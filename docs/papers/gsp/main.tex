@@ -1,0 +1,832 @@
+\documentclass[envcountsect,runningheads,orivec]{llncs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ENLARGED STYLE FOR SUBMISSION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\setlength{\textwidth}{15cm}
+
+%\setlength{\textheight}{21cm}
+%\addtolength{\oddsidemargin}{-1.25cm}pu
+%\setlength{\evensidemargin}{\oddsidemargin}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[all]{xy}\CompileMatrices
+\usepackage[english]{babel}
+\usepackage[mathcal]{euscript}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{pslatex}
+\usepackage{alltt}
+
+\usepackage{url}
+\usepackage{subfigure}
+\usepackage{stmaryrd,amsmath,amsfonts,amstext,amssymb,fancybox}
+
+\usepackage{bussproofs}
+\usepackage{mathtools}
+
+\newcommand{\powerset}{\mathcal{P}_f}
+\newcommand{\compatible}{compatible}
+\newcommand{\compatibility}{compatibility}
+
+\newcommand{\bn}{\mathop{\mathrm{bn}}}
+\newcommand{\initial}{\mathop{I}}
+\newcommand{\fn}{\mathop{\mathrm{fn}}}
+\newcommand{\struct}{\equiv}
+%\newcommand{\rec}[2]{\mathsf{rec}\;{#1}.{#2}}
+\newcommand{\sep}{\;\;\mid\;\;}
+\newcommand{\locpar}{|}
+\newcommand{\install}[1]{\mathsf{install}[{#1}]}
+\newcommand{\sedef}{\Rightarrow}
+\newcommand{\merg}[2]{\mathsf{merge}^{#1}\ {#2}}
+\newcommand{\invoke}[1]{\mathsf{invoke}\ {#1}}
+
+\newcommand{\arro}[1]{\xrightarrow[]{#1}}
+\newcommand{\arroi}[1]{\arro{#1}_i}
+\newcommand{\arrobyclient}[2]{\arro{#1}_#2}
+
+\newcommand{\auxarro}[1]{\xmapsto{#1}}
+
+\newcommand{\typearro}[1]{\stackrel{#1}{\mapsto}}
+\newcommand{\labdef}[1]{\top #1}
+\newcommand{\session}{\rhd}
+\newcommand{\labinv}[1]{\bot #1}
+\newcommand{\labmerg}[2]{#1^{#2}}
+\newcommand{\deduce}[2]{\frac{\displaystyle #1}{\displaystyle #2}}
+\newcommand{\equal}[2]{#1 \stackrel{\cdot}{=} #2}
+\newcommand{\n}{\mathop{\mathrm{n}}}
+\newcommand{\muse}{$\mu\mathsf{se}$}
+\newcommand{\var}{{\mathcal A}}
+\newcommand{\varb}{{\mathcal B}}
+\newcommand{\subst}[2]{\{#1 / #2\}}
+\newcommand{\judge}[4]{#1\vdash #4:\{{#2}\,\nearrow\,{#3}\}}
+\newcommand{\judges}[3]{#1\vdash #3 :\{#2 \}}
+\newcommand{\compliance}{\thickapprox}
+
+%\newcommand{\topfigrule}{\vskip2pt\noindent\rule{\textwidth}{1pt}}
+\newcommand{\olds}[1]{\oldstylenums{#1}}
+\newcommand{\oldsb}[1]{{\bfseries\olds{#1}}}
+\newif{\ifcomments}
+\commentsfalse \ifcomments
+\newcommand{\comment}[1]{\stepcounter{ncomm}%
+\vbox to0pt{\vss\llap{\tiny\oldsb{\arabic{ncomm}}}\vskip6pt}%
+\marginpar{\tiny\bf\raggedright%
+{\oldsb{\arabic{ncomm}}}.\hskip0.5em#1}}
+\newcounter{ncomm}
+\else
+\newcommand{\comment}[1]{}
+\fi
+\newcommand{\marginnote}[2]{\hrule\smallskip\textbf{#1}:{\sf #2}\smallskip\hrule}
+\newcommand{\rest}[1]{(\nu #1)}
+\newcommand{\pinull}{\mathbf{0}}
+\newcommand{\typenull}{\mathsf{0}}
+\newcommand{\subt}{\; \mbox{{{\tt <}} \hspace{-.29cm} \raisebox{.25ex}{\tt :}}\,}
+\newcommand{\bigfract}[2]{\frac{^{\textstyle #1}}{_{\textstyle #2}}}
+\newcommand{\lred}[1]{\stackrel{#1}{\longrightarrow}}
+\def \mathax #1#2{\begin{array}{l} {\mbox{\scriptsize {{\sc (#1)}}} } \\ #2
+\end{array}}
+
+\def \mathrule #1#2#3{\begin{array}{l}
+        {\mbox{\scriptsize {\ruleName{#1}}} }
+        \\ \deduce{#2}{#3}
+\end{array}}
+
+\def \mathrulean #1#2#3{\begin{array}{l}
+        {\mbox{\scriptsize {\ruleName{#1}}} }
+        \, \deduce{#2}{#3}
+\end{array}}
+
+\def \mathanrule #1#2{\begin{array}{l}
+				\deduce{#1}{#2}
+\end{array}}
+
+\def \mathaxiom #1#2{\begin{array}{l}%
+    {\mbox{\scriptsize ({\sc #1})} }%
+    \\ \iaxiom{#2}%
+    \end{array}}
+\newcommand{\iaxiom}[1]{\textstyle\rule[-1.3ex]{0cm}{3ex}#1}
+        
+\newcommand{\wsdl}{{\sc wsdl}}
+\newcommand{\lredm}[1]{\stackrel{#1}{\longmapsto}}
+\newcommand{\ruleName}[1]{{\sc (#1)}}
+
+
+\newcommand{\bla}{\fbox{bla, bla, bla...}}
+\newcommand{\replace}[2]{{\fbox{#2}}\marginpar{$\star\star$}}
+%\newcommand{\replace}[2]{{#2}}
+
+
+
+%
+% MACRO FOR COMMENTS
+%
+%\newcommand{\nota}[1]{\noindent \fbox{ \parbox{\textwidth}{#1} }  }
+\newcommand{\nota}[1]{}
+
+%
+% ABBREVIATIONS AND SYMBOLS
+%
+\newcommand{\eg}{e.g.}
+\newcommand{\ie}{i.e.}
+\newcommand{\wrt}{w.r.t.}
+\newcommand{\tdot}{..}
+
+
+
+\newcommand{\emptysequence}{[]}
+
+\newcommand{\tsystem}[2]{#1\ \bigpar\ #2}
+\newcommand{\tclient}[6]{\{#1 , #2, #3, #4, #5, #6\}}
+\newcommand{\tclienti}[6]{\tclient{#1}{#2}{#3}{#4}{#5}{#6}_{i}}
+
+\newcommand{\tknown}{\textit{k}}
+\newcommand{\tpending}{\rho}
+\newcommand{\ttransactionbuffer}{\alpha}
+\newcommand{\tsent}{\sigma}
+\newcommand{\tsenthead}{\beta}
+
+\newcommand{\treceivebuffer}{\textit{j}}
+\newcommand{\rvalue}[2]{\textit{rvalue}(#1, #2)}
+
+\newcommand{\tupdateins}{\textit{update(u);P}}
+\newcommand{\tpushins}{\textit{push();P}}
+\newcommand{\tconfirmedins}[1]{\textit{let}\ #1 = \textit{confirmed}();P}
+
+\newcommand{\tpullins}{\textit{pull();P}}
+\newcommand{\treadins}[2]{\textit{let}\ #1 = \textit{read}(#2);P}
+\newcommand{\treceivetran}{\textit{receive()}}
+
+\newcommand{\queuemessage}{S}
+\newcommand{\system}{C}
+\newcommand{\systemterm}{N}
+\newcommand{\enviromentterm}{E}
+
+
+%
+% SERVER AND CLIENT
+%
+\newcommand{\gsp}{\textit{gsp}}
+\newcommand{\tgspcalculus}{\textit{tgsp-calculus}}
+\newcommand{\gspcalculus}{\textit{gsp-calculus}}
+
+\newcommand{\server}[3]{\{#1 , #2, #3\}}
+\newcommand{\client}[9]{\{#1 , \textless #2, #3, #4, #5, #6, #7, #8, #9 \textgreater\}}
+\newcommand{\clientr}[2]{\{#1 , #2\}_i}
+
+
+\newcommand{\clienti}[9]{\{#1 , #2, #3, #4, #5, #6, #7, #8\}_#9}
+
+\newcommand{\inserver}{\textit{$in_s$}}
+\newcommand{\outserver}{\textit{$out_s$}}
+\newcommand{\inclient}{\textit{$in_c$}}
+\newcommand{\outclient}{\textit{$out_c$}}
+\newcommand{\outclientlist}{\textit{\headerround} \cdot \textit{\tailround}}
+
+\newcommand{\state}{\textit{ps}}
+\newcommand{\stateclient}{E}
+
+
+\newcommand{\persistedstate}{\textit{ps}}
+\newcommand{\statetype}{\textit{State}}
+\newcommand{\updatetype}{\textit{Update}}
+\newcommand{\readtype}{\textit{Read}}
+\newcommand{\valuetype}{\textit{Value}}
+
+\newcommand{\deltatype}{\textit{Delta}}
+\newcommand{\known}{\textit{k}}
+\newcommand{\pending}{\textit{p}}
+\newcommand{\transactionbuffer}{\textit{tb}}
+\newcommand{\pushbuffer}{\textit{pb}}
+\newcommand{\receivebuffer}{\textit{rb}}
+
+\newcommand{\knowntype}{\statetype}
+\newcommand{\pendingtype}{\rho}
+\newcommand{\transactionbuffertype}{\delta}
+\newcommand{\pushbuffertype}{\delta}
+\newcommand{\receivebuffertype}{\gssegmenttype \cup \gsprefixtype}
+\newcommand{\nroundtype}{\mathbb{N}}
+
+\newcommand{\maxround}{\textit{mr}}
+\newcommand{\append}[2]{\textit{append}(#1, #2)}
+\newcommand{\apply}[2]{\textit{apply}(#1, #2)}
+\newcommand{\gs}{\textit{gs}}
+\newcommand{\gss}{\textit{gss}}
+\newcommand{\gssegment}{\textless	\delta,\maxround \textgreater}
+\newcommand{\emptygssegment}{\theta}
+\newcommand{\gsprefix}{\textless	\state,\maxround \textgreater}
+\newcommand{\round}[3]{\textless	#1, #2, #3 \textgreater}
+
+\newcommand{\specfunction}[4]{\textit{#1} :: #2 $x$ #3 $\rightarrow$ #4}
+\newcommand{\specfunctiononeparameter}[3]{\textit{#1} :: #2 $\rightarrow$ #3}
+\newcommand{\specfunctionforparameters}[6]{\textit{#1} :: #2 $x$ #3 $x$ #4 $x$ #5 $\rightarrow$ #6}
+
+
+
+
+\newcommand{\gssegmenttype}{\textit{GSSegment}}
+\newcommand{\gsprefixtype}{\textit{GSPrefix}}
+\newcommand{\roundtype}{\textit{Round}}
+\newcommand{\headerround}{\textless	i, n_0, \delta_0\textgreater}
+
+\newcommand{\tailround}{\textit{rs}}
+
+\newcommand{\partialfunction}[2]{#1 \rightarrow #2}
+
+\newcommand{\reduce}[1]{\textbf{\textit{reduce}}(#1)}
+\newcommand{\applyplus}[2]{\textbf{\textit{apply}}(#1, #2)}
+\newcommand{\readplus}[2]{\textbf{\textit{read}}(#1, #2) = \textit{v}}
+\newcommand{\appendplus}[2]{\textbf{\textit{append}}(#1, #2)}
+
+\newcommand{\reducestate}[2]{\textbf{\textit{reducestate}}(#1, #2)}
+
+
+\newcommand{\gsprefixins}[2]{\textless #1, #2\textgreater}
+\newcommand{\gssegmentins}[2]{\textless #1, #2\textgreater}
+
+\newcommand{\receive}{\textit{receive()}}
+
+\newcommand{\confirmedtran}{\textit{confirmed()}}
+\newcommand{\pushtran}{\textit{push()}}
+\newcommand{\updatetran}{\textit{update}(u)}
+\newcommand{\processtran}{\textit{process}()}
+
+\newcommand{\updatevtran}[2]{\textit{update}(#1^#2)}
+
+
+\newcommand{\updatebyclient}[1]{\textit{update}(u)_#1}
+\newcommand{\readbyclient}[1]{\textit{read}(r)_#1}
+
+\newcommand{\pulltran}{\textit{pull()}}
+\newcommand{\sendtran}{\textit{send()}}
+\newcommand{\dropconn}[1]{\dagger(#1)}
+\newcommand{\dropconnectionclient}{\dagger}
+\newcommand{\tprogram}{P}
+
+\newcommand{\acceptconn}[1]{\oplus(#1)}
+\newcommand{\crashandrecover}{\ddagger}
+\newcommand{\undefined}{\perp}
+\newcommand{\receiveroundsname}[1]{\textit{receivedRounds}(#1)}
+\newcommand{\updatein}[2]{#1^#2}
+\newcommand{\update}[3]{#1[#2 \mapsto #3]}
+\newcommand{\updatethree}[7]{#1[#2 \mapsto #3; #4 \mapsto #5; #6 \mapsto #7]}
+\newcommand{\updatetwo}[5]{#1[#2 \mapsto #3; #4 \mapsto #5]}
+\newcommand{\updatefour}[9]{#1[#2 \mapsto #3; #4 \mapsto #5; #6 \mapsto #7; #8 \mapsto #9]}
+
+
+\newcommand{\tupdate}{\textit{u}}
+\newcommand{\readins}[2]{\textit{let}\ #1 = \textit{read}(#2);P}
+\newcommand{\readtran}[1]{\textit{read}(#1)}
+
+\newcommand{\twhile}[2]{\textit{while} (#1)\ \textbf{do}\ #2}
+
+
+\newcommand{\updateins}[1]{\textit{update}(#1);P}
+\newcommand{\pushins}{\textit{push}();P}
+\newcommand{\pullins}{\textit{pull}();P}
+\newcommand{\curstate}[4]{\textit{curstate}(#1, #2, #3, #4)}
+\newcommand{\nround}{\textit{n}}
+\newcommand{\confirmedins}[1]{\textit{let}\ #1 = \textit{confirmed}();P}
+\newcommand{\domround}{\mathcal{N} \times \mathbb{N} \times \deltatype}
+\newcommand{\dominserver}{\mathbb{N} \times \deltatype}
+
+
+
+
+\newcommand{\tuple}[1]{\vec{#1}}
+\newcommand{\zero} {0}
+\newcommand{\outp}[2]{\overline{#1}\langle #2 \rangle}
+\newcommand{\inp}[2]{#1(#2)}
+\newcommand{\ifte}[3]{{\bf if}\ #1\ {\bf then}\ #2\ {\bf else}\ #3}
+\newcommand{\rec}[2]{{\bf rec}_{#1}\ #2}
+
+\newcommand{\corrinst}[2]{#1\triangleright[#2]}
+
+\newcommand{\service}[4]{#1_{#2}\{#3\ ,\ #4\}}
+
+\newcommand{\bigpar}{|\!|}
+
+
+\newcommand{\denote}[1]{\llbracket #1\rrbracket}
+
+ \newcommand{\unexcplbl}[1]{[#1]}
+ \newcommand{\unexcp}{\circledast 	}
+
+ \newcommand{\mayhandle}[2]{#1\downarrow_{#2}}
+ \newcommand{\maynothandle}[2]{#1\not\downarrow_{#2}}
+
+\newcommand{\Arro}{\Rightarrow}
+
+\newcommand{\verticesets}{\mathbb{V}}
+\newcommand{\updatesets}{\mathbb{U}}
+
+\newcommand{\condition}[2]{\neg(#1\downarrow)=#2}
+
+%CONSISTENCY GRAMMAR
+
+\newcommand{\enviroment}[5]{\{#1 , #2, #3, #4, #5\}}
+\newcommand{\vis}{\textsc{\scriptsize{VIS}}}
+\newcommand{\op}{\textsc{\scriptsize{OP}}}
+\newcommand{\arb}{\textsc{\scriptsize{AR}}}
+\newcommand{\so}{\textsc{\scriptsize{SO}}}
+\newcommand{\soby}[2]{#1\triangleright_i{#2}}
+\newcommand{\updateinqueuemessage}[2]{\queuemessage[#1]_#2}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% COMMENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\cf}[2]{
+    \fontsize{#1}{#1}{\selectfont{#2}}
+  }
+
+\newcommand{\hernan}[1]{{\marginpar{\cf{6}{{HM: #1}}}}}
+%\newcommand{\emi}[1]{{\marginpar{\cf{6}{{#1}}}}}
+%  \newcommand{\cf}[2]{
+%    \fontsize{#1}{#1}{\selectfont{#2}}
+%  }
+%\newcommand{\emic}[2]{\shadowbox{\fbox{\parbox{.8\textwidth}{\begin{description}\item[\cf{8}{\sc\bf #2}]\cf{8}{#1}\end{description}}}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Para Borrar
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\ignorar}[1]{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Type system
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\type}{\mathcal{T}}
+\newcommand{\patternmtch}{\owedge}
+\newcommand{\tjudge}[4]{#1 \vdash #2 : {#3} ,#4}
+
+\title{GSP-Calculus}
+
+\author{Hern\'an Melgratti\inst{1,2} \and Christian Rold\'an\inst{1} 
+        }
+
+\institute{
+  Departamento de Computaci\'on, FCEyN, Universidad de Buenos Aires.
+ %\email{hmelgra@dc.uba.ar} 
+\\
+\and CONICET.}
+
+%\titlerunning{Correlation sets}
+
+%\authorrunning{R. Bruni, H. Melgratti, U. Montanari}
+
+
+\bibliographystyle{plain}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+
+\section{Global Sequence Protocol Language}
+
+\subsection{Syntax}
+
+We assume the following countable sets of vertice names $\verticesets$ ranged over by $v$;$v_0$;$v_1$, \ldots;
+We shall use $\ttransactionbuffer$, $\beta$ to denote sequence of updates $\updatesets$ ranged over by $u^v$,$u^{v_0}_0$,$u^{v_1}_1$,$\ldots$; Let $\mathcal{U}$=$u^{v_0}_0$ $\cdot$ $u^{v_1}_1$ $\cdot$,$\dotsc$,$\cdot$ $u^{v_n}_n$. For the sake of clarity, we shall only use vertices as update's decoration whenever it would be necessary.
+
+Let $\tpending$, $\sigma$ be sequence defined as $\epsilon$ \text{\textbar} [$\alpha$]$\cdot$ $\tpending$. We use $\epsilon$ to denote the empty sequence, \ie, the sequence of length 0.
+ 
+Let $\tpending$ and $\ttransactionbuffer$ be sequence, we write $\setminus$ as relative complement of $\tpending$ in $\ttransactionbuffer$, \ie\ ,$\tpending$ $\setminus$ $\ttransactionbuffer$ = [$u_i$ $|$ $u_i$ $\in$ $\tpending$ $\wedge$\ $u_i$ $\notin$ $\ttransactionbuffer$]. 
+
+
+ \begin{definition}[Global Sequence Protocol Language] 
+The set of \tgspcalculus\ expressions is defined by the following syntax:
+ 
+  \[
+    \begin{array}{l@{\quad}r@{}l}
+			 (\textsc{system}) & N \::=\ & \tsystem{C}{\queuemessage} \\
+       (\textsc{client}) & C \::=\ & \zero \;|\; \tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \;|\; C\ \bigpar\ C \qquad where $ $ \tknown\ and $ $ \treceivebuffer\ \in \mathbb{N} \\
+			 (\textsc{state}) & S \::=\ & \epsilon \;|\; \queuemessage \cdot \tpending \\
+			 (\textsc{program}) & \tprogram \::=\ & \tupdateins \;|\; \treadins{x}{v} \;|\; \tpullins \;|\; \tpushins \;|\; \\
+			&  \ \ & \tconfirmedins{x} \;|\; \twhile{cond}{\tprogram} 
+     \end{array}
+  \]
+\end{definition}
+
+We model the system $N$ as several clients interacting with a message queue $S$. This message queue will represent the program state. We formalize an $i^{\ th}$ client as a tuple $\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}$
+where $P$, called Program, is a set of programming primitives that allow programmer to interact with the distributed store by invoking of actions on objects, a index $\tknown$ which denotes the maximum index of update that reading in $S$, a sequence of updates sent but unconfirmed their reception $\tpending$, a transaction buffer $\ttransactionbuffer$, a sequence of all the updates sent by the client to the RTOB $\tsent$ and finally $\treceivebuffer$ which represents a amount of received updates. 
+
+\subsection{Operational Semantics}
+
+The operational semantics of \tgspcalculus\ is defined by a labeled transition system 
+over well-formed terms, up-to the structural congruence.
+
+The labeled transition system considers the following actions:
+\[ 
+\begin{array}{r@{\ ::= \ }l}
+  \alpha & \tau \ | \ \readtran{r} \ | \  \updatetran \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran 
+\end{array}
+\]
+
+ \[
+ \begin{array}{l}
+\mathrule{t-read}{\rvalue{r}{\textit{flatten}(\queuemessage[0..\tknown-1] \cdot \tpending) \cdot \ttransactionbuffer} = v}{\tsystem{\tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arro{\readtran{r}} \tsystem{\tclienti{\update{\tprogram}{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ C}{\queuemessage}}
+\\[25pt]
+
+\mathax{t-update}{\tsystem{\tclienti{\tupdateins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arro{\updatetran} \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer\ \cdot \tupdate}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
+
+\\[15pt]
+
+\mathax{t-push}{\tsystem{\tclienti{\tpushins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \bigpar\ \system}{\queuemessage} \arro{\pushtran} \tsystem{\tclienti{\tprogram}{\tknown}{\tpending \cdot [\ttransactionbuffer]}{\epsilon}{\tsent \cdot [\ttransactionbuffer]}{\treceivebuffer} \bigpar\ \system}{\queuemessage}}
+\\[15pt]
+
+\mathax{t-pull}{\tsystem{\tclienti{\tpullins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \bigpar\ \system}{\queuemessage} \arro{\pulltran} \tsystem{\tclienti{\tprogram}{\tknown+\treceivebuffer}{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer]}{\ttransactionbuffer}{\tsent}{0} \bigpar\ \system}{\queuemessage}}
+\\[15pt]
+
+
+\mathax{t-confirmed}{\tsystem{\tclienti{\tconfirmedins{x}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arro{\confirmedtran} \tsystem{\tclienti{\update{\tprogram}{x}{\tpending \neq \emptysequence \vee\ \ttransactionbuffer \neq \epsilon}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ C}{\queuemessage}}
+
+\\[20pt]
+
+\mathrule{t-while-true}{\condition{cond}{false}}{\tsystem{\tclienti{\twhile{cond}{\tprogram}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \bigpar \system}{\queuemessage} \arro{\tau} \tsystem{\tclienti{\tprogram;\twhile{cond}{\tprogram}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1} \bigpar\ \system}{\queuemessage}}
+
+
+\\[25pt]
+
+\mathrule{t-while-false}{\condition{cond}{true}}{\tsystem{\tclienti{\twhile{cond}{\tprogram}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \bigpar \system}{\queuemessage} \arro{\tau} \tsystem{\tclienti{0}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1} \bigpar\ \system}{\queuemessage}}
+
+
+\\[20pt]
+\mathrule{t-receive}{\tknown + \treceivebuffer + 1 \leq \text{\textbar} S \text{\textbar} }{\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \bigpar \system}{\queuemessage} \arro{\tau} \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1} \bigpar\ \system}{\queuemessage}}
+
+\\[25pt]
+
+\mathax{t-process}{\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\tsenthead] \cdot \tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arro{\tau} \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ C}{\queuemessage \cdot \tsenthead}}
+\\
+ \end{array}
+\]
+
+
+The meaning of $\tau$ is standard. A \tgspcalculus\ program is given by a Labeled Transition System (LTS) before introducing. Transitions for systems are labeled by actions $\alpha$ as usual.
+
+Rule $\textsc{(T-READ)}$ states that a client $i$ can perform an action $\readtran{r}$, substituting each occurrence of $x$ in $P$ with the value $v$. Notice that $v$ is got from the queue message and the client's internal queues. Rule \textsc{(T-UPDATE)} describes effects performed by an update operation. The update $u$ is saving in the temporal queue $\ttransactionbuffer$. After \textsc{(T-PUSH)} the content of the transaction queue $\ttransactionbuffer$ is moved to the pending queue, $\tpending$, and the sent queue, $\tsent$. Rule $\textsc{(T-PULL)}$ increases the amount of updates that client $i$ can read in the message queue $S$. This increase is given by the amount of update receiving.The pending queue removes those updates which belong between index $\tknown$ and the amount of update receiving $\treceivebuffer$ in $S$. Besides, $\treceivebuffer$ is restarted in 0. $\textsc{(T-CONFIRMED)}$ sets $x$ in false whether updates are in pending queue or transaction queue, true in otherwise. Rule $\textsc{(T-WHILE-TRUE)}$ and $\textsc{(T-WHILE-fALSE)}$ are standard. Rule $\textsc{(T-RECEIVE)}$ states that a counter $\treceivebuffer$ is incremented (by 1). Finally, the last one rule, $\textsc{(T-PROCESS)}$, moves updates from sent queue to the message queue.  
+
+ \paragraph{Notation.} Let $f$ and $g$ be a partial function, we define the update operator $\_[\_]$ such that
+  $dom(f[g])  = dom(f) \cup dom(g)$ and 
+ \[
+   \begin{array}{l@{\ = \ \Bigg\{}l}
+     f[g](x) & 
+     \begin{array}{ll}
+        f(x) & \mbox{if }\ x\not\in dom(g) \wedge x\in dom(f) \\
+        g(x) & \mbox{if }\ x\in dom(g)\\
+        \mathit{\undefined}  & \mbox{Otherwise} 
+     \end{array}
+   \end{array}
+ \]    
+
+ We write $[x_1 \mapsto y_1, \ldots, x_n \mapsto y_n]$ for the partial function $f$ such that $dom(f)=\{x_1,\ldots,x_n\}$ and $f(x_i)=y_i$; $A \setminus B$ to denote the usual difference of sets.\\
+ 
+
+\section{Robust Streaming}
+
+Let \statetype\ and \deltatype\ be abstract types, \gssegmenttype\ the set operation over sets \deltatype $\times$ $\mathcal{N}$ $\rightarrow$ $\mathbb{N}$, \gsprefixtype\ the set over sets \statetype\ $\times$ $\mathcal{N}$ $\rightarrow$ $\mathbb{N}$ and \roundtype\ the set over sets $\mathcal{N}$ $\times$ $\mathbb{N}$ $\times$ \deltatype; $\emptygssegment$\ is a fresh element of \gssegmenttype.
+
+Furthermore, we assume the following parametric functions defined over the abstract data types above borrowed from[1]:
+
+\[\begin{array}{lll}
+\textbf{const} & \textit{initialstate} & :$\statetype$ \\
+\textbf{function} & \textit{read} & :\partialfunction{\readtype \times \statetype}{\valuetype} \\
+\textbf{function} & \textit{apply} & :\partialfunction{\statetype \times \deltatype^*}{\statetype} \\
+\textbf{const} & \textit{emptydelta} & :\deltatype \\
+\textbf{function} & \textit{append} & :\partialfunction{\deltatype \times \updatetype}{\deltatype} \\
+\textbf{function} & \textit{reduce} & :\partialfunction{\deltatype^*}{\deltatype} \\
+\end{array}\] 
+
+Let \statetype\ be a set of state ranged over by $s$, $s_1$, $s_2$, $\ldots$;
+We shall use $\pushbuffertype$ to denote sequence of Delta ranged over by $d$, $d_0$, $d_1$ $\ldots$; Let $\pendingtype$, $\sigma$ be sequence defined:
+
+$\pendingtype$,$\sigma$ := $\epsilon$ \text{\textbar} [$\delta$]$\cdot$ $\pendingtype$
+ 
+
+We assume the following countable sets of persisted state $\gsprefixtype$ ranged over by $ps$, $ps_1$, $\ldots$; 
+
+Let $\inserver$\ be a partial function in $\partialfunction{\mathcal{N}}{\dominserver}$
+
+Let $\outserver$\ be a partial function in $\partialfunction{\mathcal{N}}{\gssegmenttype^* \cup \gsprefixtype}$ \\
+
+
+\subsection{Auxiliar Function}
+
+\specfunction{append}{\gssegmenttype}{$\roundtype^*$}{\statetype} \\
+\append{\gssegmentins{$\delta$}{\maxround}}{$\epsilon$} = \gssegmentins{$\delta$}{\maxround} \\
+\append{\gssegmentins{$\delta$}{\maxround}}{$\headerround$:\tailround} = \append{\textless\reduce{$\delta$ $\cdot$ $\delta_0$ $\cdot$ $\epsilon$}, $\update{\maxround}{b_0}{n_0}$\textgreater}{\tailround} 
+
+\begin{flushleft}
+\specfunction{apply}{\gsprefixtype}{\gssegmenttype}{\gsprefixtype} \\
+\apply{$\gsprefixins{\state}{\maxround}$}{\gssegmentins{$\delta$}{$\maxround'$}} =  \gsprefixins{\applyplus{\state}{$\delta$ $\cdot$ $\epsilon$}}{\maxround[$\maxround'$]}  \\
+\end{flushleft}
+
+\begin{flushleft}
+\specfunctiononeparameter{receivedrounds}{($\partialfunction{\mathcal{N}}{\textless \dominserver \textgreater^*}$)}{$\roundtype^*$}\\
+\textit{receivedrounds}($\undefined$) = $\epsilon$ \\
+\textit{receivedrounds}($\partialfunction{b}{\textless n_0,\ \delta_0 \textgreater} \cdot\ f$) = \textless $b$, \ $n_0$, \ $\delta_0$\textgreater\ $\cdot$ $receivedrounds(f)$
+\end{flushleft}
+
+
+\begin{flushleft}
+\specfunctionforparameters{curstate}{\statetype}{$\roundtype^*$}{\deltatype}{\deltatype}{\statetype} \\
+\textit{curstate}(\state, \pending, \pushbuffer, \transactionbuffer) = \applyplus{\state}{\textit{getdeltas}(\pending) $\cdot$ \pushbuffer $\cdot$ \transactionbuffer}
+\end{flushleft}
+
+
+\begin{flushleft}
+\specfunctiononeparameter{getdeltas}{$\roundtype^*$}{$\deltatype^*$} \\
+\textit{getdeltas}($\epsilon$) = $\epsilon$ \\
+\textit{getdeltas}(\textless $n_0$,$\delta_0$ \textgreater $\cdot$ $\delta$) = $\delta_0$ $\cdot$ getdeltas($\delta$)\\
+\end{flushleft}
+
+
+ \begin{definition}[GSP] 
+	The syntax of clients and server is given by the following grammar 
+  \[
+    \begin{array}{l@{\quad}r@{\;::=\;}l}
+			 (\textsc{system}) & \systemterm & \zero \;|\; S\ \bigpar\ C \\
+			 (\textsc{server}) & S & \zero \;|\; \server{\persistedstate}{\inserver}{\outserver} \\
+       (\textsc{clients}) & C & \emptyset \;|\; \client{P}{\statetype}{\pendingtype}{\pushbuffertype}{\transactionbuffertype}{\receivebuffertype}{\nroundtype}{\inclient}{\outclient} \;|\; C\ \bigpar\ C  \\
+			 (\textsc{program}) & P & \zero \;|\; \readins{x}{r} \;|\; \updateins{u} \;|\; 	\pushins \;|\; \pullins
+     \end{array}
+  \]
+ \end{definition}
+ 
+E.\known $\in$ \knowntype; E.\pending $\in$ $\pendingtype$; E.\pushbuffer, E.\transactionbuffer $\in$ $\pushbuffertype$; E.\nround $\in$ $\nroundtype$.
+
+\subsection{Operational Semantics}
+
+The operational semantics of \gspcalculus\ is defined by a labeled transition system 
+over well-formed terms, up-to the structural congruence.
+
+The labeled transition system considers the following actions:
+\[ 
+\begin{array}{r@{\ ::= \ }l}
+  \alpha & \tau \ | \ \readtran{r} \ | \  \updatetran \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran 
+  \\
+\end{array}
+\]
+
+ \[
+ \begin{array}{l}
+    \hspace{-.3cm} \textsc{SERVER}\\
+    
+\mathrule{drop\_conn}{b_i \in \inserver \qquad  b_i \in \outserver}{\server{\persistedstate}{\inserver}{\outserver} \auxarro{\dropconn{b_i}} \server{\persistedstate}{\inserver \setminus b_i}{\outserver \setminus b_i}} 
+\hfill
+\mathax{crash\_and\_recover}{\server{\persistedstate}{\inserver}{\outserver} \auxarro{\crashandrecover} \server{\persistedstate}{\undefined}{\undefined}}
+
+\\[25pt]
+
+\mathrule{batch}{ps'=\apply{\persistedstate}{d} \qquad d=\append{\emptygssegment}{rs} \qquad rs=\receiveroundsname{\inserver}}{\server{\persistedstate}{\inserver}{\outserver} \arro{\tau} \server{ps'}{\updatein{\inserver}{ps'}}{\outserver}}
+
+\\[25pt]
+
+\mathrule{accept\_conn}{b_i \notin \inserver \qquad b_i \notin \outserver}{\server{\persistedstate}{\inserver}{\outserver} \auxarro{\acceptconn{b_i}} \server{\persistedstate}{\inserver}{\update{\outserver}{b_i}{\persistedstate}}}
+
+    \\[35pt]
+    \hspace{-.3cm} \textsc{COMMUNICATION}
+		
+\\
+    \mathrule{comm server-client}{\outserver(i)=\gs \cdot \gss}{\server{\state}{\inserver}{\outserver} \bigpar \clientr{P}{\stateclient} \arro{\tau} \server{\state}{\inserver}{\update{\outserver}{i}{\gss}} \bigpar 
+		\clientr{P}{\update{E}{\inclient}{E.\inclient \cup \{\gs\}}}}
+		
+\\[25pt]
+    %\mathrule{comm client-server}{\outclient=\headerround \cdot \tailround}{\server{\state}{\inserver}{\outserver} \bigpar \clientr{P}{\stateclient} \arro{\tau} \server{\state}{\update{\inclient}{i}{\headerround}}{\outserver} \bigpar \clientr{P}{\stateclient}{\update{\outclient}{E.\outclient}{\tailround}}}}
+		%
+	    \mathrule{comm client-server}{\outclient=\headerround \cdot \tailround}{\server{\state}{\inserver}{\outserver} \bigpar \clientr{P}{\stateclient} \arro{\tau} \server{\state}{\update{\inserver}{i}{\headerround}}{\outserver} \bigpar 
+		\clientr{P}{\update{E}{\outclient}{\tailround}}}	
+ \\
+
+ \end{array}
+ \]
+
+\newpage
+
+
+ \[
+ \begin{array}{l}
+    \hspace{-.3cm} \textsc{CLIENTS}\\
+		
+\mathrule{read}{\readplus{r}{\curstate{\known}{\pending}{\pushbuffer}{\transactionbuffer}}}{\clientr{\readins{x}{r}}{\stateclient} \arro{\readtran{r}} \clientr{\update{P}{x}{v}}{\stateclient}}
+\\[25pt]
+
+		\mathax{update}{\clientr{\updateins{u}}{\stateclient} \arro{\updatetran} \clientr{P}{\update{E}{\transactionbuffer}{\appendplus{E.\transactionbuffer}{u}}}} \\[15pt]
+
+
+		\mathax{push}{\clientr{\pushins}{\stateclient} \arro{\pushtran} \clientr{P}{\updatethree{E}{\pushbuffer}{\reduce{E.\pushbuffer\cdot E.\transactionbuffer}}{\transactionbuffer}{\epsilon}{\nround}{E.\nround+1}  }} \\[25pt]
+
+%\updatethree{E}{\pushbuffer}{\appendplus{\pushbuffer}{\transactionbuffer}}{\transactionbuffer}{\epsilon}{\nround}{\nround+1}
+
+		\mathrule{pull}{E.\inclient \neq \emptyset \qquad E.\outclient \neq \emptyset \qquad |E.\receivebuffer| > 0}{\clientr{\pullins}{\stateclient}\arro{\pulltran} \clientr{P}{\updatetwo{E}{\known}{\reducestate{E.\known}{E.\receivebuffer}}{\receivebuffer}{\epsilon}}}
+\\[25pt]
+
+		\mathrule{confirmed-true}{E.\pending = \epsilon \qquad E.\pushbuffer = \epsilon \qquad E.\transactionbuffer = \epsilon}{\clientr{\confirmedins{x}}{\stateclient} \arro{\confirmedtran} \clientr{\update{P}{x}{\textbf{true}}}{\stateclient}} \\[25pt]
+
+
+		\mathrule{confirmed-false}{E.\pending \neq \epsilon   \  ||  \ E.\pushbuffer \neq \epsilon  \  ||  \ E.\transactionbuffer  \neq \epsilon}{\clientr{\confirmedins{x}}{\stateclient} \arro{\confirmedtran} \clientr{\update{P}{x}{\textbf{false}}}{\stateclient}} \\[25pt]
+
+
+\mathax{send}{\clientr{P}{\stateclient} \arro{\sendtran} \clientr{P}{\updatethree{E}{\pending}{E.\pending \cdot E.\pushbuffer}{\pushbuffer}{\epsilon}{\outclient}{\outclient \cdot \round{i}{E.\nround}{E.\pushbuffer}}}}
+
+\\[25pt]
+
+		\mathrule{receive}{E.\inclient = \gs_0 \cdot \gs_t}{\clientr{P}{\stateclient} \arro{\receive} \clientr{P}{\updatetwo{E}{\receivebuffer}{E.\receivebuffer \cdot \gs_0.gssegment)}{\inclient}{\gs_t)}}}\\[25pt]
+
+
+		\mathax{drop\_connection}{\clientr{P}{\known}{\stateclient} \arro{\dropconnectionclient} \clientr{P}{\updatetwo{E}{\inclient}{\emptyset}{\outclient}{\emptyset}}}\\[15pt]
+ \end{array}
+ \]
+
+
+\section{Consistency Guarantees}
+
+We shall introduce a series of store-level consistency guarantees and then we shall show which are captured by application written in GSP. We start identifying three kinds of relations between actions of update and read:
+
+ \paragraph{Session Order} relates whatever pair of actions from the same client, indicating the program order. It is a total order on actions. 
+
+ \paragraph{Visibility} relates Updates with Reads. It is used to indicate is if an action of Update is visible for an action of Read.
+
+ \paragraph{Arbitration} relates Updates with Updates. It is used to resolve update conflicts. It is a total order on actions of update.
+
+
+We extend the GSP language with a new term which capture the relations amount operation in our system. 
+ 
+\[
+    \begin{array}{l@{\quad}r@{\;::=\;}l}
+			 (\textsc{enviroment}) & \enviromentterm &  \enviroment{\systemterm}{\op}{\so}{\vis}{\arb} \\
+	    \end{array}
+  \]
+	
+Let $\enviromentterm$, a new term, where $\systemterm$ represents our system introduced in Definition 1.1, $\op$ is a mapping of vertices to actions, $\so$ is a session order relation defined from vertices to relations of vertices $\verticesets$ $\times$ ($\verticesets$ $\times$ $\verticesets$) and $\vis$,$\arb$ are visibility and arbitration relation.
+
+
+ \paragraph{Notation.} Given a session order relation $\so$ from client $i$ and a vertice $v$, we shall write $\soby{\so}{v}$  meaning that $\soby{(\mathcal{V}, \mathcal{R})}{v} = (\mathcal{V} \ \cup \ \{v\}, \mathcal{R}\ \cup \ \{(x,v) / x \in \verticesets\})$. We shall refer to an update action on the queue message as $\updateinqueuemessage{n}{i}$.The arbitration relation $\arb$ is defined as $\{ (v,w) / \{v \mapsto \updateinqueuemessage{m}{h}\} \in \op \land \ \{w \mapsto \updateinqueuemessage{n}{i} \} \in \op \land \ m < n \}$. A transition $\arroi{\alpha}$ denotes the fact that action $\alpha$ is perfomed by client $i$.
+
+ 
+The following operational semantic allow to understand how working the enviroment when the actions are executed.
+
+ \[
+ \begin{array}{l}
+		
+\mathrule{e-read}{\systemterm \arroi{\readtran{r}} \systemterm' \qquad v \notin 
+dom(\op) \qquad \ \vis' = \vis \ \cup \ \{ (x,v) / \{x \mapsto \updatebyclient{h}\} \in \op \ \land \  u^x \in \ \queuemessage[0..\tknown-1] \cdot \tpending \cdot [\ttransactionbuffer] \}}{\enviroment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{\readtran{r}} \enviroment{\systemterm'}{\op \ \cup \ \{v \mapsto \readtran{r}\} }{\soby{\so}{v}}{\vis'}{\arb}}
+
+ \\[35pt]
+
+		\mathrule{e-update}{\systemterm \arroi{\updatevtran{u}{v}} \systemterm' \qquad v \notin 
+dom(\op)}{\enviroment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{\updatevtran{u}{v}} \enviroment{\systemterm'}{\op \ \cup \ \{v \mapsto \updatetran \}}{\soby{\so}{v}}{\vis}{\arb}}
+ 
+ \end{array}
+ \]
+
+\subsection{Ordering Guarantees}
+
+We now prove what ordering guarantees are assured by GSP language and what do not. 
+
+
+First, we prove a useful lemma: 
+\begin{lemma}\label{lemma:update-ever-belong} Let u an update action, $\queuemessage$ a message queue, $\tpending_i$ and $\ttransactionbuffer_i$ a pending queue and transaction queue from the client i, if $\enviroment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $\{x \mapsto \updatebyclient{i} \}\ \in \ \op\ \Rightarrow\ u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$
+
+\end{lemma}
+
+\begin{proof} The proof follows by induction on the length of the derivation $\arro{} ^*$.
+\begin{itemize}
+   \item{\bf n=0}. Then $\op$ is $\emptyset$, so that antecedent is false, then the preoposition is true.
+   \item{\bf n=k+1}. Then $\enviroment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^n\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{} \{x \mapsto \updatebyclient{i} \}\ \in \ \op\ \Rightarrow\ u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$. We proceed by 
+case analysis on the last transition:
+	
+	\begin{itemize}
+        \item {\bf rule (\textsc{E-READ})}. As $x$ is an update operation then it must not be $v$, so that $\{x \mapsto \updatebyclient{i} \} \in\ \op$, then by inductive hypothesis $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$. When $\systemterm \arroi{\readtran{r}} \systemterm'$, $\tknown_i$, $\tpending_i$,$\ttransactionbuffer_i$ do not change.
+				\item {\bf rule (\textsc{E-UPDATE})}. There are two possibilities:
+				
+				
+					\begin{itemize}
+						\item {\bf $x \neq v$}. Then we can use inductive hypothesis, so that it is easy to see that if $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$ then $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i] \cdot u_{t}^v$ too.
+						\item {\bf $x =\ v$}. When $\systemterm \arroi{\updatevtran{u}{v}} \systemterm'$, $u^v \in \ttransactionbuffer'_i$ (with $\ttransactionbuffer'_i$ transaction queue in $\systemterm'$) because $\ttransactionbuffer'_i = \ttransactionbuffer_i \cdot u^v$. It is immediate to note that $u^x \in\  \queuemessage[0..\tknown'_i-1] \cdot \tpending'_i \cdot [\ttransactionbuffer'_i]$.
+					\end{itemize}
+				\item {\bf rule (\textsc{E-PUSH})}. As $\op$ do not change, then by inductive hypothesis, $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i] \equiv\ u^x \in\  \queuemessage[0..\tknown_i-1] \cdot (\tpending_i \cdot [\ttransactionbuffer_i]) \cdot \epsilon$. When $\systemterm \arroi{\pushtran} \systemterm'$, $\tknown_i$' = $\tknown_i$, $\tpending_i$' = $\tpending_i \cdot [\ttransactionbuffer_i]$ and $\ttransactionbuffer_i$' = $\epsilon$.
+\item {\bf rule (\textsc{E-PULL})}. As $\op$ do not change, then by inductive hypothesis, $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$. We should prove that it is equivalent to $u^x \in\  \queuemessage[0..\tknown_i - 1 + \treceivebuffer_i] \cdot \tpending_i \setminus \queuemessage[\tknown_i .. \tknown_i + \treceivebuffer_i] \cdot [\ttransactionbuffer_i]$. There are two interesting cases to consider:
+		\begin{itemize}
+			\item If $u^x \in\ \tpending_i\  \land\ u^x \notin\ \queuemessage[\tknown_i .. \tknown_i + \treceivebuffer_i]$, then $u^x \in \ \tpending_i$'.
+			\item If $u^x \in\ \tpending_i\  \land\ u^x \in\ \queuemessage[\tknown_i .. \tknown_i + \treceivebuffer_i]$, then $u^x \notin \ \tpending_i$' but $u^x \in\ \queuemessage[\tknown_i .. \tknown_i + \treceivebuffer_i]$. 
+		\end{itemize}
+\end{itemize}
+\end{itemize}
+
+The proof for the remaining cases is by inductive hypothesis because $\op$, $\tknown_i$, $\tpending_i$ and $\ttransactionbuffer_i$ do not change.
+
+\end{proof}
+
+\begin{theorem}[\textsc{ReadMyWrites}]\label{theorem:readmywrites}
+
+Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, if $\enviroment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $\textsc{\small{SO}}_R \cap \ (\mathbb{U}\ \times \ \mathbb{R})  \subseteq \ \textsc{\small{VIS}}$
+
+\end{theorem}
+
+
+\begin{proof} The proof follows by induction on the length of the derivation $\arro{} ^*$.
+\begin{itemize}
+   \item{\bf n=0}. In particular $\op$ and $\vis$ are $\emptyset$, so that $\emptyset \subseteq \emptyset$.
+   \item{\bf n=k+1}. Then $\enviroment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^n\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{\alpha} \enviroment{\systemterm'}{\op'}{\so'}{\vis'}{\arb}$. We proceed by 
+definition:
+	
+	\begin{itemize}
+        \item $\textsc{\small{SO}}_R$' = $\textsc{\small{SO}}_R \cup\ \{(w,v) / \{w \mapsto \readtran{r}\} \lor\ \{w \mapsto \ \updatebyclient{j}\} \}$. Applying the intersection $(\mathbb{U}\ \times \ \mathbb{R})$, we shall obtain $\textsc{\small{SO}}_R \ \cup\ \{(w,v) / \{w \mapsto \updatebyclient{j}\} \}$.				
+				\item $\vis' = \vis \ \cup \ \{ (x,v) / \{x \mapsto \updatebyclient{h}\} \in \op \ \land \  u^x \in \ \queuemessage[0..\tknown-1] \cdot \tpending \cdot [\ttransactionbuffer] \}$.
+\end{itemize}
+By inductive hypothesis, $\textsc{\small{SO}}_R \ \cup\ (\mathbb{U}\ \times \ \mathbb{R}) \subseteq \vis$. We only have to prove that $\{(w,v) / \{w \mapsto \updatebyclient{j}\} \in \op  \ \} \subseteq \{ (x,v) / \{x \mapsto \updatebyclient{h}\} \in \op \ \land \  u^x \in \ \queuemessage[0..\tknown-1] \cdot \tpending \cdot [\ttransactionbuffer] \}$. When $j = h$ and $w = x$, we can use Lemma~\ref{lemma:update-ever-belong}. So that, we have proved that $\textsc{\small{SO}}_R$' $\cap \ (\mathbb{U}\ \times \ \mathbb{R})  \subseteq \ \textsc{\small{VIS'}}$.
+\end{itemize}
+\end{proof}
+
+
+
+\begin{theorem}[\textsc{Monotonic Read}]
+
+Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, if $\enviroment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $(\textsc{\small{VIS}};\textsc{\small{SO}}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R})  \subseteq \ \textsc{\small{VIS}}$
+
+\end{theorem}
+
+
+\begin{proof} The proof follows by induction on the length of the derivation $\arro{} ^*$.
+\begin{itemize}
+   \item{\bf n=0}. In particular $\textsc{\small{SO}}_R$ and $\textsc{\small{VIS}}$ are $\emptyset$, so that $\emptyset \subseteq \emptyset$.
+   \item{\bf n=k+1}. Then $\enviroment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^n\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{\alpha} \enviroment{\systemterm'}{\op'}{\so'}{\vis'}{\arb}$. Let $R$ be a composition of relations. We shall say that if $(x,y) \in \ R $ iff $\ \exists y \in\ \verticesets\ $ such that $(x,y) \in\ \textsc{\small{VIS}}' \land \ (y,z) \in\  \textsc{\small{SO}}_R$'. We have to prove that $(x,z) \in \ \textsc{\small{VIS}}$'. We proceed by 
+case analysis on the last transition:
+	
+	\begin{itemize}
+        \item {\bf rule (\textsc{E-READ})}. We know that $v$ is fresh, therefore, $v$ have not be neither $x$ nor $y$ because there exists $z$ such that, $z$ happens after from $x$ and $y$. There are only two possibilities:
+					
+					\begin{itemize}
+						\item $z = v$. As $(y,z) \in \ \textsc{\small{SO}}_R$, then $y$ and $z$ are from the same client, called $i$. We are only interested in relations of $update \times\ read$. We know that $v$ is associated to an read action besides $x$ have to be an update action. As $(x,y) \in \ \textsc{\small{VIS}}$' then $y$ is an read action,i.e., $\{y \mapsto \readbyclient{i} \}\ \in \ \op$.By Lemma xx, there exists an update $u$ such that $u^x \in\ \ \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$. Substituting $w$ by $v$ in $\textsc{\small{VIS}}$', we prove that $(x,z) \in \textsc{\small{VIS}}$'.
+						item $z \neq v$. This case follows immediately by inductive hypothesis.
+					\end{itemize}
+					
+			  \item{\bf rule (\textsc{E-UPDATE})}. Visibility relation does not change,i.e.,$\textsc{\small{VIS}}$ = $\textsc{\small{VIS}}$'. Let $v$ be a vertice associated an update action, then $\textsc{\small{SO}}_R$' = $\textsc{\small{SO}}_R \cup\ \{(w,v) / \{w \mapsto \readtran{r}\} \lor\ \{w \mapsto \ \updatebyclient{j}\} \}$. As we are only interested in relations of $update \times\ read$, then $(\textsc{\small{VIS}}';\textsc{\small{SO}'}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \equiv \ (\textsc{\small{VIS}};\textsc{\small{SO}}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R})$. By inductive hypothesis we can prove that $(\textsc{\small{VIS}}';\textsc{\small{SO}}_R)' \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \ \subseteq \ \textsc{\small{VIS}} \subseteq \ \textsc{\small{VIS}}$'.				
+				The proof for the remaining cases follow are not interesting because the relations does not change.
+\end{itemize}
+\end{itemize}
+\end{proof}
+
+
+
+\begin{theorem}[\textsc{No Circular Causality}]
+
+Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, if $\enviroment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $\textbf{acyclic}(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^+$.
+
+\end{theorem}
+
+\begin{proof}
+
+Since $\textsc{\small{VIS}}$ is acyclic and $\textsc{\small{SO}}_R \cap \ (\mathbb{U}\ \times \ \mathbb{R})  \subseteq \ \textsc{\small{VIS}}$ by Theorem~\ref{lemma:update-ever-belong}, we have to prove that $\textsc{\small{VIS}} ^+$ is acyclic. In particular, the transitive closure of an acyclic graph is the reachability relation of the directed acyclic graph and a strict partial order.
+
+\end{proof}
+
+
+
+
+\begin{example}[Consistent Prefix] 
+\label{consistent-prefix}Consider the following system built-up from two 
+different client:
+\[
+\begin{array}{l}
+
+E = \enviroment{C_1\ \bigpar\ C_2 \bigpar\ S}{\emptyset}{\emptyset}{\emptyset}{\emptyset} 
+\\
+\\
+C_1 = \tclient{\textit{add(aList,'hello');push();send();}}{0}{\epsilon}{\epsilon}{\epsilon}{\epsilon}
+\\
+C_2 = \tclient{\textit{add(aList,'world');push();send();let v = read(x);}}{0}{\epsilon}{\epsilon}{\epsilon}{\epsilon} 
+\\
+S = \epsilon 
+\end{array}
+\]
+\end{example}
+		
+Enviroment has a system $\systemterm$ with two clients and a message queue $S$ without updates. Relation sets $\op$,$\so$,$\vis$,$\arb$ are empty, i.e.,there were not an execution in $\systemterm$ captured by the relation sets. The update action add a string to an object called $aList$. 
+In this state, $C_1$ and $C_2$ can perform their update actions. Considerer the following execution:
+
+\[
+\begin{array}{l}
+  E  \arrobyclient{\updatevtran{add(aList,'hello')}{v}}{1} \enviroment{C'_1\ \bigpar\ C_2 \bigpar\ S}{v_0 \mapsto add(aList,'hello')}{\emptyset}{\emptyset}{\emptyset} \\
+\\
+\\
+C'_1 = \tclient{push();send();}{0}{\epsilon}{\epsilon}{\epsilon}{\epsilon}
+\\
+C_2 = \tclient{\textit{update(aList,'world');push();send();let v = read(x);}}{0}{\epsilon}{\epsilon}{\epsilon}{\epsilon} 
+\\
+S = \epsilon 
+\end{array}
+\]
+
+
+			
+\end{document}
