@@ -247,7 +247,7 @@
 
 \newcommand{\confirmedtran}{\textit{confirmed()}}
 \newcommand{\pushtran}{\textit{push()}}
-\newcommand{\updatetran}{\textit{update}(u)}
+\newcommand{\updatetran}[1]{\textit{update}(#1)}
 \newcommand{\processtran}{\textit{process}()}
 
 \newcommand{\updatevtran}[2]{\textit{update}(#1^#2)}
@@ -330,6 +330,8 @@
 \newcommand{\so}{\textsc{\scriptsize{SO}}}
 \newcommand{\soby}[2]{#1\triangleright_i{#2}}
 \newcommand{\updateinqueuemessage}[2]{\queuemessage[#1]_#2}
+\newcommand{\rb}{\textsc{\scriptsize{RB}}}
+\newcommand{\tx}{\textsc{\scriptsize{Tx}}}
 
 
 
@@ -427,7 +429,7 @@ over well-formed terms, up-to the structural congruence.
 The labeled transition system considers the following actions:
 \[ 
 \begin{array}{r@{\ ::= \ }l}
-  \alpha & \tau \ | \ \readtran{r} \ | \  \updatetran \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran 
+  \alpha & \tau \ | \ \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran 
 \end{array}
 \]
 
@@ -436,7 +438,7 @@ The labeled transition system considers the following actions:
 \mathrule{t-read}{\rvalue{r}{\textit{flatten}(\queuemessage[0..\tknown-1] \cdot \tpending) \cdot \ttransactionbuffer} = v}{\tsystem{\tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arro{\readtran{r}} \tsystem{\tclienti{\update{\tprogram}{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ C}{\queuemessage}}
 \\[25pt]
 
-\mathax{t-update}{\tsystem{\tclienti{\tupdateins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arro{\updatetran} \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer\ \cdot \tupdate}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
+\mathax{t-update}{\tsystem{\tclienti{\tupdateins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arro{\updatetran{u}} \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer\ \cdot \tupdate}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
 
 \\[15pt]
 
@@ -571,7 +573,7 @@ over well-formed terms, up-to the structural congruence.
 The labeled transition system considers the following actions:
 \[ 
 \begin{array}{r@{\ ::= \ }l}
-  \alpha & \tau \ | \ \readtran{r} \ | \  \updatetran \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran 
+  \alpha & \tau \ | \ \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran 
   \\
 \end{array}
 \]
@@ -619,7 +621,7 @@ The labeled transition system considers the following actions:
 \mathrule{read}{\readplus{r}{\curstate{\known}{\pending}{\pushbuffer}{\transactionbuffer}}}{\clientr{\readins{x}{r}}{\stateclient} \arro{\readtran{r}} \clientr{\update{P}{x}{v}}{\stateclient}}
 \\[25pt]
 
-		\mathax{update}{\clientr{\updateins{u}}{\stateclient} \arro{\updatetran} \clientr{P}{\update{E}{\transactionbuffer}{\appendplus{E.\transactionbuffer}{u}}}} \\[15pt]
+		\mathax{update}{\clientr{\updateins{u}}{\stateclient} \arro{\updatetran{u}} \clientr{P}{\update{E}{\transactionbuffer}{\appendplus{E.\transactionbuffer}{u}}}} \\[15pt]
 
 
 		\mathax{push}{\clientr{\pushins}{\stateclient} \arro{\pushtran} \clientr{P}{\updatethree{E}{\pushbuffer}{\reduce{E.\pushbuffer\cdot E.\transactionbuffer}}{\transactionbuffer}{\epsilon}{\nround}{E.\nround+1}  }} \\[25pt]
@@ -683,7 +685,7 @@ dom(\op) \qquad \ \vis' = \vis \ \cup \ \{ (x,v) / \{x \mapsto \updatebyclient{h
  \\[35pt]
 
 		\mathrule{e-update}{\systemterm \arroi{\updatevtran{u}{v}} \systemterm' \qquad v \notin 
-dom(\op)}{\enviroment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{\updatevtran{u}{v}} \enviroment{\systemterm'}{\op \ \cup \ \{v \mapsto \updatetran \}}{\soby{\so}{v}}{\vis}{\arb}}
+dom(\op)}{\enviroment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{\updatevtran{u}{v}} \enviroment{\systemterm'}{\op \ \cup \ \{v \mapsto \updatetran{u} \}}{\soby{\so}{v}}{\vis}{\arb}}
  
  \end{array}
  \]
@@ -791,42 +793,95 @@ Since $\textsc{\small{VIS}}$ is acyclic and $\textsc{\small{SO}}_R \cap \ (\math
 \end{proof}
 
 
-
-
 \begin{example}[Consistent Prefix] 
 \label{consistent-prefix}Consider the following system built-up from two 
 different client:
+
 \[
 \begin{array}{l}
-
-E = \enviroment{C_1\ \bigpar\ C_2 \bigpar\ S}{\emptyset}{\emptyset}{\emptyset}{\emptyset} 
+E = \enviroment{\tclient{\textit{update(aList.add('a'));push();}}{0}{\epsilon}{\epsilon}{\epsilon}{0}_1\ \bigpar\
 \\
-\\
-C_1 = \tclient{\textit{add(aList,'hello');push();send();}}{0}{\epsilon}{\epsilon}{\epsilon}{\epsilon}
-\\
-C_2 = \tclient{\textit{add(aList,'world');push();send();let v = read(x);}}{0}{\epsilon}{\epsilon}{\epsilon}{\epsilon} 
-\\
-S = \epsilon 
+\tclient{\textit{update(aList.add('b'));push();let v = read(x);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}_2  \bigpar\ \epsilon}{\emptyset}{\emptyset}{\emptyset}{\emptyset}
 \end{array}
 \]
 \end{example}
 		
-Enviroment has a system $\systemterm$ with two clients and a message queue $S$ without updates. Relation sets $\op$,$\so$,$\vis$,$\arb$ are empty, i.e.,there were not an execution in $\systemterm$ captured by the relation sets. The update action add a string to an object called $aList$. 
-In this state, $C_1$ and $C_2$ can perform their update actions. Considerer the following execution:
+Environment has a system $\systemterm$ with two clients and a message queue $S$ without updates. Relation sets $\op$,$\so$,$\vis$,$\arb$ are empty, i.e.,there were not an execution in $\systemterm$ captured by the relation sets. The update action add a string to an object called $aList$ which has not elements. 
+In this state, $C_1$ and $C_2$ can perform their update actions. E may non-deterministically choose to do $update(aList.add('a')$ or $update(aList.add('b')$. If the first communication takes place over $update(aList.add('a')$, then the system evolves as follows:
 
 \[
 \begin{array}{l}
-  E  \arrobyclient{\updatevtran{add(aList,'hello')}{v}}{1} \enviroment{C'_1\ \bigpar\ C_2 \bigpar\ S}{v_0 \mapsto add(aList,'hello')}{\emptyset}{\emptyset}{\emptyset} \\
+E \arrobyclient{\updatevtran{aList.add('a')}{{v_0}}}{1} \enviroment{\tclient{push();}{0}{\epsilon}{[aList.add('a')]}{\epsilon}{0}_1\ \bigpar\
 \\
-\\
-C'_1 = \tclient{push();send();}{0}{\epsilon}{\epsilon}{\epsilon}{\epsilon}
-\\
-C_2 = \tclient{\textit{update(aList,'world');push();send();let v = read(x);}}{0}{\epsilon}{\epsilon}{\epsilon}{\epsilon} 
-\\
-S = \epsilon 
+\tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}_2  \bigpar\ \epsilon} 
+{\\ \emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
 \end{array}
 \]
 
+The action $\updatetran{aList.add('a')}$ of the client $1$ will be identified by vertice $v_0$ by rule $\textsc{\small{E-UPDATE}}$. In particular, the update action will be left into the transactional queue of Client $1$ besides the new vertice will be added to vertices in $\so$. Now, Client 1 performs $\pushtran$: 
 
-			
+\[
+\begin{array}{l}
+E \arrobyclient{\pushtran}{1} \enviroment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{[aList.add('a')]}{0}_1\ \bigpar\
+\\
+\tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}_2  \bigpar\ \epsilon} 
+{\\ \emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
+\end{array}
+\]
+		
+When it happens, $aList.add('a')$ is moved to the sent queue and pending queue. At this moment, Client 2 can perform an update action however Client 1 will realize an internal action which is given by $\textsc{\small{E-PROCESS}}$.  			
+
+\[
+\begin{array}{l}
+E \arrobyclient{\tau}{1} \enviroment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}_1\ \bigpar\ \\
+\tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}_2  \bigpar\ \\ 
+aList.add('a')} 
+{\emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
+\end{array}
+\]
+
+Analogously, Client 2 realize its actions leaving to environment evolves as below:
+
+\[
+\begin{array}{l}
+E \arrobyclient{\updatetran{aList.add('b')}}{2} \enviroment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}_1\ \bigpar\
+\\
+\tclient{\textit{push();let x = read(aList);}}{0}{\epsilon}{[aList.add('b')]}{\epsilon}{0}_2  \bigpar\ 
+\\ aList.add('a')} {\emptyset}{\{( \{ v_0,v_1 \} , \{\ (v_0,v_1) \} ) \}}{\emptyset}{\emptyset} 
+\\
+\\
+\arrobyclient{\pushtran}{2} \enviroment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}_1\ \bigpar\
+\\
+\tclient{\textit{let x = read(aList);}}{0}{[aList.add('b')]}{\epsilon}{[aList.add('b')]}{0}_2  \bigpar\ 
+\\ aList.add('a')}{\emptyset}{\{( \{ v_0,v_1 \} , \{\ (v_0,v_1) \} ) \}}{\emptyset}{\emptyset} 
+\\
+\\
+\arrobyclient{\tau}{2} \enviroment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}_1\ \bigpar\
+\\
+\tclient{\textit{let x = read(aList);}}{0}{[aList.add('b')]}{\epsilon}{\epsilon}{0}_2  \bigpar\ 
+\\aList.add('a') \cdot [aList.add('b')]} {\emptyset}{\{( \{ v_0,v_1 \} , \{\ (v_0,v_1) \} ) \}}{\emptyset}{\{ (v_0,v_1) \}} 
+\\
+\\
+\arrobyclient{\readtran{aList}}{2} \enviroment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}_1\ \bigpar\
+\\
+\tclient{\update{0}{x}{['b']}}{0}{[aList.add('b')]}{\epsilon}{\epsilon}{0}_2  \bigpar\ aList.add('a') \cdot [aList.add('b')]} 
+\\
+{\emptyset}{\emptyset}{\emptyset}{\emptyset} 
+\end{array}
+\]
+		
+Note that $\arb$ is modified because the message queue has two elements. The value returned will be the list with a only element, ['b'], because of the internal action associated to the rule $\textsc{\small{E-RECEIVE}}$ did not perform it. Then, if the rule $\textsc{\small{E-RECEIVE}}$ were performed, the value of the list would be ['a','b']. It is because the content of the pending queue is removed when the server left their message. 
+
+The guarantee Consistent Prefix, which rules is $(\textsc{\small{AR}};\textsc{\small{VIS}}) \subseteq \ \textsc{\small{AR}};\textsc{\small{VIS}}$, states that if we see an result from a client in a particular order, we will never see this result in a different order.
+
+\section{Extending GSP}
+
+As illustrated in above examples, there are situations in which a environment does not ensures consistency guarantees from the literature, as Consistent Prefix or Single Order. The nature of such cases is caused by having no transactions as the usual databases.
+
+The remaining of this section is proposing a environment that ensures these consistency guarantees. We start by refining the sintax of GSP distinguishing two relations:
+
+\paragraph{Return Before} identified as $\textsc{\small{RB}}$. It is used to indicate is if an action of Update is visible for an action of Read.
+
+ $\textsc{\small{RB}}$ and $\textsc{\small{Tx}}$.
+
 \end{document}
