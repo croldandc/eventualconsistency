@@ -728,7 +728,7 @@ The proof for the remaining cases is by inductive hypothesis because $\op$, $\tk
 
 \end{proof}
 
-\begin{theorem}[\textsc{ReadMyWrites}]\label{theorem:readmywrites}
+\begin{theorem}[\textsc{Read My Writes}]\label{theorem:read-my-writes}
 
 Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, if $\enviroment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $\textsc{\small{SO}}_R \cap \ (\mathbb{U}\ \times \ \mathbb{R})  \subseteq \ \textsc{\small{VIS}}$
 
@@ -752,7 +752,7 @@ By inductive hypothesis, $\textsc{\small{SO}}_R \ \cup\ (\mathbb{U}\ \times \ \m
 
 
 \begin{theorem}[\textsc{Monotonic Read}]
-
+\label{theorem:monotonic-read}
 Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, if $\enviroment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $(\textsc{\small{VIS}};\textsc{\small{SO}}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R})  \subseteq \ \textsc{\small{VIS}}$
 
 \end{theorem}
@@ -789,6 +789,81 @@ Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small
 \begin{proof}
 
 Since $\textsc{\small{VIS}}$ is acyclic and $\textsc{\small{SO}}_R \cap \ (\mathbb{U}\ \times \ \mathbb{R})  \subseteq \ \textsc{\small{VIS}}$ by Theorem~\ref{lemma:update-ever-belong}, we have to prove that $\textsc{\small{VIS}} ^+$ is acyclic. In particular, the transitive closure of an acyclic graph is the reachability relation of the directed acyclic graph and a strict partial order.
+
+\end{proof}
+
+
+
+
+
+\begin{theorem}[\textsc{Causal Visibility}]
+
+Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{+} \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \subseteq \textsc{\small{VIS}}.$ 
+
+\end{theorem}
+ 
+
+\begin{proof} The proof follows by induction on the number of union sets between $\textsc{\small{SO}}_R$ and $\textsc{\small{VIS}}$. Then, $\bigcup_{n=1}^{\infty} (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{n} \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \subseteq \textsc{\small{VIS}}.$
+\begin{itemize}
+   \item{\bf n=0}. This means that $\textsc{\small{SO}}_R$ and $\textsc{\small{VIS}}$ are $\emptyset$, so that $\emptyset \subseteq \emptyset$.
+   \item{\bf n=k+1}. Suppose that we have proved that the number of union sets $< k+1$. Now, we have to prove that: $\forall (a,b) \mid (a,b \in \verticesets \Rightarrow\ (a,b)\ \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1} \cap \ (\mathbb{U}\ \times \ \mathbb{R})) \Rightarrow\ (a,b) \in \textsc{\small{VIS}}$.
+	
+Assume $(a, x_1),(x_1, x_2),\ldots(x_{k{-}1}, x_k),(x_{k}, b)$ are relations from $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1}$. Then $(a, x_1),(x_1, x_2),\ldots(x_{k{-}1}, x_k)$ are relations from $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k}$. By the induction hypothesis, $(a, x_k) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k}$, and we also have $(x_k, b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} )$. Thus by the definition of $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1}$, $(a, b) \in
+(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1}$.
+Conversely, assume $(a,b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1}$ = $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k} \circ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}})$. Then there is a vertice $c \in \verticesets$ such
+that $(a,c) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k}$ and $(c, b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} )$.
+
+We are only interested when $a$ is an update action and $b$ a read action. It is because of the intersection with $(Update \times Read)$. We have two possible cases:
+
+\begin{itemize}
+	\item c is a read action. It means that $(c, b)$ only can be in $\textsc{\small{SO}}_R$ because $\textsc{\small{VIS}}$ requires that $c$ will be an update action. In particular, if  $(c, b) \in\ \textsc{\small{SO}}_R$, they belong to the same client. 
+	
+	\begin{itemize}
+		\item if $(a,c) \in\ \textsc{\small{VIS}}$ and $(c,b) \in\ \textsc{\small{SO}}_R$, by Theorem~\ref{theorem:monotonic-read}, $(a,b) \in\ \textsc{\small{VIS}}$.
+		
+		\item if $(a,c) \in\ \textsc{\small{SO}}_R$ then by Theorem~\ref{theorem:read-my-writes}, $(a,c) \in\ \textsc{\small{VIS}}$- Then, it is analogous to the previous case.
+		
+	\end{itemize}
+	\item c is an update action. It means that $(a, c)$ only can be in $\textsc{\small{SO}}_R$ because $\textsc{\small{VIS}}$ requires that $c$ will be an read action. In particular, if  $(a,c) \in\ \textsc{\small{SO}}_R$, they belong to the same client.
+	
+	\begin{itemize}
+		\item if $(a,c) \in\ \textsc{\small{SO}}_R$ and $(c,b) \in \textsc{\small{VIS}}$, by Theorem Monotonic Writes (Falta probar!), $(a,b) \in\ \textsc{\small{VIS}}$.
+		\item if $(a,c) \in\ \textsc{\small{VIS}}$ ... VER.
+	\end{itemize}
+\end{itemize}
+
+
+	
+	
+\end{itemize}
+\end{proof}
+
+
+\begin{theorem}[\textsc{Causal Arbitration}]
+
+Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small{SO}}$, $\textsc{\small{VIS}}$ a visibility relation and $\textsc{\small{AR}}$ an arbitration relation then $(\mathbb{U}\ \times \ \mathbb{U}) \cap \ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{+} - \textsc{\small{SO}}_R \subseteq \textsc{\small{AR}}.$ 
+
+\end{theorem}
+ 
+
+\begin{proof} 
+The proof follows by induction on the number of union sets between $\textsc{\small{SO}}_R$ and $\textsc{\small{VIS}}$. Then, $(\mathbb{U}\ \times \ \mathbb{U}) \cap \ \bigcup_{n=1}^{\infty} (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{n} - \textsc{\small{SO}}_R \subseteq \textsc{\small{AR}}.$
+
+
+\begin{itemize}
+   \item{\bf n=0}. This means that $\textsc{\small{SO}}_R$, $\textsc{\small{VIS}}$ and  $\textsc{\small{AR}}$ are $\emptyset$, so that $\emptyset \subseteq \emptyset$.
+   \item{\bf n=k+1}. Suppose that we have proved that the number of union sets $< k+1$. Now, we have to prove that: $\forall (a,b) \mid (a,b \in \verticesets \Rightarrow\ (a,b)\ \in\ (\mathbb{U}\ \times \ \mathbb{U}) \cap \ \bigcup_{n=1}^{\infty} (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1} - \textsc{\small{SO}}_R \Rightarrow\ (a,b) \in \textsc{\small{AR}}$. 
+
+Assume $(a,b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1} $ = $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k} \circ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}})$. Then there is a vertice $c \in \verticesets$ such
+that $(a,c) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k}$ and $(c, b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} )$.
+
+We are only interested when $a$ and $b$ are an update actions. It is because of the intersection with $(Update \times Update)$. We have two possible cases:
+\begin{itemize}
+	\item c is a read action. It means that $(c,b)$ only can be in $\textsc{\small{SO}}_R$ because $\textsc{\small{VIS}}$ requires that $c$ will be an update action. In particular, if  $(c,b) \in\ \textsc{\small{SO}}_R$, they belong to the same client. COMPLETAR
+	
+	\item c is an update action. COMPLETAR
+\end{itemize}
+\end{itemize}
 
 \end{proof}
 
@@ -883,5 +958,7 @@ The remaining of this section is proposing a environment that ensures these cons
 \paragraph{Return Before} identified as $\textsc{\small{RB}}$. It is used to indicate is if an action of Update is visible for an action of Read.
 
  $\textsc{\small{RB}}$ and $\textsc{\small{Tx}}$.
+
+
 
 \end{document}
