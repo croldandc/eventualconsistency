@@ -148,7 +148,9 @@
 \newcommand{\treceivebuffer}{\textit{j}}
 \newcommand{\rvalue}[2]{\textit{rvalue}(#1, #2)}
 
-\newcommand{\tupdateins}{\textit{update(u);P}}
+\newcommand{\tupdateins}{\textit{\tupdins;P}}
+\newcommand{\tupdins}{\textit{update(u)}}
+
 \newcommand{\tpushins}{\textit{push();P}}
 \newcommand{\tconfirmedins}[1]{\textit{let}\ #1 = \textit{confirmed}();P}
 
@@ -159,7 +161,7 @@
 \newcommand{\queuemessage}{S}
 \newcommand{\system}{C}
 \newcommand{\systemterm}{N}
-\newcommand{\enviromentterm}{E}
+\newcommand{\environmentterm}{E}
 
 
 %
@@ -251,7 +253,7 @@
 \newcommand{\processtran}{\textit{process}()}
 
 \newcommand{\updatevtran}[2]{\textit{update}(#1^#2)}
-
+\newcommand{\syncupdtran}[2]{\textit{sync\_update}(#1^#2)}
 
 \newcommand{\updatebyclient}[1]{\textit{update}(u)_#1}
 \newcommand{\readbyclient}[1]{\textit{read}(r)_#1}
@@ -261,6 +263,8 @@
 \newcommand{\dropconn}[1]{\dagger(#1)}
 \newcommand{\dropconnectionclient}{\dagger}
 \newcommand{\tprogram}{P}
+\newcommand{\tflush}{\textit{flush()}}
+\newcommand{\tsyncupd}[1]{\textit{sync\_update(#1)}}
 
 \newcommand{\acceptconn}[1]{\oplus(#1)}
 \newcommand{\crashandrecover}{\ddagger}
@@ -276,6 +280,12 @@
 \newcommand{\tupdate}{\textit{u}}
 \newcommand{\readins}[2]{\textit{let}\ #1 = \textit{read}(#2);P}
 \newcommand{\readtran}[1]{\textit{read}(#1)}
+
+\newcommand{\startsynctran}{\textit{start-sync}}
+\newcommand{\finishsynctran}{\textit{end-sync}}
+
+
+
 
 \newcommand{\twhile}[2]{\textit{while} (#1)\ \textbf{do}\ #2}
 
@@ -323,7 +333,9 @@
 
 %CONSISTENCY GRAMMAR
 
-\newcommand{\enviroment}[5]{\{#1 , #2, #3, #4, #5\}}
+\newcommand{\environment}[5]{\{#1 , #2, #3, #4, #5\}}
+\newcommand{\environmenttran}[7]{\{#1 , #2, #3, #4, #5, #6, #7\}}
+
 \newcommand{\vis}{\textsc{\scriptsize{VIS}}}
 \newcommand{\op}{\textsc{\scriptsize{OP}}}
 \newcommand{\arb}{\textsc{\scriptsize{AR}}}
@@ -664,28 +676,28 @@ We extend the GSP language with a new term which capture the relations amount op
  
 \[
     \begin{array}{l@{\quad}r@{\;::=\;}l}
-			 (\textsc{enviroment}) & \enviromentterm &  \enviroment{\systemterm}{\op}{\so}{\vis}{\arb} \\
+			 (\textsc{environment}) & \environmentterm &  \environment{\systemterm}{\op}{\so}{\vis}{\arb} \\
 	    \end{array}
   \]
 	
-Let $\enviromentterm$, a new term, where $\systemterm$ represents our system introduced in Definition 1.1, $\op$ is a mapping of vertices to actions, $\so$ is a session order relation defined from vertices to relations of vertices $\verticesets$ $\times$ ($\verticesets$ $\times$ $\verticesets$) and $\vis$,$\arb$ are visibility and arbitration relation.
+Let $\environmentterm$, a new term, where $\systemterm$ represents our system introduced in Definition 1.1, $\op$ is a mapping of vertices to actions, $\so$ is a session order relation defined from vertices to relations of vertices $\verticesets$ $\times$ ($\verticesets$ $\times$ $\verticesets$) and $\vis$,$\arb$ are visibility and arbitration relation.
 
 
  \paragraph{Notation.} Given a session order relation $\so$ from client $i$ and a vertice $v$, we shall write $\soby{\so}{v}$  meaning that $\soby{(\mathcal{V}, \mathcal{R})}{v} = (\mathcal{V} \ \cup \ \{v\}, \mathcal{R}\ \cup \ \{(x,v) / x \in \verticesets\})$. We shall refer to an update action on the queue message as $\updateinqueuemessage{n}{i}$.The arbitration relation $\arb$ is defined as $\{ (v,w) / \{v \mapsto \updateinqueuemessage{m}{h}\} \in \op \land \ \{w \mapsto \updateinqueuemessage{n}{i} \} \in \op \land \ m < n \}$. A transition $\arroi{\alpha}$ denotes the fact that action $\alpha$ is perfomed by client $i$.
 
  
-The following operational semantic allow to understand how working the enviroment when the actions are executed.
+The following operational semantic allow to understand how working the environment when the actions are executed.
 
  \[
  \begin{array}{l}
 		
 \mathrule{e-read}{\systemterm \arroi{\readtran{r}} \systemterm' \qquad v \notin 
-dom(\op) \qquad \ \vis' = \vis \ \cup \ \{ (x,v) / \{x \mapsto \updatebyclient{h}\} \in \op \ \land \  u^x \in \ \queuemessage[0..\tknown-1] \cdot \tpending \cdot [\ttransactionbuffer] \}}{\enviroment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{\readtran{r}} \enviroment{\systemterm'}{\op \ \cup \ \{v \mapsto \readtran{r}\} }{\soby{\so}{v}}{\vis'}{\arb}}
+dom(\op) \qquad \ \vis' = \vis \ \cup \ \{ (x,v) / \{x \mapsto \updatebyclient{h}\} \in \op \ \land \  u^x \in \ \queuemessage[0..\tknown-1] \cdot \tpending \cdot [\ttransactionbuffer] \}}{\environment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{\readtran{r}} \environment{\systemterm'}{\op \ \cup \ \{v \mapsto \readtran{r}\} }{\soby{\so}{v}}{\vis'}{\arb}}
 
  \\[35pt]
 
 		\mathrule{e-update}{\systemterm \arroi{\updatevtran{u}{v}} \systemterm' \qquad v \notin 
-dom(\op)}{\enviroment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{\updatevtran{u}{v}} \enviroment{\systemterm'}{\op \ \cup \ \{v \mapsto \updatetran{u} \}}{\soby{\so}{v}}{\vis}{\arb}}
+dom(\op)}{\environment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{\updatevtran{u}{v}} \environment{\systemterm'}{\op \ \cup \ \{v \mapsto \updatetran{u} \}}{\soby{\so}{v}}{\vis}{\arb}}
  
  \end{array}
  \]
@@ -696,14 +708,14 @@ We now prove what ordering guarantees are assured by GSP language and what do no
 
 
 First, we prove a useful lemma: 
-\begin{lemma}\label{lemma:update-ever-belong} Let u an update action, $\queuemessage$ a message queue, $\tpending_i$ and $\ttransactionbuffer_i$ a pending queue and transaction queue from the client i, if $\enviroment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $\{x \mapsto \updatebyclient{i} \}\ \in \ \op\ \Rightarrow\ u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$
+\begin{lemma}\label{lemma:update-ever-belong} Let u an update action, $\queuemessage$ a message queue, $\tpending_i$ and $\ttransactionbuffer_i$ a pending queue and transaction queue from the client i, if $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \environment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $\{x \mapsto \updatebyclient{i} \}\ \in \ \op\ \Rightarrow\ u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$
 
 \end{lemma}
 
 \begin{proof} The proof follows by induction on the length of the derivation $\arro{} ^*$.
 \begin{itemize}
    \item{\bf n=0}. Then $\op$ is $\emptyset$, so that antecedent is false, then the preoposition is true.
-   \item{\bf n=k+1}. Then $\enviroment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^n\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{} \{x \mapsto \updatebyclient{i} \}\ \in \ \op\ \Rightarrow\ u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$. We proceed by 
+   \item{\bf n=k+1}. Then $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^n\ \environment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{} \{x \mapsto \updatebyclient{i} \}\ \in \ \op\ \Rightarrow\ u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$. We proceed by 
 case analysis on the last transition:
 	
 	\begin{itemize}
@@ -730,7 +742,7 @@ The proof for the remaining cases is by inductive hypothesis because $\op$, $\tk
 
 \begin{theorem}[\textsc{Read My Writes}]\label{theorem:read-my-writes}
 
-Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, if $\enviroment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $\textsc{\small{SO}}_R \cap \ (\mathbb{U}\ \times \ \mathbb{R})  \subseteq \ \textsc{\small{VIS}}$
+Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, if $\environment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \environment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $\textsc{\small{SO}}_R \cap \ (\mathbb{U}\ \times \ \mathbb{R})  \subseteq \ \textsc{\small{VIS}}$
 
 \end{theorem}
 
@@ -738,7 +750,7 @@ Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small
 \begin{proof} The proof follows by induction on the length of the derivation $\arro{} ^*$.
 \begin{itemize}
    \item{\bf n=0}. In particular $\op$ and $\vis$ are $\emptyset$, so that $\emptyset \subseteq \emptyset$.
-   \item{\bf n=k+1}. Then $\enviroment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^n\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{\alpha} \enviroment{\systemterm'}{\op'}{\so'}{\vis'}{\arb}$. We proceed by 
+   \item{\bf n=k+1}. Then $\environment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^n\ \environment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{\alpha} \environment{\systemterm'}{\op'}{\so'}{\vis'}{\arb}$. We proceed by 
 definition:
 	
 	\begin{itemize}
@@ -753,7 +765,7 @@ By inductive hypothesis, $\textsc{\small{SO}}_R \ \cup\ (\mathbb{U}\ \times \ \m
 
 \begin{theorem}[\textsc{Monotonic Read}]
 \label{theorem:monotonic-read}
-Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, if $\enviroment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $(\textsc{\small{VIS}};\textsc{\small{SO}}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R})  \subseteq \ \textsc{\small{VIS}}$
+Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, if $\environment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \environment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $(\textsc{\small{VIS}};\textsc{\small{SO}}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R})  \subseteq \ \textsc{\small{VIS}}$
 
 \end{theorem}
 
@@ -761,7 +773,7 @@ Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small
 \begin{proof} The proof follows by induction on the length of the derivation $\arro{} ^*$.
 \begin{itemize}
    \item{\bf n=0}. In particular $\textsc{\small{SO}}_R$ and $\textsc{\small{VIS}}$ are $\emptyset$, so that $\emptyset \subseteq \emptyset$.
-   \item{\bf n=k+1}. Then $\enviroment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^n\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{\alpha} \enviroment{\systemterm'}{\op'}{\so'}{\vis'}{\arb}$. Let $R$ be a composition of relations. We shall say that if $(x,y) \in \ R $ iff $\ \exists y \in\ \verticesets\ $ such that $(x,y) \in\ \textsc{\small{VIS}}' \land \ (y,z) \in\  \textsc{\small{SO}}_R$'. We have to prove that $(x,z) \in \ \textsc{\small{VIS}}$'. We proceed by 
+   \item{\bf n=k+1}. Then $\environment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^n\ \environment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{\alpha} \environment{\systemterm'}{\op'}{\so'}{\vis'}{\arb}$. Let $R$ be a composition of relations. We shall say that if $(x,y) \in \ R $ iff $\ \exists y \in\ \verticesets\ $ such that $(x,y) \in\ \textsc{\small{VIS}}' \land \ (y,z) \in\  \textsc{\small{SO}}_R$'. We have to prove that $(x,z) \in \ \textsc{\small{VIS}}$'. We proceed by 
 case analysis on the last transition:
 	
 	\begin{itemize}
@@ -782,7 +794,7 @@ case analysis on the last transition:
 
 \begin{theorem}[\textsc{No Circular Causality}]
 
-Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, if $\enviroment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \enviroment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $\textbf{acyclic}(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^+$.
+Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, if $\environment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \environment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $\textbf{acyclic}(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^+$.
 
 \end{theorem}
 
@@ -874,7 +886,7 @@ different client:
 
 \[
 \begin{array}{l}
-E = \enviroment{\tclient{\textit{update(aList.add('a'));push();}}{0}{\epsilon}{\epsilon}{\epsilon}{0}_1\ \bigpar\
+E = \environment{\tclient{\textit{update(aList.add('a'));push();}}{0}{\epsilon}{\epsilon}{\epsilon}{0}_1\ \bigpar\
 \\
 \tclient{\textit{update(aList.add('b'));push();let v = read(x);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}_2  \bigpar\ \epsilon}{\emptyset}{\emptyset}{\emptyset}{\emptyset}
 \end{array}
@@ -886,7 +898,7 @@ In this state, $C_1$ and $C_2$ can perform their update actions. E may non-deter
 
 \[
 \begin{array}{l}
-E \arrobyclient{\updatevtran{aList.add('a')}{{v_0}}}{1} \enviroment{\tclient{push();}{0}{\epsilon}{[aList.add('a')]}{\epsilon}{0}_1\ \bigpar\
+E \arrobyclient{\updatevtran{aList.add('a')}{{v_0}}}{1} \environment{\tclient{push();}{0}{\epsilon}{[aList.add('a')]}{\epsilon}{0}_1\ \bigpar\
 \\
 \tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}_2  \bigpar\ \epsilon} 
 {\\ \emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
@@ -897,7 +909,7 @@ The action $\updatetran{aList.add('a')}$ of the client $1$ will be identified by
 
 \[
 \begin{array}{l}
-E \arrobyclient{\pushtran}{1} \enviroment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{[aList.add('a')]}{0}_1\ \bigpar\
+E \arrobyclient{\pushtran}{1} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{[aList.add('a')]}{0}_1\ \bigpar\
 \\
 \tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}_2  \bigpar\ \epsilon} 
 {\\ \emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
@@ -908,7 +920,7 @@ When it happens, $aList.add('a')$ is moved to the sent queue and pending queue. 
 
 \[
 \begin{array}{l}
-E \arrobyclient{\tau}{1} \enviroment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}_1\ \bigpar\ \\
+E \arrobyclient{\tau}{1} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}_1\ \bigpar\ \\
 \tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}_2  \bigpar\ \\ 
 aList.add('a')} 
 {\emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
@@ -919,25 +931,25 @@ Analogously, Client 2 realize its actions leaving to environment evolves as belo
 
 \[
 \begin{array}{l}
-E \arrobyclient{\updatetran{aList.add('b')}}{2} \enviroment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}_1\ \bigpar\
+E \arrobyclient{\updatetran{aList.add('b')}}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}_1\ \bigpar\
 \\
 \tclient{\textit{push();let x = read(aList);}}{0}{\epsilon}{[aList.add('b')]}{\epsilon}{0}_2  \bigpar\ 
 \\ aList.add('a')} {\emptyset}{\{( \{ v_0,v_1 \} , \{\ (v_0,v_1) \} ) \}}{\emptyset}{\emptyset} 
 \\
 \\
-\arrobyclient{\pushtran}{2} \enviroment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}_1\ \bigpar\
+\arrobyclient{\pushtran}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}_1\ \bigpar\
 \\
 \tclient{\textit{let x = read(aList);}}{0}{[aList.add('b')]}{\epsilon}{[aList.add('b')]}{0}_2  \bigpar\ 
 \\ aList.add('a')}{\emptyset}{\{( \{ v_0,v_1 \} , \{\ (v_0,v_1) \} ) \}}{\emptyset}{\emptyset} 
 \\
 \\
-\arrobyclient{\tau}{2} \enviroment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}_1\ \bigpar\
+\arrobyclient{\tau}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}_1\ \bigpar\
 \\
 \tclient{\textit{let x = read(aList);}}{0}{[aList.add('b')]}{\epsilon}{\epsilon}{0}_2  \bigpar\ 
 \\aList.add('a') \cdot [aList.add('b')]} {\emptyset}{\{( \{ v_0,v_1 \} , \{\ (v_0,v_1) \} ) \}}{\emptyset}{\{ (v_0,v_1) \}} 
 \\
 \\
-\arrobyclient{\readtran{aList}}{2} \enviroment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}_1\ \bigpar\
+\arrobyclient{\readtran{aList}}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}_1\ \bigpar\
 \\
 \tclient{\update{0}{x}{['b']}}{0}{[aList.add('b')]}{\epsilon}{\epsilon}{0}_2  \bigpar\ aList.add('a') \cdot [aList.add('b')]} 
 \\
@@ -951,14 +963,73 @@ The guarantee Consistent Prefix, which rules is $(\textsc{\small{AR}};\textsc{\s
 
 \section{Extending GSP}
 
-As illustrated in above examples, there are situations in which a environment does not ensures consistency guarantees from the literature, as Consistent Prefix or Single Order. The nature of such cases is caused by having no transactions as the usual databases.
+As illustrated in above examples, there are situations in which a environment does not ensures consistency guarantees as Consistent Prefix or Single Order. The nature of such cases is caused by having no transactions as the usual databases.
 
-The remaining of this section is proposing a environment that ensures these consistency guarantees. We start by refining the sintax of GSP distinguishing two relations:
+The remaining of this section is proposing a environment that ensures these consistency guarantees. We start by refining the environment in GSP. We will distinguish two relations:
 
-\paragraph{Return Before} identified as $\textsc{\small{RB}}$. It is used to indicate is if an action of Update is visible for an action of Read.
+\paragraph{Return Before} relates updates actions. It indicates the ordering of non-overlapping operations.
 
- $\textsc{\small{RB}}$ and $\textsc{\small{Tx}}$.
+\paragraph{Transactions} relates vertices from a client to set of naturals. 
+
+\[
+    \begin{array}{l@{\quad}r@{\;::=\;}l}
+			 (\textsc{environment}) & \environmentterm &  \environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx} \\
+			 (\textsc{transactions}) & \tx &  \emptyset  \ | \ v^i \mapsto \mathcal{N},\tx  \\
+
+	    \end{array}
+\]
+
+We assume the following countable sets of transactional vertices names $[\verticesets]$ ranged over by $[v];[v_0];[v_1],\ldots$;
+
+The labeled transition system for the extension of GSP considers the following actions $\beta$:	
+
+\[ 
+\begin{array}{r@{\ ::= \ }l}
+  \beta & \alpha \ | \ \startsynctran \ | \ \finishsynctran  \ | \  [\alpha] \\
+\end{array}
+\]
+
+These labels allow system to perform an update synchronous. Label $\startsynctran$ stands for the begining of a transaction, and $\finishsynctran$ the end of it.
 
 
 
+ \[
+ \begin{array}{l}    \hspace{-.3cm} \textsc{ENVIRONMENT}\\
+
+		
+\mathrule{e-start-sync}{\systemterm \arroi{\syncupdtran{u}{v}} \systemterm' \qquad [v^i] \notin 
+dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx} \arroi{\startsynctran} \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb}{\tx}}
+
+ \\[35pt]
+
+\mathrule{e-end-sync}{\systemterm \arroi{\finishsynctran(u^{[v]})} \systemterm' \qquad [v^i] \in 
+dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{v^i \mapsto \mathcal{N},\tx} \arroi{\finishsynctran([v^i])} \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb'}{\tx}}
+ 
+ \end{array}
+ \]
+
+
+\[
+ \begin{array}{l} \hspace{-.3cm} \textsc{PROGRAM}\\
+
+
+\mathax{t-sync-update}{\tsystem{\tclienti{\tsyncupd{u};\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\syncupdtran{u}{v}} \tsystem{\tclienti{[\tupdins;\tflush];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
+ 
+ \\[15pt]
+
+\mathrule{t-tran}{\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\alpha} \tsystem{\tclienti{\tprogram'}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}\ \bigpar\ C}{\queuemessage}}{\tsystem{\tclienti{[\tprogram];Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{[\alpha]} \tsystem{\tclienti{[\tprogram'];Q}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}\ \bigpar\ C}{\queuemessage}}
+
+ \\[25pt]
+
+ 
+\mathax{t-flush}{\tsystem{\tclienti{[\tflush];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\tau} \tsystem{\tclienti{[\twhile{cond}{Q}];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
+ 
+ \\[15pt]
+
+\mathax{t-end-sync}{\tsystem{\tclienti{[0];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\finishsynctran(u^{[v]})} \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
+ 
+
+ \end{array}
+ \]
+ 
 \end{document}
