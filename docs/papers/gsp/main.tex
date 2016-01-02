@@ -281,8 +281,8 @@
 \newcommand{\readins}[2]{\textit{let}\ #1 = \textit{read}(#2);P}
 \newcommand{\readtran}[1]{\textit{read}(#1)}
 
-\newcommand{\startsynctran}{\textit{start-sync}}
-\newcommand{\finishsynctran}{\textit{end-sync}}
+\newcommand{\startsynctran}{\dagger}
+\newcommand{\finishsynctran}{\ddagger}
 
 
 
@@ -334,7 +334,7 @@
 %CONSISTENCY GRAMMAR
 
 \newcommand{\environment}[5]{\{#1 , #2, #3, #4, #5\}}
-\newcommand{\environmenttran}[7]{\{#1 , #2, #3, #4, #5, #6, #7\}}
+\newcommand{\environmenttran}[8]{\{#1 , #2, #3, #4, #5, #6, #7, #8\}}
 
 \newcommand{\vis}{\textsc{\scriptsize{VIS}}}
 \newcommand{\op}{\textsc{\scriptsize{OP}}}
@@ -343,7 +343,8 @@
 \newcommand{\soby}[2]{#1\triangleright_i{#2}}
 \newcommand{\updateinqueuemessage}[2]{\queuemessage[#1]_#2}
 \newcommand{\rb}{\textsc{\scriptsize{RB}}}
-\newcommand{\tx}{\textsc{\scriptsize{Tx}}}
+\newcommand{\tx}{\textsc{\scriptsize{TO}}}
+\newcommand{\tc}{\textsc{\scriptsize{TC}}}
 
 
 
@@ -408,7 +409,7 @@
 
 \subsection{Syntax}
 
-We assume the following countable sets of vertice names $\verticesets$ ranged over by $v$;$v_0$;$v_1$, \ldots;
+We assume the following countable sets of vertex names $\verticesets$ ranged over by $v$;$v_0$;$v_1$, \ldots;
 We shall use $\ttransactionbuffer$, $\beta$ to denote sequence of updates $\updatesets$ ranged over by $u^v$,$u^{v_0}_0$,$u^{v_1}_1$,$\ldots$; Let $\mathcal{U}$=$u^{v_0}_0$ $\cdot$ $u^{v_1}_1$ $\cdot$,$\dotsc$,$\cdot$ $u^{v_n}_n$. For the sake of clarity, we shall only use vertices as update's decoration whenever it would be necessary.
 
 Let $\tpending$, $\sigma$ be sequence defined as $\epsilon$ \text{\textbar} [$\alpha$]$\cdot$ $\tpending$. We use $\epsilon$ to denote the empty sequence, \ie, the sequence of length 0.
@@ -683,7 +684,7 @@ We extend the GSP language with a new term which capture the relations amount op
 Let $\environmentterm$, a new term, where $\systemterm$ represents our system introduced in Definition 1.1, $\op$ is a mapping of vertices to actions, $\so$ is a session order relation defined from vertices to relations of vertices $\verticesets$ $\times$ ($\verticesets$ $\times$ $\verticesets$) and $\vis$,$\arb$ are visibility and arbitration relation.
 
 
- \paragraph{Notation.} Given a session order relation $\so$ from client $i$ and a vertice $v$, we shall write $\soby{\so}{v}$  meaning that $\soby{(\mathcal{V}, \mathcal{R})}{v} = (\mathcal{V} \ \cup \ \{v\}, \mathcal{R}\ \cup \ \{(x,v) / x \in \verticesets\})$. We shall refer to an update action on the queue message as $\updateinqueuemessage{n}{i}$.The arbitration relation $\arb$ is defined as $\{ (v,w) / \{v \mapsto \updateinqueuemessage{m}{h}\} \in \op \land \ \{w \mapsto \updateinqueuemessage{n}{i} \} \in \op \land \ m < n \}$. A transition $\arroi{\alpha}$ denotes the fact that action $\alpha$ is perfomed by client $i$.
+ \paragraph{Notation.} Given a session order relation $\so$ from client $i$ and a vertex $v$, we shall write $\soby{\so}{v}$  meaning that $\soby{(\mathcal{V}, \mathcal{R})}{v} = (\mathcal{V} \ \cup \ \{v\}, \mathcal{R}\ \cup \ \{(x,v) / x \in \verticesets\})$. We shall refer to an update action on the queue message as $\updateinqueuemessage{n}{i}$.The arbitration relation $\arb$ is defined as $\{ (v,w) / \{v \mapsto \updateinqueuemessage{m}{h}\} \in \op \land \ \{w \mapsto \updateinqueuemessage{n}{i} \} \in \op \land \ m < n \}$. A transition $\arroi{\alpha}$ denotes the fact that action $\alpha$ is perfomed by client $i$.
 
  
 The following operational semantic allow to understand how working the environment when the actions are executed.
@@ -784,7 +785,7 @@ case analysis on the last transition:
 						item $z \neq v$. This case follows immediately by inductive hypothesis.
 					\end{itemize}
 					
-			  \item{\bf rule (\textsc{E-UPDATE})}. Visibility relation does not change,i.e.,$\textsc{\small{VIS}}$ = $\textsc{\small{VIS}}$'. Let $v$ be a vertice associated an update action, then $\textsc{\small{SO}}_R$' = $\textsc{\small{SO}}_R \cup\ \{(w,v) / \{w \mapsto \readtran{r}\} \lor\ \{w \mapsto \ \updatebyclient{j}\} \}$. As we are only interested in relations of $update \times\ read$, then $(\textsc{\small{VIS}}';\textsc{\small{SO}'}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \equiv \ (\textsc{\small{VIS}};\textsc{\small{SO}}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R})$. By inductive hypothesis we can prove that $(\textsc{\small{VIS}}';\textsc{\small{SO}}_R)' \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \ \subseteq \ \textsc{\small{VIS}} \subseteq \ \textsc{\small{VIS}}$'.				
+			  \item{\bf rule (\textsc{E-UPDATE})}. Visibility relation does not change,i.e.,$\textsc{\small{VIS}}$ = $\textsc{\small{VIS}}$'. Let $v$ be a vertex associated an update action, then $\textsc{\small{SO}}_R$' = $\textsc{\small{SO}}_R \cup\ \{(w,v) / \{w \mapsto \readtran{r}\} \lor\ \{w \mapsto \ \updatebyclient{j}\} \}$. As we are only interested in relations of $update \times\ read$, then $(\textsc{\small{VIS}}';\textsc{\small{SO}'}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \equiv \ (\textsc{\small{VIS}};\textsc{\small{SO}}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R})$. By inductive hypothesis we can prove that $(\textsc{\small{VIS}}';\textsc{\small{SO}}_R)' \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \ \subseteq \ \textsc{\small{VIS}} \subseteq \ \textsc{\small{VIS}}$'.				
 				The proof for the remaining cases follow are not interesting because the relations does not change.
 \end{itemize}
 \end{itemize}
@@ -822,7 +823,7 @@ Let $\textsc{\small{SO}}_R$ the second component of the relation $\textsc{\small
 	
 Assume $(a, x_1),(x_1, x_2),\ldots(x_{k{-}1}, x_k),(x_{k}, b)$ are relations from $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1}$. Then $(a, x_1),(x_1, x_2),\ldots(x_{k{-}1}, x_k)$ are relations from $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k}$. By the induction hypothesis, $(a, x_k) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k}$, and we also have $(x_k, b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} )$. Thus by the definition of $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1}$, $(a, b) \in
 (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1}$.
-Conversely, assume $(a,b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1}$ = $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k} \circ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}})$. Then there is a vertice $c \in \verticesets$ such
+Conversely, assume $(a,b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1}$ = $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k} \circ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}})$. Then there is a vertex $c \in \verticesets$ such
 that $(a,c) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k}$ and $(c, b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} )$.
 
 We are only interested when $a$ is an update action and $b$ a read action. It is because of the intersection with $(Update \times Read)$. We have two possible cases:
@@ -866,7 +867,7 @@ The proof follows by induction on the number of union sets between $\textsc{\sma
    \item{\bf n=0}. This means that $\textsc{\small{SO}}_R$, $\textsc{\small{VIS}}$ and  $\textsc{\small{AR}}$ are $\emptyset$, so that $\emptyset \subseteq \emptyset$.
    \item{\bf n=k+1}. Suppose that we have proved that the number of union sets $< k+1$. Now, we have to prove that: $\forall (a,b) \mid (a,b \in \verticesets \Rightarrow\ (a,b)\ \in\ (\mathbb{U}\ \times \ \mathbb{U}) \cap \ \bigcup_{n=1}^{\infty} (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1} - \textsc{\small{SO}}_R \Rightarrow\ (a,b) \in \textsc{\small{AR}}$. 
 
-Assume $(a,b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1} $ = $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k} \circ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}})$. Then there is a vertice $c \in \verticesets$ such
+Assume $(a,b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1} $ = $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k} \circ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}})$. Then there is a vertex $c \in \verticesets$ such
 that $(a,c) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k}$ and $(c, b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} )$.
 
 We are only interested when $a$ and $b$ are an update actions. It is because of the intersection with $(Update \times Update)$. We have two possible cases:
@@ -905,7 +906,7 @@ E \arrobyclient{\updatevtran{aList.add('a')}{{v_0}}}{1} \environment{\tclient{pu
 \end{array}
 \]
 
-The action $\updatetran{aList.add('a')}$ of the client $1$ will be identified by vertice $v_0$ by rule $\textsc{\small{E-UPDATE}}$. In particular, the update action will be left into the transactional queue of Client $1$ besides the new vertice will be added to vertices in $\so$. Now, Client 1 performs $\pushtran$: 
+The action $\updatetran{aList.add('a')}$ of the client $1$ will be identified by vertex $v_0$ by rule $\textsc{\small{E-UPDATE}}$. In particular, the update action will be left into the transactional queue of Client $1$ besides the new vertex will be added to vertices in $\so$. Now, Client 1 performs $\pushtran$: 
 
 \[
 \begin{array}{l}
@@ -965,19 +966,33 @@ The guarantee Consistent Prefix, which rules is $(\textsc{\small{AR}};\textsc{\s
 
 As illustrated in above examples, there are situations in which a environment does not ensures consistency guarantees as Consistent Prefix or Single Order. The nature of such cases is caused by having no transactions as the usual databases.
 
-The remaining of this section is proposing a environment that ensures these consistency guarantees. We start by refining the environment in GSP. We will distinguish two relations:
+The remaining of this section is proposing a environment that ensures these consistency guarantees. We start by refining the environment in GSP. We will distinguish a new relation:
 
 \paragraph{Return Before} relates updates actions. It indicates the ordering of non-overlapping operations.
 
-\paragraph{Transactions} relates vertices from a client to set of naturals. 
-
 \[
     \begin{array}{l@{\quad}r@{\;::=\;}l}
-			 (\textsc{environment}) & \environmentterm &  \environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx} \\
-			 (\textsc{transactions}) & \tx &  \emptyset  \ | \ v^i \mapsto \mathcal{N},\tx  \\
+			 (\textsc{environment}) & \environmentterm &  \environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx}{\tc} \\
+			 (\textsc{transactions with overlapping}) & \tx &  \emptyset  \ | \ w^j \mapsto \mathcal{N},\tx  \  with \ w \ \in\ \verticesets\, j \in\ \mathbb{N} \\
+			 (\textsc{transactions closed}) & \tc &  \epsilon  \ | \ w^j \cdot \tc \ with \ w \ \in\ \verticesets\, j \in\ \mathbb{N} 
 
 	    \end{array}
 \]
+
+
+The term $\tx$ relates vertex from a client to set of vertex which have just not finished; $\tc$ denotes transaction closed.
+
+
+\subsection{Operational Semantic}
+
+%\subsubsection{Notation}
+
+%\begin{flushleft}
+%\specfunction{$\downharpoonright$}{$\verticesets$}{$2^\verticesets$}{$2^\verticesets$} \\
+%$\downharpoonright v^i \emptyset$ =  $\emptyset$ \\
+%$\downharpoonright v^i (x^h \mapsto V)$ = x^h \mapsto V \cup \ v^i;  $\downharpoonright v^i V$ \\
+%\end{flushleft}
+
 
 We assume the following countable sets of transactional vertices names $[\verticesets]$ ranged over by $[v];[v_0];[v_1],\ldots$;
 
@@ -998,13 +1013,15 @@ These labels allow system to perform an update synchronous. Label $\startsynctra
 
 		
 \mathrule{e-start-sync}{\systemterm \arroi{\syncupdtran{u}{v}} \systemterm' \qquad [v^i] \notin 
-dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx} \arroi{\startsynctran} \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb}{\tx}}
+dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx}{\tc} \arroi{\startsynctran} \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb}{\tx;v^i \mapsto dom(\tc)}{\tc}}
 
  \\[35pt]
 
 \mathrule{e-end-sync}{\systemterm \arroi{\finishsynctran(u^{[v]})} \systemterm' \qquad [v^i] \in 
-dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{v^i \mapsto \mathcal{N},\tx} \arroi{\finishsynctran([v^i])} \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb'}{\tx}}
- 
+dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{v^i \mapsto \mathcal{N},\tx}{\tc} \arroi{\finishsynctran([v^i])} \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb'}{\tx}{\tc \cdot\ v^i}}
+\\
+ \\[10pt]where \ 
+\rb' = \rb \cup\ \{ (x,v) \ | \ \forall 0 \leq m,n < |\queuemessage|, x \mapsto \queuemessage[m] \ \land \ v \mapsto \queuemessage[n] \ \land \ m \leq\ n \ \land \ x\notin\tc(v) \}
  \end{array}
  \]
 
