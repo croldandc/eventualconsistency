@@ -172,8 +172,9 @@
 \newcommand{\gspcalculus}{\textit{gsp-calculus}}
 
 \newcommand{\server}[3]{\{#1 , #2, #3\}}
-\newcommand{\client}[9]{\{#1 , \textless #2, #3, #4, #5, #6, #7, #8, #9 \textgreater\}}
-\newcommand{\clientr}[2]{\{#1 , #2\}_i}
+\newcommand{\clientr}[2]{\client{#1}{#2}_i}
+\newcommand{\client}[2]{\{#1 , #2\}}
+
 
 
 \newcommand{\clienti}[9]{\{#1 , #2, #3, #4, #5, #6, #7, #8\}_#9}
@@ -236,7 +237,11 @@
 
 \newcommand{\reduce}[1]{\textbf{\textit{reduce}}(#1)}
 \newcommand{\applyplus}[2]{\textbf{\textit{apply}}(#1, #2)}
-\newcommand{\readplus}[2]{\textbf{\textit{read}}(#1, #2) = \textit{v}}
+
+\newcommand{\readplus}[2]{\readp{#1}{#2} = \textit{v}}
+
+\newcommand{\readp}[2]{\textbf{\textit{read}}(#1, #2)}
+
 \newcommand{\appendplus}[2]{\textbf{\textit{append}}(#1, #2)}
 
 \newcommand{\reducestate}[2]{\textbf{\textit{reducestate}}(#1, #2)}
@@ -615,8 +620,7 @@ The labeled transition system considers the following actions:
 		\clientr{P}{\update{E}{\inclient}{E.\inclient \cup \{\gs\}}}}
 		
 \\[25pt]
-    %\mathrule{comm client-server}{\outclient=\headerround \cdot \tailround}{\server{\state}{\inserver}{\outserver} \bigpar \clientr{P}{\stateclient} \arro{\tau} \server{\state}{\update{\inclient}{i}{\headerround}}{\outserver} \bigpar \clientr{P}{\stateclient}{\update{\outclient}{E.\outclient}{\tailround}}}}
-		%
+
 	    \mathrule{comm client-server}{\outclient=\headerround \cdot \tailround}{\server{\state}{\inserver}{\outserver} \bigpar \clientr{P}{\stateclient} \arro{\tau} \server{\state}{\update{\inserver}{i}{\headerround}}{\outserver} \bigpar 
 		\clientr{P}{\update{E}{\outclient}{\tailround}}}	
  \\
@@ -661,6 +665,38 @@ The labeled transition system considers the following actions:
  \end{array}
  \]
 
+\newpage
+
+\section{Equivalence}
+
+We have introduced an abstract GSP protocol and a robust streaming server-client implementation of GSP. Next theorem states one of most important result of the paper, saying that they are weak bisimulation equivalent. 
+
+
+\begin{theorem}
+Let $\mathcal{R}$ be a relation defined as $\{ (\parallel_{i \ \in\ I_{\{0 \ldots n\}}} A_i \parallel \ \queuemessage_A),(\parallel_{i \ \in\ I_{\{0 \ldots n\}}} C_i \parallel \ \queuemessage_C) \ | \ \forall i \ \in\ \mathbb{N}, \forall r: \readtype, A_i = \ \tclient{\tprogram_i}{\tknown_i}{\tpending_i}{\ttransactionbuffer_i}{\tsent_i}{\treceivebuffer_i} \land C_i = \client{P_i}{\stateclient_i} \land \ \rvalue{r}{\textit{flatten}(\queuemessage_{A}[0..\tknown-1] \cdot \tpending) \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}} \land \ \queuemessage_C.\state \triangleleft \queuemessage_A \land \ E_{i}.\transactionbuffer = [\ttransactionbuffer_i] \land \ E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i] - 1 \ \land \ E_{i}.known \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1] \ \land \  E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i \ \land \ \forall l, 1 \leq l < |\inclient|, E_{i}.\inclient[l] \triangleleft \queuemessage_A[\tknown + \treceivebuffer - 1 +l] \ \land \ \tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0 \ \land \ \forall \beta \ \in \ \tsent_i, \beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver
+\}$.
+
+\end{theorem}
+
+
+
+\begin{proof}
+We have to prove that $\mathcal{R}$ satisfies the nine points of its definition:
+
+\begin{enumerate}
+	\item $\rvalue{r}{\textit{flatten}(\queuemessage_{A}[0..\tknown-1] \cdot \tpending) \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}}$
+	\item $\queuemessage_C.\state \triangleleft \queuemessage_A$
+	\item $\ E_{i}.\transactionbuffer = [\ttransactionbuffer_i]$
+	\item $E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i] - 1$
+	\item $E_{i}.known \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1]$
+	\item $E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i$
+	\item $\forall l, 1 \leq l < |\inclient|, E_{i}.\inclient[l] \triangleleft \queuemessage_A[\tknown + \treceivebuffer - 1 +l]$
+	\item $\tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0$
+	\item $\forall \beta \ \in \ \tsent_i, \beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver$
+	
+\end{enumerate}
+
+\end{proof}
 
 \section{Consistency Guarantees}
 
