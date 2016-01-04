@@ -210,8 +210,8 @@
 \newcommand{\nroundtype}{\mathbb{N}}
 
 \newcommand{\maxround}{\textit{mr}}
-\newcommand{\append}[2]{\textit{append}(#1, #2)}
-\newcommand{\apply}[2]{\textit{apply}(#1, #2)}
+\newcommand{\append}[2]{append(#1, #2)}
+\newcommand{\apply}[2]{apply(#1, #2)}
 \newcommand{\gs}{\textit{gs}}
 \newcommand{\gss}{\textit{gss}}
 \newcommand{\gssegment}{\textless	\delta,\maxround \textgreater}
@@ -219,9 +219,9 @@
 \newcommand{\gsprefix}{\textless	\state,\maxround \textgreater}
 \newcommand{\round}[3]{\textless	#1, #2, #3 \textgreater}
 
-\newcommand{\specfunction}[4]{\textit{#1} :: #2 $x$ #3 $\rightarrow$ #4}
-\newcommand{\specfunctiononeparameter}[3]{\textit{#1} :: #2 $\rightarrow$ #3}
-\newcommand{\specfunctionforparameters}[6]{\textit{#1} :: #2 $x$ #3 $x$ #4 $x$ #5 $\rightarrow$ #6}
+\newcommand{\specfunction}[4]{#1 :: #2 $x$ #3 $\rightarrow$ #4}
+\newcommand{\specfunctiononeparameter}[3]{#1 :: #2 $\rightarrow$ #3}
+\newcommand{\specfunctionforparameters}[6]{#1 :: #2 $x$ #3 $x$ #4 $x$ #5 $\rightarrow$ #6}
 
 
 
@@ -410,6 +410,7 @@
 \begin{abstract}
 \end{abstract}
 
+
 \section{Global Sequence Protocol Language}
 
 \subsection{Syntax}
@@ -510,9 +511,13 @@ Rule $\textsc{(T-READ)}$ states that a client $i$ can perform an action $\readtr
  We write $[x_1 \mapsto y_1, \ldots, x_n \mapsto y_n]$ for the partial function $f$ such that $dom(f)=\{x_1,\ldots,x_n\}$ and $f(x_i)=y_i$; $A \setminus B$ to denote the usual difference of sets.\\
  
 
-\section{Robust Streaming}
+\section{Implementation of GSP}
 
-Let \statetype\ and \deltatype\ be abstract types, \gssegmenttype\ the set operation over sets \deltatype $\times$ $\mathcal{N}$ $\rightarrow$ $\mathbb{N}$, \gsprefixtype\ the set over sets \statetype\ $\times$ $\mathcal{N}$ $\rightarrow$ $\mathbb{N}$ and \roundtype\ the set over sets $\mathcal{N}$ $\times$ $\mathbb{N}$ $\times$ \deltatype; $\emptygssegment$\ is a fresh element of \gssegmenttype.
+The GSP model introduced in the previous section is an abstract protocol which does not consider implementation details. Problems like space explosion caused by the growing of the update sequence have to allow for implementing these protocol. 
+
+Instead of storing update sequence, the implementation to present reduce such sequence to in two differents objects. $\statetype$ when the update sequence reduced represents a prefix of the global queue message or $\deltatype$ when the update sequence reduced represents a interval or segment of the global queue message.
+
+The \gsprefixtype\ the set over sets \statetype\ $\times$ $\mathcal{N}$ $\rightarrow$ $\mathbb{N}$, \gssegmenttype\ the set operation over sets \deltatype $\times$ $\mathcal{N}$ $\rightarrow$ $\mathbb{N}$ and \roundtype\ the set over sets $\mathcal{N}$ $\times$ $\mathbb{N}$ $\times$ \deltatype; $\emptygssegment$\ is a fresh element of \gssegmenttype.
 
 Furthermore, we assume the following parametric functions defined over the abstract data types above borrowed from[1]:
 
@@ -526,7 +531,7 @@ Furthermore, we assume the following parametric functions defined over the abstr
 \end{array}\] 
 
 Let \statetype\ be a set of state ranged over by $s$, $s_1$, $s_2$, $\ldots$;
-We shall use $\pushbuffertype$ to denote sequence of Delta ranged over by $d$, $d_0$, $d_1$ $\ldots$; Let $\pendingtype$, $\sigma$ be sequence defined:
+We shall use $\pushbuffertype$ to denote sequence of $Delta$ ranged over by $d$, $d_0$, $d_1$ $\ldots$; Let $\pendingtype$, $\sigma$ be sequence defined:
 
 $\pendingtype$,$\sigma$ := $\epsilon$ \text{\textbar} [$\delta$]$\cdot$ $\pendingtype$
  
@@ -540,9 +545,15 @@ Let $\outserver$\ be a partial function in $\partialfunction{\mathcal{N}}{\gsseg
 
 \subsection{Auxiliar Function}
 
+Before describing the implementation of GSP, we will introduce the following auxiliars functions which will be used when we define the operational semantic.
+
+\footnotesize
+\ttfamily
+\begin{flushleft}
 \specfunction{append}{\gssegmenttype}{$\roundtype^*$}{\statetype} \\
 \append{\gssegmentins{$\delta$}{\maxround}}{$\epsilon$} = \gssegmentins{$\delta$}{\maxround} \\
 \append{\gssegmentins{$\delta$}{\maxround}}{$\headerround$:\tailround} = \append{\textless\reduce{$\delta$ $\cdot$ $\delta_0$ $\cdot$ $\epsilon$}, $\update{\maxround}{b_0}{n_0}$\textgreater}{\tailround} 
+\end{flushleft}
 
 \begin{flushleft}
 \specfunction{apply}{\gsprefixtype}{\gssegmenttype}{\gsprefixtype} \\
@@ -551,37 +562,44 @@ Let $\outserver$\ be a partial function in $\partialfunction{\mathcal{N}}{\gsseg
 
 \begin{flushleft}
 \specfunctiononeparameter{receivedrounds}{($\partialfunction{\mathcal{N}}{\textless \dominserver \textgreater^*}$)}{$\roundtype^*$}\\
-\textit{receivedrounds}($\undefined$) = $\epsilon$ \\
-\textit{receivedrounds}($\partialfunction{b}{\textless n_0,\ \delta_0 \textgreater} \cdot\ f$) = \textless $b$, \ $n_0$, \ $\delta_0$\textgreater\ $\cdot$ $receivedrounds(f)$
+receivedrounds($\undefined$) = $\epsilon$ \\
+receivedrounds($\partialfunction{b}{\textless n_0,\ \delta_0 \textgreater} \cdot\ f$) = \textless $b$, \ $n_0$, \ $\delta_0$\textgreater\ $\cdot$ receivedrounds($f$)
 \end{flushleft}
 
 
 \begin{flushleft}
 \specfunctionforparameters{curstate}{\statetype}{$\roundtype^*$}{\deltatype}{\deltatype}{\statetype} \\
-\textit{curstate}(\state, \pending, \pushbuffer, \transactionbuffer) = \applyplus{\state}{\textit{getdeltas}(\pending) $\cdot$ \pushbuffer $\cdot$ \transactionbuffer}
+curstate(\state, \pending, \pushbuffer, \transactionbuffer) = \applyplus{\state}{getdeltas(\pending) $\cdot$ \pushbuffer $\cdot$ \transactionbuffer}
 \end{flushleft}
 
 
 \begin{flushleft}
 \specfunctiononeparameter{getdeltas}{$\roundtype^*$}{$\deltatype^*$} \\
-\textit{getdeltas}($\epsilon$) = $\epsilon$ \\
-\textit{getdeltas}(\textless $n_0$,$\delta_0$ \textgreater $\cdot$ $\delta$) = $\delta_0$ $\cdot$ getdeltas($\delta$)\\
+getdeltas($\epsilon$) = $\epsilon$ \\
+getdeltas(\textless $n_0$,$\delta_0$ \textgreater $\cdot$ $\delta$) = $\delta_0$ $\cdot$ getdeltas($\delta$)\\
 \end{flushleft}
 
+\normalfont
+\normalsize
 
- \begin{definition}[GSP] 
+The functions \textbf{reduce} and \textbf{apply} are abstract and depend on the data model used. 
+
+\subsection{Sintax}
+ \begin{definition}[Implementation of GSP] 
 	The syntax of clients and server is given by the following grammar 
   \[
     \begin{array}{l@{\quad}r@{\;::=\;}l}
 			 (\textsc{system}) & \systemterm & \zero \;|\; S\ \bigpar\ C \\
 			 (\textsc{server}) & S & \zero \;|\; \server{\persistedstate}{\inserver}{\outserver} \\
-       (\textsc{clients}) & C & \emptyset \;|\; \client{P}{\statetype}{\pendingtype}{\pushbuffertype}{\transactionbuffertype}{\receivebuffertype}{\nroundtype}{\inclient}{\outclient} \;|\; C\ \bigpar\ C  \\
+       (\textsc{clients}) & C & \emptyset \;|\; \client{P}{<\statetype,\pendingtype,\pushbuffertype,\transactionbuffertype,\receivebuffertype,\nroundtype,\inclient,\outclient>} \;|\; C\ \bigpar\ C  \\
 			 (\textsc{program}) & P & \zero \;|\; \readins{x}{r} \;|\; \updateins{u} \;|\; 	\pushins \;|\; \pullins
      \end{array}
   \]
  \end{definition}
  
-E.\known $\in$ \knowntype; E.\pending $\in$ $\pendingtype$; E.\pushbuffer, E.\transactionbuffer $\in$ $\pushbuffertype$; E.\nround $\in$ $\nroundtype$.
+The implementation of a system is a server and clients interacting concurrently. A server will be represented with a persisted state denoted by $\persistedstate$, input messages $\inserver$ and output messages $\outserver$.
+We will refer to clients, as tuple of program $P$ and set of states and sequences $E$. A program client stores a state ($E.\known$), a pending queue ($E.\pending$),i.e., updates sent to the server without confirmation of their reception, a push buffer ($E.\pushbuffer$) which holds updates that were pushed by the client but have not been sent to the server, a transaction buffer ($E.\transactionbuffer$) which holds updates for sending with another ones, a receive buffer ($E.\receivebuffertype$) for updates which were sent by the server, the number of round sent ($E.\nround$), a input message queue ($E.\inclient$) and a output message queue ($E.\outclient$).
+
 
 \subsection{Operational Semantics}
 
@@ -669,7 +687,15 @@ The labeled transition system considers the following actions:
 
 \section{Equivalence}
 
-We have introduced an abstract GSP protocol and a robust streaming server-client implementation of GSP. Next theorem states one of most important result of the paper, saying that they are weak bisimulation equivalent. 
+We have introduced an abstract GSP protocol and a robust streaming server-client implementation of GSP. There exists a  representation relation $\triangleleft$ that relates state and delta objects to the update sequences. 
+\begin{itemize}
+	\item On $Delta \times Update^*$, let $\triangleleft$ be the smallest relation such that (1) $emptydelta \triangleleft []$, and
+(2) $d \triangleleft a$ implies $append(d,u) \triangleleft a \cdot u$ for all updates u, and (3) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $reduce(d_1 \ldots d_n) \triangleleft a_1 \cdots a_n$.
+\item On $State \times Update^*$, let $\triangleleft$ be the smallest relation such that (1) $initialstate \triangleleft []$, and
+(2) $s \triangleleft a \land \ d_1 \triangleleft a_1 \land \ \ldots \ \land \ d_n \triangleleft a_n$ implies $apply(s,d_1 \ldots d_n) \triangleleft a \cdot a_1 \cdots a_n$.
+\end{itemize}
+
+Next theorem states one of most important result of the paper, saying that they are weak bisimulation equivalent. 
 
 
 \begin{theorem}
@@ -696,6 +722,24 @@ We have to prove that $\mathcal{R}$ satisfies the nine points of its definition:
 	
 \end{enumerate}
 
+The proof follows by induction on the length of the derivation $\arro{} ^*$.
+
+\begin{itemize}
+   \item{\bf n=0}. 
+   \item{\bf n=k+1}. $\forall (A,C) \ \in \ \mathcal{R}$
+	
+			
+			\begin{itemize}
+				\item {\bf rule (\textsc{T-READ})}. Then $A = \tsystem{\tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ \tilde{A}}{\queuemessage_A}$ and $A' = \tsystem{\tclienti{\update{\tprogram}{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ \tilde{A}}{\queuemessage_A}$. As $(A,C)$ belongs $\mathcal{R}$ then $C$ must be $\{\readp{r}{\curstate{\known}{\pending}{\pushbuffer}{\transactionbuffer}}\}_i \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, so that, read transition is the only one that $C$ could perform.
+				Then, $C' = \clientr{\update{P}{x}{v}}{\stateclient}\ \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. If $(A',C') \ \in \ \mathcal{R}$ then we will check the previous nine properties:
+				
+				\begin{enumerate}
+					\item Note that $v = v'$
+				\end{enumerate}
+			\end{itemize}
+	
+
+\end{itemize}
 \end{proof}
 
 \section{Consistency Guarantees}
