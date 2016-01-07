@@ -185,6 +185,9 @@
 \newcommand{\outclient}{\textit{$out_c$}}
 \newcommand{\outclientlist}{\textit{\headerround} \cdot \textit{\tailround}}
 
+\newcommand{\initialstate}{\textit{initialstate}}
+\newcommand{\emptydelta}{\textit{emptydelta}}
+
 \newcommand{\state}{\textit{ps}}
 \newcommand{\stateclient}{E}
 
@@ -524,10 +527,10 @@ The \gsprefixtype\ the set over sets \statetype\ $\times$ $\mathcal{N}$ $\righta
 Furthermore, we assume the following parametric functions defined over the abstract data types above borrowed from[1]:
 
 \[\begin{array}{lll}
-\textbf{const} & \textit{initialstate} & :$\statetype$ \\
+\textbf{const} & \initialstate & :$\statetype$ \\
 \textbf{function} & \textit{read} & :\partialfunction{\readtype \times \statetype}{\valuetype} \\
 \textbf{function} & \textit{apply} & :\partialfunction{\statetype \times \deltatype^*}{\statetype} \\
-\textbf{const} & \textit{emptydelta} & :\deltatype \\
+\textbf{const} & \emptydelta & :\deltatype \\
 \textbf{function} & \textit{append} & :\partialfunction{\deltatype \times \updatetype}{\deltatype} \\
 \textbf{function} & \textit{reduce} & :\partialfunction{\deltatype^*}{\deltatype} \\
 \end{array}\] 
@@ -674,13 +677,11 @@ The labeled transition system considers the following actions:
 		\mathrule{pull}{E.\inclient \neq \emptyset \qquad E.\outclient \neq \emptyset \qquad |E.\receivebuffer| > 0}{\clientr{\pullins}{\stateclient}\arro{\pulltran} \clientr{P}{\updatethree{E}{\known}{\reducestate{E.\known}{E.\receivebuffer}}{\receivebuffer}{\epsilon}{E.\pending}{\remove{E.\pending}{E.\receivebuffer}}}}
 \\[25pt]
 
-		\mathrule{confirmed-true}{E.\pending = \epsilon \qquad E.\pushbuffer = \epsilon \qquad E.\transactionbuffer = \epsilon}{\clientr{\confirmedins{x}}{\stateclient} \arro{\confirmedtran} \clientr{\update{P}{x}{\textbf{true}}}{\stateclient}} \\[25pt]
+		\mathax{confirmed}{\clientr{\confirmedins{x}}{\stateclient} \arro{\confirmedtran} \clientr{\update{P}{x \mapsto E.\pending = \epsilon \lor E.\pushbuffer = \epsilon \lor E.\transactionbuffer = \epsilon}{\textbf{true}}}{\stateclient}} 
+	
+	\\[15pt]
 
-
-		\mathrule{confirmed-false}{E.\pending \neq \epsilon   \  ||  \ E.\pushbuffer \neq \epsilon  \  ||  \ E.\transactionbuffer  \neq \epsilon}{\clientr{\confirmedins{x}}{\stateclient} \arro{\confirmedtran} \clientr{\update{P}{x}{\textbf{false}}}{\stateclient}} \\[25pt]
-
-
-\mathax{send}{\clientr{P}{\stateclient} \arro{\sendtran} \clientr{P}{\updatethree{E}{\pending}{E.\pending \cdot E.\pushbuffer}{\pushbuffer}{\epsilon}{\outclient}{\outclient \cdot \round{i}{E.\nround}{E.\pushbuffer}}}}
+ \mathax{send}{\clientr{P}{\stateclient} \arro{\sendtran} \clientr{P}{\updatethree{E}{\pending}{E.\pending \cdot E.\pushbuffer}{\pushbuffer}{\epsilon}{\outclient}{\outclient \cdot \round{i}{E.\nround}{E.\pushbuffer}}}}
 
 \\[25pt]
 
@@ -695,28 +696,20 @@ The labeled transition system considers the following actions:
 
 \section{Equivalence}
 
-We have introduced an abstract GSP protocol and a robust streaming server-client implementation of GSP. There exists a  representation relation $\triangleleft$ that relates state and delta objects to the update sequences. 
+We have introduced an abstract GSP protocol and a robust streaming server-client implementation of GSP. There exists a relation represented by $\triangleleft$ [~ref:] which relates state and delta objects to the update sequences. 
 \begin{itemize}
-	\item On $Delta \times Update^*$, let $\triangleleft$ be the smallest relation such that (1) $emptydelta \triangleleft []$, and
-(2) $d \triangleleft a$ implies $append(d,u) \triangleleft a \cdot u$ for all updates u, and (3) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $reduce(d_1 \ldots d_n) \triangleleft a_1 \cdots a_n$.
-\item On $State \times Update^*$, let $\triangleleft$ be the smallest relation such that (1) $initialstate \triangleleft []$, and
+	\item On $\mathit{Delta} \times \mathit{Update}^*$, let $\triangleleft$ be the smallest relation such that (1) $\emptydelta \triangleleft []$, and
+(2) $d \triangleleft a$ implies $append(d,u) \triangleleft a \cdot u$ for all updates $u$, and (3) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $reduce(d_1 \ldots d_n) \triangleleft a_1 \cdots a_n$ and (4) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $\remove{d_1 \ldots d_{n}}{d_n} \triangleleft a_1 \cdots a_{n-1}$. \marginpar{El (4) lo agregamos nosotros. ¿Se aclara? ¿C\'omo?}
+  
+\item On $State \times Update^*$, let $\triangleleft$ be the smallest relation such that (1) $\initialstate \triangleleft []$, and
 (2) $s \triangleleft a \land \ d_1 \triangleleft a_1 \land \ \ldots \ \land \ d_n \triangleleft a_n$ implies $apply(s,d_1 \ldots d_n) \triangleleft a \cdot a_1 \cdots a_n$.
 \end{itemize}
 
-Next theorem states one of most important result of the paper, saying that they are weak bisimulation equivalent. 
-
+Next theorem states one of most important result of the paper, saying that abstract GSP protocol and the implementation of GSP are weak bisimulation equivalent (or weakly bisimilar). 
 
 \begin{theorem}
-Let $\mathcal{R}$ be a relation defined as $\{ (\parallel_{i \ \in\ I_{\{0 \ldots n\}}} A_i \parallel \ \queuemessage_A),(\parallel_{i \ \in\ I_{\{0 \ldots n\}}} C_i \parallel \ \queuemessage_C) \ | \ \forall i \ \in\ \mathbb{N}, \forall r: \readtype, A_i = \ \tclient{\tprogram_i}{\tknown_i}{\tpending_i}{\ttransactionbuffer_i}{\tsent_i}{\treceivebuffer_i} \land C_i = \client{P_i}{\stateclient_i} \land \ \rvalue{r}{\textit{flatten}(\queuemessage_{A}[0..\tknown-1] \cdot \tpending) \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}} \land \ \queuemessage_C.\state \triangleleft \queuemessage_A \land \ E_{i}.\transactionbuffer = [\ttransactionbuffer_i] \land \ E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i] - 1 \ \land \ E_{i}.known \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1] \ \land \  E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i \ \land \ \forall l, 1 \leq l < |\inclient|, E_{i}.\inclient[l] \triangleleft \queuemessage_A[\tknown + \treceivebuffer - 1 +l] \ \land \ \tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0 \ \land \ \forall \beta \ \in \ \tsent_i, \beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver
-\}$.
-
-\end{theorem}
-
-
-
-\begin{proof}
-We have to prove that $\mathcal{R}$ satisfies the nine properties of its definition:
-
+Let $A$ be a system from abstract GSP Protocol, defined as  then both system are weakly bisimilar, written $A \approx C$, if $(A,C)  \in \ \mathcal{R}$, where $\mathcal{R}$ be a binary relation defined as $\{ (\parallel_{i \ \in\ I_{\{0 \ldots n\}}} A_i \parallel \ \queuemessage_A),(\parallel_{i \ \in\ I_{\{0 \ldots n\}}} C_i \parallel \ \queuemessage_C) \ | \ \forall i \ \in\ \mathbb{N}, \forall r: \readtype, A_i = \ \tclient{\tprogram_i}{\tknown_i}{\tpending_i}{\ttransactionbuffer_i}{\tsent_i}{\treceivebuffer_i} \land C_i = \client{P_i}{\stateclient_i}$ and the conjunction of the following properties: %\land \ \rvalue{r}{\textit{flatten}(\queuemessage_{A}[0..\tknown-1] \cdot \tpending) \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}} \land \ \queuemessage_C.\state \triangleleft \queuemessage_A \land \ E_{i}.\transactionbuffer = [\ttransactionbuffer_i] \land \ E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i] - 1 \ \land \ E_{i}.known \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1] \ \land \  E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i \ \land \ \forall l, 1 \leq l < |\inclient|, E_{i}.\inclient[l] \triangleleft \queuemessage_A[\tknown + \treceivebuffer - 1 +l] \ \land \ \tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0 \ \land \ \forall \beta \ \in \ \tsent_i, \beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver
+\marginpar{Ac\'á deber\'ia decir que R cumple las propiedades de weak bisimulation. C\'omo lo escribo mejor?}
 \begin{enumerate}
 	\item $\rvalue{r}{\textit{flatten}(\queuemessage_{A}[0..\tknown-1] \cdot \tpending) \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}}$
 	\item $\queuemessage_C.\state \triangleleft \queuemessage_A$
@@ -724,16 +717,33 @@ We have to prove that $\mathcal{R}$ satisfies the nine properties of its definit
 	\item $E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i] - 1$
 	\item $E_{i}.known \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1]$
 	\item $E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i$
-	\item $\forall l, 1 \leq l < |\inclient|, E_{i}.\inclient[l] \triangleleft \queuemessage_A[\tknown + \treceivebuffer - 1 +l]$
+	\item For all natural $l$, such that $1 \leq l < |\inclient|$ then $E_{i}.\inclient[l] \triangleleft \queuemessage_A[\tknown + \treceivebuffer - 1 +l]$
 	\item $\tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0$
 	\item $\forall \beta \ \in \ \tsent_i, \beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver$
-	
 \end{enumerate}
+\end{theorem}
 
-The proof follows by induction on the length of the derivation $\arro{} ^*$.
+
+
+\begin{proof}
+
+The proof follows by induction on the length of the derivation $\arro{} ^*$. We use $\tilde{A}$ and $\tilde{C}$ to denote clients, except client $i^{th}$, interacting concurrently, i.e., $\parallel_{j \ \in\ I_{\{0 \ldots n\} - i}}$ $A_j$ or $C_j$ respectively.
 
 \begin{itemize}
-   \item{\bf n=0}. 
+   \item{\bf n=0}. Then $A$ = $\tsystem{\tclienti{0}{\emptyset}{\emptyset}{\emptyset}{\emptyset}{0}\ \bigpar\ \tilde{A}}{\queuemessage_A}$ and $C$ = $\clientr{E}{\initialstate}$. In particular,
+
+			\begin{enumerate}
+				\item The operation $rvalue$ in the abstract language is performing on empty sequences, hence, the result is undefined. Moreover the parametric function $read$ tries to get a result on a $\initialstate$, then the result returned is undefined.
+				\item It is easy to see, due to property (1) of $\triangleleft$ between States and Updates.
+				\item It is guaranteed by property (1) of $\triangleleft$ between Deltas and Updates.
+				\item Analogous to property 2.
+				\item Analogous to property 3.
+				\item Precondition of implication is $false$.
+				\item Precondition of both implications are $false$. 
+				\item $\emptyset \in \ \emptyset$.
+				
+			\end{enumerate}
+	
    \item{\bf n=k+1}. $\forall (A,C) \ \in \ \mathcal{R}$
 	
 			
@@ -768,19 +778,31 @@ The proof follows by induction on the length of the derivation $\arro{} ^*$.
 						\item {\bf rule (\textsc{T-PULL})}. If $A \arroi{\pulltran} A'$, then by rule (\textsc{\footnotesize{T-PULL}}), $A$ must be the following term: $ \tsystem{\tclienti{\tpullins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ \tilde{A}}{\queuemessage_A}$, therefore, the client $i^{th}$ is only one who changes. So that, $A'$ will be $\tclienti{\tprogram}{\tknown+\treceivebuffer}{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer]}{\ttransactionbuffer}{\tsent}{0} \bigpar \ \tilde{A} \bigpar\ \queuemessage_A$. Due to $(A,C)$ belongs $\mathcal{R}$, then $C$ must be $\clientr{\pullins}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the pull transition is the only one that $C$ could perform. Then, after applying the rule, $C' = \clientr{P}{\updatethree{E}{\known}{\reducestate{E.\known}{E.\receivebuffer}}{\receivebuffer}{\epsilon}{E.\pending}{\remove{E.\pending}{E.\receivebuffer}}} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We prove that $(A',C') \ \in \ \mathcal{R}$ if nine properties introduced are keeping.	
 						
 						\begin{enumerate}
-							\item We have to prove that after push transitions, the operations $rvalue$ and $read$ get back the same value. Then $\rvalue{r}{\textit{flatten}(\queuemessage_{A}[0..\tknown_i+\treceivebuffer-1] \cdot (\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer])) \cdot \ttransactionbuffer_i} = \readp{r}{\curstate{\reducestate{E.\known}{E.\receivebuffer}}{\remove{E.\pending}{E.\receivebuffer}}{E.\pushbuffer}{E.\transactionbuffer}}$ = $\readp{r}{\applyplus{\reducestate{E.\known}{E.\receivebuffer}}{\remove{E.\pending}{E.\receivebuffer} \cdot E.\pushbuffer \cdot E.\transactionbuffer}}$. On the one hand, property 5 states that $E_{i}.known \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1]$, on the other hand by property 4, $E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i -1]$, after, using the property of the relation $\triangleleft$ between state and updates, we know that $\applyplus{E_{i}.\known}{E_{i}.\receivebuffer[0].delta \cdots \ E_{i}.\receivebuffer[\treceivebuffer_i-1].delta} \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1] \cdot \ \cdots \ \cdot \ \queuemessage_A[\tknown_i + \treceivebuffer_i -1]$. As you note, the left side is reducestate's definition, then $\reducestate{E.\known}{E.\receivebuffer} u\triangleleft \queuemessage_A[0 \ldots \tknown_i + \treceivebuffer_i -1]$. Next, property by 6., we know that $E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i$, if we apply the extra axiom of $\triangleleft$, we will get that $\remove{E_i.\pending \cdot E_i.\pushbuffer}{E_i.\receivebuffer[0].delta} \triangleleft \tpending \setminus \queuemessage[\tknown]$, so that, $\remove{E_i.\pending \cdot E_i.\pushbuffer}{E_i.\receivebuffer} \triangleleft \tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer]$. Therefore it worths.
+							\item We have to prove that after push transitions, the operations $rvalue$ and $read$ get back the same value. Then $\rvalue{r}{\textit{flatten}(\queuemessage_{A}[0..\tknown_i+\treceivebuffer-1] \cdot (\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer])) \cdot \ttransactionbuffer_i} = \readp{r}{\curstate{\reducestate{E.\known}{E.\receivebuffer}}{\remove{E.\pending}{E.\receivebuffer}}{E.\pushbuffer}{E.\transactionbuffer}}$ = $\readp{r}{\applyplus{\reducestate{E.\known}{E.\receivebuffer}}{\remove{E.\pending}{E.\receivebuffer} \cdot E.\pushbuffer \cdot E.\transactionbuffer}}$. On the one hand, property 5 states that $E_{i}.known \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1]$, on the other hand by property 4, $E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i -1]$, after, using the property of the relation $\triangleleft$ between state and updates, we know that $\applyplus{E_{i}.\known}{E_{i}.\receivebuffer[0].delta \cdots \ E_{i}.\receivebuffer[\treceivebuffer_i-1].delta} \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1] \cdot \ \cdots \ \cdot \ \queuemessage_A[\tknown_i + \treceivebuffer_i -1]$. As you note, the left side is reducestate's definition, then $\reducestate{E.\known}{E.\receivebuffer} u\triangleleft \queuemessage_A[0 \ldots \tknown_i + \treceivebuffer_i -1]$. Next, property by 6., we know that $E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i$, if we apply the extra axiom of $\triangleleft$, we will get that $\remove{E_i.\pending \cdot E_i.\pushbuffer}{E_i.\receivebuffer[0].delta} \triangleleft \tpending \setminus \queuemessage[\tknown]$, so that, $\remove{E_i.\pending \cdot E_i.\pushbuffer}{E_i.\receivebuffer} \triangleleft \tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer]$. Therefore it is guaranteed.
 							\item It does not change.
 							\item It does not change.
-							\item $E_{i}.\receivebuffer$ is $\epsilon$ and $\treceivebuffer$ is 0, therefore it property worths.
+							\item $E_{i}.\receivebuffer$ is $\epsilon$ and $\treceivebuffer$ is 0, therefore it property is guaranteed.
 							\item It does not change.
 							\item We know that $E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i$, if we apply the extra axiom of $\triangleleft$, we will get that $\remove{E_i.\pending \cdot E_i.\pushbuffer}{E_i.\receivebuffer[0].delta} \triangleleft \tpending \setminus \queuemessage[\tknown]$, so that, $\remove{E_i.\pending \cdot E_i.\pushbuffer}{E_i.\receivebuffer} \triangleleft \tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer]$.
 							\item to 9. do not change.
-							
-							
-							
-
-							
 						\end{enumerate}
+					\item {\bf rule (\textsc{T-CONFIRMED})} If $A \arroi{\confirmedtran} A'$, then by rule (\textsc{\footnotesize{T-CONFIRMED}}), $A$ must be the following term: $ \tsystem{\tclienti{\tconfirmedins{x}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ \tilde{A}}{\queuemessage_A}$, therefore, the client $i^{th}$ is only one who changes. So that, $A'$ will be $\tsystem{\tclienti{\update{\tprogram}{x}{\tpending \neq \emptysequence \vee\ \ttransactionbuffer \neq \epsilon}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ \tilde{A}}{\queuemessage_A}$. As $(A,C)$ belongs $\mathcal{R}$ then $C$ must be $\clientr{\confirmedins{x}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the read transition is the only one that $C$ could perform.
+				Then, looking at the rule, $C' = \clientr{\update{P}{x \mapsto E.\pending = \epsilon \lor E.\pushbuffer = \epsilon \lor E.\transactionbuffer = \epsilon}{\textbf{true}}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We prove that $(A',C') \ \in \ \mathcal{R}$ if nine properties introduced are keeping.				
+					\begin{enumerate}
+						\item Both clients has the same program $P$. By 6. we know that the value of $E.\pending \cdot E.\pushbuffer$ is related to $\tpending$, thereby, when E.$\pending$ or E.$\pushbuffer$ have any elements then $\tpending$ also has it. Finally, $\ E_{i}.\transactionbuffer$ has elements iff $\ttransactionbuffer_i$ also has by property 3.
+						\item to 9. Do not change.
+					\end{enumerate}
+					
+					
+					
+					\item {\bf rule (\textsc{T-PROCESS})} If $A \arroi{\tau} A'$, then by rule (\textsc{\footnotesize{T-PROCESS}}), $A$ must be the following term: $\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\tsenthead] \cdot \tsent}{\treceivebuffer}\ \bigpar\ \tilde{A}}{\queuemessage_A}$, therefore, the client $i^{th}$ is only one who changes. So that, $A'$ will be $\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ C}{\queuemessage \cdot \tsenthead}$. As $(A,C)$ belongs $\mathcal{R}$ then $C$ must be $\clientr{\confirmedins{x}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the read transition is the only one that $C$ could perform.
+				Then, looking at the rule, $C' = \clientr{\update{P}{x \mapsto E.\pending = \epsilon \lor E.\pushbuffer = \epsilon \lor E.\transactionbuffer = \epsilon}{\textbf{true}}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We prove that $(A',C') \ \in \ \mathcal{R}$ if nine properties introduced are keeping.				
+					\begin{enumerate}
+						\item Both clients has the same program $P$. By 6. we know that the value of $E.\pending \cdot E.\pushbuffer$ is related to $\tpending$, thereby, when E.$\pending$ or E.$\pushbuffer$ have any elements then $\tpending$ also has it. Finally, $\ E_{i}.\transactionbuffer$ has elements iff $\ttransactionbuffer_i$ also has by property 3.
+						\item to 9. Do not change.
+					\end{enumerate}
+					
+					
 \end{itemize}
 
 \end{itemize}
