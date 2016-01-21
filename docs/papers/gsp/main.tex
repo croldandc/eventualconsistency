@@ -77,7 +77,7 @@ None operation can simultaneously read and update a store, therefore we assume
 $r, r', r'',\ldots$ for reads in $\readset$. 
 
 The global state of a store and the local  replicas maintained by the clients are 
-represented by sequences containing update operations. 
+represented by sequences of update operations. 
 %For technical 
 %convenience, we will decorate each update operations $u$ with the 
 %identity $i$ of the client that issued it, written $u_i$.  
@@ -120,10 +120,10 @@ The set of \tgspcalculus\ expressions is given by the following grammar:
     \begin{array}{l@{\quad}r@{}l}
 			 (\textsc{store}) & \queuemessage \::=\ &  \tpending \\
 			 (\textsc{program}) & \tprogram \::=\ & \tupdateins \;|\; \treadins{x}{r} \;|\; \tpullins \;|\; \tpushins \;|\; \\
-			&  \ \ & \tconfirmedins{x} \;|\; \twhile{\cond}{\tprogram}  \;|\;\\
-			&  \ \ & \tifte\\
-      (\textsc{client}) & C \::=\ &  \tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} 
-       				\;|\; C\ \bigpar\ C \hfill \text{with}\  \tknown, \treceivebuffer\ \in \nat \\
+			&  \ \ & \tconfirmedins{x} \;|\; \pwhile{\cond}{\tprogram}  \;|\;\\
+			&  \ \ & \pifte\\
+      (\textsc{client}) & C \::=\ &  0\  \ |\ \  \tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \  \ |\ \ 
+       				  C\bigpar C \hfill \text{with}\  \tknown, \treceivebuffer\ \in \nat \\
 			 (\textsc{system}) & N \::=\ & \tsystem{C}{\queuemessage} 
       \end{array}
   \]
@@ -157,29 +157,27 @@ store that is replicated locally, i.e., $S[0..k]$; and $j$ stands for the number
 in the global store that have been received and needs to be added to the local replica, i.e., $S[k+1..k+j]$.
 A system is composed by a store and a non-empty set of clients. 
 
-A system $N = S \;|\ C_0 \;|\ \ldots \;|\  C_n$  with $C_l = \tclienti{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\tsent_l}{\treceivebuffer_l}[\cid_l]$ for all $0\leq j \leq n$  is well-formed if it 
+A system $N = S \bigpar C_0\bigpar \ldots\bigpar C_n$  with 
+$C_l = \tclienti{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\tsent_l}{\treceivebuffer_l}[\cid_l]$ 
+for all $0\leq j \leq n$  is {\em well-formed} if it 
 satisfies the following conditions: 
 \begin{itemize}
-  \item $\cid_l \neq \cid_k$ for all $j\neq k$,   
-  \item $k+j\leq \length S$
-  \item $\cid = \cid_l$, for all $\ublock \in {\tpending_l}\cdot {\tsent_l}$
-  \item $\cid \in {\cid_0,\ldots, \cid_n} $ for all $\ublock \in S$.
+  \item $\cid_l \neq \cid_k$ for all $j\neq k$, \ie,  clients have different identifiers;
+  \item $k_l+j_l\leq \length S$ for all $l$, \ie,  a client see at most every messages in the storage;
+  \item if $\ublock \in {\tpending_l}\cdot {\tsent_l}$ then $\cid = \cid_l$, \ie,  blocks in the local queues of 
+  a client $l$ are  all decorated with the identifier $\cid_l$.
+  \item $\cid \in {\cid_0,\ldots, \cid_n} $ for all $\ublock \in S$, \henote{Pensar bien, tal vez no es necesaria}
 \end{itemize}
 \changed{}{
 \begin{example} Show an example, for instance a server with two clients with different information.
 \end{example}
 }
 
-\henote{we probably need some well-formedness condition requiring all clients to have different ids}
-
 \subsection{Operational Semantics}
 \label{sec:gsp-sos}
 \changed{}
 {\paragraph{Interpretation of read and update operations}
 we need to explain rvalue}
-
-We assume the following countable sets of vertex names $\verticesets$ ranged over by $v$;$v_0$;$v_1$, \ldots;
- ranged over by $u^v$,$u^{v_0}_0$,$u^{v_1}_1$,$\ldots$; Let \changed{$\mathcal{U}$=$u^{v_0}_0$ $\cdot$ $u^{v_1}_1$ $\cdot$,$\dotsc$,$\cdot$ $u^{v_n}_n$}{$\mathcal{U}$=$u^{v_0}_0$ $\cdot$ $u^{v_1}_1$ $\cdot$ $\dotsc$ $\cdot$ $u^{v_n}_n$}. For the sake of clarity, we shall only use vertices as update's decoration whenever it would be necessary.
 
 
 The operational semantics of \tgspcalculus\ is defined by a labeled transition system 
@@ -689,6 +687,10 @@ We shall introduce a series of store-level consistency guarantees and then we sh
  \paragraph{Visibility} relates Updates with Reads. It is used to indicate is if an action of Update is visible for an action of Read.
 
  \paragraph{Arbitration} relates Updates with Updates. It is used to resolve update conflicts. It is a total order on actions of update.
+
+
+We assume the following countable sets of vertex names $\verticesets$ ranged over by $v$;$v_0$;$v_1$, \ldots;
+ ranged over by $u^v$,$u^{v_0}_0$,$u^{v_1}_1$,$\ldots$; Let \changed{$\mathcal{U}$=$u^{v_0}_0$ $\cdot$ $u^{v_1}_1$ $\cdot$,$\dotsc$,$\cdot$ $u^{v_n}_n$}{$\mathcal{U}$=$u^{v_0}_0$ $\cdot$ $u^{v_1}_1$ $\cdot$ $\dotsc$ $\cdot$ $u^{v_n}_n$}. For the sake of clarity, we shall only use vertices as update's decoration whenever it would be necessary.
 
 
 We extend the GSP language with a new term which capture the relations amount operation in our system. 
