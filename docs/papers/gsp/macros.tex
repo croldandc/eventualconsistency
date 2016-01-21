@@ -1,18 +1,18 @@
-\newcommand{\powerset}{\mathcal{P}_f}
-\newcommand{\compatible}{compatible}
-\newcommand{\compatibility}{compatibility}
+%\newcommand{\powerset}{\mathcal{P}_f}
+%\newcommand{\compatible}{compatible}
+%\newcommand{\compatibility}{compatibility}
 
-\newcommand{\bn}{\mathop{\mathrm{bn}}}
-\newcommand{\initial}{\mathop{I}}
-\newcommand{\fn}{\mathop{\mathrm{fn}}}
-\newcommand{\struct}{\equiv}
-%\newcommand{\rec}[2]{\mathsf{rec}\;{#1}.{#2}}
-\newcommand{\sep}{\;\;\mid\;\;}
-\newcommand{\locpar}{|}
-\newcommand{\install}[1]{\mathsf{install}[{#1}]}
-\newcommand{\sedef}{\Rightarrow}
-\newcommand{\merg}[2]{\mathsf{merge}^{#1}\ {#2}}
-\newcommand{\invoke}[1]{\mathsf{invoke}\ {#1}}
+%\newcommand{\bn}{\mathop{\mathrm{bn}}}
+%\newcommand{\initial}{\mathop{I}}
+%\newcommand{\fn}{\mathop{\mathrm{fn}}}
+%\newcommand{\struct}{\equiv}
+%%\newcommand{\rec}[2]{\mathsf{rec}\;{#1}.{#2}}
+%\newcommand{\sep}{\;\;\mid\;\;}
+%\newcommand{\locpar}{|}
+%\newcommand{\install}[1]{\mathsf{install}[{#1}]}
+%\newcommand{\sedef}{\Rightarrow}
+%\newcommand{\merg}[2]{\mathsf{merge}^{#1}\ {#2}}
+%\newcommand{\invoke}[1]{\mathsf{invoke}\ {#1}}
 
 \newcommandx{\arro}[2][2=i]{\xrightarrow[]{#1}_{#2}}
 \newcommand{\arroi}[1]{\arro{#1}}
@@ -20,42 +20,12 @@
 
 \newcommand{\auxarro}[1]{\xmapsto{#1}}
 
-\newcommand{\typearro}[1]{\stackrel{#1}{\mapsto}}
-\newcommand{\labdef}[1]{\top #1}
-\newcommand{\session}{\rhd}
-\newcommand{\labinv}[1]{\bot #1}
-\newcommand{\labmerg}[2]{#1^{#2}}
+%\newcommand{\typearro}[1]{\stackrel{#1}{\mapsto}}
+%\newcommand{\labdef}[1]{\top #1}
+%\newcommand{\session}{\rhd}
+%\newcommand{\labinv}[1]{\bot #1}
+%\newcommand{\labmerg}[2]{#1^{#2}}
 \newcommand{\deduce}[2]{\frac{\displaystyle #1}{\displaystyle #2}}
-\newcommand{\equal}[2]{#1 \stackrel{\cdot}{=} #2}
-\newcommand{\n}{\mathop{\mathrm{n}}}
-\newcommand{\muse}{$\mu\mathsf{se}$}
-\newcommand{\var}{{\mathcal A}}
-\newcommand{\varb}{{\mathcal B}}
-\newcommand{\subst}[2]{\{#1 / #2\}}
-\newcommand{\judge}[4]{#1\vdash #4:\{{#2}\,\nearrow\,{#3}\}}
-\newcommand{\judges}[3]{#1\vdash #3 :\{#2 \}}
-\newcommand{\compliance}{\thickapprox}
-
-%\newcommand{\topfigrule}{\vskip2pt\noindent\rule{\textwidth}{1pt}}
-\newcommand{\olds}[1]{\oldstylenums{#1}}
-\newcommand{\oldsb}[1]{{\bfseries\olds{#1}}}
-\newif{\ifcomments}
-\commentsfalse \ifcomments
-\newcommand{\comment}[1]{\stepcounter{ncomm}%
-\vbox to0pt{\vss\llap{\tiny\oldsb{\arabic{ncomm}}}\vskip6pt}%
-\marginpar{\tiny\bf\raggedright%
-{\oldsb{\arabic{ncomm}}}.\hskip0.5em#1}}
-\newcounter{ncomm}
-\else
-\newcommand{\comment}[1]{}
-\fi
-\newcommand{\marginnote}[2]{\hrule\smallskip\textbf{#1}:{\sf #2}\smallskip\hrule}
-\newcommand{\rest}[1]{(\nu #1)}
-\newcommand{\pinull}{\mathbf{0}}
-\newcommand{\typenull}{\mathsf{0}}
-\newcommand{\subt}{\; \mbox{{{\tt <}} \hspace{-.29cm} \raisebox{.25ex}{\tt :}}\,}
-\newcommand{\bigfract}[2]{\frac{^{\textstyle #1}}{_{\textstyle #2}}}
-\newcommand{\lred}[1]{\stackrel{#1}{\longrightarrow}}
 \def \mathax #1#2{\begin{array}{l} {\mbox{\scriptsize {{\sc (#1)}}} } \\ #2
 \end{array}}
 
@@ -79,15 +49,47 @@
     \end{array}}
 \newcommand{\iaxiom}[1]{\textstyle\rule[-1.3ex]{0cm}{3ex}#1}
         
-\newcommand{\wsdl}{{\sc wsdl}}
-\newcommand{\lredm}[1]{\stackrel{#1}{\longmapsto}}
 \newcommand{\ruleName}[1]{{\sc (#1)}}
 
 
-\newcommand{\bla}{\fbox{bla, bla, bla...}}
-\newcommand{\replace}[2]{{\fbox{#2}}\marginpar{$\star\star$}}
-%\newcommand{\replace}[2]{{#2}}
+%\newcommand{\equal}[2]{#1 \stackrel{\cdot}{=} #2}
+%\newcommand{\n}{\mathop{\mathrm{n}}}
+%\newcommand{\muse}{$\mu\mathsf{se}$}
+%\newcommand{\var}{{\mathcal A}}
+%\newcommand{\varb}{{\mathcal B}}
+%\newcommand{\subst}[2]{\{#1 / #2\}}
+%\newcommand{\judge}[4]{#1\vdash #4:\{{#2}\,\nearrow\,{#3}\}}
+%\newcommand{\judges}[3]{#1\vdash #3 :\{#2 \}}
+%\newcommand{\compliance}{\thickapprox}
 
+%\newcommand{\topfigrule}{\vskip2pt\noindent\rule{\textwidth}{1pt}}
+%\newcommand{\olds}[1]{\oldstylenums{#1}}
+%\newcommand{\oldsb}[1]{{\bfseries\olds{#1}}}
+%\newif{\ifcomments}
+%\commentsfalse \ifcomments
+%\newcommand{\comment}[1]{\stepcounter{ncomm}%
+%\vbox to0pt{\vss\llap{\tiny\oldsb{\arabic{ncomm}}}\vskip6pt}%
+%\marginpar{\tiny\bf\raggedright%
+%{\oldsb{\arabic{ncomm}}}.\hskip0.5em#1}}
+%\newcounter{ncomm}
+%\else
+%\newcommand{\comment}[1]{}
+%\fi
+%\newcommand{\marginnote}[2]{\hrule\smallskip\textbf{#1}:{\sf #2}\smallskip\hrule}
+%\newcommand{\rest}[1]{(\nu #1)}
+%\newcommand{\pinull}{\mathbf{0}}
+%\newcommand{\typenull}{\mathsf{0}}
+%\newcommand{\subt}{\; \mbox{{{\tt <}} \hspace{-.29cm} \raisebox{.25ex}{\tt :}}\,}
+%\newcommand{\bigfract}[2]{\frac{^{\textstyle #1}}{_{\textstyle #2}}}
+%\newcommand{\lred}[1]{\stackrel{#1}{\longrightarrow}}
+%
+%\newcommand{\wsdl}{{\sc wsdl}}
+%\newcommand{\lredm}[1]{\stackrel{#1}{\longmapsto}}
+%
+%
+%\newcommand{\bla}{\fbox{bla, bla, bla...}}
+%\newcommand{\replace}[2]{{\fbox{#2}}\marginpar{$\star\star$}}
+%\newcommand{\replace}[2]{{#2}}
 
 
 %
@@ -104,11 +106,28 @@
 \newcommand{\wrt}{w.r.t.}
 \newcommand{\tdot}{..}
 
-
+% SEQUENCES
 
 \newcommand{\emptysequence}{[]}
 
+
+%%%%SYNTAX GSP
+
+%sets 
+\newcommand{\idset}{\mathcal{\mathcal{I}}}
+
+\newcommand{\verticesets}{\mathbb{V}}
+\newcommand{\updatesets}{\mathcal{U}}
+\newcommand{\readset}{\mathcal{R}}
+\newcommand{\varset}{\mathcal{X}}
+
+\newcommand{\cid}{\sf i}
+
+
+\newcommand{\bigpar}{|\!|}
 \newcommand{\tsystem}[2]{#1\ \bigpar\ #2}
+
+% Clients configuration
 \newcommandx{\tclient}[7][7=\cid]{\{#1 , #4, #5, #3,  #2, #6\}_{#7}}
 \newcommand{\tclienti}[6]{\tclient{#1}{#2}{#3}{#4}{#5}{#6}}
 
@@ -121,26 +140,36 @@
 \newcommand{\tsenthead}{\beta}
 
 \newcommand{\treceivebuffer}{\textit{j}}
-\newcommand{\rvalue}[2]{\textit{rvalue}(#1, #2)}
 
 
+%%%%Syntax of processes
+\newcommandx{\updcmd}[1][1=\tupdate]{{\tt update}(#1)}
+\newcommandx{\readcmd}[1][1= r]{{\tt read}(#1)}
+\newcommand{\pullcmd}{{\tt pull}}
+\newcommand{\pushcmd}{{\tt push}}
+\newcommand{\confcmd}{{\tt confirmed}}
+
+
+
+
+\newcommand{\tupdins}{\updcmd}
 \newcommand{\tupdateins}{\tupdins;P}
-\newcommand{\tupdins}{{\tt update} (u)}
 
+\newcommand{\treadins}[2]{{\tt let}\ #1 = {\tt read}(#2)\ {\tt in}\ P}
 \newcommand{\tpushins}{{\tt push};P}
 \newcommand{\tconfirmedins}[1]{{\tt let}\ #1 = {\tt confirmed};P}
-
-\newcommandx{\twhile}[3][3=P]{{\tt while} (#1)\ {\tt do}\ #2 \ {\tt od}; #3}
-\newcommandx{\tifte}[4][1=\cond,2=P,3=P,4=P]{{\tt if} (#1)\ {\tt then}\ #2 \ {\tt else}\ #3 \ {\tt fi}; #4}
-
 \newcommand{\tpullins}{{\tt pull};P}
-\newcommand{\treadins}[2]{{\tt let}\ #1 = {\tt read}(#2)\ {\tt in}\ P}
-\newcommand{\treceivetran}{\textit{receive()}}
+
+\newcommand{\cond}{e}
+\newcommand{\eval}[1]{#1\downarrow}
+
+\newcommandx{\pwhile}[3][3=P]{{\tt while} (#1)\ {\tt do}\ #2 \ {\tt od}; #3}
+\newcommandx{\pifte}[4][1=\cond,2=P,3=P,4=P]{{\tt if} (#1)\ {\tt then}\ #2 \ {\tt else}\ #3 \ {\tt fi}; #4}
+
+\newcommand{\treceivetran}{{\tt receive}}
 
 \newcommand{\plet}[3]{{\tt let}\ #1 = #2 \ {\tt in}\ #3}
 
-
-\newcommand{\cond}{e}
 
 \newcommand{\queuemessage}{S}
 \newcommand{\system}{C}
@@ -148,6 +177,20 @@
 \newcommand{\environmentterm}{E}
 
 \newcommand{\nat}{\mathbb{N}}
+
+%Operational Semantics
+
+
+%Labels
+\newcommand{\readtran}[1]{\textit{read}(#1)}
+\newcommand{\receive}{\textit{receive}}
+
+\newcommand{\confirmedtran}{\textit{confirmed}}
+\newcommand{\pushtran}{\textit{push}}
+\newcommand{\updatetran}[1]{\textit{update}(#1)}
+\newcommand{\processtran}{\textit{process}}
+
+
 %
 % SERVER AND CLIENT
 %
@@ -196,6 +239,7 @@
 \newcommand{\receivebuffertype}{\gssegmenttype \cup \gsprefixtype}
 \newcommand{\nroundtype}{\mathbb{N}}
 
+\newcommand{\rvalue}[2]{\textit{rvalue}(#1, #2)}
 \newcommand{\maxround}{\textit{mr}}
 \newcommand{\append}[2]{append(#1, #2)}
 \newcommand{\apply}[2]{apply(#1, #2)}
@@ -241,12 +285,6 @@
 \newcommand{\gsprefixins}[2]{\textless #1, #2\textgreater}
 \newcommand{\gssegmentins}[2]{\textless #1, #2\textgreater}
 
-\newcommand{\receive}{\textit{receive}}
-
-\newcommand{\confirmedtran}{\textit{confirmed}}
-\newcommand{\pushtran}{\textit{push}}
-\newcommand{\updatetran}[1]{\textit{update}(#1)}
-\newcommand{\processtran}{\textit{process}}
 
 \newcommand{\updatevtran}[2]{\textit{update}(#1^#2)}
 \newcommand{\syncupdtran}[2]{\textit{sync\_update}(#1^#2)}
@@ -275,9 +313,8 @@
 \newcommand{\updatefour}[9]{#1[#2 \mapsto #3; #4 \mapsto #5; #6 \mapsto #7; #8 \mapsto #9]}
 
 
-\newcommand{\tupdate}{\textit{u}}
-\newcommand{\readins}[2]{\textit{let}\ #1 = \textit{read}(#2);P}
-\newcommand{\readtran}[1]{\textit{read}(#1)}
+\newcommand{\tupdate}{\textcolor{blue}{u}}
+\newcommand{\readins}[2]{\treadins}
 
 \newcommand{\startsynctran}{\dagger}
 \newcommand{\finishsynctran}{\ddagger}
@@ -310,7 +347,6 @@
 
 \newcommand{\service}[4]{#1_{#2}\{#3\ ,\ #4\}}
 
-\newcommand{\bigpar}{|\!|}
 
 
 \newcommand{\denote}[1]{\llbracket #1\rrbracket}
@@ -323,16 +359,7 @@
 
 \newcommand{\Arro}{\Rightarrow}
 
-\newcommand{\idset}{\mathcal{\mathcal{I}}}
 
-\newcommand{\verticesets}{\mathbb{V}}
-\newcommand{\updatesets}{\mathcal{U}}
-\newcommand{\readset}{\mathcal{R}}
-\newcommand{\varset}{\mathcal{X}}
-
-\newcommand{\cid}{\sf i}
-
-\newcommand{\eval}[1]{#1\downarrow}
 
 \newcommand{\condition}[2]{\neg(\eval{#1})=#2}
 
