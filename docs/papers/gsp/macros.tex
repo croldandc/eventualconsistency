@@ -1,0 +1,409 @@
+\newcommand{\powerset}{\mathcal{P}_f}
+\newcommand{\compatible}{compatible}
+\newcommand{\compatibility}{compatibility}
+
+\newcommand{\bn}{\mathop{\mathrm{bn}}}
+\newcommand{\initial}{\mathop{I}}
+\newcommand{\fn}{\mathop{\mathrm{fn}}}
+\newcommand{\struct}{\equiv}
+%\newcommand{\rec}[2]{\mathsf{rec}\;{#1}.{#2}}
+\newcommand{\sep}{\;\;\mid\;\;}
+\newcommand{\locpar}{|}
+\newcommand{\install}[1]{\mathsf{install}[{#1}]}
+\newcommand{\sedef}{\Rightarrow}
+\newcommand{\merg}[2]{\mathsf{merge}^{#1}\ {#2}}
+\newcommand{\invoke}[1]{\mathsf{invoke}\ {#1}}
+
+\newcommandx{\arro}[2][2=i]{\xrightarrow[]{#1}_{#2}}
+\newcommand{\arroi}[1]{\arro{#1}}
+\newcommand{\arrobyclient}[2]{\arro{#1}[#2]}
+
+\newcommand{\auxarro}[1]{\xmapsto{#1}}
+
+\newcommand{\typearro}[1]{\stackrel{#1}{\mapsto}}
+\newcommand{\labdef}[1]{\top #1}
+\newcommand{\session}{\rhd}
+\newcommand{\labinv}[1]{\bot #1}
+\newcommand{\labmerg}[2]{#1^{#2}}
+\newcommand{\deduce}[2]{\frac{\displaystyle #1}{\displaystyle #2}}
+\newcommand{\equal}[2]{#1 \stackrel{\cdot}{=} #2}
+\newcommand{\n}{\mathop{\mathrm{n}}}
+\newcommand{\muse}{$\mu\mathsf{se}$}
+\newcommand{\var}{{\mathcal A}}
+\newcommand{\varb}{{\mathcal B}}
+\newcommand{\subst}[2]{\{#1 / #2\}}
+\newcommand{\judge}[4]{#1\vdash #4:\{{#2}\,\nearrow\,{#3}\}}
+\newcommand{\judges}[3]{#1\vdash #3 :\{#2 \}}
+\newcommand{\compliance}{\thickapprox}
+
+%\newcommand{\topfigrule}{\vskip2pt\noindent\rule{\textwidth}{1pt}}
+\newcommand{\olds}[1]{\oldstylenums{#1}}
+\newcommand{\oldsb}[1]{{\bfseries\olds{#1}}}
+\newif{\ifcomments}
+\commentsfalse \ifcomments
+\newcommand{\comment}[1]{\stepcounter{ncomm}%
+\vbox to0pt{\vss\llap{\tiny\oldsb{\arabic{ncomm}}}\vskip6pt}%
+\marginpar{\tiny\bf\raggedright%
+{\oldsb{\arabic{ncomm}}}.\hskip0.5em#1}}
+\newcounter{ncomm}
+\else
+\newcommand{\comment}[1]{}
+\fi
+\newcommand{\marginnote}[2]{\hrule\smallskip\textbf{#1}:{\sf #2}\smallskip\hrule}
+\newcommand{\rest}[1]{(\nu #1)}
+\newcommand{\pinull}{\mathbf{0}}
+\newcommand{\typenull}{\mathsf{0}}
+\newcommand{\subt}{\; \mbox{{{\tt <}} \hspace{-.29cm} \raisebox{.25ex}{\tt :}}\,}
+\newcommand{\bigfract}[2]{\frac{^{\textstyle #1}}{_{\textstyle #2}}}
+\newcommand{\lred}[1]{\stackrel{#1}{\longrightarrow}}
+\def \mathax #1#2{\begin{array}{l} {\mbox{\scriptsize {{\sc (#1)}}} } \\ #2
+\end{array}}
+
+\def \mathrule #1#2#3{\begin{array}{l}
+        {\mbox{\scriptsize {\ruleName{#1}}} }
+        \\ \deduce{#2}{#3}
+\end{array}}
+
+\def \mathrulean #1#2#3{\begin{array}{l}
+        {\mbox{\scriptsize {\ruleName{#1}}} }
+        \, \deduce{#2}{#3}
+\end{array}}
+
+\def \mathanrule #1#2{\begin{array}{l}
+				\deduce{#1}{#2}
+\end{array}}
+
+\def \mathaxiom #1#2{\begin{array}{l}%
+    {\mbox{\scriptsize ({\sc #1})} }%
+    \\ \iaxiom{#2}%
+    \end{array}}
+\newcommand{\iaxiom}[1]{\textstyle\rule[-1.3ex]{0cm}{3ex}#1}
+        
+\newcommand{\wsdl}{{\sc wsdl}}
+\newcommand{\lredm}[1]{\stackrel{#1}{\longmapsto}}
+\newcommand{\ruleName}[1]{{\sc (#1)}}
+
+
+\newcommand{\bla}{\fbox{bla, bla, bla...}}
+\newcommand{\replace}[2]{{\fbox{#2}}\marginpar{$\star\star$}}
+%\newcommand{\replace}[2]{{#2}}
+
+
+
+%
+% MACRO FOR COMMENTS
+%
+%\newcommand{\nota}[1]{\noindent \fbox{ \parbox{\textwidth}{#1} }  }
+\newcommand{\nota}[1]{}
+
+%
+% ABBREVIATIONS AND SYMBOLS
+%
+\newcommand{\eg}{e.g.}
+\newcommand{\ie}{i.e.}
+\newcommand{\wrt}{w.r.t.}
+\newcommand{\tdot}{..}
+
+
+
+\newcommand{\emptysequence}{[]}
+
+\newcommand{\tsystem}[2]{#1\ \bigpar\ #2}
+\newcommandx{\tclient}[7][7=\cid]{\{#1 , #4, #5, #3,  #2, #6\}_{#7}}
+\newcommand{\tclienti}[6]{\tclient{#1}{#2}{#3}{#4}{#5}{#6}}
+
+\newcommand{\tknown}{\textit{k}}
+\newcommand{\tpending}{\rho}
+\newcommand{\ttransactionbuffer}{\alpha}
+\newcommandx{\ublock}[2][1=\ttransactionbuffer,2=\cid]{[#1]_{#2}}
+
+\newcommand{\tsent}{\sigma}
+\newcommand{\tsenthead}{\beta}
+
+\newcommand{\treceivebuffer}{\textit{j}}
+\newcommand{\rvalue}[2]{\textit{rvalue}(#1, #2)}
+
+
+\newcommand{\tupdateins}{\tupdins;P}
+\newcommand{\tupdins}{{\tt update} (u)}
+
+\newcommand{\tpushins}{{\tt push};P}
+\newcommand{\tconfirmedins}[1]{{\tt let}\ #1 = {\tt confirmed};P}
+
+\newcommandx{\twhile}[3][3=P]{{\tt while} (#1)\ {\tt do}\ #2 \ {\tt od}; #3}
+\newcommandx{\tifte}[4][1=\cond,2=P,3=P,4=P]{{\tt if} (#1)\ {\tt then}\ #2 \ {\tt else}\ #3 \ {\tt fi}; #4}
+
+\newcommand{\tpullins}{{\tt pull};P}
+\newcommand{\treadins}[2]{{\tt let}\ #1 = {\tt read}(#2)\ {\tt in}\ P}
+\newcommand{\treceivetran}{\textit{receive()}}
+
+\newcommand{\plet}[3]{{\tt let}\ #1 = #2 \ {\tt in}\ #3}
+
+
+\newcommand{\cond}{e}
+
+\newcommand{\queuemessage}{S}
+\newcommand{\system}{C}
+\newcommand{\systemterm}{N}
+\newcommand{\environmentterm}{E}
+
+\newcommand{\nat}{\mathbb{N}}
+%
+% SERVER AND CLIENT
+%
+\newcommand{\gsp}{\textit{gsp}}
+\newcommand{\tgspcalculus}{\textit{tgsp-calculus}}
+\newcommand{\gspcalculus}{\textit{gsp-calculus}}
+
+\newcommand{\server}[3]{\{#1 , #2, #3\}}
+\newcommand{\clientr}[2]{\client{#1}{#2}_i}
+\newcommand{\client}[2]{\{#1 , #2\}}
+
+
+
+\newcommand{\clienti}[9]{\{#1 , #2, #3, #4, #5, #6, #7, #8\}_#9}
+
+\newcommand{\inserver}{\textit{$in_s$}}
+\newcommand{\outserver}{\textit{$out_s$}}
+\newcommand{\inclient}{\textit{$in_c$}}
+\newcommand{\outclient}{\textit{$out_c$}}
+\newcommand{\outclientlist}{\textit{\headerround} \cdot \textit{\tailround}}
+
+\newcommand{\initialstate}{\textit{initialstate}}
+\newcommand{\emptydelta}{\textit{emptydelta}}
+
+\newcommand{\state}{\textit{ps}}
+\newcommand{\stateclient}{E}
+
+
+\newcommand{\persistedstate}{\textit{ps}}
+\newcommand{\statetype}{\textit{State}}
+\newcommand{\updatetype}{\textit{Update}}
+\newcommand{\readtype}{\textit{Read}}
+\newcommand{\valuetype}{\textit{Value}}
+
+\newcommand{\deltatype}{\textit{Delta}}
+\newcommand{\known}{\textit{k}}
+\newcommand{\pending}{\textit{p}}
+\newcommand{\transactionbuffer}{\textit{tb}}
+\newcommand{\pushbuffer}{\textit{pb}}
+\newcommand{\receivebuffer}{\textit{rb}}
+
+\newcommand{\knowntype}{\statetype}
+\newcommand{\pendingtype}{\rho}
+\newcommand{\transactionbuffertype}{\delta}
+\newcommand{\pushbuffertype}{\delta}
+\newcommand{\receivebuffertype}{\gssegmenttype \cup \gsprefixtype}
+\newcommand{\nroundtype}{\mathbb{N}}
+
+\newcommand{\maxround}{\textit{mr}}
+\newcommand{\append}[2]{append(#1, #2)}
+\newcommand{\apply}[2]{apply(#1, #2)}
+\newcommand{\remove}[2]{remove(#1, #2)}
+
+\newcommand{\gs}{\textit{gs}}
+\newcommand{\gss}{\textit{gss}}
+\newcommand{\gssegment}{\textless	\delta,\maxround \textgreater}
+\newcommand{\emptygssegment}{\theta}
+\newcommand{\gsprefix}{\textless	\state,\maxround \textgreater}
+\newcommand{\round}[3]{\textless	#1, #2, #3 \textgreater}
+
+\newcommand{\specfunction}[4]{#1 :: #2 $\times$ #3 $\rightarrow$ #4}
+\newcommand{\specOperator}[4]{#1 :: #2 $\times$ #3  $\times$ #4}
+
+\newcommand{\specfunctiononeparameter}[3]{#1 :: #2 $\rightarrow$ #3}
+\newcommand{\specfunctionforparameters}[6]{#1 :: #2 $\times$ #3 $\times$ #4 $\times$ #5 $\rightarrow$ #6}
+
+
+
+
+\newcommand{\gssegmenttype}{\textit{GSSegment}}
+\newcommand{\gsprefixtype}{\textit{GSPrefix}}
+\newcommand{\roundtype}{\textit{Round}}
+\newcommand{\headerround}{\textless	i, n_0, \delta_0\textgreater}
+
+\newcommand{\tailround}{\textit{rs}}
+
+\newcommand{\partialfunction}[2]{#1 \rightarrow #2}
+
+\newcommand{\reduce}[1]{\textbf{\textit{reduce}}(#1)}
+\newcommand{\applyplus}[2]{\textbf{\textit{apply}}(#1, #2)}
+
+\newcommand{\readplus}[2]{\readp{#1}{#2} = \textit{v}}
+
+\newcommand{\readp}[2]{\textbf{\textit{read}}(#1, #2)}
+
+\newcommand{\appendplus}[2]{\textbf{\textit{append}}(#1, #2)}
+
+\newcommand{\reducestate}[2]{\textbf{\textit{reducestate}}(#1, #2)}
+
+
+\newcommand{\gsprefixins}[2]{\textless #1, #2\textgreater}
+\newcommand{\gssegmentins}[2]{\textless #1, #2\textgreater}
+
+\newcommand{\receive}{\textit{receive}}
+
+\newcommand{\confirmedtran}{\textit{confirmed}}
+\newcommand{\pushtran}{\textit{push}}
+\newcommand{\updatetran}[1]{\textit{update}(#1)}
+\newcommand{\processtran}{\textit{process}}
+
+\newcommand{\updatevtran}[2]{\textit{update}(#1^#2)}
+\newcommand{\syncupdtran}[2]{\textit{sync\_update}(#1^#2)}
+
+\newcommand{\updatebyclient}[1]{\textit{update}(u)_#1}
+\newcommand{\readbyclient}[1]{\textit{read}(r)_#1}
+
+\newcommand{\pulltran}{\textit{pull}}
+\newcommand{\sendtran}{\textit{send}}
+\newcommand{\dropconn}[1]{\dagger(#1)}
+\newcommand{\dropconnectionclient}{\dagger}
+\newcommand{\tprogram}{P}
+\newcommand{\tflush}{\textit{flush()}}
+\newcommand{\tsyncupd}[1]{\textit{sync\_update(#1)}}
+
+\newcommand{\acceptconn}[1]{\oplus(#1)}
+\newcommand{\crashandrecover}{\ddagger}
+\newcommand{\undefined}{\perp}
+\newcommand{\receiveroundsname}[1]{\textit{receivedRounds}(#1)}
+\newcommand{\notify}[3]{\textit{notify}(#1, #2, #3)}
+
+\newcommand{\updatein}[2]{#1^#2}
+\newcommand{\update}[3]{#1[#2 \mapsto #3]}
+\newcommand{\updatethree}[7]{#1[#2 \mapsto #3; #4 \mapsto #5; #6 \mapsto #7]}
+\newcommand{\updatetwo}[5]{#1[#2 \mapsto #3; #4 \mapsto #5]}
+\newcommand{\updatefour}[9]{#1[#2 \mapsto #3; #4 \mapsto #5; #6 \mapsto #7; #8 \mapsto #9]}
+
+
+\newcommand{\tupdate}{\textit{u}}
+\newcommand{\readins}[2]{\textit{let}\ #1 = \textit{read}(#2);P}
+\newcommand{\readtran}[1]{\textit{read}(#1)}
+
+\newcommand{\startsynctran}{\dagger}
+\newcommand{\finishsynctran}{\ddagger}
+
+
+
+
+
+
+\newcommand{\updateins}[1]{\textit{update}(#1);P}
+\newcommand{\pushins}{\textit{push}();P}
+\newcommand{\pullins}{\textit{pull}();P}
+\newcommand{\curstate}[4]{\textit{curstate}(#1, #2, #3, #4)}
+\newcommand{\nround}{\textit{n}}
+\newcommand{\confirmedins}[1]{\textit{let}\ #1 = \textit{confirmed}();P}
+\newcommand{\domround}{\mathcal{N} \times \mathbb{N} \times \deltatype}
+\newcommand{\dominserver}{\mathbb{N} \times \deltatype}
+
+
+
+
+\newcommand{\tuple}[1]{\vec{#1}}
+\newcommand{\zero} {0}
+\newcommand{\outp}[2]{\overline{#1}\langle #2 \rangle}
+\newcommand{\inp}[2]{#1(#2)}
+\newcommand{\ifte}[3]{{\bf if}\ #1\ {\bf then}\ #2\ {\bf else}\ #3}
+\newcommand{\rec}[2]{{\bf rec}_{#1}\ #2}
+
+\newcommand{\corrinst}[2]{#1\triangleright[#2]}
+
+\newcommand{\service}[4]{#1_{#2}\{#3\ ,\ #4\}}
+
+\newcommand{\bigpar}{|\!|}
+
+
+\newcommand{\denote}[1]{\llbracket #1\rrbracket}
+
+ \newcommand{\unexcplbl}[1]{[#1]}
+ \newcommand{\unexcp}{\circledast 	}
+
+ \newcommand{\mayhandle}[2]{#1\downarrow_{#2}}
+ \newcommand{\maynothandle}[2]{#1\not\downarrow_{#2}}
+
+\newcommand{\Arro}{\Rightarrow}
+
+\newcommand{\idset}{\mathcal{\mathcal{I}}}
+
+\newcommand{\verticesets}{\mathbb{V}}
+\newcommand{\updatesets}{\mathcal{U}}
+\newcommand{\readset}{\mathcal{R}}
+\newcommand{\varset}{\mathcal{X}}
+
+\newcommand{\cid}{\sf i}
+
+\newcommand{\eval}[1]{#1\downarrow}
+
+\newcommand{\condition}[2]{\neg(\eval{#1})=#2}
+
+%CONSISTENCY GRAMMAR
+
+\newcommand{\environment}[5]{\{#1 , #2, #3, #4, #5\}}
+\newcommand{\environmenttran}[8]{\{#1 , #2, #3, #4, #5, #6, #7, #8\}}
+
+\newcommand{\vis}{\textsc{\scriptsize{VIS}}}
+\newcommand{\op}{\textsc{\scriptsize{OP}}}
+\newcommand{\arb}{\textsc{\scriptsize{AR}}}
+\newcommand{\so}{\textsc{\scriptsize{SO}}}
+\newcommand{\soby}[2]{#1\triangleright_i{#2}}
+\newcommand{\updateinqueuemessage}[2]{\queuemessage[#1]_#2}
+\newcommand{\rb}{\textsc{\scriptsize{RB}}}
+\newcommand{\tx}{\textsc{\scriptsize{TO}}}
+\newcommand{\tc}{\textsc{\scriptsize{TC}}}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% COMMENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\cf}[2]{
+    \fontsize{#1}{#1}{\selectfont{#2}}
+  }
+
+\newcommand{\hernan}[1]{{\marginpar{\cf{6}{{HM: #1}}}}}
+%\newcommand{\emi}[1]{{\marginpar{\cf{6}{{#1}}}}}
+%  \newcommand{\cf}[2]{
+%    \fontsize{#1}{#1}{\selectfont{#2}}
+%  }
+%\newcommand{\emic}[2]{\shadowbox{\fbox{\parbox{.8\textwidth}{\begin{description}\item[\cf{8}{\sc\bf #2}]\cf{8}{#1}\end{description}}}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Para Borrar
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\ignorar}[1]{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Type system
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\type}{\mathcal{T}}
+\newcommand{\patternmtch}{\owedge}
+\newcommand{\tjudge}[4]{#1 \vdash #2 : {#3} ,#4}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cross-ref
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\equref}[1]{Eq.~\eqref{#1}}
+\newcommand{\thmref}[1]{Thm.~\ref{#1}}
+\newcommand{\lemref}[1]{Lem.~\ref{#1}}
+\newcommand{\figref}[1]{Fig.~\ref{#1}}
+\newcommand{\defref}[1]{Def.~\ref{#1}}
+\newcommand{\secref}[1]{\S~\ref{#1}}
+\newcommand{\exref}[1]{Ex.~\ref{#1}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% comments
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\newcommand{\changed}[2]{\textcolor{blue}{#2}}
+\newcommand{\henote}[1]{\textcolor{red}{[H: #1]}}
+
+\newcommand{\flatten}[1]{\textit{flatten}(#1)}
+\newcommand{\length}[1]{|#1|}
+
+
+
