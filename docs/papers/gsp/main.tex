@@ -291,8 +291,9 @@ In what follows we will write labelled transitions $\arro{\mu}$ instead of $\tr{
 \end{figure*}
 
 
-We now comment on the inference rules in \figref{fig:OS-tgsp} defining the operational semantics of \tgspcalculus.
-When a client performs an update $u$ (rule \textsc{update}), the change is made locally by extending the local sequence of updates $\alpha$
+We now comment on the inference rules in \figref{fig:OS-tgsp}, which define the operational semantics of \tgspcalculus.
+When a client performs an update $u$ (rule \textsc{update}), the change has effect only locally. This is achieved
+ by extending the local sequence of updates $\alpha$
 with the operation $u$ decorated with a globally fresh identifier $\vertice$.  
 %
 A client invokes  the primitive $\pushcmd$ to  propagate its local changes to the global store. All changes in the local sequence $\alpha$ are
