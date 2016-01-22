@@ -13,8 +13,9 @@
 %\newcommand{\sedef}{\Rightarrow}
 %\newcommand{\merg}[2]{\mathsf{merge}^{#1}\ {#2}}
 %\newcommand{\invoke}[1]{\mathsf{invoke}\ {#1}}
+\newcommand{\tr}[1]{\xrightarrow[]{#1}}
 
-\newcommandx{\arro}[2][2=i]{\xrightarrow[]{#1}_{#2}}
+\newcommandx{\arro}[2][2=\cid]{\xrightarrow[]{#1}_{#2}}
 \newcommand{\arroi}[1]{\arro{#1}}
 \newcommand{\arrobyclient}[2]{\arro{#1}[#2]}
 
@@ -29,10 +30,18 @@
 \def \mathax #1#2{\begin{array}{l} {\mbox{\scriptsize {{\sc (#1)}}} } \\ #2
 \end{array}}
 
-\def \mathrule #1#2#3{\begin{array}{l}
-        {\mbox{\scriptsize {\ruleName{#1}}} }
-        \\ \deduce{#2}{#3}
+\newcommand{\irule}[2]{\frac{\textstyle\rule[-1.3ex]{0cm}{3ex}#1}%
+{\textstyle\rule[-.5ex]{0cm}{3ex}#2}}
+%
+\def \mathrule #1#2#3{\begin{array}{l}%
+      {\mbox{\scriptsize {\ruleName{#1}}} }
+    \\ \irule{#2}{#3}%
 \end{array}}
+
+%\def \mathrule #1#2#3{\begin{array}{l}
+%        {\mbox{\scriptsize {\ruleName{#1}}} }
+%        \\ \deduce{#2}{#3}
+%\end{array}}
 
 \def \mathrulean #1#2#3{\begin{array}{l}
         {\mbox{\scriptsize {\ruleName{#1}}} }
@@ -108,7 +117,7 @@
 
 % SEQUENCES
 
-\newcommand{\emptysequence}{[]}
+\newcommand{\emptysequence}{\epsilon}
 
 
 %%%%SYNTAX GSP
@@ -120,21 +129,22 @@
 \newcommand{\updatesets}{\mathcal{U}}
 \newcommand{\readset}{\mathcal{R}}
 \newcommand{\varset}{\mathcal{X}}
+\newcommand{\valueset}{\mathcal{V}}
 
-\newcommand{\cid}{\sf i}
+\newcommand{\cid}{{\sf i}}
 
 
 \newcommand{\bigpar}{|\!|}
-\newcommand{\tsystem}[2]{#1\ \bigpar\ #2}
+\newcommandx{\tsystem}[2][2=N]{#1\ \bigpar\ #2}
 
 % Clients configuration
-\newcommandx{\tclient}[7][7=\cid]{\{#1 , #4, #5, #3,  #2, #6\}_{#7}}
+\newcommandx{\tclient}[7][7=\cid]{\langle #1 , #4, #5, #3,  #2, #6\, \rangle_{#7}}
 \newcommand{\tclienti}[6]{\tclient{#1}{#2}{#3}{#4}{#5}{#6}}
 
 \newcommand{\tknown}{\textit{k}}
 \newcommand{\tpending}{\rho}
 \newcommand{\ttransactionbuffer}{\alpha}
-\newcommandx{\ublock}[2][1=\ttransactionbuffer,2=\cid]{[#1]_{#2}}
+\newcommandx{\ublock}[2][1=\ttransactionbuffer,2=\cid]{[#1]}
 
 \newcommand{\tsent}{\sigma}
 \newcommand{\tsenthead}{\beta}
@@ -143,7 +153,7 @@
 
 
 %%%%Syntax of processes
-\newcommandx{\updcmd}[1][1=\tupdate]{{\tt update}(#1)}
+\newcommandx{\updcmd}[1][1=u]{{\tt update}(#1)}
 \newcommandx{\readcmd}[1][1= r]{{\tt read}(#1)}
 \newcommand{\pullcmd}{{\tt pull}}
 \newcommand{\pushcmd}{{\tt push}}
@@ -151,6 +161,7 @@
 
 
 
+\newcommand{\tupdate}{\udec}
 
 \newcommand{\tupdins}{\updcmd}
 \newcommand{\tupdateins}{\tupdins;P}
@@ -161,7 +172,7 @@
 \newcommand{\tpullins}{{\tt pull};P}
 
 \newcommand{\cond}{e}
-\newcommand{\eval}[1]{#1\downarrow}
+\newcommand{\eval}[2]{#1\downarrow #2}
 
 \newcommandx{\pwhile}[3][3=P]{{\tt while} (#1)\ {\tt do}\ #2 \ {\tt od}; #3}
 \newcommandx{\pifte}[4][1=\cond,2=P,3=P,4=P]{{\tt if} (#1)\ {\tt then}\ #2 \ {\tt else}\ #3 \ {\tt fi}; #4}
@@ -176,26 +187,31 @@
 \newcommand{\systemterm}{N}
 \newcommand{\environmentterm}{E}
 
-\newcommand{\nat}{\mathbb{N}}
+\newcommand{\nat}{\mathbbm{N}}
 
 %Operational Semantics
 
+\newcommand{\subst}[2]{\{#2/{#1}\}}
 
 %Labels
+
+\newcommandx{\udec}[2][1=u,2=\vertice]{{#1\!^{\scalebox{.8}{$#2$}}}}
+\newcommandx{\vertice}[1][1=v]{\mathbbmss{v}}
 \newcommand{\readtran}[1]{\textit{read}(#1)}
 \newcommand{\receive}{\textit{receive}}
 
 \newcommand{\confirmedtran}{\textit{confirmed}}
 \newcommand{\pushtran}{\textit{push}}
-\newcommand{\updatetran}[1]{\textit{update}(#1)}
+\newcommandx{\updatetran}[2][2=\vertice]{\textit{update}(\udec[#1][#2])}
 \newcommand{\processtran}{\textit{process}}
+
 
 
 %
 % SERVER AND CLIENT
 %
-\newcommand{\gsp}{\textit{gsp}}
-\newcommand{\tgspcalculus}{\textit{tgsp-calculus}}
+\newcommand{\gsp}{\textcolor{red}{\sc gsp}}
+\newcommand{\tgspcalculus}{{\sc gsp}}
 \newcommand{\gspcalculus}{\textit{gsp-calculus}}
 
 \newcommand{\server}[3]{\{#1 , #2, #3\}}
@@ -203,8 +219,7 @@
 \newcommand{\client}[2]{\{#1 , #2\}}
 
 
-
-\newcommand{\clienti}[9]{\{#1 , #2, #3, #4, #5, #6, #7, #8\}_#9}
+%\newcommand{\clienti}[9]{\langle#1 , #2, #3, #4, #5, #6, #7, #8\rangle_#9}
 
 \newcommand{\inserver}{\textit{$in_s$}}
 \newcommand{\outserver}{\textit{$out_s$}}
@@ -239,7 +254,9 @@
 \newcommand{\receivebuffertype}{\gssegmenttype \cup \gsprefixtype}
 \newcommand{\nroundtype}{\mathbb{N}}
 
-\newcommand{\rvalue}[2]{\textit{rvalue}(#1, #2)}
+\newcommand{\rvaluename}{\textit{rvalue}}
+
+\newcommand{\rvalue}[2]{\rvaluename(#1, #2)}
 \newcommand{\maxround}{\textit{mr}}
 \newcommand{\append}[2]{append(#1, #2)}
 \newcommand{\apply}[2]{apply(#1, #2)}
@@ -313,7 +330,9 @@
 \newcommand{\updatefour}[9]{#1[#2 \mapsto #3; #4 \mapsto #5; #6 \mapsto #7; #8 \mapsto #9]}
 
 
-\newcommand{\tupdate}{\textcolor{blue}{u}}
+\newcommandx{\updev}[2][1=u,2=v,usedefault=@]{\textcolor{blue}{#1^{#2}}}
+
+
 \newcommand{\readins}[2]{\treadins}
 
 \newcommand{\startsynctran}{\dagger}

@@ -19,7 +19,7 @@
 \usepackage{amssymb}
 %\usepackage{pslatex}
 \usepackage{alltt}
-
+\usepackage{bbm}
 \usepackage{url}
 \usepackage{subfigure}
 %\usepackage{stmaryrd,amsmath,amsfonts,amstext,amssymb,fancybox}
@@ -76,20 +76,24 @@ None operation can simultaneously read and update a store, therefore we assume
  $u, u', u'',\ldots$ for  updates in $\updatesets$  and 
 $r, r', r'',\ldots$ for reads in $\readset$. 
 
-The global state of a store and the local  replicas maintained by the clients are 
+The global state of a store and the local  replicas at each client are 
 represented by sequences of update operations. 
-%For technical 
-%convenience, we will decorate each update operations $u$ with the 
-%identity $i$ of the client that issued it, written $u_i$.  
-%
-We  use $\ttransactionbuffer$, $\beta$ to denote sequences of updates and
-$\ublock$ for an atomic block of updates performed by the client $i$. 
+For technical 
+convenience (particularly in \secref{sec:properties-gsp}), we find useful to 
+distinguish  different executions of the same operation. Formally, stores 
+will associate each update with a fresh event identifier.
+We assume a set $\verticesets$ of event identifiers  $\vertice$, $\vertice_0$, \ldots, $\vertice'$,$\ldots$ 
+and write $\udec$ for the update operation $u$ corresponding to the event $\vertice$.
+We sometimes omit the decoration when it is irrelevant for the context.  
+
+We  use $\ttransactionbuffer$, $\beta$ to denote sequences of decorate updates and
+$\ublock$ for an atomic block of updates performed by a client. 
 (We reserve the term 
 transaction for a different notion addressed in \secref{sec:transactions}). 
 We use  $\tpending$ and $\sigma$ 
 for sequences of blocks.
 Formally,
-\[ \ttransactionbuffer, \beta := \epsilon \ |\ u\cdot\alpha 
+\[ \ttransactionbuffer, \beta := \epsilon \ |\ \udec\cdot\alpha 
     \qquad\qquad 
     \tpending,\sigma:= \epsilon\ |\ \ublock\cdot\tpending\]
 where  $\epsilon$ is the empty sequence.
@@ -103,7 +107,7 @@ In the next sections  will  make use of following operations on sequences:
     \item Relative complement:  
     %Let $\tpending$ and $\ttransactionbuffer$ be sequence, we write $\setminus$ as the 
     %relative complement of $\tpending$ in $\ttransactionbuffer$, \ie,
-     $\tpending \setminus \ttransactionbuffer = [u_i | u_i \in \tpending \wedge\ u_i\notin \ttransactionbuffer]$. 
+     $\tpending \setminus \sigma = [\ublock | u_i \in \tpending \wedge\ u_i\notin \ttransactionbuffer]$. 
      \henote{fix}
     \item Flatten: $\flatten{\epsilon} = \epsilon$, and 
     $\flatten{\ublock\cdot\tpending} = \ttransactionbuffer\cdot\flatten\tpending$.
@@ -113,8 +117,8 @@ In the next sections  will  make use of following operations on sequences:
 
 
 
- \begin{definition}[Global Sequence Protocol Language] 
-The set of \tgspcalculus\ expressions is given by the following grammar:
+ \begin{definition}[GSP Language] 
+The set of \tgspcalculus\ terms is given by the following grammar:
  
   \[
     \begin{array}{l@{\quad}r@{}l}
@@ -135,11 +139,11 @@ for interacting with
 the store: $\readcmd,  \updcmd, \pullcmd,  \pushcmd, \confcmd$
  (we postpone their description until \secref{sec:gsp-sos}). Conditional and loop statements contain expressions 
 $\cond, \cond', \ldots$ written in some language that we left unspecified. We only assume   
-such language to be equipped with a valuation function, written $\eval{\_}$, which associates expressions 
-with values.  
+such language to be equipped with a valuation function  that associates each expression $\cond$  
+with a value $v$ in some domain $\valueset$, written $\eval{\cond}{v}$.  
 A program $\plet{x}{\ldots}{P}$ introduces a bound variable whose  scope is $P$. The definition of 
-free variables of a programs is  standard. We say that process $P$ is {\em closed} when it has 
-no free variables.
+free variables of a program is  standard. We say that a process $P$ is {\em closed} when it does not contain  
+ free variables.
 
 
 The term $\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}$ 
@@ -148,16 +152,16 @@ program $P$.
 The remaining elements 
 describe the state of the local replica: $\ttransactionbuffer$ contains the  updates 
 that have been made locally and are  part of an unfinished block; $\tsent$ contains the locally 
-completed blocks that need to be sent to the global store; 
+completed blocks that have not reached the global store; 
 $\tpending$ are the locally completed blocks that await confirmation about 
 their successful application to the global storage.
- For simplicity, we avoid having explicitly replicated the known 
+ For simplicity, we avoid to explicitly replicate the known 
 part of the global state in each client, instead we use natural numbers for identifying the 
 portion of the global state that is known by each client. Specifically, 
 $k$ identifies the portion of the global 
-store that is replicated locally, i.e., $S[0..k]$; and $j$ stands for the number of new updates 
-in the global store that have been received and needs to be added to the local replica, i.e., $S[k+1..k+j]$.
-A system is composed by a store and a non-empty set of clients. 
+store that is replicated locally, i.e., $S[0..k-1]$; and $j$ stands for the number of new updates 
+in the global store that have been received and needs to be added to the local replica, i.e., $S[k..k+j-1]$.
+A system $N$ is composed by a store and a  set of clients. 
 
 A system $N = S \bigpar C_0\bigpar \ldots\bigpar C_n$  with 
 $C_l = \tclienti{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\tsent_l}{\treceivebuffer_l}[\cid_l]$ 
@@ -166,9 +170,9 @@ satisfies the following conditions:
 \begin{itemize}
   \item $\cid_l \neq \cid_k$ for all $j\neq k$, \ie,  clients have different identifiers;
   \item $k_l+j_l\leq \length S$ for all $l$, \ie,  a client see at most every messages in the storage;
-  \item if $\ublock \in {\tpending_l}\cdot {\tsent_l}$ then $\cid = \cid_l$, \ie,  blocks in the local queues of 
-  a client $l$ are  all decorated with the identifier $\cid_l$.
-  \item $\cid \in {\cid_0,\ldots, \cid_n} $ for all $\ublock \in S$, \henote{Pensar bien, tal vez no es necesaria}
+%  \item if $\ublock \in {\tpending_l}\cdot {\tsent_l}$ then $\cid = \cid_l$, \ie,  blocks in the local queues of 
+%  a client $l$ are  all decorated with the identifier $\cid_l$.
+%  \item $\cid \in {\cid_0,\ldots, \cid_n} $ for all $\ublock \in S$, \henote{Pensar bien, tal vez no es necesaria}
 \end{itemize}
 \changed{}{
 \begin{example} Show an example, for instance a server with two clients with different information.
@@ -177,93 +181,149 @@ satisfies the following conditions:
 
 \subsection{Operational Semantics}
 \label{sec:gsp-sos}
-\changed{}
-{\paragraph{Interpretation of read and update operations}
-we need to explain rvalue}
 
-
-The operational semantics of \tgspcalculus\ is defined by a labeled transition system 
-over well-formed terms, up-to the structural congruence \changed{}{defined as the least 
-congruence satisfying the following rules:
-\[
-  \begin{array}{l}
-  TODO
-  \end{array}
-\]}
-
-
-
-\changed{The labeled transition system considers the following actions:}{We rely on a set of labels defined by the following grammar:
-}
+The operational semantics of \tgspcalculus\ is given by a labeled transition system 
+over well-formed terms, quotiented by the structural congruence $\equiv$ defined as the least congruence 
+such that  $\bigpar$ is associative, commutative and has $0$ as neutral element.
+Transitions will be labelled by pairs $(\mu,\cid)$ where $\mu$ is the action performed 
+by the client $\cid$. The set of actions is defined by the following grammar:
 \[ 
 \begin{array}{r@{\ ::= \ }l}
-  \alpha & \tau \ | \ \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran 
+  \mu & \tau \ | \ \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran 
 \end{array}
 \]
+As usual,  $\tau$ stands for an internal, unobservable action, while the remaining actions allow 
+a client to update to, read from and synchronise with a global store. 
+In what follows we will write labelled transitions $\arro{\mu}$ instead of $\tr{(\mu,\cid)}$. 
 
-The meaning of $\tau$ is standard. A
-\henote{.}
 
-\begin{figure*}[thp]
+\begin{figure*}[tp]
  \[
  \begin{array}{l}
-\mathrule{t-read}
-  	{\rvalue{r}
- 		{\flatten(\queuemessage[0..\tknown-1] \cdot \tpending) \cdot \ttransactionbuffer} = v}		
-	{\tsystem{\tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}
-			{\queuemessage} \arro{\readtran{r}} \tsystem{\tclienti{\update{\tprogram}{x}{v}}{\tknown}
-			{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ C}{\queuemessage}}
-\\[25pt]
-
-\mathax{t-update}{\tsystem{\tclienti{\tupdateins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arro{\updatetran{u}} \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer\ \cdot \tupdate}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
-
-\\[15pt]
-
-\mathax{t-push}{\tsystem{\tclienti{\tpushins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \bigpar\ \system}{\queuemessage} \arro{\pushtran} \tsystem{\tclienti{\tprogram}{\tknown}{\tpending \cdot [\ttransactionbuffer]}{\epsilon}{\tsent \cdot [\ttransactionbuffer]}{\treceivebuffer} \bigpar\ \system}{\queuemessage}}
-\\[15pt]
-
-\mathax{t-pull}{\tsystem{\tclienti{\tpullins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \bigpar\ \system}{\queuemessage} \arro{\pulltran} \tsystem{\tclienti{\tprogram}{\tknown+\treceivebuffer}{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer]}{\ttransactionbuffer}{\tsent}{0} \bigpar\ \system}{\queuemessage}}
-\\[15pt]
-
-
-\mathax{t-confirmed}{\tsystem{\tclienti{\tconfirmedins{x}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arro{\confirmedtran} \tsystem{\tclienti{\update{\tprogram}{x}{\tpending \neq \emptysequence \vee\ \ttransactionbuffer \neq \epsilon}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ C}{\queuemessage}}
-
-\\[20pt]
-
-\mathrule{t-while-true}{\condition{\cond}{false}}{\tsystem{\tclienti{\pwhile{\cond}{\tprogram}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \bigpar \system}{\queuemessage} \arro{\tau} \tsystem{\tclienti{\tprogram;\pwhile{\cond}{\tprogram}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1} \bigpar\ \system}{\queuemessage}}
-
+\mathrule{update}
+         { \vertice \ \mbox{fresh}
+         }
+ 	{
+	\tsystem{\tclienti{\tupdateins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+	\arro{\updatetran{u}} 
+	\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer \cdot \tupdate}{\tsent}{\treceivebuffer}}
+	}
 
 \\[25pt]
-
-\mathrule{t-while-false}{\condition{\cond}{true}}{\tsystem{\tclienti{\pwhile{\cond}{\tprogram;Q}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \bigpar \system}{\queuemessage} \arro{\tau} \tsystem{\tclienti{Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1} \bigpar\ \system}{\queuemessage}}
-
-
-\\[20pt]
-\mathrule{t-receive}{\tknown + \treceivebuffer + 1 \leq \text{\textbar} S \text{\textbar} }{\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \bigpar \system}{\queuemessage} \arro{\tau} \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1} \bigpar\ \system}{\queuemessage}}
+\mathax{push}
+	{
+	\tsystem{\tclienti{\tpushins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} }
+	\arro{\pushtran} 
+	\tsystem{\tclienti{\tprogram}{\tknown}{\tpending \cdot [\ttransactionbuffer]}{\epsilon}{\tsent \cdot [\ttransactionbuffer]}{\treceivebuffer}}
+	}
 
 \\[25pt]
+\mathax{send}
+	{
+	\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\tsenthead] \cdot \tsent}{\treceivebuffer}} 
+	\arro{\tau} \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[\queuemessage \cdot [\tsenthead]]
+	}
 
-\mathax{t-process}{\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\tsenthead] \cdot \tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arro{\tau} \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ C}{\queuemessage \cdot \tsenthead}}
-\\
+\\[25pt]
+\mathrule{receive}
+	{\tknown + \treceivebuffer\ \textcolor{red}{ + 1} \leq \text{\textbar} S \text{\textbar} \qquad\qquad \textcolor{red}{eliminar\ + 1}} 
+	{
+	\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+	\arro{\tau} 
+	\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}
+	}
+
+
+\\[25pt]
+\mathax{pull}
+	{
+	\tsystem{\tclienti{\tpullins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+	\arro{\pulltran}
+	\tsystem{\tclienti{\tprogram}{\tknown+\treceivebuffer}{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer \textcolor{red}{\ -1}]}
+		{\ttransactionbuffer}{\tsent}{0}}
+	}
+
+\\[25pt]
+\mathrule{read}
+  	{
+	\rvalue{r}{\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer} = v
+	}	
+	{
+	\tsystem{\tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	\arro{\readtran{r}} 
+	\tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	}
+
+
+\\[25pt]
+\mathrule{confirm}
+ 	{\eval{(\tpending \cdot  \ttransactionbuffer == \epsilon)}  v}
+	{
+	\tsystem{\tclienti{\tconfirmedins{x}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+	\arro{\confirmedtran} 
+	\tsystem{\tclienti{{\tprogram}\subst{x}{v}}
+		{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	}
+	
+\\[25pt]
+\mathrule{while-true}
+	{\eval \cond {true}}
+	{
+	\tsystem{\tclienti{\pwhile{\cond}{\tprogram}[Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	\arro{\tau} 
+	\tsystem{\tclienti{\tprogram;\pwhile{\cond}{\tprogram}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}
+	}
+
+\\[25pt]
+\mathrule{while-false}
+	{\eval \cond {false}}
+	{
+	\tsystem{\tclienti{\pwhile{\cond}{\tprogram}[Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+	\arro{\tau} 
+	\tsystem{\tclienti{Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}
+	}
+	\\
+\henote{\mbox{Agregar reglas para if}}
  \end{array}
 \]
 \caption{Operational semantics for \tgspcalculus}
 \label{fig:OS-tgsp}
 \end{figure*}
 
- \changed{\tgspcalculus\ program is given by a Labeled Transition System (LTS) before introducing. Transitions for systems are labeled by actions $\alpha$ as usual}{The operational semantics of a \tgspcalculus\ system is given 
- by the inference rules in \figref{fig:OS-tgsp}}.
-Rule $\textsc{(t-read)}$ states the behaviour of the client $i$  performing a reading action  \changed{$\readtran{r}$} {$r$}. 
-\henote{$i$ is not defined in the label, nor in the arrow}.
 
-\changed{}{Such operation $r$ is evaluated over the client's local view of the global state, that is, 
-the known part of the server state $S[0..\tknown]$ and the  uncommitted operations in the  internal queues 
-of the client $\tpending$ and $\ttransactionbuffer$. The obtained value $v$ is bound to the variable $x$, and hence $x$ is 
-substituted by $v$ in the continuation $P$ of the program}.
+We now comment on the inference rules in \figref{fig:OS-tgsp} defining the operational semantics of \tgspcalculus.
+When a client performs an update $u$ (rule \textsc{update}), the change is made locally by extending the local sequence of updates $\alpha$
+with the operation $u$ decorated with a globally fresh identifier $\vertice$.  
+%
+A client invokes  the primitive $\pushcmd$ to  propagate its local changes to the global store. All changes in the local sequence $\alpha$ are
+ transmitted as an atomic unit, \ie, as a block $\ublock$ (rule \textsc{push}). Nevertheless, those changes are not  available immediately
+ at the global storage because of the asynchronous nature of the communication model. This is modelled by using the communication buffer $\tsent$, which 
+contains all those blocks sent by the client that still have not reached the global store.  Note also that the 
+completed block $\ublock$ is added  to the local sequence $\tpending$, which will be temporarily used
+  in subsequent reads until  the client updates its view of the global store. 
+% 
+Rule \textsc{send} models the fact that a sent block is finally incorporated to the global state. Conversely, rule \textsc{receive} models a client 
+receiving a message containing a new update incorporated to the global store. Note that the update is not immediately incorporated to the local copy. The received messages will 
+be processed when the client executes the operation pull (rule \textsc{pull}).  At this moment, the local view of the global store considers the 
+$j$ blocks previously received. In addition, all temporary blocks in $\tpending$ that are already in the newly discovered fragment of the 
+store $S[k..k+j-1]$ are removed from  $\tpending$. 
+% 
+The behaviour of a client performing a reading operation $r$  is defined by rule textsc{read}.  The underlying idea is that the 
+semantics of operations is abstractly defined by an interpretation function $\rvaluename:\readset\times\updatesets^*\rightarrow  \valueset$, 
+\ie,  a function  that takes a read operation and a sequence of updates, and returns the value that results from applying all the updates in the sequence to the initial state of the store. Note that the operation $r$ is evaluated over the client's local view of the global state, that is, 
+the known part of the server state $S[0..\tknown-1]$ and the local updates in 
+ $\tpending$ and $\ttransactionbuffer$. The obtained value $v$ is bound to the variable $x$, and hence all free occurrences of $x$ in the 
+ continuation $P$  are substituted by $v$.
+ %
+ Primitive $\confcmd$ allows a client to check whether the local updates have been already applied to the global state. In fact, this  
+ primitive returns true when the sequences  containing local changes $\tpending$ and $\ttransactionbuffer$ are both empty.
+ %
+Remaining rules are standard.
+%$\textsc{(t-while-trye)}$ and $\textsc{(t-while-false)}$ are standard. Rule $\textsc{(t-receive)}$ states that a counter $\treceivebuffer$ is incremented (by 1). Finally, the last one rule, $\textsc{(t-process)}$, moves updates from sent queue to the message queue.  
 
-\henote{it could be a good idea to move t-read after the other rules for presentation purposes.}
 
-Rule $\textsc{(t-update)}$ describes effects performed by an update operation. The update $u$ is saving in the temporal queue $\ttransactionbuffer$. After $\textsc{(t-push)}$ the content of the transaction queue $\ttransactionbuffer$ is moved to the pending queue, $\tpending$, and the sent queue, $\tsent$. Rule $\textsc{(t-pull)}$ increases the amount of updates that client $i$ can read in the message queue $S$. This increase is given by the amount of update receiving.The pending queue removes those updates which belong between index $\tknown$ and the amount of update receiving $\treceivebuffer$ in $S$. Besides, $\treceivebuffer$ is restarted in 0. $\textsc{(t-confirmed)}$ sets $x$ in false whether updates are in pending queue or transaction queue, true in otherwise. Rule $\textsc{(t-while-trye)}$ and $\textsc{(t-while-false)}$ are standard. Rule $\textsc{(t-receive)}$ states that a counter $\treceivebuffer$ is incremented (by 1). Finally, the last one rule, $\textsc{(t-process)}$, moves updates from sent queue to the message queue.  
+\section{Implementation of GSP}
+
 
  \paragraph{Notation.} Let $f$ and $g$ be a partial function, we define the update operator $\_[\_]$ such that
   $dom(f[g])  = dom(f) \cup dom(g)$ and 
@@ -278,10 +338,9 @@ Rule $\textsc{(t-update)}$ describes effects performed by an update operation. T
    \end{array}
  \]    
 
- We write $[x_1 \mapsto y_1, \ldots, x_n \mapsto y_n]$ for the partial function $f$ such that $dom(f)=\{x_1,\ldots,x_n\}$ and $f(x_i)=y_i$; $A \setminus B$ to denote the usual difference of sets.\\
+ We write $[x_1 \mapsto y_1, \ldots, x_n \mapsto y_n]$ for the partial function $f$ such that $dom(f)=\{x_1,\ldots,x_n\}$ and $f(x_i)=y_i$; $A \setminus B$ to denote the usual difference of sets.
  
 
-\section{Implementation of GSP}
 
 The GSP model introduced in the previous section is an abstract protocol which does not consider implementation details. Problems like space explosion caused by the growing of the update sequence have to allow for implementing these protocol. 
 
@@ -549,14 +608,14 @@ The proof follows by induction on the length of the derivation $\arro{} ^*$. We 
 
 					\end{enumerate}
 	
-			\item {\bf rule (\textsc{t-update})}. If $A \arroi{\updatetran{u}} A'$, then by rule (\textsc{\footnotesize{t-update}}), $A$ must be the following term: $ \tsystem{\tclienti{\tupdateins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ \tilde{A}}{\queuemessage_A}$, therefore, the client $i^{th}$ is only one who changes. So that, $A'$ will be $\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer\ \cdot \tupdate}{\tsent}{\treceivebuffer}\bigpar\ \tilde{A}}{\queuemessage_A}$. We know that $(A,C)$ belongs $\mathcal{R}$, then $C$ must be $\clientr{\updateins{u}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the update transition is the only one that $C$ could perform. Then, $C' = \clientr{P}{\update{E}{\transactionbuffer}{\appendplus{E.\transactionbuffer}{u}}}\ \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We prove that $(A',C') \ \in \ \mathcal{R}$ if ten properties introduced are keeping.					
+			\item {\bf rule (\textsc{t-update})}. If $A \arroi{\updatetran{u}} A'$, then by rule (\textsc{\footnotesize{t-update}}), $A$ must be the following term: $ \tsystem{\tclienti{\tupdateins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ \tilde{A}}{\queuemessage_A}$, therefore, the client $i^{th}$ is only one who changes. So that, $A'$ will be $\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer \cdot \tupdate}{\tsent}{\treceivebuffer}\bigpar\ \tilde{A}}{\queuemessage_A}$. We know that $(A,C)$ belongs $\mathcal{R}$, then $C$ must be $\clientr{\updateins{u}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the update transition is the only one that $C$ could perform. Then, $C' = \clientr{P}{\update{E}{\transactionbuffer}{\appendplus{E.\transactionbuffer}{u}}}\ \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We prove that $(A',C') \ \in \ \mathcal{R}$ if ten properties introduced are keeping.					
 						\begin{enumerate}
-							\item States $\rvalue{r}{\flatten(\queuemessage_{A}[0..\tknown_i-1] \cdot \tpending_i) \cdot \ttransactionbuffer_i} = \readp{r}{\applyplus{E_{i}.\known}{E_{i}.\pending \cdot E_{i}.\pushbuffer \cdot E_{i}.\transactionbuffer}}$ however after applying rules, the transaction buffers change. Then, performing a read action in abstract GSP, $\rvalue{r}{\flatten(\queuemessage_{A}[0..\tknown_i-1] \cdot \tpending_i) \cdot \ttransactionbuffer_i \cdot \tupdate}$ and the implementation, $\readp{r}{\applyplus{E_{i}.\known}{E_{i}.\pending \cdot E_{i}.\pushbuffer \cdot \appendplus{E.\transactionbuffer}{u}}}$. We rename $\ttransactionbuffer\ \cdot \tupdate$ by $\ttransactionbuffer$' and  $\appendplus{E.\transactionbuffer}{u}$ by $E_{i}.\transactionbuffer$'. If we show that $\forall u: Update$ such that $\appendplus{E.\transactionbuffer}{u} \triangleleft \ttransactionbuffer\ \cdot \tupdate$, we will prove that $(A',C') \ \in \ \mathcal{R}$. By property 3, we know that $\ E_{i}.\transactionbuffer \triangleleft [\ttransactionbuffer_i]$, using the property of relation between Delta and Update, $\appendplus{E.\transactionbuffer}{u} \triangleleft \ttransactionbuffer\ \cdot \tupdate$.
+							\item States $\rvalue{r}{\flatten(\queuemessage_{A}[0..\tknown_i-1] \cdot \tpending_i) \cdot \ttransactionbuffer_i} = \readp{r}{\applyplus{E_{i}.\known}{E_{i}.\pending \cdot E_{i}.\pushbuffer \cdot E_{i}.\transactionbuffer}}$ however after applying rules, the transaction buffers change. Then, performing a read action in abstract GSP, $\rvalue{r}{\flatten(\queuemessage_{A}[0..\tknown_i-1] \cdot \tpending_i) \cdot \ttransactionbuffer_i \cdot \tupdate}$ and the implementation, $\readp{r}{\applyplus{E_{i}.\known}{E_{i}.\pending \cdot E_{i}.\pushbuffer \cdot \appendplus{E.\transactionbuffer}{u}}}$. We rename $\ttransactionbuffer \cdot \tupdate$ by $\ttransactionbuffer$' and  $\appendplus{E.\transactionbuffer}{u}$ by $E_{i}.\transactionbuffer$'. If we show that $\forall u: Update$ such that $\appendplus{E.\transactionbuffer}{u} \triangleleft \ttransactionbuffer \cdot \tupdate$, we will prove that $(A',C') \ \in \ \mathcal{R}$. By property 3, we know that $\ E_{i}.\transactionbuffer \triangleleft [\ttransactionbuffer_i]$, using the property of relation between Delta and Update, $\appendplus{E.\transactionbuffer}{u} \triangleleft \ttransactionbuffer \cdot \tupdate$.
 							\item to 9. Do not change.
 						
 						\end{enumerate}
 	
-\item {\bf rule (\textsc{t-push})}. If $A \arroi{\pushtran} A'$, then by rule (\textsc{\footnotesize{t-push}}), $A$ must be the following term: $ \tsystem{\tclienti{\tpushins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ \tilde{A}}{\queuemessage_A}$, therefore, the client $i^{th}$ is only one who changes. So that, $A'$ will be $\tsystem{\tclienti{\tprogram}{\tknown}{\tpending \cdot [\ttransactionbuffer]}{\ttransactionbuffer\ \cdot \tupdate}{\tsent \cdot [\ttransactionbuffer]}{\treceivebuffer}\bigpar\ \tilde{A}}{\queuemessage_A}$. We know that $(A,C)$ belongs $\mathcal{R}$, then $C$ must be $\clientr{\pushins}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the push transition is the only one that $C$ could perform. Then, after applying the rule, $C' = \clientr{P}{\updatethree{E}{\pushbuffer}{\reduce{E.\pushbuffer\cdot E.\transactionbuffer}}{\transactionbuffer}{\epsilon}{\nround}{E.\nround+1}}\ \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We prove that $(A',C') \ \in \ \mathcal{R}$ if ten properties introduced are keeping.					
+\item {\bf rule (\textsc{t-push})}. If $A \arroi{\pushtran} A'$, then by rule (\textsc{\footnotesize{t-push}}), $A$ must be the following term: $ \tsystem{\tclienti{\tpushins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ \tilde{A}}{\queuemessage_A}$, therefore, the client $i^{th}$ is only one who changes. So that, $A'$ will be $\tsystem{\tclienti{\tprogram}{\tknown}{\tpending \cdot [\ttransactionbuffer]}{\ttransactionbuffer \cdot \tupdate}{\tsent \cdot [\ttransactionbuffer]}{\treceivebuffer}\bigpar\ \tilde{A}}{\queuemessage_A}$. We know that $(A,C)$ belongs $\mathcal{R}$, then $C$ must be $\clientr{\pushins}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the push transition is the only one that $C$ could perform. Then, after applying the rule, $C' = \clientr{P}{\updatethree{E}{\pushbuffer}{\reduce{E.\pushbuffer\cdot E.\transactionbuffer}}{\transactionbuffer}{\epsilon}{\nround}{E.\nround+1}}\ \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We prove that $(A',C') \ \in \ \mathcal{R}$ if ten properties introduced are keeping.					
 						\begin{enumerate}
 							\item We have to prove that after push transitions, the operations $rvalue$ and $read$ get back the same value. Then $\rvalue{r}{\flatten(\queuemessage_{A}[0..\tknown_i-1] \cdot \tpending_i) \cdot \ttransactionbuffer_i} = \rvalue{r}{\flatten(\queuemessage_{A}[0..\tknown_i-1] \cdot (\tpending_i \cdot [\ttransactionbuffer_i])) \cdot \epsilon}$ by Lemma XX besides $\readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}}$ = $
 						\readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{ \reduce{E.\pushbuffer\cdot E.\transactionbuffer}}{\epsilon}}$ by Lemma YY.
@@ -571,7 +630,7 @@ The proof follows by induction on the length of the derivation $\arro{} ^*$. We 
 						
 						\begin{enumerate}
 							\item We have to prove that after push transitions, the operations $rvalue$ and $read$ get back the same value. Then 
-							$\rvalue{r}{\flatten{\queuemessage_{A}[0..\tknown_i+\treceivebuffer-1] \cdot (\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer])} \cdot \ttransactionbuffer_i} = \readp{r}{\curstate{\reducestate{E.\known}{E.\receivebuffer}}{\remove{E.\pending}{E.\receivebuffer}}{E.\pushbuffer}{E.\transactionbuffer}}$ = $\readp{r}{\applyplus{\reducestate{E.\known}{E.\receivebuffer}}{\remove{E.\pending}{E.\receivebuffer} \cdot E.\pushbuffer \cdot E.\transactionbuffer}}$. On the one hand, property 5 states that $E_{i}.known \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1]$, on the other hand by property 4, $E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i -1]$, after, using the property of the relation $\triangleleft$ between state and updates, we know that $\applyplus{E_{i}.\known}{E_{i}.\receivebuffer[0].delta \cdots \ E_{i}.\receivebuffer[\treceivebuffer_i-1].delta} \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1] \cdot \ \cdots \ \cdot \ \queuemessage_A[\tknown_i + \treceivebuffer_i -1]$. As you note, the left side is reducestate's definition, then $\reducestate{E.\known}{E.\receivebuffer} u\triangleleft \queuemessage_A[0 \ldots \tknown_i + \treceivebuffer_i -1]$. Next, property by 6., we know that $E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i$, if we apply the extra axiom of $\triangleleft$, we will get that $\remove{E_i.\pending \cdot E_i.\pushbuffer}{E_i.\receivebuffer[0].delta} \triangleleft \tpending \setminus \queuemessage[\tknown]$, so that, $\remove{E_i.\pending \cdot E_i.\pushbuffer}{E_i.\receivebuffer} \triangleleft \tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer]$. Therefore it is guaranteed.
+							$\rvalue{r}{\flatten{\queuemessage_{A}[0..\tknown_i+\treceivebuffer-1] \cdot (\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer])} \cdot \ttransactionbuffer_i} = \readp{r}{\curstate{\reducestate{E.\known}{E.\receivebuffer}}{\remove{E.\pending}{E.\receivebuffer}}{E.\pushbuffer}{E.\transactionbuffer}}$ = $\readp{r}{\applyplus{\reducestate{E.\known}{E.\receivebuffer}}{\remove{E.\pending}{E.\receivebuffer} \cdot E.\pushbuffer \cdot E.\transactionbuffer}}$. On the one hand, property 5 states that $E_{i}.known \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1]$, on the other hand by property 4, $E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i -1]$, after, using the property of the relation $\triangleleft$ between state and updates, we know that $\applyplus{E_{i}.\known}{E_{i}.\receivebuffer[0].delta \cdots \ E_{i}.\receivebuffer[\treceivebuffer_i-1].delta} \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1] \cdot  \cdots  \cdot \ \queuemessage_A[\tknown_i + \treceivebuffer_i -1]$. As you note, the left side is reducestate's definition, then $\reducestate{E.\known}{E.\receivebuffer} u\triangleleft \queuemessage_A[0 \ldots \tknown_i + \treceivebuffer_i -1]$. Next, property by 6., we know that $E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i$, if we apply the extra axiom of $\triangleleft$, we will get that $\remove{E_i.\pending \cdot E_i.\pushbuffer}{E_i.\receivebuffer[0].delta} \triangleleft \tpending \setminus \queuemessage[\tknown]$, so that, $\remove{E_i.\pending \cdot E_i.\pushbuffer}{E_i.\receivebuffer} \triangleleft \tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer]$. Therefore it is guaranteed.
 							\item It does not change.
 							\item It does not change.
 							\item $E_{i}.\receivebuffer$ is $\epsilon$ and $\treceivebuffer$ is 0, therefore it property is guaranteed.
@@ -686,6 +745,7 @@ We have prove that if $A$ perform an action, $C$ also can perform an action, the
 
 
 \section{Consistency Guarantees}
+\label{sec:properties-gsp}
 
 We shall introduce a series of store-level consistency guarantees and then we shall show which are captured by application written in GSP. We start identifying three kinds of relations between actions of update and read:
 
@@ -696,8 +756,6 @@ We shall introduce a series of store-level consistency guarantees and then we sh
  \paragraph{Arbitration} relates Updates with Updates. It is used to resolve update conflicts. It is a total order on actions of update.
 
 
-We assume the following countable sets of vertex names $\verticesets$ ranged over by $v$;$v_0$;$v_1$, \ldots;
- ranged over by $u^v$,$u^{v_0}_0$,$u^{v_1}_1$,$\ldots$; Let \changed{$\mathcal{U}$=$u^{v_0}_0$ $\cdot$ $u^{v_1}_1$ $\cdot$,$\dotsc$,$\cdot$ $u^{v_n}_n$}{$\mathcal{U}$=$u^{v_0}_0$ $\cdot$ $u^{v_1}_1$ $\cdot$ $\dotsc$ $\cdot$ $u^{v_n}_n$}. For the sake of clarity, we shall only use vertices as update's decoration whenever it would be necessary.
 
 
 We extend the GSP language with a new term which capture the relations amount operation in our system. 
