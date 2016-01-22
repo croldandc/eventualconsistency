@@ -27,6 +27,7 @@
 \usepackage{bussproofs}
 \usepackage{mathtools}
 \usepackage{color} %para los comentarios
+\usepackage[dvipsnames]{xcolor}
 
 \usepackage{xargs}
 
@@ -325,40 +326,37 @@ Remaining rules are standard.
 
 \section{Implementation of GSP}
 
+The \tgspcalculus\ model formalised in the previous section corresponds to an idealised model that
+abstracts away from important implementation details, mainly, the  problem of maintaining a constantly growing 
+sequence of updates to represent store states.  A realistic implementation for such model has been 
+proposed in\henote{~\cite{}}, in which states and changes have a compact representation in 
+terms of two different objects: a {\em state} and {\em delta}. Their precise definition highly depends
+on the datatype of the values kept in the store. \henote{agregar ejemplo?}. 
+In order to keep the description of the model as general as possible, they have been
+characterised \henote{in~\cite{}} with 
+two abstract types, namely $\statetype$ and $\deltatype$, which are equipped with the following  operations.
+\[
+\begin{array}{lll}
+	\textbf{const} & \initialstate & : \statetype \\
+	\textbf{function} & \ireadname & : \partialfunction{\readtype \times \statetype}{\valuetype} \\
+	\textbf{function} & \iapplyname & : \partialfunction{\statetype \times \deltatype^*}{\statetype} \\
+	\textbf{const} & \emptydelta & : \deltatype \\
+	\textbf{function} & \iappendname & : \partialfunction{\deltatype \times \updatetype}{\deltatype} \\
+	\textbf{function} & \ireducename & : \partialfunction{\deltatype^*}{\deltatype} \\
+\end{array}
+\] 
 
- \paragraph{Notation.} Let $f$ and $g$ be a partial function, we define the update operator $\_[\_]$ such that
-  $dom(f[g])  = dom(f) \cup dom(g)$ and 
- \[
-   \begin{array}{l@{\ = \ \Bigg\{}l}
-     f[g](x) & 
-     \begin{array}{ll}
-        f(x) & \mbox{if }\ x\not\in dom(g) \wedge x\in dom(f) \\
-        g(x) & \mbox{if }\ x\in dom(g)\\
-        \mathit{\undefined}  & \mbox{Otherwise} 
-     \end{array}
-   \end{array}
- \]    
+Operations $\initialstate$ and $\emptydelta$ are the constructors for the respective types. Function $\ireadname$ is the 
+interpretation function for read operations (\ie, the implementation counterpart of the operation $\rvalue{\_}{\_}$  in the 
+idealised model) while $\iapplyname$ is for state transformations. The remaining operations $\iappendname$ and
+$\ireducename$ account for compacting the description of several updates.
 
- We write $[x_1 \mapsto y_1, \ldots, x_n \mapsto y_n]$ for the partial function $f$ such that $dom(f)=\{x_1,\ldots,x_n\}$ and $f(x_i)=y_i$; $A \setminus B$ to denote the usual difference of sets.
- 
+%Let $\idset$ be a set of clients' name ranged over by $b$, $b_1$, $b_2$, $\ldots$; 
 
+\gsprefixtype\ be a set over sets \statetype\ $\times$ $\idset$ $\rightarrow$ $\mathbb{N}$, \gssegmenttype\ be a set operation over sets \deltatype $\times$ $\idset$ $\rightarrow$ $\mathbb{N}$ and \roundtype\ the set over sets $\idset$ $\times$ $\mathbb{N}$ $\times$ \deltatype; $\emptygssegment$\ is a fresh element of \gssegmenttype.
 
-The GSP model introduced in the previous section is an abstract protocol which does not consider implementation details. Problems like space explosion caused by the growing of the update sequence have to allow for implementing these protocol. 
+Furthermore, we assume the following parametric functions defined over the abstract data types above borrowed from :
 
-Instead of storing update sequence, the implementation to present reduce such sequence to in two differents objects. $\statetype$ when the update sequence reduced represents a prefix of the global queue message or $\deltatype$ when the update sequence reduced represents a interval or segment of the global queue message.
-
-Let $\mathcal{N}$ be a set of clients' name ranged over by $b$, $b_1$, $b_2$, $\ldots$; \gsprefixtype\ be a set over sets \statetype\ $\times$ $\mathcal{N}$ $\rightarrow$ $\mathbb{N}$, \gssegmenttype\ be a set operation over sets \deltatype $\times$ $\mathcal{N}$ $\rightarrow$ $\mathbb{N}$ and \roundtype\ the set over sets $\mathcal{N}$ $\times$ $\mathbb{N}$ $\times$ \deltatype; $\emptygssegment$\ is a fresh element of \gssegmenttype.
-
-Furthermore, we assume the following parametric functions defined over the abstract data types above borrowed from[1]:
-
-\[\begin{array}{lll}
-\textbf{const} & \initialstate & :$\statetype$ \\
-\textbf{function} & \textit{read} & :\partialfunction{\readtype \times \statetype}{\valuetype} \\
-\textbf{function} & \textit{apply} & :\partialfunction{\statetype \times \deltatype^*}{\statetype} \\
-\textbf{const} & \emptydelta & :\deltatype \\
-\textbf{function} & \textit{append} & :\partialfunction{\deltatype \times \updatetype}{\deltatype} \\
-\textbf{function} & \textit{reduce} & :\partialfunction{\deltatype^*}{\deltatype} \\
-\end{array}\] 
 
 Let \statetype\ be a set of state ranged over by $s$, $s_1$, $s_2$, $\ldots$;
 We shall use $\pushbuffertype$ to denote sequence of $Delta$ ranged over by $d$, $d_0$, $d_1$ $\ldots$; Let $\pendingtype$, $\sigma$ be sequence defined:
@@ -368,68 +366,21 @@ $\pendingtype$,$\sigma$ := $\epsilon$ \text{\textbar} [$\delta$]$\cdot$ $\pendin
 
 We assume the following countable sets of persisted state $\gsprefixtype$ ranged over by $ps$, $ps_1$, $\ldots$; 
 
-Let $\inserver$\ be a partial function in $\partialfunction{\mathcal{N}}{\dominserver}$
+Let $\inserver$\ be a partial function in $\partialfunction{\idset}{\dominserver}$
 
-Let $\outserver$\ be a partial function in $\partialfunction{\mathcal{N}}{\gssegmenttype^* \cup \gsprefixtype}$ \\
-
-
-\subsection{Auxiliar Function}
-
-Before describing the implementation of GSP, we will introduce the following auxiliars functions which will be used when we define the operational semantic.
-
-\footnotesize
-\ttfamily
+Let $\outserver$\ be a partial function in $\partialfunction{\idset}{\gssegmenttype^* \cup \gsprefixtype}$ \\
 
 
-\begin{flushleft}
-\specfunction{append}{\gssegmenttype}{$\roundtype^*$}{\gssegmenttype} \\
-\append{\gssegmentins{$\delta$}{\maxround}}{$\epsilon$} = \gssegmentins{$\delta$}{\maxround} \\
-\append{\gssegmentins{$\delta$}{\maxround}}{$\headerround$:\tailround} = \append{\textless\reduce{$\delta$ $\cdot$ $\delta_0$ $\cdot$ $\epsilon$}, $\update{\maxround}{b_0}{n_0}$\textgreater}{\tailround} 
-\end{flushleft}
 
-\begin{flushleft}
-\specfunction{apply}{\gsprefixtype}{\gssegmenttype}{\gsprefixtype} \\
-\apply{$\gsprefixins{\state}{\maxround}$}{\gssegmentins{$\delta$}{$\maxround'$}} =  \gsprefixins{\applyplus{\state}{$\delta$ $\cdot$ $\epsilon$}}{\maxround[$\maxround'$]}  \\
-\end{flushleft}
-
-\begin{flushleft}
-\specfunctiononeparameter{receivedrounds}{($\partialfunction{\mathcal{N}}{\textless \dominserver \textgreater^*}$)}{$\roundtype^*$}\\
-receivedrounds($\undefined$) = $\epsilon$ \\
-receivedrounds($\partialfunction{b}{\textless n_0,\ \delta_0 \textgreater} \cdot\ f$) = \textless $b$, \ $n_0$, \ $\delta_0$\textgreater\ $\cdot$ receivedrounds($f$)
-\end{flushleft}
-
-\begin{flushleft}
-\specfunctionforparameters{curstate}{\statetype}{$\roundtype^*$}{\deltatype}{\deltatype}{\statetype} \\
-curstate(\state, \pending, \pushbuffer, \transactionbuffer) = \applyplus{\state}{getdeltas(\pending) $\cdot$ \pushbuffer $\cdot$ \transactionbuffer}
-\end{flushleft}
-
-
-\begin{flushleft}
-\specfunctiononeparameter{getdeltas}{$\roundtype^*$}{$\deltatype^*$} \\
-getdeltas($\epsilon$) = $\epsilon$ \\
-getdeltas(\textless $n_0$,$\delta_0$ \textgreater $\cdot$ $\delta$) = $\delta_0$ $\cdot$ getdeltas($\delta$)\\
-\end{flushleft}
-
-\begin{flushleft}
-\specfunctiononeparameter{remove}{$\deltatype^*$}{$\deltatype^*$} \\
-remove(rs,$\epsilon$) = $\epsilon$ \\
-remove(rs, xs) = $(foldr (\backslash x\ rec\ ys\to h \ (filter \ (/$=$x) ys))\ id) xs \ rs$\\
-\end{flushleft}
-
-\normalfont
-\normalsize
-
-The functions \textbf{reduce} and \textbf{apply} are abstract and depend on the data model used. 
-
-\subsection{Sintax}
+\subsection{Syntax}
  \begin{definition}[Implementation of GSP] 
 	The syntax of clients and server is given by the following grammar 
   \[
     \begin{array}{l@{\quad}r@{\;::=\;}l}
-			 (\textsc{system}) & \systemterm & \zero \;|\; S\ \bigpar\ C \\
-			 (\textsc{server}) & S & \zero \;|\; \server{\persistedstate}{\inserver}{\outserver} \\
-       (\textsc{clients}) & C & \emptyset \;|\; \client{P}{<\statetype,\pendingtype,\pushbuffertype,\transactionbuffertype,\receivebuffertype,\nroundtype,\inclient,\outclient>} \;|\; C\ \bigpar\ C  \\
-			 (\textsc{program}) & P & \zero \;|\; \readins{x}{r} \;|\; \updateins{u} \;|\; 	\pushins \;|\; \pullins
+	(\textsc{system}) & \systemterm &  S\ \bigpar\ C \\
+	(\textsc{server}) & S & \server{\persistedstate}{\inserver}{\outserver} \\
+	(\textsc{clients}) & C & \zero \;|\; \client{P}{<\statetype,\pendingtype,\pushbuffertype,\transactionbuffertype,\receivebuffertype,\nroundtype,\inclient,\outclient>} \;|\; C\ \bigpar\ C  \\
+%			 (\textsc{program}) & P & \zero \;|\; \readins{x}{r} \;|\; \updateins{u} \;|\; 	\pushins \;|\; \pullins
      \end{array}
   \]
  \end{definition}
@@ -529,7 +480,7 @@ The labeled transition system considers the following actions:
 
 
 \begin{flushleft}
-\specOperator{notify}{$\mathcal{N}^*$}{($\partialfunction{\mathcal{N}}{\gssegmenttype^* \cup \gsprefixtype}$)}{\gssegmenttype}\\
+\specOperator{notify}{$\idset^*$}{($\partialfunction{\idset}{\gssegmenttype^* \cup \gsprefixtype}$)}{\gssegmenttype}\\
 notify($\{b\}$, \outserver, gs) = \outserver(b) = $gss \cdot gs$ \\
 notify($b \cdot bs$, \outserver, gs) = \outserver(b) = $gss \cdot gs\ \land \notify{bs}{\outserver}{gs}$ \marginpar{Esto no me convenció, discutir si hay una manera mejor}
 \end{flushleft}
@@ -1060,7 +1011,7 @@ The remaining of this section is proposing a environment that ensures these cons
 \[
     \begin{array}{l@{\quad}r@{\;::=\;}l}
 			 (\textsc{environment}) & \environmentterm &  \environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx}{\tc} \\
-			 (\textsc{transactions with overlapping}) & \tx &  \emptyset  \ | \ w^j \mapsto \mathcal{N},\tx  \  with \ w \ \in\ \verticesets\, j \in\ \mathbb{N} \\
+			 (\textsc{transactions with overlapping}) & \tx &  \emptyset  \ | \ w^j \mapsto \idset,\tx  \  with \ w \ \in\ \verticesets\, j \in\ \mathbb{N} \\
 			 (\textsc{transactions closed}) & \tc &  \epsilon  \ | \ w^j \cdot \tc \ with \ w \ \in\ \verticesets\, j \in\ \mathbb{N} 
 
 	    \end{array}
@@ -1105,7 +1056,7 @@ dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx}{\tc} \ar
  \\[35pt]
 
 \mathrule{e-end-sync}{\systemterm \arroi{\finishsynctran(u^{[v]})} \systemterm' \qquad [v^i] \in 
-dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{v^i \mapsto \mathcal{N},\tx}{\tc} \arroi{\finishsynctran([v^i])} \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb'}{\tx}{\tc \cdot\ v^i}}
+dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{v^i \mapsto \idset,\tx}{\tc} \arroi{\finishsynctran([v^i])} \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb'}{\tx}{\tc \cdot\ v^i}}
 \\
  \\[10pt]where \ 
 \rb' = \rb \cup\ \{ (x,v) \ | \ \forall 0 \leq m,n < |\queuemessage|, x \mapsto \queuemessage[m] \ \land \ v \mapsto \queuemessage[n] \ \land \ m \leq\ n \ \land \ x\notin\tc(v) \}
@@ -1136,5 +1087,73 @@ dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{v^i \mapsto \
  \end{array}
  \]
  
+ \appendix
+ 
+ \section{Functions for implementing datatypes}
+ \subsection{Auxiliar Function}
+
+Before describing the implementation of GSP, we will introduce the following auxiliars functions which will be used when we define the operational semantic.
+
+\footnotesize
+\ttfamily
+
+
+\begin{flushleft}
+\specfunction{append}{\gssegmenttype}{$\roundtype^*$}{\gssegmenttype} \\
+\append{\gssegmentins{$\delta$}{\maxround}}{$\epsilon$} = \gssegmentins{$\delta$}{\maxround} \\
+\append{\gssegmentins{$\delta$}{\maxround}}{$\headerround$:\tailround} = \append{\textless\reduce{$\delta$ $\cdot$ $\delta_0$ $\cdot$ $\epsilon$}, $\update{\maxround}{b_0}{n_0}$\textgreater}{\tailround} 
+\end{flushleft}
+
+\begin{flushleft}
+\specfunction{apply}{\gsprefixtype}{\gssegmenttype}{\gsprefixtype} \\
+\apply{$\gsprefixins{\state}{\maxround}$}{\gssegmentins{$\delta$}{$\maxround'$}} =  \gsprefixins{\applyplus{\state}{$\delta$ $\cdot$ $\epsilon$}}{\maxround[$\maxround'$]}  \\
+\end{flushleft}
+
+\begin{flushleft}
+\specfunctiononeparameter{receivedrounds}{($\partialfunction{\idset}{\textless \dominserver \textgreater^*}$)}{$\roundtype^*$}\\
+receivedrounds($\undefined$) = $\epsilon$ \\
+receivedrounds($\partialfunction{b}{\textless n_0,\ \delta_0 \textgreater} \cdot\ f$) = \textless $b$, \ $n_0$, \ $\delta_0$\textgreater\ $\cdot$ receivedrounds($f$)
+\end{flushleft}
+
+\begin{flushleft}
+\specfunctionforparameters{curstate}{\statetype}{$\roundtype^*$}{\deltatype}{\deltatype}{\statetype} \\
+curstate(\state, \pending, \pushbuffer, \transactionbuffer) = \applyplus{\state}{getdeltas(\pending) $\cdot$ \pushbuffer $\cdot$ \transactionbuffer}
+\end{flushleft}
+
+
+\begin{flushleft}
+\specfunctiononeparameter{getdeltas}{$\roundtype^*$}{$\deltatype^*$} \\
+getdeltas($\epsilon$) = $\epsilon$ \\
+getdeltas(\textless $n_0$,$\delta_0$ \textgreater $\cdot$ $\delta$) = $\delta_0$ $\cdot$ getdeltas($\delta$)\\
+\end{flushleft}
+
+\begin{flushleft}
+\specfunctiononeparameter{remove}{$\deltatype^*$}{$\deltatype^*$} \\
+remove(rs,$\epsilon$) = $\epsilon$ \\
+remove(rs, xs) = $(foldr (\backslash x\ rec\ ys\to h \ (filter \ (/$=$x) ys))\ id) xs \ rs$\\
+\end{flushleft}
+
+\normalfont
+\normalsize
+
+\paragraph{Notation.} Let $f$ and $g$ be a partial function, we define the update operator $\_[\_]$ such that
+  $dom(f[g])  = dom(f) \cup dom(g)$ and 
+ \[
+   \begin{array}{l@{\ = \ \Bigg\{}l}
+     f[g](x) & 
+     \begin{array}{ll}
+        f(x) & \mbox{if }\ x\not\in dom(g) \wedge x\in dom(f) \\
+        g(x) & \mbox{if }\ x\in dom(g)\\
+        \mathit{\undefined}  & \mbox{Otherwise} 
+     \end{array}
+   \end{array}
+ \]    
+
+ We write $[x_1 \mapsto y_1, \ldots, x_n \mapsto y_n]$ for the partial function $f$ such that $dom(f)=\{x_1,\ldots,x_n\}$ and $f(x_i)=y_i$; $A \setminus B$ to denote the usual difference of sets.
+
+
+
+The functions \textbf{reduce} and \textbf{apply} are abstract and depend on the data model used. 
+
 
 \end{document}
