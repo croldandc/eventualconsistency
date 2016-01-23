@@ -141,12 +141,18 @@ For convenience, notational conventions are in~\figref{}
        \rName{Round}
        &
        \around &::= & \aroundtuple
-       \\
+        \\
        &
-       {\inqueue} & \in  & \partialfunction{\idset}{\dominserver}
+       {\inclient} &::= &  {{\agsseg}^* \cup \agspref}
        \\
        & 
-       \outqueue &\in & \partialfunction{\idset}{{\agsseg}^* \cup \agspref}
+       \outclient &\in & {\around^*}
+      \\
+       &
+       {\inserver} & \in  & \partialfunction{\idset}\outclient
+       \\
+       & 
+       \outserver &\in & \partialfunction{\idset}\inclient
    \end{array}
   \]
   \caption{Syntax}
