@@ -226,7 +226,7 @@ In what follows we will write labelled transitions $\arro{\mu}$ instead of $\tr{
 	{
 	\tsystem{\tclienti{\pwhile{\cond}{\tprogram}[Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
 	\arro{\tau} 
-	\tsystem{\tclienti{\tprogram;\pwhile{\cond}{\tprogram}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}
+	\tsystem{\tclienti{\tprogram;\pwhile{\cond}{\tprogram}[Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}
 	}
 
 \\[25pt]

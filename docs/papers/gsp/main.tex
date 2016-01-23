@@ -120,7 +120,7 @@ For convenience, notational conventions are in~\figref{}
        \\
        &\astate & \in & \statetype
        \\
-       &\adelta & \in & \deltatype
+       &\adelta & \in & \deltatype \cup \{\epsilon\}
        \\
        &\pendingtype & \in & \deltatype^* \quad \mbox{\henote{antes $\rho$ y $\sigma$}}\\
        &\amxrf & \in & \idset\rightarrow \nat
@@ -205,38 +205,67 @@ The labeled transition system considers the following actions:
 
  \[
  \begin{array}{l}
-    \hspace{-.3cm} \textsc{CLIENTS}\\
+   \hspace{-.3cm} \textsc{CLIENTS}\\
+%		\mathax{update}{\clientr{\updateins{u}}{\stateclient} \arro{\updatetran{u}} \clientr{P}{\update{E}{\transactionbuffer}{\appendplus{E.\transactionbuffer}{u}}}} \\[15pt]
+%		
+	\mathax{update}
+		{\begin{array}{l}
+		\addid{\iclientinst[\tupdateins]} \ \bigpar \ \isystemterm
+		\arro{\updatetran{u}} 
+		\\[5pt]
+		\hspace{5.5cm}
+		{\addid{\iclientinst[P][@][@][@][\iappend{\transactionbuffer}{u}]} \ \bigpar \   \isystemterm}
+		\end{array}}
+\\
+% 		\mathax{push}{\clientr{\pushins}{\stateclient} \arro{\pushtran} \clientr{P}{\updatethree{E}{\pushbuffer}{\reduce{E.\pushbuffer\cdot E.\transactionbuffer}}{\transactionbuffer}{\epsilon}{\nround}{E.\nround+1}  }} \\[25pt]
+	\mathax{push}
+		{\begin{array}{l}
+		\addid{\iclientinst[\tpushins]} \ \bigpar \ \isystemterm
+		\arro{\pushtran} 
+		\\[5pt]
+		\hspace{5cm}
+		{\addid{\iclientinst[P][@][@][\ireduce{\pushbuffer\cdot \transactionbuffer}][\epsilon][@][n+1]}\ \bigpar \ \isystemterm}
+		\end{array}}
+%\updatethree{E}{\pushbuffer}{\appendplus{\pushbuffer}{\transactionbuffer}}{\transactionbuffer}{\epsilon}{\nround}{\nround+1}
+\\
+	
+\\[15pt]
 %		\mathrule{read}{\readplus{r}{\curstate{\known}{\pending}{\pushbuffer}{\transactionbuffer}}}{\clientr{\readins{x}{r}}{\stateclient} \arro{\readtran{r}} \clientr{\update{P}{x}{v}}{\stateclient}}
 	\mathrule{read}
 		{\iread{r}{\curstate{\known}{\pending}{\pushbuffer}{\transactionbuffer}}}
 		{\addid{\iclientinst[\treadins{x}{r}]} \arro{\readtran{r}} \addid{\iclientinst[{P}\subst{x}{v}]}}
 \\
 \henote{\mbox{curstate donde esta definida?}}
-\\[25pt]
-%		\mathax{update}{\clientr{\updateins{u}}{\stateclient} \arro{\updatetran{u}} \clientr{P}{\update{E}{\transactionbuffer}{\appendplus{E.\transactionbuffer}{u}}}} \\[15pt]
-%		
-	\mathax{update}
-		{\addid{\iclientinst[\tupdateins]} 
-		\arro{\updatetran{u}} 
-		{\addid{\iclientinst[P][@][@][@][\iappend{\transactionbuffer}{u}]}}} \\[15pt]
-\\[25pt]
-% 		\mathax{push}{\clientr{\pushins}{\stateclient} \arro{\pushtran} \clientr{P}{\updatethree{E}{\pushbuffer}{\reduce{E.\pushbuffer\cdot E.\transactionbuffer}}{\transactionbuffer}{\epsilon}{\nround}{E.\nround+1}  }} \\[25pt]
+\\[15pt]
 
-	\mathax{push}
-	 	{\addid{\iclientinst[\tpushins]} 
-		\arro{\pushtran} 
-		{\addid{\iclientinst[P][@][@][\ireduce{\pushbuffer\cdot \transactionbuffer}][\epsilon][@][n+1]}}} \\[15pt]
-
-		%\clientr{P}{\updatethree{E}{\pushbuffer}{\reduce{E.\pushbuffer\cdot E.\transactionbuffer}}{\transactionbuffer}{\epsilon}{\nround}{E.\nround+1}  }} \\[25pt]
-
-%\updatethree{E}{\pushbuffer}{\appendplus{\pushbuffer}{\transactionbuffer}}{\transactionbuffer}{\epsilon}{\nround}{\nround+1}
-
-		\mathrule{pull}{E.\inclient(i) \neq \undefined \qquad E.\outclient(i) \neq \undefined \qquad |E.\receivebuffer| > 0}{\clientr{\pullins}{\stateclient}\arro{\pulltran} \clientr{P}{\updatethree{E}{\known}{\reducestate{E.\known}{E.\receivebuffer}}{\receivebuffer}{\epsilon}{E.\pending}{\remove{E.\pending}{E.\receivebuffer}}}}
-\\[25pt]
-
-		\mathax{confirmed}{\clientr{\confirmedins{x}}{\stateclient} \arro{\confirmedtran} \clientr{\update{P}{x \mapsto E.\pending = \epsilon \lor E.\pushbuffer = \epsilon \lor E.\transactionbuffer = \epsilon}{\textbf{true}}}{\stateclient}} 
+%		\mathrule{pull}{E.\inclient(i) \neq \undefined \qquad E.\outclient(i) \neq \undefined \qquad |E.\receivebuffer| > 0}{\clientr{\pullins}{\stateclient}\arro{\pulltran} \clientr{P}{\updatethree{E}{\known}{\reducestate{E.\known}{E.\receivebuffer}}{\receivebuffer}{\epsilon}{E.\pending}{\remove{E.\pending}{E.\receivebuffer}}}}
+	\mathrule{pull}
+		{\appf{\inqueue}{\cid} \neq \undefined \qquad\qquad \appf{\outqueue}{\cid} \neq \undefined \qquad\qquad |\receivebuffer| > 0}
+		{
+			\addid{\iclientinst[\tpullins]}
+			\arro{\pulltran} 
+			\addid{\iclientinst[P]
+						 [\reducestate{\known}{\receivebuffer}]
+						 [\remove{\pending}{\receivebuffer}]
+						 [@][@]
+						 [{\epsilon}]
+				}
+		}
+		\\
+\henote{\mbox{no podemos usar setminus en lugar de remove y apply en lugar de reducestate}}
+\\[5pt]
+%		\mathax{confirmed}{\clientr{\confirmedins{x}}{\stateclient} \arro{\confirmedtran}
+ %\clientr{\update{P}{x \mapsto E.\pending = \epsilon \lor E.\pushbuffer = \epsilon \lor E.\transactionbuffer = \epsilon}{\textbf{true}}}{\stateclient}} 
+		\mathrule{confirm}
+		{ v = (\pending \cdot \pushbuffer \cdot\transactionbuffer == \epsilon) }
+		{
+			\addid{\iclientinst[\tpullins]}
+			\arro{\pulltran} 
+			\addid{\iclientinst[P\subst{x}{v}]		
+				}
+		}
 	
-	\\[20pt]
+\\[20pt]
 
 \mathrule{while-true}{\condition{\cond}{true}}{\clientr{\pwhile{\cond}{\tprogram}}{\stateclient} \arro{\tau} \clientr{\tprogram;\pwhile{\cond}{\tprogram}}{\stateclient}}
 
@@ -252,6 +281,15 @@ The labeled transition system considers the following actions:
 \\[25pt]
 
 		\mathrule{receive}{E.\inclient = \gs_0 \cdot \gs_t}{\clientr{P}{\stateclient} \arro{\receive} \clientr{P}{\updatetwo{E}{\receivebuffer}{E.\receivebuffer \cdot \gs_0.gssegment)}{\inclient(i)}{\gs_t)}}}\\[25pt]
+
+%	\mathrule{receive}
+%		{\inclient(\cid) = \gs_0 \cdot \gs_t}
+%		{\begin{array}{l}
+%			{\addid{\iclientinst[@]}} \arro{\tau}
+%			\\
+%			\hspace{5cm} 
+%			{\addid{\iclientinst[@][@][@][@][@][\receivebuffer \cdot \gs_0.gssegment][@][\inclient{[\cid\mapsto\gs_t]}]}}
+%		\end{array}}
 
 \end{array}
  \]

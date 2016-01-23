@@ -190,7 +190,9 @@
 \newcommand{\cond}{\textcolor{OliveGreen}{{e}}}
 \newcommand{\eval}[2]{#1\downarrow #2}
 
-\newcommandx{\pwhile}[3][3=P]{{\tt while} (#1)\ {\tt do}\ #2 \ {\tt od}; #3}
+%\newcommandx{\pwhile}[3][3=P]{{\tt while} (#1)\ {\tt do}\ #2 \ {\tt od}; #3}
+\newcommandx{\pwhile}[3][3=P]{{\tt while}\ #1\  \{ #2\};  #3}
+
 \newcommandx{\pifte}[4][1=\cond,2=P,3=P,4=P]{{\tt if} (#1)\ {\tt then}\ #2 \ {\tt else}\ #3 \ {\tt fi}; #4}
 
 \newcommand{\treceivetran}{{\tt receive}}
@@ -389,6 +391,7 @@
 \newcommand{\tailround}{\textit{rs}}
 
 \newcommand{\partialfunction}[2]{#1 \rightarrow #2}
+\newcommand{\appf}[2]{#1(#2)}
 
 \newcommand{\reduce}[1]{\textbf{\textit{reduce}}(#1)}
 \newcommand{\applyplus}[2]{\textbf{\textit{apply}}(#1, #2)}
