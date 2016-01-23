@@ -1,0 +1,279 @@
+% !TEX root = main.tex
+
+
+\section{Abstract Global Sequence Protocol Language}
+
+\subsection{Syntax}
+
+We rely on countable sets $\varset$ of program variables $x,x',\ldots$ 
+and $\idset$ of client identifiers $\cid,\cid',\ldots,\cid_1,\ldots$.
+Clients interact with a storage by performing operations in $\mathcal{O} = \updatesets\cup\readset$,
+where the elements in $\updatesets$ denote update operations and those in $\readset$ 
+stand for read operations. 
+None operation can simultaneously read and update a store, therefore we assume
+ $\updatesets \cap \readset= \emptyset$.
+ We write 
+ $u, u', u'',\ldots$ for  updates in $\updatesets$  and 
+$r, r', r'',\ldots$ for reads in $\readset$. 
+
+The global state of a store and the local  replicas at each client are 
+represented by sequences of update operations. 
+For technical 
+convenience (particularly in \secref{sec:properties-gsp}), we find useful to 
+distinguish  different executions of the same operation. Formally, stores 
+will associate each update with a fresh event identifier.
+We assume a set $\verticesets$ of event identifiers  $\vertice$, $\vertice_0$, \ldots, $\vertice'$,$\ldots$ 
+and write $\udec$ for the update operation $u$ corresponding to the event $\vertice$.
+We sometimes omit the decoration when it is irrelevant for the context.  
+
+We  use $\ttransactionbuffer$ to denote sequences of decorate updates and
+$\ublock$ for an atomic block of updates performed by a client. 
+(We reserve the term 
+transaction for a different notion addressed in \secref{sec:transactions}). 
+We use  $\tpending$ and $\tsent$ 
+for sequences of blocks.
+Formally,
+\[ \ttransactionbuffer := \epsilon \ |\ \udec\cdot\ttransactionbuffer 
+    \qquad\qquad 
+    \tpending,{\tsent}:= \epsilon\ |\ \ublock\cdot\tpending\]
+where  $\epsilon$ is the empty sequence.
+%  defined by the following grammar
+% \[\tpending,{\tpending[']} ::= \epsilon \ |\  [\alpha] \cdot \tpending\]
+% \changed{}{A sequence $[\alpha] \cdot \tpending]$ stands for ....}, and we 
+% use $\epsilon$ to denote the empty sequence, \ie, the sequence of length 0.
+ 
+In the next sections  will  make use of following operations on sequences: 
+\begin{itemize}
+    \item Relative complement:  
+    %Let $\tpending$ and $\ttransactionbuffer$ be sequence, we write $\setminus$ as the 
+    %relative complement of $\tpending$ in $\ttransactionbuffer$, \ie,
+     $\blockseq \setminus {\blockseq[']} = [\ublock | u_i \in \blockseq \wedge\ u_i\notin  {\blockseq[']} ]$. 
+     \henote{fix}
+    \item Flatten: $\flatten{\epsilon} = \epsilon$, and 
+    $\flatten{\ublock\cdot\blockseq} = \ttransactionbuffer\cdot\flatten\blockseq$.
+    \item subsequence: ${\ttransactionbuffer}[j.. k]$ with $j,k\in\nat$.
+    \item length: $\length\_$
+\end{itemize}
+
+
+
+ \begin{definition}[GSP Language] 
+The set of \tgspcalculus\ terms is given by the following grammar:
+ 
+  \[
+    \begin{array}{l@{\quad}r@{}l}
+		 \rName{store} 
+			 & \queuemessage \ ::=\ 
+			 &  \blockseq 
+			 \\
+		 \rName{program} 
+			 & \tprogram \ ::=\ 
+			 & \tupdateins \;|\; \treadins{x}{r} \;|\; \tpullins \;|\; \tpushins \;|\;
+			 \\
+			&   
+			& \tconfirmedins{x} \;|\; \pwhile{\cond}{\tprogram}  \;|\;
+			\\
+			&
+			& \pifte
+			\\
+      		\rName{client} 
+			& \Absclient \ ::=\ 
+			& 0 \;|\; \tclient{\tprogram}{n}{\blockseq}{\ttransactionbuffer}{\blockseq}{n} \;|\;
+       				  \Absclient\bigpar \Absclient \hfill \text{with}\  \tknown, \treceivebuffer\ \in \nat
+			\\
+		\rName{system} 
+		& \systemterm\ ::= \ 
+		& \queuemessage \bigpar \Absclient
+      \end{array}
+  \]
+\end{definition}
+
+The state of a global store $\queuemessage$ is represented by a sequence of  blocks.
+Programs $P$ run by clients are written in a simple sequential language enriched with  primitives 
+for interacting with 
+the store: $\readcmd,  \updcmd, \pullcmd,  \pushcmd, \confcmd$
+ (we postpone their description until \secref{sec:gsp-sos}). Conditional and loop statements contain expressions 
+$\cond, \cond', \ldots$ written in some language that we left unspecified. We only assume   
+such language to be equipped with a valuation function  that associates each expression $\cond$  
+with a value $v$ in some domain $\valueset$, written $\eval{\cond}{v}$.  
+A program $\plet{x}{\ldots}{P}$ introduces a bound variable whose  scope is $P$. The definition of 
+free variables of a program is  standard. We say that a process $P$ is {\em closed} when it does not contain  
+ free variables.
+
+
+The term $\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}$ 
+stands for a client that has identifier $\cid$ and it is engaged in the execution of the 
+program $P$. 
+The remaining elements 
+describe the state of the local replica: $\ttransactionbuffer$ contains the  updates 
+that have been made locally and are  part of an unfinished block; $\tsent$ contains the locally 
+completed blocks that have not reached the global store; 
+$\tpending$ are the locally completed blocks that await confirmation about 
+their successful application to the global storage.
+ For simplicity, we avoid to explicitly replicate the known 
+part of the global state in each client, instead we use natural numbers for identifying the 
+portion of the global state that is known by each client. Specifically, 
+$k$ identifies the portion of the global 
+store that is replicated locally, i.e., $\queuemessage[0..k-1]$; and $j$ stands for the number of new updates 
+in the global store that have been received and needs to be added to the local replica, i.e., $\queuemessage[k..k+j-1]$.
+A system $\systemterm$ is composed by a store and a  set of clients. 
+
+A system $\systemterm = \Absserver \bigpar \Absclient_0\bigpar \ldots\bigpar \Absclient_n$  with 
+$\Absclient_l = \tclienti{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\tsent_l}{\treceivebuffer_l}[\cid_l]$ 
+for all $0\leq j \leq n$  is {\em well-formed} if it 
+satisfies the following conditions: 
+\begin{itemize}
+  \item $\cid_l \neq \cid_k$ for all $j\neq k$, \ie,  clients have different identifiers;
+  \item $k_l+j_l\leq \length \queuemessage$ for all $l$, \ie,  a client see at most every messages in the storage;
+%  \item if $\ublock \in {\tpending_l}\cdot {\tsent_l}$ then $\cid = \cid_l$, \ie,  blocks in the local queues of 
+%  a client $l$ are  all decorated with the identifier $\cid_l$.
+%  \item $\cid \in {\cid_0,\ldots, \cid_n} $ for all $\ublock \in S$, \henote{Pensar bien, tal vez no es necesaria}
+\end{itemize}
+\changed{}{
+\begin{example} Show an example, for instance a server with two clients with different information.
+\end{example}
+}
+
+\subsection{Operational Semantics}
+\label{sec:gsp-sos}
+
+The operational semantics of \tgspcalculus\ is given by a labeled transition system 
+over well-formed terms, quotiented by the structural congruence $\equiv$ defined as the least congruence 
+such that  $\bigpar$ is associative, commutative and has $0$ as neutral element.
+Transitions will be labelled by pairs $(\mu,\cid)$ where $\mu$ is the action performed 
+by the client $\cid$. The set of actions is defined by the following grammar:
+\[ 
+\begin{array}{r@{\ ::= \ }l}
+  \mu & \tau \ | \ \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran 
+\end{array}
+\]
+As usual,  $\tau$ stands for an internal, unobservable action, while the remaining actions allow 
+a client to update to, read from and synchronise with a global store. 
+In what follows we will write labelled transitions $\arro{\mu}$ instead of $\tr{(\mu,\cid)}$. 
+
+
+\begin{figure*}[tp]
+ \[
+ \begin{array}{l}
+\mathrule{update}
+         { \vertice \ \mbox{fresh}
+         }
+ 	{
+	\tsystem{\tclienti{\tupdateins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+	\arro{\updatetran{u}} 
+	\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer \cdot \tupdate}{\tsent}{\treceivebuffer}}
+	}
+
+\\[25pt]
+\mathax{push}
+	{
+	\tsystem{\tclienti{\tpushins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} }
+	\arro{\pushtran} 
+	\tsystem{\tclienti{\tprogram}{\tknown}{\tpending \cdot [\ttransactionbuffer]}{\epsilon}{\tsent \cdot [\ttransactionbuffer]}{\treceivebuffer}}
+	}
+
+\\[25pt]
+\mathax{send}
+	{
+	\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\tsenthead] \cdot \tsent}{\treceivebuffer}} 
+	\arro{\tau} \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[\queuemessage \cdot [\tsenthead]]
+	}
+
+\\[25pt]
+\mathrule{receive}
+	{\tknown + \treceivebuffer\ \textcolor{red}{ + 1} \leq \text{\textbar} S \text{\textbar} \qquad\qquad \textcolor{red}{eliminar\ + 1}} 
+	{
+	\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+	\arro{\tau} 
+	\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}
+	}
+
+
+\\[25pt]
+\mathax{pull}
+	{
+	\tsystem{\tclienti{\tpullins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+	\arro{\pulltran}
+	\tsystem{\tclienti{\tprogram}{\tknown+\treceivebuffer}{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer \textcolor{red}{\ -1}]}
+		{\ttransactionbuffer}{\tsent}{0}}
+	}
+
+\\[25pt]
+\mathrule{read}
+  	{
+	\rvalue{r}{\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer} = v
+	}	
+	{
+	\tsystem{\tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	\arro{\readtran{r}} 
+	\tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	}
+
+
+\\[25pt]
+\mathrule{confirm}
+ 	{\eval{(\tpending \cdot  \ttransactionbuffer == \epsilon)}  v}
+	{
+	\tsystem{\tclienti{\tconfirmedins{x}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+	\arro{\confirmedtran} 
+	\tsystem{\tclienti{{\tprogram}\subst{x}{v}}
+		{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	}
+	
+\\[25pt]
+\mathrule{while-true}
+	{\eval \cond {true}}
+	{
+	\tsystem{\tclienti{\pwhile{\cond}{\tprogram}[Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	\arro{\tau} 
+	\tsystem{\tclienti{\tprogram;\pwhile{\cond}{\tprogram}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}
+	}
+
+\\[25pt]
+\mathrule{while-false}
+	{\eval \cond {false}}
+	{
+	\tsystem{\tclienti{\pwhile{\cond}{\tprogram}[Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+	\arro{\tau} 
+	\tsystem{\tclienti{Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}
+	}
+	\\
+\henote{\mbox{Agregar reglas para if}}
+ \end{array}
+\]
+\caption{Operational semantics for \tgspcalculus}
+\label{fig:OS-tgsp}
+\end{figure*}
+
+
+We now comment on the inference rules in \figref{fig:OS-tgsp}, which define the operational semantics of \tgspcalculus.
+When a client performs an update $u$ (rule \textsc{update}), the change has effect only locally. This is achieved
+ by extending the local sequence of updates $\alpha$
+with the operation $u$ decorated with a globally fresh identifier $\vertice$.  
+%
+A client invokes  the primitive $\pushcmd$ to  propagate its local changes to the global store. All changes in the local sequence $\alpha$ are
+ transmitted as an atomic unit, \ie, as a block $\ublock$ (rule \textsc{push}). Nevertheless, those changes are not  available immediately
+ at the global storage because of the asynchronous nature of the communication model. This is modelled by using the communication buffer $\tsent$, which 
+contains all those blocks sent by the client that still have not reached the global store.  Note also that the 
+completed block $\ublock$ is added  to the local sequence $\tpending$, which will be temporarily used
+  in subsequent reads until  the client updates its view of the global store. 
+% 
+Rule \textsc{send} models the fact that a sent block is finally incorporated to the global state. Conversely, rule \textsc{receive} models a client 
+receiving a message containing a new update incorporated to the global store. Note that the update is not immediately incorporated to the local copy. The received messages will 
+be processed when the client executes the operation pull (rule \textsc{pull}).  At this moment, the local view of the global store considers the 
+$j$ blocks previously received. In addition, all temporary blocks in $\tpending$ that are already in the newly discovered fragment of the 
+store $\queuemessage[k..k+j-1]$ are removed from  $\tpending$. 
+% 
+The behaviour of a client performing a reading operation $r$  is defined by rule textsc{read}.  The underlying idea is that the 
+semantics of operations is abstractly defined by an interpretation function $\rvaluename:\readset\times\updatesets^*\rightarrow  \valueset$, 
+\ie,  a function  that takes a read operation and a sequence of updates, and returns the value that results from applying all the updates in the sequence to the initial state of the store. Note that the operation $r$ is evaluated over the client's local view of the global state, that is, 
+the known part of the server state $\queuemessage[0..\tknown-1]$ and the local updates in 
+ $\tpending$ and $\ttransactionbuffer$. The obtained value $v$ is bound to the variable $x$, and hence all free occurrences of $x$ in the 
+ continuation $P$  are substituted by $v$.
+ %
+ Primitive $\confcmd$ allows a client to check whether the local updates have been already applied to the global state. In fact, this  
+ primitive returns true when the sequences  containing local changes $\tpending$ and $\ttransactionbuffer$ are both empty.
+ %
+Remaining rules are standard.
+%$\textsc{(t-while-trye)}$ and $\textsc{(t-while-false)}$ are standard. Rule $\textsc{(t-receive)}$ states that a counter $\treceivebuffer$ is incremented (by 1). Finally, the last one rule, $\textsc{(t-process)}$, moves updates from sent queue to the message queue.  
+

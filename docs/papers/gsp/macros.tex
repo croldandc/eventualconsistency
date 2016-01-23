@@ -59,6 +59,8 @@
 \newcommand{\iaxiom}[1]{\textstyle\rule[-1.3ex]{0cm}{3ex}#1}
         
 \newcommand{\ruleName}[1]{{\sc (#1)}}
+      
+\newcommand{\rName}[1]{\mbox{\scriptsize {\ruleName{#1}}} }
 
 
 %\newcommand{\equal}[2]{#1 \stackrel{\cdot}{=} #2}
@@ -126,6 +128,13 @@
 
 %%%%SYNTAX GSP
 
+\newcommand{\Absclient}{\textcolor{OliveGreen}{C}}
+\newcommand{\queuemessage}{\textcolor{OliveGreen}{S}}
+\newcommand{\systemterm}{\textcolor{OliveGreen}{N}}
+
+\newcommand{\Absserver}{\textcolor{OliveGreen}{C}}
+
+
 %sets 
 \newcommand{\idset}{\mathcal{\mathcal{I}}}
 
@@ -139,19 +148,22 @@
 
 
 \newcommand{\bigpar}{|\!|}
-\newcommandx{\tsystem}[2][2=N]{#1\ \bigpar\ #2}
+\newcommandx{\tsystem}[2][2=\systemterm]{#1\ \bigpar\ #2}
 
 % Clients configuration
 \newcommandx{\tclient}[7][7=\cid]{\langle #1 , #4, #5, #3,  #2, #6\, \rangle_{#7}}
 \newcommand{\tclienti}[6]{\tclient{#1}{#2}{#3}{#4}{#5}{#6}}
 
 \newcommand{\tknown}{\textit{k}}
-\newcommand{\tpending}{\rho}
-\newcommand{\ttransactionbuffer}{\alpha}
+\newcommandx{\ttransactionbuffer}[1][1={}]{\textcolor{OliveGreen}{\mathsf{u#1}}}
 \newcommandx{\ublock}[2][1=\ttransactionbuffer,2=\cid]{[#1]}
 
-\newcommand{\tsent}{\sigma}
-\newcommand{\tsenthead}{\beta}
+
+\newcommandx{\blockseq}[1][1={}]{\textcolor{OliveGreen}{\mathsf{b#1}}}
+
+\newcommandx{\tpending}[1][1={}]{\textcolor{OliveGreen}{\textcolor{OliveGreen}{\blockseq[']}}}
+\newcommand{\tsent}{\blockseq}
+\newcommand{\tsenthead}{\ttransactionbuffer[']}
 
 \newcommand{\treceivebuffer}{\textit{j}}
 
@@ -175,7 +187,7 @@
 \newcommand{\tconfirmedins}[1]{{\tt let}\ #1 = {\tt confirmed};P}
 \newcommand{\tpullins}{{\tt pull};P}
 
-\newcommand{\cond}{e}
+\newcommand{\cond}{\textcolor{OliveGreen}{{e}}}
 \newcommand{\eval}[2]{#1\downarrow #2}
 
 \newcommandx{\pwhile}[3][3=P]{{\tt while} (#1)\ {\tt do}\ #2 \ {\tt od}; #3}
@@ -186,9 +198,6 @@
 \newcommand{\plet}[3]{{\tt let}\ #1 = #2 \ {\tt in}\ #3}
 
 
-\newcommand{\queuemessage}{S}
-\newcommand{\system}{C}
-\newcommand{\systemterm}{N}
 \newcommand{\environmentterm}{E}
 
 \newcommand{\nat}{\mathbbm{N}}
@@ -216,6 +225,9 @@
 %
 
 %IMPLEMENTATION DATA TYPES
+\newcommand{\statetype}{\textit{State}}
+\newcommand{\deltatype}{\textit{Delta}}
+
 
 \newcommand{\initialstate}{\textcolor{Orange}{\textit{initialstate}}}
 \newcommand{\emptydelta}{\textcolor{Orange}{\textit{emptydelta}}}
@@ -231,28 +243,108 @@
 
 \newcommand{\iappendname}{\textcolor{orange}{\textit{append}}}
 \newcommand{\iappend}[2]{\textcolor{orange}{\iappendname(#1,#2)}}
-%volver
+
+%%%%GS SOMETHING
+\newcommandx{\astate}[2][1={},2=s,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
+\newcommandx{\adelta}[2][1={},2=d,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
+\newcommandx{\amxrf}[2][1={},2=f,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
+
+\newcommandx{\agspref}[2][1={},2=gsp,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
+\newcommandx{\agsprefpair}[2][1=\astate,2=\amxrf,usedefault=@]{
+		\textcolor{Brown}{{\langle#1,#2\rangle}}}
+
+
+\newcommandx{\agsseg}[2][1={},2=gss,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
+\newcommandx{\agssegpair}[2][1=\adelta,2=\amxrf,usedefault=@]{
+		\textcolor{Brown}{{\langle#1,#2\rangle}}}
+
+\newcommandx{\aseg}[2][1={},2=seg,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
+
+\newcommandx{\around}[2][1={},2=r,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
+\newcommandx{\aroundtuple}[3][1=\cid,2=n,3=\adelta,usedefault=@]{
+		\textcolor{Brown}{{\langle#1,#2,{#3}\rangle}}}
+
+
+%\newcommand{\pendingtype}{\rho}
+\newcommandx{\pendingtype}[2][1={},2=q,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
+
+%
 
 \newcommand{\server}[3]{\langle #1 , #2, #3\rangle}
+
+%\newcommand{\persistedstate}{\textit{ps}}
+\newcommand{\persistedstate}{\agsseg}
+
+%\newcommand{\transactionbuffertype}{\delta}
+\newcommand{\transactionbuffertype}{\adelta}
+
+%\newcommand{\pushbuffertype}{\delta}
+\newcommand{\pushbuffertype}{\adelta}
+
+%\newcommand{\receivebuffertype}{\gssegmenttype \cup \gsprefixtype}
+\newcommand{\receivebuffertype}{\aseg}
+
+\newcommandx{\inqueue}[1][1={}]{\textcolor{Brown}{\mathtt{in#1}}}
+\newcommandx{\outqueue}[1][1={}]{\textcolor{Brown}{\mathtt{out#1}}}
+
+\newcommand{\inserver}{\inqueue[_s]}
+\newcommand{\outserver}{\outqueue[_s]}
+\newcommand{\inclient}{\inqueue[_c]}
+\newcommand{\outclient}{\outqueue[_c]}
+
+
+\newcommand{\outclientlist}{\textit{\headerround} \cdot \textit{\tailround}}
+
+\newcommand{\nroundtype}{\mathbb{N}}
+
+
+
+
+\newcommand{\isystemterm}{\textcolor{Brown}{\mathtt{N}}}
+\newcommand{\iserver}{\textcolor{Brown}{\mathtt{S}}}
+\newcommand{\iclient}{\textcolor{Brown}{\mathtt{C}}}
+
 \newcommandx{\clientr}[3][3=\cid]{\client{#1}{#2}_{#3}}
 \newcommand{\client}[2]{\langle#1 , #2\rangle}
 
 
+\newcommandx{\iclientsyntax}[9]
+	[1=P,2=\astate,3={\pendingtype},4=\pushbuffertype,5=\transactionbuffertype,
+			6=\receivebuffertype,7=n,8=\inclient,9=\outclient,usedefault=@]
+	{
+   	\langle #1,#2,#3,#4,#5,#6,#7,#8,#9\rangle
+	}
+
+\newcommandx{\iclientinst}[9]
+	[1=P,2=\astate,3={\pending},4=\pushbuffer,5=\transactionbuffer,
+			6=\receivebuffer,7=n,8=\inqueue,9=\outqueue,usedefault=@]
+	{
+   	\langle #1,#2,#3,#4,#5,#6,#7,#8,#9\rangle
+	}
+%\newcommandx{\iclientinst}[9]
+%	[1=\_,2=\_,3=\_,4=\_,5=\_,
+%			6=\_,7=\_,8=\_,9=\_,usedefault=@]
+%	{
+%   	\langle #1,#2,#3,#4,#5,#6,#7,#8,#9\rangle
+%	}
+
+\newcommandx{\addid}[2][2=\cid]{#1_{#2}}
+
 %\newcommand{\clienti}[9]{\langle#1 , #2, #3, #4, #5, #6, #7, #8\rangle_#9}
 
-\newcommand{\inserver}{\textit{$in_s$}}
-\newcommand{\outserver}{\textit{$out_s$}}
-\newcommand{\inclient}{\textit{$in_c$}}
-\newcommand{\outclient}{\textit{$out_c$}}
-\newcommand{\outclientlist}{\textit{\headerround} \cdot \textit{\tailround}}
+%\newcommand{\known}{\textit{k}}
+\newcommand{\known}{\astate}
+
+\newcommand{\pending}{\pendingtype}
+\newcommand{\transactionbuffer}{\adelta_{t}}
+\newcommand{\pushbuffer}{\adelta_{p}}
+\newcommand{\receivebuffer}{\aseg}
 
 
 \newcommand{\state}{\textit{ps}}
 \newcommand{\stateclient}{E}
 
 
-\newcommand{\persistedstate}{\textit{ps}}
-\newcommand{\statetype}{\textit{State}}
 %\newcommand{\updatetype}{\textit{Update}}
 \newcommand{\updatetype}{\updatesets}
 \newcommand{\readtype}{\readset}
@@ -261,19 +353,9 @@
 \newcommand{\valuetype}{\valueset}
 
 
-\newcommand{\deltatype}{\textit{Delta}}
-\newcommand{\known}{\textit{k}}
-\newcommand{\pending}{\textit{p}}
-\newcommand{\transactionbuffer}{\textit{tb}}
-\newcommand{\pushbuffer}{\textit{pb}}
-\newcommand{\receivebuffer}{\textit{rb}}
 
 \newcommand{\knowntype}{\statetype}
-\newcommand{\pendingtype}{\rho}
-\newcommand{\transactionbuffertype}{\delta}
-\newcommand{\pushbuffertype}{\delta}
-\newcommand{\receivebuffertype}{\gssegmenttype \cup \gsprefixtype}
-\newcommand{\nroundtype}{\mathbb{N}}
+%\newcommand{\pendingtype}{\rho}
 
 \newcommand{\rvaluename}{\textcolor{Orange}{\textit{rvalue}}}
 
@@ -469,7 +551,7 @@
 \newcommand{\changed}[2]{\textcolor{blue}{#2}}
 \newcommand{\henote}[1]{\textcolor{red}{[H: #1]}}
 
-\newcommand{\flatten}[1]{\textit{flatten}(#1)}
+\newcommand{\flatten}[1]{\textcolor{Orange}{\textit{flatten}(#1)}}
 \newcommand{\length}[1]{|#1|}
 
 
