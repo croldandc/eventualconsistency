@@ -1,0 +1,148 @@
+\section{Extending GSP to Stronger Model}
+\label{sec:transactions}
+
+As illustrated in above examples, there are situations in which a environment does not ensures consistency guarantees as Consistent Prefix or Single Order. The nature of such cases is caused by having no transactions as the usual databases.
+
+The remaining of this section is proposing a environment that ensures these consistency guarantees. We start by refining the environment in GSP. We will distinguish a new relation:
+
+\paragraph{Return Before} relates updates actions. It indicates the ordering of non-overlapping operations. 
+
+Furthermore, we will add two additional terms; $\tx$ that relates a vertex to set of vertex which have just not finished and $\tc$ that denotes transaction closed.
+
+
+\[
+    \begin{array}{l@{\quad}r@{\;::=\;}l}
+			 (\textsc{environment}) & \environmentterm &  \environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx}{\tc} \\
+			 (\textsc{transactions with overlapping}) & \tx &  \emptyset  \ | \ \verticesets\ \mapsto 2^{\vertice},\tx   \\
+			 (\textsc{transactions closed}) & \tc &  \epsilon  \ | \ \vertice\ \cdot \tc 
+	   \end{array}
+\]
+
+
+\subsection{Operational Semantic}
+
+%\subsubsection{Notation}
+
+%\begin{flushleft}
+%\specfunction{$\downharpoonright$}{$\verticesets$}{$2^\verticesets$}{$2^\verticesets$} \\
+%$\downharpoonright v^i \emptyset$ =  $\emptyset$ \\
+%$\downharpoonright v^i (x^h \mapsto V)$ = x^h \mapsto V \cup \ v^i;  $\downharpoonright v^i V$ \\
+%\end{flushleft}
+
+
+We assume the following countable sets of transactional vertices names $[\verticesets]$ ranged over by $[\vertice];[\vertice_0];[\vertice_1],\ldots$;
+
+The labeled transition system for the extension of GSP considers the following actions $\zeta$:	
+
+\[ 
+\begin{array}{r@{\ ::= \ }l}
+  \zeta & \mu \ | \ \startsynctran \ | \ \finishsynctran  \ | \  [\mu] \\
+\end{array}
+\]
+
+These labels allow system to perform an update synchronous. Label $\startsynctran$ stands for the begining of a transaction, and $\finishsynctran$ the end of it.
+
+\paragraph{Notation} $\updopentx{\epsilon} = \epsilon$, and 
+   $\updopentx{\vertice_0 \mapsto \{\instanceset\};tail} = \vertice_0 \mapsto \{\instanceset \cup \{\vertice\}\};\updopentx{tail}$.
+		
+		
+ \[
+ \begin{array}{l}    \hspace{-.3cm} \textsc{ENVIRONMENT}\\
+
+		
+\mathrule{e-start-sync}{\systemterm \arroi{\syncupdtran{\tupdate}} \systemterm' \qquad [\vertice] \notin 
+dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx}{\tc} \arroi{\startsynctran{\vertice}} \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb}{\updopentx{\tx};\vertice \mapsto dom(\tc)}{\tc}}
+
+ \\[35pt]
+{
+\mathrule{e-end-sync}{\systemterm \arroi{\finishsynctran{\tupdate}} \systemterm' \qquad [\vertice] \in 
+dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\vertice \mapsto \instanceset,\tx}{\tc} \arroi{\finishsynctran{\vertice}} \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb'}{\tx}{\tc \cdot\ \vertice}}}
+\\
+ \\[10pt]where \ 
+\rb' = \rb \cup\ \{ (x,v) \ | \ \forall 0 \leq m,n < |\queuemessage|, \op(x) = \queuemessage[m] \ \land \ \op(v) = \queuemessage[n] \ \land \ m \leq\ n \ \land \ x\notin\tx(v) \}
+ \end{array}
+ \]
+
+
+\[
+ \begin{array}{l} \hspace{-.3cm} \textsc{PROGRAM}\\
+
+
+\mathax{t-sync-update}{\tsystem{\tclienti{\tsyncupd{u};\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\syncupdtran{\tupdate}} \tsystem{\tclienti{[\tupdins;\tflush];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
+ 
+ \\[15pt]
+
+\mathrule{t-tran}{\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\mu} \tsystem{\tclienti{\tprogram'}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}\ \bigpar\ C}{\queuemessage}}{\tsystem{\tclienti{[\tprogram];Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{[\mu]} \tsystem{\tclienti{[\tprogram'];Q}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}\ \bigpar\ C}{\queuemessage}}
+
+ \\[25pt]
+
+ 
+\mathax{t-flush}{\tsystem{\tclienti{[\tflush];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\tau} \tsystem{\tclienti{[\pushtran;\pwhile{!\confirmedtran()}{\pulltran};];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
+ 
+\\
+\chnote{\mbox{En realidad el programa es: $\pushtran;let x = \confirmedtran();\pwhile{!x}{\pulltran};let x = \confirmedtran();$}}
+
+ \\[15pt]
+
+\mathax{t-end-sync}{\tsystem{\tclienti{[0];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\finishsynctran(u^{[v]})} \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
+ 
+
+ \end{array}
+ \]
+ 
+
+First, we prove a useful lemma: 
+
+\begin{lemma}\label{lemma:empty_queue} 
+
+$\forall C$ such that 
+$\tclienti{Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \ 
+    \Arro^* \ \tclienti{\tsyncupd{u};\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} 
+	  \Arro^* \ \tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}$, then  
+rvalue operation always reads above the store.
+
+\end{lemma}
+
+\begin{proof} Confirmed is evaluated to true when $\tpending$ and $\ttransactionbuffer$ are empty so that, after the loop, the read operation only return values which belong to the Store.
+\end{proof}	
+
+
+Single Order is a consistency guarantee that express a single order of operations observed by arbitration and visibility relation. The definition introduced by [] requires that arbitration and visibility are the same except by operations which have not finished, i.e., it considers only operations that belong to $\tc$. However, we do not model if an update is visible to another update since the effects of an update only are seen by a read operations. Furthermore, there not exists conflicts between read operation and update operation, the Store keep update actions. Therefore, we can not compare these sets. 
+
+\begin{theorem}[\textsc{Single Order}]
+
+Let $\textsc{\small{AR}}$ an arbitration relation and $\textsc{\small{VIS}}$ a visibility relation, if $\environmenttran{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}{\emptyset}{\undefined}{\emptyset} \arro{} ^*\ \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb}{\tx}{\tc}$ then $\textsc{\small{AR}};\textsc{\small{VIS}} \subseteq \textsc{\small{VIS}}$ and  $\textsc{\small{AR}}^{-1};\neg\textsc{\small{VIS}} \subseteq \neg\textsc{\small{VIS}}$.
+
+
+\end{theorem}
+ 
+
+\begin{proof} 
+Firstly, we will prove by induction on on the length of the derivation that $\textsc{\small{AR}};\textsc{\small{VIS}} \subseteq \textsc{\small{VIS}}$, i.e., for all $\vertice_a$,$\vertice_b$,$\vertice_c$ such that ($\vertice_a$,$\vertice_b$) $\in$ $\textsc{\small{AR}}$ and ($\vertice_b$,$\vertice_c$) $\in$ $\textsc{\small{VIS}}$ then ($\vertice_a$,$\vertice_c$) $\in$ $\textsc{\small{VIS}}$.
+
+\begin{itemize}
+   \item{\bf n=0}. It is easy to see because of both relations are empty, hence is trivial $\emptyset \subseteq \emptyset$.
+   \item{\bf n=k+1}. Then $\environmenttran{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset}{\emptyset}{\undefined}{\emptyset} \arro{} ^n\ \environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx}{\tc} \arroi{\alpha} \environmenttran{\systemterm'}{\op'}{\so'}{\vis'}{\arb'}{\rb'}{\tx'}{\tc'}$. We proceed by case analysis on the last transition:
+	
+	\begin{itemize}
+        \item {\bf rule (\textsc{E-READ})}. $\textsc{\small{AR}}$ does not change, therefore, $\textsc{\small{AR}}'$ = $\textsc{\small{AR}}$.  Then, there exists two cases: \chnote{\mbox{la regla es S-READ, pero es igual a E-READ sin los ultimos terminos, charlar como escribir esto}}
+				
+				\begin{itemize}
+					\item $\vertice_c \neq \vertice$, as $\vertice$ is an vertex associated to last computation step then ($\vertice_b$,$\vertice_c$) $\in$ $\textsc{\small{VIS}}$, therefore, these belong to $\textsc{\small{VIS}}'$. Then, by inductive hypothesis, ($\vertice_a$,$\vertice_c$) $\in$ $\textsc{\small{VIS}}$ so that as $\vertice_c \neq \vertice$ then ($\vertice_a$,$\vertice_c$) $\in$  $\textsc{\small{VIS}'}$.
+					\item $\vertice_c$ = $\vertice$, as $\vertice_a$ and $\vertice_b$ are in $\textsc{\small{AR}}$ then there exist two updates into the Store associated to them. Let $\udec[u][\vertice_a]$, $\udec[u][\vertice_b]$ be these updates, then we know that $\udec[u][\vertice_a]$ = $\queuemessage$[m] and $\udec[u][\vertice_b]$ = $\queuemessage$[n] such that m < n. If ($\vertice_b$,$\vertice_c$) $\in$ $\textsc{\small{VIS}}$ then $\udec[u][\vertice_b]$ $\in \queuemessage[0..\tknown-1] \cdot \tpending \cdot [\ttransactionbuffer]$ by definition. Then, analyzing cases:
+					\begin{itemize}
+						\item $\udec[u][\vertice_b]$ $\in \queuemessage[0..\tknown-1]$. Then $\udec[u][\vertice_a]$ also is in $\queuemessage[0..\tknown-1]$ because of $\udec[u][\vertice_a]$ = $\queuemessage$[m] and $\udec[u][\vertice_b]$ = $\queuemessage$[n] and m < n.
+						\item $\udec[u][\vertice_b]$ $\in \tpending$ or $\udec[u][\vertice_b]$ $\in [\ttransactionbuffer]$, however these do not be by $\lemref{lemma:empty_queue}$.
+					\end{itemize}
+					
+				\end{itemize}
+				
+			\item The rest of the rules do not change $\textsc{\small{VIS}}$.
+
+\end{itemize}
+
+\end{itemize}
+
+Now, we will prove by induction on on the length of the derivation that $\textsc{\small{AR}}^{-1};\neg\textsc{\small{VIS}} \subseteq \neg\textsc{\small{VIS}}$, i.e., for all $\vertice_a$,$\vertice_b$,$\vertice_c$ such that ($\vertice_b$,$\vertice_a$) $\in$ $\textsc{\small{AR}}$ and ($\vertice_a$,$\vertice_c$) $\notin$ $\textsc{\small{VIS}}$ then ($\vertice_b$,$\vertice_c$) $\notin$ $\textsc{\small{VIS}}$. This prove is analogue when $\vertice_c \neq \vertice$. Furthermore, if $\udec[u][\vertice_a]$ $\notin \queuemessage[0..\tknown-1]$ then $\udec[u][\vertice_b]$ $\notin \queuemessage[0..\tknown-1]$ because of $\udec[u][\vertice_b]$ is before to $\udec[u][\vertice_a]$ at Store, then 
+\end{proof}
+	
