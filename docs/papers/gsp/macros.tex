@@ -319,7 +319,7 @@
 
 \newcommandx{\iclientinst}[9]
 	[1=P,2=\astate,3={\pending},4=\pushbuffer,5=\transactionbuffer,
-			6=\receivebuffer,7=n,8=\inqueue,9=\outqueue,usedefault=@]
+			6=\receivebuffer,7=n,8=\inclient,9=\outclient,usedefault=@]
 	{
    	\langle #1,#2,#3,#4,#5,#6,#7,#8,#9\rangle
 	}
@@ -538,7 +538,7 @@
 \newcommand{\tjudge}[4]{#1 \vdash #2 : {#3} ,#4}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%c%%%%%%%%%%
 % Cross-ref
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\equref}[1]{Eq.~\eqref{#1}}

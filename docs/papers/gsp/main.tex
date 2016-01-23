@@ -260,6 +260,22 @@ The labeled transition system considers the following actions:
 				}
 		}
 		\\
+\\[15pt]
+
+%		\mathrule{pull}{E.\inclient(i) \neq \undefined \qquad E.\outclient(i) \neq \undefined \qquad |E.\receivebuffer| > 0}{\clientr{\pullins}{\stateclient}\arro{\pulltran} \clientr{P}{\updatethree{E}{\known}{\reducestate{E.\known}{E.\receivebuffer}}{\receivebuffer}{\epsilon}{E.\pending}{\remove{E.\pending}{E.\receivebuffer}}}}
+	\mathrule{pull}
+		{\appf{\inqueue}{\cid} \neq \undefined \qquad\qquad \appf{\outqueue}{\cid} \neq \undefined \qquad\qquad |\receivebuffer| > 0}
+		{
+			\addid{\iclientinst[\tpullins][@][@][@][@][{\agssegpair[x]}]}
+			\arro{\pulltran} 
+			\addid{\iclientinst[P]
+						 [\reducestate{\known}{\receivebuffer}]
+						 [{\pending}\setminus x]
+						 [@][@]
+						 [{\epsilon}]
+				}
+		}
+		\\
 \henote{\mbox{no podemos usar setminus en lugar de remove y apply en lugar de reducestate}}
 \\[5pt]
 %		\mathax{confirmed}{\clientr{\confirmedins{x}}{\stateclient} \arro{\confirmedtran}
