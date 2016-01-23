@@ -261,8 +261,10 @@
 		\textcolor{Brown}{{\langle#1,#2\rangle}}}
 
 \newcommandx{\aseg}[2][1={},2=seg,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
+\newcommandx{\aseqseg}[2][1={},2=seg,usedefault=@]{\textcolor{Brown}{\mathbbm{#2#1}}}
 
 \newcommandx{\around}[2][1={},2=r,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
+\newcommandx{\aseqround}[2][1={},2=r,usedefault=@]{\textcolor{Brown}{\mathbbm{#2#1}}}
 \newcommandx{\aroundtuple}[3][1=\cid,2=n,3=\adelta,usedefault=@]{
 		\textcolor{Brown}{{\langle#1,#2,{#3}\rangle}}}
 
@@ -284,7 +286,7 @@
 \newcommand{\pushbuffertype}{\adelta}
 
 %\newcommand{\receivebuffertype}{\gssegmenttype \cup \gsprefixtype}
-\newcommand{\receivebuffertype}{\aseg}
+\newcommand{\receivebuffertype}{\aseqseg}
 
 \newcommandx{\inqueue}[1][1={}]{\textcolor{Brown}{\mathtt{in#1}}}
 \newcommandx{\outqueue}[1][1={}]{\textcolor{Brown}{\mathtt{out#1}}}
@@ -340,7 +342,7 @@
 \newcommand{\pending}{\pendingtype}
 \newcommand{\transactionbuffer}{\adelta_{t}}
 \newcommand{\pushbuffer}{\adelta_{p}}
-\newcommand{\receivebuffer}{\aseg}
+\newcommand{\receivebuffer}{\aseqseg}
 
 
 \newcommand{\state}{\textit{ps}}

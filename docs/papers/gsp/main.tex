@@ -137,16 +137,23 @@ For convenience, notational conventions are in~\figref{}
        &
        \aseg & ::= & \agspref \; |\;  \agsseg
         \\
-        \\
        \rName{Round}
        &
        \around &::= & \aroundtuple
+        \\
+       \rName{Round Seq}
+       &
+       \aseqround &\in & \around^*
+        \\
+       \rName{Seg Seq}
+       &
+       \aseqseg &\in & \aseg^*
         \\
        &
        {\inclient} &::= &  {{\agsseg}^* \cup \agspref}
        \\
        & 
-       \outclient &\in & {\around^*}
+       \outclient &\in & {\aseqround}
       \\
        &
        {\inserver} & \in  & \partialfunction{\idset}\outclient
@@ -247,32 +254,31 @@ The labeled transition system considers the following actions:
 \\[15pt]
 
 %		\mathrule{pull}{E.\inclient(i) \neq \undefined \qquad E.\outclient(i) \neq \undefined \qquad |E.\receivebuffer| > 0}{\clientr{\pullins}{\stateclient}\arro{\pulltran} \clientr{P}{\updatethree{E}{\known}{\reducestate{E.\known}{E.\receivebuffer}}{\receivebuffer}{\epsilon}{E.\pending}{\remove{E.\pending}{E.\receivebuffer}}}}
-	\mathrule{pull}
-		{\appf{\inqueue}{\cid} \neq \undefined \qquad\qquad \appf{\outqueue}{\cid} \neq \undefined \qquad\qquad |\receivebuffer| > 0}
-		{
-			\addid{\iclientinst[\tpullins]}
-			\arro{\pulltran} 
-			\addid{\iclientinst[P]
-						 [\reducestate{\known}{\receivebuffer}]
-						 [\remove{\pending}{\receivebuffer}]
-						 [@][@]
-						 [{\epsilon}]
-				}
-		}
-		\\
-\\[15pt]
+%	\mathrule{pull}
+%		{\appf{\inqueue}{\cid} \neq \undefined \qquad\qquad \appf{\outqueue}{\cid} \neq \undefined \qquad\qquad |\receivebuffer| > 0}
+%		{
+%			\addid{\iclientinst[\tpullins]}
+%			\arro{\pulltran} 
+%			\addid{\iclientinst[P]
+%						 [\reducestate{\known}{\receivebuffer}]
+%						 [\remove{\pending}{\receivebuffer}]
+%						 [@][@]
+%						 [{\epsilon}]
+%				}
+%		}
+%		\\
+%\\[15pt]
 
 %		\mathrule{pull}{E.\inclient(i) \neq \undefined \qquad E.\outclient(i) \neq \undefined \qquad |E.\receivebuffer| > 0}{\clientr{\pullins}{\stateclient}\arro{\pulltran} \clientr{P}{\updatethree{E}{\known}{\reducestate{E.\known}{E.\receivebuffer}}{\receivebuffer}{\epsilon}{E.\pending}{\remove{E.\pending}{E.\receivebuffer}}}}
-	\mathrule{pull}
-		{\appf{\inqueue}{\cid} \neq \undefined \qquad\qquad \appf{\outqueue}{\cid} \neq \undefined \qquad\qquad |\receivebuffer| > 0}
+	\mathaxiom{pull}
 		{
-			\addid{\iclientinst[\tpullins][@][@][@][@][{\agssegpair[x]}]}
+			\addid{\iclientinst[\tpullins][@][@][@][@][{\agssegpair[x]}\cdot\receivebuffer]}
 			\arro{\pulltran} 
 			\addid{\iclientinst[P]
-						 [\reducestate{\known}{\receivebuffer}]
+						 [\iapply{\known}{x}]
 						 [{\pending}\setminus x]
 						 [@][@]
-						 [{\epsilon}]
+						 [{\receivebuffer}]
 				}
 		}
 		\\
