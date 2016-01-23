@@ -150,7 +150,7 @@ For convenience, notational conventions are in~\figref{}
        \aseqseg &\in & \aseg^*
         \\
        &
-       {\inclient} &::= &  {{\agsseg}^* \cup \agspref}
+       {\inclient} &::= &  \aseqseg%{{\agsseg}^* \cup \agspref}
        \\
        & 
        \outclient &\in & {\aseqround}
@@ -282,7 +282,7 @@ The labeled transition system considers the following actions:
 				}
 		}
 		\\
-\henote{\mbox{no podemos usar setminus en lugar de remove y apply en lugar de reducestate}}
+\henote{\mbox{el apply no está en el paper, ellos usan reducestate}}
 \\[5pt]
 %		\mathax{confirmed}{\clientr{\confirmedins{x}}{\stateclient} \arro{\confirmedtran}
  %\clientr{\update{P}{x \mapsto E.\pending = \epsilon \lor E.\pushbuffer = \epsilon \lor E.\transactionbuffer = \epsilon}{\textbf{true}}}{\stateclient}} 
@@ -310,7 +310,7 @@ The labeled transition system considers the following actions:
 
 \\[25pt]
 
-		\mathrule{receive}{E.\inclient = \gs_0 \cdot \gs_t}{\clientr{P}{\stateclient} \arro{\receive} \clientr{P}{\updatetwo{E}{\receivebuffer}{E.\receivebuffer \cdot \gs_0.gssegment)}{\inclient}{\gs_t)}}}\\[25pt]
+		\mathrule{receive}{E.\inclient = \gs_0 \cdot \gs_t}{\clientr{P}{\stateclient} \arro{\receive} \clientr{P}{\updatetwo{E}{\receivebuffer}{E.\receivebuffer \cdot \gs_0)}{\inclient}{\gs_t)}}}\\[25pt]
 
 
 %	\mathrule{receive}
@@ -336,7 +336,9 @@ The labeled transition system considers the following actions:
 
 \\[25pt]
 
-\mathrule{batch}{rs=\receiveroundsname{\inserver} \qquad gs=\append{\emptygssegment}{rs} \qquad \agspref'=\applyplus{\persistedstate}{gs.delta}}{\server{\persistedstate}{\inserver}{\outserver} \arro{\tau} \server{\agspref'}{\clean{\inserver}}{\notify{dom(\outserver)}{\outserver}{gs}}}
+\mathrule{batch}{rs=\receiveroundsname{\inserver} \qquad \agssegpair[@][{\amxrf[{'}]}] =\append{\emptygssegment}{rs} \qquad 
+  \astate[']=\iapply{\astate}{\adelta}}{\server{\agsprefpair }{\inserver}{\outserver} \arro{\tau} 
+  \server{\agsprefpair[{\astate[']}][{\amxrf[{'}]}] }{\clean{\inserver}}{\notify{dom(\outserver)}{\outserver}{gs}}}
 
 \\[25pt]
 
