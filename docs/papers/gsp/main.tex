@@ -236,6 +236,8 @@ The labeled transition system considers the following actions:
 		{\addid{\iclientinst[\treadins{x}{r}]} \arro{\readtran{r}} \addid{\iclientinst[{P}\subst{x}{v}]}}
 \\
 \henote{\mbox{curstate donde esta definida?}}
+\chnote{\mbox{en el apendice.}}
+
 \\[15pt]
 
 %		\mathrule{pull}{E.\inclient(i) \neq \undefined \qquad E.\outclient(i) \neq \undefined \qquad |E.\receivebuffer| > 0}{\clientr{\pullins}{\stateclient}\arro{\pulltran} \clientr{P}{\updatethree{E}{\known}{\reducestate{E.\known}{E.\receivebuffer}}{\receivebuffer}{\epsilon}{E.\pending}{\remove{E.\pending}{E.\receivebuffer}}}}
@@ -280,7 +282,8 @@ The labeled transition system considers the following actions:
 
 \\[25pt]
 
-		\mathrule{receive}{E.\inclient = \gs_0 \cdot \gs_t}{\clientr{P}{\stateclient} \arro{\receive} \clientr{P}{\updatetwo{E}{\receivebuffer}{E.\receivebuffer \cdot \gs_0.gssegment)}{\inclient(i)}{\gs_t)}}}\\[25pt]
+		\mathrule{receive}{E.\inclient = \gs_0 \cdot \gs_t}{\clientr{P}{\stateclient} \arro{\receive} \clientr{P}{\updatetwo{E}{\receivebuffer}{E.\receivebuffer \cdot \gs_0.gssegment)}{\inclient}{\gs_t)}}}\\[25pt]
+
 
 %	\mathrule{receive}
 %		{\inclient(\cid) = \gs_0 \cdot \gs_t}
@@ -305,7 +308,7 @@ The labeled transition system considers the following actions:
 
 \\[25pt]
 
-\mathrule{batch}{rs=\receiveroundsname{\inserver} \qquad gs=\append{\emptygssegment}{rs} \qquad \agspref'=\applyplus{\persistedstate}{gs.delta}}{\server{\persistedstate}{\inserver}{\outserver} \arro{\tau} \server{\agspref'}{\inserver}{\notify{dom(\outserver)}{\outserver}{gs}}}
+\mathrule{batch}{rs=\receiveroundsname{\inserver} \qquad gs=\append{\emptygssegment}{rs} \qquad \agspref'=\applyplus{\persistedstate}{gs.delta}}{\server{\persistedstate}{\inserver}{\outserver} \arro{\tau} \server{\agspref'}{\clean{\inserver}}{\notify{dom(\outserver)}{\outserver}{gs}}}
 
 \\[25pt]
 
@@ -316,25 +319,16 @@ The labeled transition system considers the following actions:
 		
 \\
     \mathrule{comm server-client}{\outserver(i)=\gs \cdot \gss}{\server{\state}{\inserver}{\outserver} \bigpar \clientr{P}{\stateclient} \arro{\tau} \server{\state}{\inserver}{\update{\outserver}{i}{\gss}} \bigpar 
-		\clientr{P}{\update{E}{\inclient}{E.\inclient \cup \{\gs\}}}}
+		\clientr{P}{\update{E}{\inclient}{E.\inclient \cdot \gs}}}
 		
 \\[25pt]
 
-	    \mathrule{comm client-server}{\outclient=\headerround \cdot \tailround}{\server{\state}{\inserver}{\outserver} \bigpar \clientr{P}{\stateclient} \arro{\tau} \server{\state}{\update{\inserver}{i}{\headerround}}{\outserver} \bigpar 
+	    \mathrule{comm client-server}{\outclient=\headerround \cdot \tailround}{\server{\state}{\inserver}{\outserver} \bigpar \clientr{P}{\stateclient} \arro{\tau} \server{\state}{\update{\inserver}{i}{\inserver(i) \cdot \headerround}}{\outserver} \bigpar 
 		\clientr{P}{\update{E}{\outclient}{\tailround}}}	
  \\
 
  \end{array}
  \]
-
-\newpage
-
-
-\begin{flushleft}
-\specOperator{notify}{$\idset^*$}{($\partialfunction{\idset}{\gssegmenttype^* \cup \gsprefixtype}$)}{\gssegmenttype}\\
-notify($\{b\}$, $\outserver$, gs) = $\outserver(b)$ = $gss \cdot gs$ \\
-notify($b \cdot bs$, $\outserver$, gs) = $\outserver(b)$ = $gss \cdot gs\ \land \notify{bs}{\outserver}{gs}$ \marginpar{Esto no me convenció, discutir si hay una manera mejor}
-\end{flushleft}
 
 
 Rule $\textsc{(drop-conn)}$ removes from the server's queues the client called $b_i$. Rule $\textsc{(crash-and-recover)}$ leaves undefined the server's queues and preserves the server's persistent state.  Rule $\textsc{(accept-conn)}$ show how to add a new connecti(Read)send to its the persistent state. Last rule from \textbf{\textsc{(server)}} is Rule $\textsc{(batch)}$, the most interesting of this group. Its has three hypothesis, the first one, is responsible for receiving rounds from the queue of in-messages. Se\cond one, let $\emptygssegment$ be a empty segment, it gives back a delta object who represents the combination of numbers of rounds into a single object. Finally, this object is applied to the persistent state. As result, the persistent state is putted into the queues messages-out.
@@ -882,8 +876,9 @@ receivedrounds($\partialfunction{b}{\textless n_0,\ \delta_0 \textgreater} \cdot
 
 \begin{flushleft}
 \henote{arreglar las lineas comentadas}
-%\specfunctionforparameters{curstate}{\statetype}{$\roundtype^*$}{\deltatype}{\deltatype}{\statetype} \\
-%$curstate(\state, \pending, \pushbuffer, \transactionbuffer$) = \applyplus{\state}{getdeltas(\pending) \cdot\pushbuffer\cdot \transactionbuffer}$
+\chnote{hecho}
+\specfunctionforparameters{curstate}{\statetype}{$\roundtype^*$}{\deltatype}{\deltatype}{\statetype} \\
+$curstate(\state, \pending, \pushbuffer, \transactionbuffer$) = $\applyplus{\state}{getdeltas(\pending) \cdot\pushbuffer\cdot \transactionbuffer}$
 \end{flushleft}
 
 
@@ -898,6 +893,20 @@ getdeltas(\textless $n_0$,$\delta_0$ \textgreater $\cdot$ $\delta$) = $\delta_0$
 remove(rs,$\epsilon$) = $\epsilon$ \\
 remove(rs, xs) = $(foldr (\backslash x\ rec\ ys\to h \ (filter \ (/$=$x) ys))\ id) xs \ rs$\\
 \end{flushleft}
+
+
+\begin{flushleft}
+\specfunctionthreeparameters{notify}{$\idset^*$}{($\partialfunction{\idset}{\gssegmenttype^* \cup \gsprefixtype}$)}{$\gssegmenttype$}{$(\partialfunction{\idset}{\gssegmenttype^* \cup \gsprefixtype})$}\\
+notify($\{\cid\}$, $\outserver$, gs) = $\outserver[\cid \mapsto gss \cdot gs]$\\
+notify($\cid \cdot bs$, $\outserver$, gs) = $\notify{bs}{\outserver}{gs}[\cid \mapsto gss \cdot gs]$ 
+\end{flushleft}
+
+\begin{flushleft}
+\specfunction{\cleannamefun}{$\idset^*$}{$(\partialfunction{\idset}{\dominserver}$)}{$(\partialfunction{\idset}{\dominserver})$}\\
+\cleannamefun($\{\cid\}$, $\outserver$, gs) = $\inserver[\cid \mapsto \emptyset]$\\
+\cleannamefun($\cid \cdot bs$, $\outserver$, gs) = $\clean{bs}{\inserver[\cid \mapsto \emptyset]$}
+\end{flushleft}
+
 
 \normalfont
 \normalsize
