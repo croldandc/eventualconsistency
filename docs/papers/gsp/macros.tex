@@ -117,6 +117,8 @@
 \newcommand{\wrt}{w.r.t.}
 \newcommand{\tdot}{..}
 
+\newcommand{\dom}[1]{\textit{dom}(#1)}
+
 \newcommand{\gsp}{\textcolor{red}{\sc gsp}}
 \newcommand{\tgspcalculus}{{\sc gsp}}
 \newcommand{\gspcalculus}{\textit{gsp-calculus}}
@@ -253,6 +255,9 @@
 \newcommand{\nodelta}{\epsilon}
 \newcommandx{\amxrf}[2][1={},2=f,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
 
+
+\newcommandx{\adeltaorstate}[2][1={},2=x,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
+
 \newcommandx{\agspref}[2][1={},2=gsp,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
 \newcommandx{\agsprefpair}[2][1=\astate,2=\amxrf,usedefault=@]{
 		\textcolor{Brown}{{\langle#1,#2\rangle}}}
@@ -270,13 +275,16 @@
 \newcommandx{\aroundtuple}[3][1=\cid,2=n,3=\adelta,usedefault=@]{
 		\textcolor{Brown}{{\langle#1,#2,{#3}\rangle}}}
 
+\newcommand{\igetdeltas}[1]{\textcolor{orange}{\textit{getdeltas}(#1)}}
+
 
 %\newcommand{\pendingtype}{\rho}
 \newcommandx{\pendingtype}[1][1={},usedefault=@]{\textcolor{Brown}{\adeltaseq{#1}}}
 
 %
 
-\newcommand{\server}[3]{\langle #1 , #2, #3\rangle}
+%\newcommand{\server}[3]{\langle #1 , #2, #3\rangle}
+\newcommandx{\server}[4][4=\amxrf]{\langle #1, #4,  #2, #3\rangle}
 
 %\newcommand{\persistedstate}{\textit{ps}}
 \newcommand{\persistedstate}{\agsseg}
@@ -293,8 +301,8 @@
 \newcommandx{\inqueue}[1][1={}]{\textcolor{Brown}{\mathtt{in#1}}}
 \newcommandx{\outqueue}[1][1={}]{\textcolor{Brown}{\mathtt{out#1}}}
 
-\newcommand{\inserver}{\inqueue[_s]}
-\newcommand{\outserver}{\outqueue[_s]}
+\newcommandx{\inserver}[1][1={}]{\inqueue[_s{#1}]}
+\newcommandx{\outserver}[1][1={}]{\outqueue[_s{#1}]}
 \newcommand{\inclient}{\inqueue[_c]}
 \newcommand{\outclient}{\outqueue[_c]}
 
@@ -325,7 +333,8 @@
 	[1=P,2=\astate,3={\pending},4=\pushbuffer,5=\transactionbuffer,
 			6=\receivebuffer,7=n,8=\inclient,9=\outclient,usedefault=@]
 	{
-   	\langle #1,#2,#3,#4,#5,#6,#7,#8,#9\rangle
+   	\langle #1,#2,#3,#4,#5,#7,#8\rangle
+%   	\langle #1,#2,#3,#4,#5,#6,#7,#8,#9\rangle
 	}
 %\newcommandx{\iclientinst}[9]
 %	[1=\_,2=\_,3=\_,4=\_,5=\_,
@@ -334,6 +343,8 @@
 %   	\langle #1,#2,#3,#4,#5,#6,#7,#8,#9\rangle
 %	}
 
+\newcommandx{\iserverins}[4][1=\astate,2=\amxrf,3=\inserver, 4= \outserver,usedefault=@] {\langle #1,#2,#3,#4\rangle}
+
 \newcommandx{\addid}[2][2=\cid]{#1_{#2}}
 
 %\newcommand{\clienti}[9]{\langle#1 , #2, #3, #4, #5, #6, #7, #8\rangle_#9}
@@ -341,7 +352,7 @@
 %\newcommand{\known}{\textit{k}}
 \newcommand{\known}{\astate}
 
-\newcommand{\pending}{\pendingtype}
+\newcommand{\pending}{\aseqround}
 \newcommand{\transactionbuffer}{\adelta_{t}}
 \newcommand{\pushbuffer}{\adelta_{p}}
 \newcommand{\receivebuffer}{\aseqseg}
@@ -434,9 +445,12 @@
 \newcommand{\receiveroundsname}[1]{\textit{receivedRounds}(#1)}
 \newcommand{\notify}[3]{\textit{notify}(#1, #2, #3)}
 \newcommand{\clean}[2]{\textit{\cleannamefun}(#1, #2)}
+\newcommand{\sclean}[1]{\textit{\cleannamefun}(#1)}
+
+\newcommand{\upd}[2]{[#1 \mapsto #2]}
 
 \newcommand{\updatein}[2]{#1^#2}
-\newcommand{\update}[3]{#1[#2 \mapsto #3]}
+\newcommand{\update}[3]{#1\upd{#2}{#3}}
 \newcommand{\updatethree}[7]{#1[#2 \mapsto #3; #4 \mapsto #5; #6 \mapsto #7]}
 \newcommand{\updatetwo}[5]{#1[#2 \mapsto #3; #4 \mapsto #5]}
 \newcommand{\updatefour}[9]{#1[#2 \mapsto #3; #4 \mapsto #5; #6 \mapsto #7; #8 \mapsto #9]}
