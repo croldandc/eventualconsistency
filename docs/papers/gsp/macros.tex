@@ -249,6 +249,8 @@
 %%%%GS SOMETHING
 \newcommandx{\astate}[2][1={},2=s,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
 \newcommandx{\adelta}[2][1={},2=d,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
+\newcommandx{\adeltaseq}[2][1={},2=d,usedefault=@]{\textcolor{Brown}{\mathbbm{#2#1}}}
+\newcommand{\nodelta}{\epsilon}
 \newcommandx{\amxrf}[2][1={},2=f,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
 
 \newcommandx{\agspref}[2][1={},2=gsp,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
@@ -270,7 +272,7 @@
 
 
 %\newcommand{\pendingtype}{\rho}
-\newcommandx{\pendingtype}[2][1={},2=q,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
+\newcommandx{\pendingtype}[1][1={},usedefault=@]{\textcolor{Brown}{\adeltaseq{#1}}}
 
 %
 

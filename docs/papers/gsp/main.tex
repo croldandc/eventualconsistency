@@ -120,22 +120,26 @@ For convenience, notational conventions are in~\figref{}
        \\
        &\astate & \in & \statetype
        \\
-       &\adelta & \in & \deltatype \cup \{\epsilon\}
+       &\adelta & \in & \deltatype \cup \{\nodelta\}
        \\
        &\pendingtype & \in & \deltatype^* \quad \mbox{\henote{antes $\rho$ y $\sigma$}}\\
        &\amxrf & \in & \idset\rightarrow \nat
        \\
-       \rName{GSprefix}
-       &
-       \agspref & ::= & \agsprefpair
-       \\
-       \rName{GSSegment}
-       &
-       \agsseg & ::= & \agssegpair
-       \\
+%       \rName{GSprefix}
+%       &
+%       \agspref & ::= & \agsprefpair
+%       \\
+%       \rName{GSSegment}
+%       &
+%       \agsseg & ::= & \agssegpair
+%       \\
+%       \rName{Segment}
+%       &
+%       \aseg & ::= & \agspref \; |\;  \agsseg
+%        \\
        \rName{Segment}
        &
-       \aseg & ::= & \agspref \; |\;  \agsseg
+       \aseg & ::= & \agsprefpair \; |\;  \agssegpair
         \\
        \rName{Round}
        &
@@ -156,10 +160,10 @@ For convenience, notational conventions are in~\figref{}
        \outclient &\in & {\aseqround}
       \\
        &
-       {\inserver} & \in  & \partialfunction{\idset}\outclient
+       {\inserver} & \in  & \partialfunction{\idset}\aseqround%\outclient
        \\
        & 
-       \outserver &\in & \partialfunction{\idset}\inclient
+       \outserver &\in & \partialfunction{\idset}\aseqseg%\inclient
    \end{array}
   \]
   \caption{Syntax}
@@ -241,15 +245,61 @@ The labeled transition system considers the following actions:
 		\end{array}}
 %\updatethree{E}{\pushbuffer}{\appendplus{\pushbuffer}{\transactionbuffer}}{\transactionbuffer}{\epsilon}{\nround}{\nround+1}
 \\
-	
-\\[15pt]
+%	 {\clientr{P}{\stateclient} \arro{\sendtran} \clientr{P}{\updatethree{E}{\pending}{E.\pending \cdot E.\pushbuffer}{\pushbuffer}{\epsilon}{\outclient(i)}{\outclient(i) \cdot \round{i}{E.\nround}{E.\pushbuffer}}}}
+
+	 \mathrule{send}
+	         {\pushbuffer \neq \epsilon}
+ 		{\begin{array}{l}
+		\addid{\iclientinst} \ \bigpar \ \isystemterm
+		\arro{\tau} 
+		\\[5pt]
+		\hspace{5.3cm}
+		\addid{\iclientinst[@][@][\pending \cdot \pushbuffer][\epsilon][@][@][@][@][\outclient \cdot {\aroundtuple[\cid][\nround][\pushbuffer]}]}\ \bigpar \ \isystemterm
+	 	\end{array}
+		}	
+\\
+%		\mathrule{receive}{E.\inclient = \gs_0 \cdot \gs_t}{\clientr{P}{\stateclient} \arro{\receive} \clientr{P}{\updatetwo{E}{\receivebuffer}{E.\receivebuffer \cdot \gs_0)}{\inclient}{\gs_t)}}}\\[25pt]
+	\mathax{receive}
+ 		{\begin{array}{l}
+		\addid{\iclientinst[@][@][@][@][@][@][@][\aseg \cdot \inclient]} \ \bigpar \ \isystemterm
+		\arro{\tau} 
+		\\[5pt]
+		\hspace{6.4cm}
+		\addid{\iclientinst[@][@][@][@][@][\receivebuffer \cdot \aseg]}\ \bigpar \ \isystemterm
+	 	\end{array}
+		}	
+\\
+
+%		\mathrule{pull}{E.\inclient(i) \neq \undefined \qquad E.\outclient(i) \neq \undefined \qquad |E.\receivebuffer| > 0}{\clientr{\pullins}{\stateclient}\arro{\pulltran} \clientr{P}{\updatethree{E}{\known}{\reducestate{E.\known}{E.\receivebuffer}}{\receivebuffer}{\epsilon}{E.\pending}{\remove{E.\pending}{E.\receivebuffer}}}}
+	\mathaxiom{pull}
+		 {\begin{array}{l}
+			\addid{\iclientinst[\tpullins][@][@][@][@][{\agssegpair[x]}\cdot\receivebuffer]}\ \bigpar \ \isystemterm
+			\arro{\pulltran} 
+			\\[5pt]
+			\hspace{5.2cm}
+			\addid{\iclientinst[P]
+						 [\iapply{\known}{x}]
+						 [{\pending}\setminus x]
+						 [@][@]
+						 [{\receivebuffer}]}\ \bigpar \ \isystemterm
+	 	\end{array}
+		}
+		\\
+\henote{\mbox{el apply no está en el paper, ellos usan reducestate}}
+\\
+
 %		\mathrule{read}{\readplus{r}{\curstate{\known}{\pending}{\pushbuffer}{\transactionbuffer}}}{\clientr{\readins{x}{r}}{\stateclient} \arro{\readtran{r}} \clientr{\update{P}{x}{v}}{\stateclient}}
 	\mathrule{read}
 		{\iread{r}{\curstate{\known}{\pending}{\pushbuffer}{\transactionbuffer}}}
-		{\addid{\iclientinst[\treadins{x}{r}]} \arro{\readtran{r}} \addid{\iclientinst[{P}\subst{x}{v}]}}
+		{\begin{array}{l}
+		\addid{\iclientinst[\treadins{x}{r}]} \ \bigpar \ \isystemterm
+		\arro{\readtran{r}} 
+		\\[5pt]
+		\hspace{6.1cm}
+		\addid{\iclientinst[{P}\subst{x}{v}]}\ \bigpar \ \isystemterm
+		\end{array}
+		}
 \\
-\henote{\mbox{curstate donde esta definida?}}
-\chnote{\mbox{en el apendice.}}
 
 \\[15pt]
 
@@ -268,22 +318,6 @@ The labeled transition system considers the following actions:
 %		}
 %		\\
 %\\[15pt]
-
-%		\mathrule{pull}{E.\inclient(i) \neq \undefined \qquad E.\outclient(i) \neq \undefined \qquad |E.\receivebuffer| > 0}{\clientr{\pullins}{\stateclient}\arro{\pulltran} \clientr{P}{\updatethree{E}{\known}{\reducestate{E.\known}{E.\receivebuffer}}{\receivebuffer}{\epsilon}{E.\pending}{\remove{E.\pending}{E.\receivebuffer}}}}
-	\mathaxiom{pull}
-		{
-			\addid{\iclientinst[\tpullins][@][@][@][@][{\agssegpair[x]}\cdot\receivebuffer]}
-			\arro{\pulltran} 
-			\addid{\iclientinst[P]
-						 [\iapply{\known}{x}]
-						 [{\pending}\setminus x]
-						 [@][@]
-						 [{\receivebuffer}]
-				}
-		}
-		\\
-\henote{\mbox{el apply no está en el paper, ellos usan reducestate}}
-\\[5pt]
 %		\mathax{confirmed}{\clientr{\confirmedins{x}}{\stateclient} \arro{\confirmedtran}
  %\clientr{\update{P}{x \mapsto E.\pending = \epsilon \lor E.\pushbuffer = \epsilon \lor E.\transactionbuffer = \epsilon}{\textbf{true}}}{\stateclient}} 
 		\mathrule{confirm}
@@ -294,7 +328,6 @@ The labeled transition system considers the following actions:
 			\addid{\iclientinst[P\subst{x}{v}]		
 				}
 		}
-	
 \\[20pt]
 
 \mathrule{while-true}{\condition{\cond}{true}}{\clientr{\pwhile{\cond}{\tprogram}}{\stateclient} \arro{\tau} \clientr{\tprogram;\pwhile{\cond}{\tprogram}}{\stateclient}}
@@ -304,13 +337,6 @@ The labeled transition system considers the following actions:
 \mathrule{while-false}{\condition{\cond}{true}}{\clientr{\pwhile{\cond}{\tprogram;Q}}{\stateclient} \arro{\tau} \clientr{Q}{\stateclient}}
 
 
-	\\[25pt]
-
- \mathax{send}{\clientr{P}{\stateclient} \arro{\sendtran} \clientr{P}{\updatethree{E}{\pending}{E.\pending \cdot E.\pushbuffer}{\pushbuffer}{\epsilon}{\outclient(i)}{\outclient(i) \cdot \round{i}{E.\nround}{E.\pushbuffer}}}}
-
-\\[25pt]
-
-		\mathrule{receive}{E.\inclient = \gs_0 \cdot \gs_t}{\clientr{P}{\stateclient} \arro{\receive} \clientr{P}{\updatetwo{E}{\receivebuffer}{E.\receivebuffer \cdot \gs_0)}{\inclient}{\gs_t)}}}\\[25pt]
 
 
 %	\mathrule{receive}
