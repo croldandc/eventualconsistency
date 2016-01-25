@@ -52,8 +52,14 @@
 
 \def \mathrulean #1#2#3{\begin{array}{l}
         {\mbox{\scriptsize {\ruleName{#1}}} }
-        \, \deduce{#2}{#3}
+        \ \deduce{#2}{#3}
 \end{array}}
+
+\def \mathaxlean #1#2{\begin{array}{l}
+        {\mbox{\scriptsize {\ruleName{#1}}} }
+        \  {#2}
+\end{array}}
+
 
 \def \mathanrule #1#2{\begin{array}{l}
 				\deduce{#1}{#2}
@@ -164,7 +170,12 @@
 \newcommand{\tclienti}[6]{\tclient{#1}{#2}{#3}{#4}{#5}{#6}}
 
 \newcommand{\tknown}{\textit{k}}
-\newcommandx{\ttransactionbuffer}[1][1={}]{\textcolor{OliveGreen}{\mathsf{u#1}}}
+
+\newcommandx{\anupd}[1][1={}]{\textcolor{OliveGreen}{\textit{u#1}}}
+
+\newcommandx{\anupdseq}[1][1={}]{\textcolor{OliveGreen}{\mathsf{u#1}}}
+
+\newcommandx{\ttransactionbuffer}[1][1={}]{\anupdseq[#1]}
 \newcommandx{\ublock}[2][1=\ttransactionbuffer,2=\cid]{[#1]}
 
 
@@ -240,8 +251,11 @@
 \newcommand{\deltatype}{\textit{Delta}}
 
 
-\newcommand{\initialstate}{\textcolor{Orange}{\textit{initialstate}}}
-\newcommand{\emptydelta}{\textcolor{Orange}{\textit{emptydelta}}}
+%\newcommand{\initialstate}{\textcolor{Orange}{\textit{initialstate}}}
+\newcommand{\initialstate}{\textcolor{Orange}{0}}
+
+%\newcommand{\emptydelta}{\textcolor{Orange}{\textit{emptydelta}}}
+\newcommand{\emptydelta}{\textcolor{Orange}{\emptyset}}
 
 \newcommand{\ireadname}{\textcolor{orange}{\textit{read}}}
 \newcommand{\iread}[2]{\textcolor{orange}{\ireadname(#1,#2)}}
@@ -254,6 +268,10 @@
 
 \newcommand{\iappendname}{\textcolor{orange}{\textit{append}}}
 \newcommand{\iappend}[2]{\textcolor{orange}{\iappendname(#1,#2)}}
+
+
+\newcommand{\iremovename}{\textcolor{red}{\textit{remove}}}
+\newcommand{\iremove}[2]{\textcolor{red}{\iremovename(#1,#2)}}
 
 %%%%GS SOMETHING
 \newcommandx{\astate}[2][1={},2=s,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
@@ -282,11 +300,13 @@
 \newcommandx{\aroundtuple}[3][1=\cid,2=n,3=\adelta,usedefault=@]{
 		\textcolor{Brown}{{\langle#1,#2,{#3}\rangle}}}
 
+\newcommandx{\aroundtuplei}[1][1=i]{\aroundtuple[\cid_{#1}][n_{#1}][\adelta_{#1}]}
+
 \newcommand{\igetdeltas}[1]{\textcolor{orange}{\textit{getdeltas}(#1)}}
 
 
 %\newcommand{\pendingtype}{\rho}
-\newcommandx{\pendingtype}[1][1={},usedefault=@]{\textcolor{Brown}{\adeltaseq{#1}}}
+\newcommandx{\pendingtype}[1][1={},usedefault=@]{\textcolor{Brown}{\aseqround{#1}}}
 
 %
 
@@ -349,6 +369,8 @@
 %	{
 %   	\langle #1,#2,#3,#4,#5,#6,#7,#8,#9\rangle
 %	}
+\newcommandx{\iclientinstJ}{
+	\iclientinst[P_l][\astate_l][{\pending}_l][{\pushbuffer}_l][{\transactionbuffer}_l][\receivebuffer_l][n][\inclient_l][\outclient_l]}
 
 \newcommandx{\iserverins}[4][1=\astate,2=\amxrf,3=\inserver, 4= \outserver,usedefault=@] {\langle #1,#2,#3,#4\rangle}
 
@@ -379,7 +401,6 @@
 
 
 \newcommand{\knowntype}{\statetype}
-%\newcommand{\pendingtype}{\rho}
 
 \newcommand{\rvaluename}{\textcolor{Orange}{\textit{rvalue}}}
 
@@ -592,11 +613,24 @@
 %%%%
 \newcommand{\paralelo}[4]{\parallel_{#1\in #2} {#3} \parallel \ #4}
 
-\newcommandx{\abstsyst}[4][1=j,2=J,3=\Absclient_j, 4=\queuemessage,usedefault=@]{\paralelo{#1}{#2}{#3}{#4}}
+\newcommandx{\abstsyst}[4][1=l,2=L,3=\Absclient_j, 4=\queuemessage,usedefault=@]{\paralelo{#1}{#2}{#3}{#4}}
 
-\newcommandx{\abstcliJ}[1][1=j]{\tclienti{\tprogram_{#1}}{\tknown_{#1}}{\tpending_{#1}}{\ttransactionbuffer_{#1}}{\tsent_{#1}}{\treceivebuffer_{#1}}[{\cid_{#1}}]}
+\newcommandx{\abstcliJ}[1][1=l]{\tclienti{\tprogram_{#1}}{\tknown_{#1}}{\tpending_{#1}}{\ttransactionbuffer_{#1}}{\tsent_{#1}}{\treceivebuffer_{#1}}[{\cid_{#1}}]}
 
 
-\newcommandx{\concsyst}[4][1=j,2=J,3={\addid{\iclientsyntax}[\cid_j]}
-, 4=\iserver,usedefault=@]{\paralelo{#1}{#2}{#3}{#4}}
+\newcommandx{\concsyst}[4][1=l,2=L,3={\iclient_l},4=\iserver,usedefault=@]{\paralelo{#1}{#2}{#3}{#4}}
 
+
+
+%labels inferencia triangulitos
+\newcommand{\triangemptydelta}{$\triangleleft\emptydelta$}
+\newcommand{\triangappend}{$\triangleleft\iappendname$}
+\newcommand{\triangreduce}{$\triangleleft$-\ireducename}
+\newcommand{\triangremove}{$\triangleleft$-\iremovename}
+
+\newcommand{\trianginitialstate}{$\triangleleft$-\initialstate}
+\newcommand{\triangapply}{$\triangleleft$-\iapplyname}
+\newcommand{\triangread}{$\triangleleft$-\iapplyname}
+
+
+%volver

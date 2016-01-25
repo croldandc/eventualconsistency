@@ -611,33 +611,70 @@ computes the states of the internal queues,i.e., if these has any element. Rules
 \section{Equivalence}
 
 We have introduced an abstract GSP protocol and a robust streaming server-client implementation of GSP. There exists a relation represented by $\triangleleft$ [~ref:] which relates state and delta objects to the update sequences. 
-\begin{itemize}
-	\item On $\mathit{Delta} \times \mathit{Update}^*$, let $\triangleleft$ be the smallest relation such that (1) $\emptydelta \triangleleft []$, and
-(2) $d \triangleleft a$ implies $append(d,u) \triangleleft a \cdot u$ for all updates $u$, and (3) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $reduce(d_1 \ldots d_n) \triangleleft a_1 \cdots a_n$ and (4) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $\remove{d_1 \ldots d_{n}}{d_n} \triangleleft a_1 \cdots a_{n-1}$. \marginpar{El (4) lo agregamos nosotros. ¿Se aclara? ¿C\'omo?}
-  
-\item On $State \times Update^*$, let $\triangleleft$ be the smallest relation such that (1) $\initialstate \triangleleft []$, and
-(2) $s \triangleleft a \land \ d_1 \triangleleft a_1 \land \ \ldots \ \land \ d_n \triangleleft a_n$ implies $apply(s,d_1 \ldots d_n) \triangleleft a \cdot a_1 \cdots a_n$.
-\end{itemize}
 
-Next theorem states one of most important result of the paper, saying that abstract GSP protocol and the implementation of GSP are weak bisimulation equivalent (or weakly bisimilar). 
+\[
+\begin{array}{l@{\quad\qquad}l@{\quad\qquad}l}
+  \mathax{\triangemptydelta\medskip\medskip}{\medskip\medskip\emptydelta \triangleleft \epsilon}{} 
+  &
+  \mathrule{\triangappend}
+  		{\adelta \triangleleft \anupdseq}
+		{\iappend \adelta \anupd  \triangleleft \anupdseq \cdot \anupd}
+  &
+   \mathrule{\triangreduce}
+   		{\adelta_1 \triangleleft \anupdseq_1 \ldots \adelta_n \triangleleft \anupdseq_n}
+		{\ireduce {\adelta_1 \cdots \adelta_n} \triangleleft \anupdseq_1 \cdots \anupdseq_n}
+\\
+  \mathax{\trianginitialstate\medskip\medskip}{\medskip\medskip\initialstate \triangleleft \epsilon}{} 
+  &
+  \mathrule{\triangapply}
+  		{\astate \triangleleft \anupdseq \quad \adelta_1 \triangleleft \anupdseq_1 \ldots \adelta_n \triangleleft \anupdseq_n}
+		{\iapply \astate {\adelta_1\cdots\adelta_n}  \triangleleft \anupdseq \cdot\anupdseq_1 \cdots \anupdseq_n}
+  & 
+  \mathrule{\triangread}
+  		{\astate \triangleleft \anupdseq}
+		{\iread r \astate  \triangleleft \rvalue r  \anupdseq}  
+\\
+  \multicolumn{3}{c}{\mathrule{\triangremove}
+  		{\adelta_1 \triangleleft \anupdseq_1\ \ldots\ \adelta_n \triangleleft \anupdseq_n}
+		{\iremove{\adelta_1 \cdots \adelta_n}{\adelta_n} \triangleleft \anupdseq_1 \cdots \anupdseq_{n-1}}  }
+\end{array}
+\]
+%\begin{itemize}
+%	\item On $\mathit{Delta} \times \mathit{Update}^*$, let $\triangleleft$ be the smallest relation such that (1) $\emptydelta \triangleleft []$, and
+%(2) $d \triangleleft a$ implies $append(d,u) \triangleleft a \cdot u$ for all updates $u$, and (3) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $reduce(d_1 \ldots d_n) \triangleleft a_1 \cdots a_n$ and (4) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $\remove{d_1 \ldots d_{n}}{d_n} \triangleleft a_1 \cdots a_{n-1}$. \marginpar{El (4) lo agregamos nosotros. ¿Se aclara? ¿C\'omo?}
+%  
+%\item On $State \times Update^*$, let $\triangleleft$ be the smallest relation such that (1) $\initialstate \triangleleft []$, and
+%(2) $s \triangleleft a \land \ d_1 \triangleleft a_1 \land \ \ldots \ \land \ d_n \triangleleft a_n$ implies $apply(s,d_1 \ldots d_n) \triangleleft a \cdot a_1 \cdots a_n$.
+%\end{itemize}
+%
+% 
 
-\begin{definition} Let  $\systemterm = \abstsyst[@][@][{\abstcliJ}]$ be a \tgspcalculus\ system and $\isystemterm = \concsyst$ an implementation
-system. We say $\isystemterm$ implements $\systemterm$ if the following conditions hold:
+\begin{definition} Let  $\systemterm = \abstsyst[@][@][\Absclient_j]$ with $\Absclient_l={\abstcliJ}$be a \tgspcalculus\ system and 
+$\isystemterm = \concsyst $  with $\iserver = \iserverins$ and $\iclient_l = \addid{\iclientinstJ}[{\cid{_l}}]$ 
+an streaming implementation
+system. We say $\isystemterm$ implements $\systemterm$ if the following conditions hold for all $l \in L$,
 
 \begin{enumerate}
-	\item $\rvalue{r}{\flatten{\queuemessage_{A}[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}}$
-	\item $\queuemessage_C.\state \triangleleft \queuemessage_A$
-	\item $\ E_{i}.\transactionbuffer \triangleleft [\ttransactionbuffer_i]$
-	\item $E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i - 1]$
-	\item $E_{i}.known \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1]$
-	\item $E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i$
-	\item For all natural $l$, such that $1 \leq l < |\inclient|$ then $E_{i}.\inclient[l] \triangleleft \queuemessage_A[\tknown + \treceivebuffer - 1 +l]$
+	\item \henote{eliminada}
+	% $\rvalue{r}{\flatten{\queuemessage_{A}[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}}$
+	\item $\astate \triangleleft \queuemessage$
+	\item  ${\transactionbuffer}_j\triangleleft{\ttransactionbuffer}_j$ 
+	\item \henote{eliminada}	
+	%$E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i - 1]$
+	\item $\astate_l \triangleleft \queuemessage[0 .. \tknown_l - 1]$
+	\item $\pending_l = \aroundtuplei[0]\ldots\aroundtuplei[h]$ and $\adelta_0\cdots\adelta_h\cdot {\pushbuffer}_l \triangleleft \tpending_l$
+	\item $\length{\inclient}_l = \treceivebuffer_l$ and for all $0 \leq h < \treceivebuffer_l$,  $\inclient[h] = \agssegpair$ and $\adelta\triangleleft{\queuemessage[\tknown + l]}$
 	\item $\tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0$
+	\henote{no muy seguro}
 	\item For all update sequence $\beta \ \in \ \tsent_i$ then $\beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver$
 		\item For all natural $m$, such that $0 \leq m < |\outserver(i)| - 1$ then $\outserver(i)[m] \triangleleft \queuemessage_A[\tknown + \treceivebuffer + |\inclient| + m]$
 \end{enumerate}
  
 \end{definition}
+
+Next theorem states one of most important result of the paper, saying that abstract GSP protocol and the implementation of GSP are weak bisimulation equivalent (or weakly bisimilar).
+
+
 \begin{theorem}
 Let $A$ be a system from abstract GSP Protocol, defined as  then both system are weakly bisimilar, written $A \approx C$, if $(A,C)  \in \ \mathcal{R}$, where $\mathcal{R}$ be a binary relation defined as $\{ (\parallel_{i \ \in\ I_{\{0 \ldots n\}}} A_i \parallel \ \queuemessage_A),(\parallel_{i \ \in\ I_{\{0 \ldots n\}}} C_i \parallel \ \queuemessage_C) \ | \ \forall i \ \in\ \mathbb{N}, \forall r: \readtype, A_i = \ \tclient{\tprogram_i}{\tknown_i}{\tpending_i}{\ttransactionbuffer_i}{\tsent_i}{\treceivebuffer_i} \land C_i = \client{P_i}{\stateclient_i}$ and the conjunction of the following properties: %\land \ \rvalue{r}{\flatten(\queuemessage_{A}[0..\tknown-1] \cdot \tpending) \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}} \land \ \queuemessage_C.\state \triangleleft \queuemessage_A \land \ E_{i}.\transactionbuffer = [\ttransactionbuffer_i] \land \ E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i] - 1 \ \land \ E_{i}.known \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1] \ \land \  E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i \ \land \ \forall l, 1 \leq l < |\inclient|, E_{i}.\inclient[l] \triangleleft \queuemessage_A[\tknown + \treceivebuffer - 1 +l] \ \land \ \tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0 \ \land \ \forall \beta \ \in \ \tsent_i, \beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver
 \marginpar{Ac\'á deber\'ia decir que R cumple las propiedades de weak bisimulation. C\'omo lo escribo mejor?}
