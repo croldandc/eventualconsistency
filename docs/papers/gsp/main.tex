@@ -648,19 +648,7 @@ Let $A$ be a system from abstract GSP Protocol, defined as  then both system are
 The proof follows by induction on the length of the derivation $\arro{} ^*$. We use $\tilde{A}$ and $\tilde{C}$ to denote clients, except client $i^{th}$, interacting concurrently, i.e., $\parallel_{j \ \in\ I_{\{0 \ldots n\} - i}}$ $A_j$ or $C_j$ respectively.
 
 \begin{itemize}
-   \item{\bf n=0}. Then $A$ = $\tsystem{\tclienti{0}{\emptyset}{\emptyset}{\emptyset}{\emptyset}{0}\ \bigpar\ \tilde{A}}{\queuemessage_A}$ and $C$ = $\clientr{E}{\initialstate}$. In particular,
-
-			\begin{enumerate}
-				\item The operation $rvalue$ in the abstract language is performing on empty sequences, hence, the result is undefined. Moreover the parametric function $read$ tries to get a result on a $\initialstate$, then the result returned is undefined.
-				\item It is easy to see, due to property (1) of $\triangleleft$ between States and Updates.
-				\item It is guaranteed by property (1) of $\triangleleft$ between Deltas and Updates.
-				\item Analogous to property 2.
-				\item Analogous to property 3.
-				\item Precondition of implication is $false$.
-				\item Precondition of both implications are $false$. 
-				\item $\emptyset \in \ \emptyset$.
-				
-			\end{enumerate}
+   
 	
    \item{\bf n=k+1}. $\forall (A,C) \ \in \ \mathcal{R}$
 	
