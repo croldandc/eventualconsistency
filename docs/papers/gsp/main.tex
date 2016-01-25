@@ -120,9 +120,9 @@ For convenience, notational conventions are in~\figref{}
        \\
        &\astate & \in & \statetype
        \\
-       &\adelta & \in & \deltatype \cup \{\nodelta\}
+       &\adelta & \in & \deltatype %\cup \{\nodelta\}
        \\
-       &\pendingtype & \in & \deltatype^* \quad \mbox{\henote{antes $\rho$ y $\sigma$}}\\
+       &\adeltaseq & \in & \deltatype^* \quad \mbox{\henote{antes $\rho$ y $\sigma$}}\\
        &\amxrf & \in & \idset\rightarrow \nat
        \\
 %       \rName{GSprefix}
@@ -663,7 +663,8 @@ system. We say $\isystemterm$ implements $\systemterm$ if the following conditio
 	%$E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i - 1]$
 	\item $\astate_l \triangleleft \queuemessage[0 .. \tknown_l - 1]$
 	\item $\pending_l = \aroundtuplei[0]\ldots\aroundtuplei[h]$ and $\adelta_0\cdots\adelta_h\cdot {\pushbuffer}_l \triangleleft \tpending_l$
-	\item $\length{\inclient}_l = \treceivebuffer_l$ and for all $0 \leq h < \treceivebuffer_l$,  $\inclient[h] = \agssegpair$ and $\adelta\triangleleft{\queuemessage[\tknown + l]}$
+	\item ${\inclient}_l = \agssegpairi \cdots \agssegpairi[h]$ and $\ireduce{\adelta_0\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..\treceivebuffer_l-1]$
+	% $\length{\inclient}_l = \treceivebuffer_l$ and for all $0 \leq h < \treceivebuffer_l$,  $\inclient[h] = \agssegpair$ and $\adelta\triangleleft{\queuemessage[\tknown + l]}$
 	\item $\tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0$
 	\henote{no muy seguro}
 	\item For all update sequence $\beta \ \in \ \tsent_i$ then $\beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver$

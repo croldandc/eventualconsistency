@@ -181,8 +181,8 @@
 
 \newcommandx{\blockseq}[1][1={}]{\textcolor{OliveGreen}{\mathsf{b#1}}}
 
-\newcommandx{\tpending}[1][1={}]{\textcolor{OliveGreen}{\textcolor{OliveGreen}{\blockseq[']}}}
-\newcommand{\tsent}{\blockseq}
+\newcommandx{\tpending}[1][1={}]{\textcolor{OliveGreen}{\textcolor{OliveGreen}{\blockseq[_p]}}}
+\newcommand{\tsent}{\blockseq[_s]}
 \newcommand{\tsenthead}{\ttransactionbuffer[']}
 
 \newcommand{\treceivebuffer}{\textit{j}}
@@ -252,10 +252,10 @@
 
 
 %\newcommand{\initialstate}{\textcolor{Orange}{\textit{initialstate}}}
-\newcommand{\initialstate}{\textcolor{Orange}{0}}
+\newcommand{\initialstate}{\textcolor{Orange}{\emptyset}}
 
 %\newcommand{\emptydelta}{\textcolor{Orange}{\textit{emptydelta}}}
-\newcommand{\emptydelta}{\textcolor{Orange}{\emptyset}}
+\newcommand{\emptydelta}{\textcolor{Orange}{\delta_\emptyset}}
 
 \newcommand{\ireadname}{\textcolor{orange}{\textit{read}}}
 \newcommand{\iread}[2]{\textcolor{orange}{\ireadname(#1,#2)}}
@@ -275,7 +275,7 @@
 
 %%%%GS SOMETHING
 \newcommandx{\astate}[2][1={},2=s,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
-\newcommandx{\adelta}[2][1={},2=d,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
+\newcommandx{\adelta}[2][1={},2=\delta,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
 \newcommandx{\adeltaseq}[2][1={},2=d,usedefault=@]{\textcolor{Brown}{\mathbbm{#2#1}}}
 \newcommand{\nodelta}{\epsilon}
 \newcommandx{\amxrf}[2][1={},2=f,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
@@ -291,6 +291,8 @@
 \newcommandx{\agsseg}[2][1={},2=gss,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
 \newcommandx{\agssegpair}[2][1=\adelta,2=\amxrf,usedefault=@]{
 		\textcolor{Brown}{{\langle#1,#2\rangle}}}
+
+\newcommandx{\agssegpairi}[1][1=0]{\agssegpair[\adelta_{#1}][\amxrf_{#1}]}
 
 \newcommandx{\aseg}[2][1={},2=seg,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
 \newcommandx{\aseqseg}[2][1={},2=seg,usedefault=@]{\textcolor{Brown}{\mathbbm{#2#1}}}
@@ -353,14 +355,14 @@
 	[1=P,2=\astate,3={\pendingtype},4=\pushbuffertype,5=\transactionbuffertype,
 			6=\receivebuffertype,7=n,8=\inclient,9=\outclient,usedefault=@]
 	{
-   	\langle #1,#2,#3,#4,#5,#7,#8\rangle
+   	\langle #1,#2,#5,#4,#7,#3,#8\rangle
 	}
 
 \newcommandx{\iclientinst}[9]
 	[1=P,2=\astate,3={\pending},4=\pushbuffer,5=\transactionbuffer,
 			6=\receivebuffer,7=n,8=\inclient,9=\outclient,usedefault=@]
 	{
-   	\langle #1,#2,#3,#4,#5,#7,#8\rangle
+   	\iclientsyntax[#1][#2][#3][#4][#5][#6][#7][#8][#9]\rangle
 %   	\langle #1,#2,#3,#4,#5,#6,#7,#8,#9\rangle
 	}
 %\newcommandx{\iclientinst}[9]
@@ -628,7 +630,7 @@
 \newcommand{\triangreduce}{$\triangleleft$-\ireducename}
 \newcommand{\triangremove}{$\triangleleft$-\iremovename}
 
-\newcommand{\trianginitialstate}{$\triangleleft$-\initialstate}
+\newcommand{\trianginitialstate}{$\triangleleft-\initialstate$}
 \newcommand{\triangapply}{$\triangleleft$-\iapplyname}
 \newcommand{\triangread}{$\triangleleft$-\iapplyname}
 
