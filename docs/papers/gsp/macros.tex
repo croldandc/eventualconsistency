@@ -1,3 +1,5 @@
+
+
 %\newcommand{\powerset}{\mathcal{P}_f}
 %\newcommand{\compatible}{compatible}
 %\newcommand{\compatibility}{compatibility}
@@ -13,6 +15,11 @@
 %\newcommand{\sedef}{\Rightarrow}
 %\newcommand{\merg}[2]{\mathsf{merge}^{#1}\ {#2}}
 %\newcommand{\invoke}[1]{\mathsf{invoke}\ {#1}}
+
+%LTS
+\newcommandx{\action}[1][1={}]{\lambda{#1}}
+\newcommandx{\actbyc}[1][1={}]{\mu{#1}}
+
 \newcommand{\tr}[1]{\xrightarrow[]{#1}}
 
 \newcommandx{\arro}[2][2=\cid]{\xrightarrow[]{#1}_{#2}}
@@ -326,7 +333,7 @@
 	[1=P,2=\astate,3={\pendingtype},4=\pushbuffertype,5=\transactionbuffertype,
 			6=\receivebuffertype,7=n,8=\inclient,9=\outclient,usedefault=@]
 	{
-   	\langle #1,#2,#3,#4,#5,#6,#7,#8,#9\rangle
+   	\langle #1,#2,#3,#4,#5,#7,#8\rangle
 	}
 
 \newcommandx{\iclientinst}[9]
@@ -580,5 +587,16 @@
 \newcommand{\flatten}[1]{\textcolor{Orange}{\textit{flatten}(#1)}}
 \newcommand{\length}[1]{|#1|}
 
+%%%%%
+% Section 3
+%%%%
+\newcommand{\paralelo}[4]{\parallel_{#1\in #2} {#3} \parallel \ #4}
 
+\newcommandx{\abstsyst}[4][1=j,2=J,3=\Absclient_j, 4=\queuemessage,usedefault=@]{\paralelo{#1}{#2}{#3}{#4}}
+
+\newcommandx{\abstcliJ}[1][1=j]{\tclienti{\tprogram_{#1}}{\tknown_{#1}}{\tpending_{#1}}{\ttransactionbuffer_{#1}}{\tsent_{#1}}{\treceivebuffer_{#1}}[{\cid_{#1}}]}
+
+
+\newcommandx{\concsyst}[4][1=j,2=J,3={\addid{\iclientsyntax}[\cid_j]}
+, 4=\iserver,usedefault=@]{\paralelo{#1}{#2}{#3}{#4}}
 

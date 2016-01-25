@@ -118,7 +118,7 @@ store that is replicated locally, i.e., $\queuemessage[0..k-1]$; and $j$ stands 
 in the global store that have been received and needs to be added to the local replica, i.e., $\queuemessage[k..k+j-1]$.
 A system $\systemterm$ is composed by a store and a  set of clients. 
 
-A system $\systemterm = \Absserver \bigpar \Absclient_0\bigpar \ldots\bigpar \Absclient_n$  with 
+A system $\systemterm = \Absserver \bigpar \Absclient_0\bigpar \ldots\bigpar \Absclient_n\bigpar\queuemessage$  with 
 $\Absclient_l = \tclienti{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\tsent_l}{\treceivebuffer_l}[\cid_l]$ 
 for all $0\leq j \leq n$  is {\em well-formed} if it 
 satisfies the following conditions: 
@@ -144,7 +144,8 @@ Transitions will be labelled by pairs $(\mu,\cid)$ where $\mu$ is the action per
 by the client $\cid$. The set of actions is defined by the following grammar:
 \[ 
 \begin{array}{r@{\ ::= \ }l}
-  \mu & \tau \ | \ \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran 
+  \action & \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran \\
+  \actbyc &  \tau \ |\ (\cid,\mu)
 \end{array}
 \]
 As usual,  $\tau$ stands for an internal, unobservable action, while the remaining actions allow 

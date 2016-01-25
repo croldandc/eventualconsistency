@@ -210,13 +210,13 @@ We will refer to clients, as tuple of program $P$ and set of states and sequence
 The operational semantics of \gspcalculus\ is defined by a labeled transition system 
 over well-formed terms, up-to the structural congruence.
 
-The labeled transition system considers the following actions:
-\[ 
-\begin{array}{r@{\ ::= \ }l}
-  \alpha & \tau \ | \ \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran 
-  \\
-\end{array}
-\]
+%The labeled transition system considers the following actions:
+%\[ 
+%\begin{array}{r@{\ ::= \ }l}
+%  \alpha & \tau \ | \ \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran 
+%  \\
+%\end{array}
+%\]
 
 
 
@@ -460,7 +460,7 @@ The labeled transition system considers the following actions:
 		}	
 \\
 	\mathrule{pull-1}
-	{\aseqround['] = filter\ (\geq \amxrf(\cid)) \ \aseqround}
+	{\aseqround['] = filter\ (\geq \amxrf[_k](\cid)) \ \aseqround \qquad \inclient = \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]}
 		 {\begin{array}{l}
 			\addid{\iclientinst[\tpullins][@]
 			[@]%[\aseqround\cdot{\aroundtuple}\cdot{\aseqround[']}]
@@ -470,10 +470,10 @@ The labeled transition system considers the following actions:
 			\\
 			\hspace{5.5cm}
 			\addid{\iclientinst[P]
-						 [\iapply{\known}{\adelta[']}]
+						 [\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}]
 						 [\aseqround']
 						 [@][@]
-						 [{\receivebuffer}][n]}\ \bigpar \ \isystemterm
+						 [{\receivebuffer}][n][\epsilon]}\ \bigpar \ \isystemterm
 	 	\end{array}
 		}
 \\
@@ -490,7 +490,7 @@ The labeled transition system considers the following actions:
 		}
 \\
 		\mathrule{confirm}
-		{ v = (\pending \cdot \pushbuffer \cdot\transactionbuffer == \epsilon) }
+		{ v = (\pending  \cdot \pushbuffer \cdot\transactionbuffer == \epsilon) }
 		{\begin{array}{l}
 			\addid{\iclientinst[\tconfirmedins{x}]} \bigpar \ \isystemterm
 			\arro{\confirmedtran} 
@@ -621,11 +621,11 @@ We have introduced an abstract GSP protocol and a robust streaming server-client
 
 Next theorem states one of most important result of the paper, saying that abstract GSP protocol and the implementation of GSP are weak bisimulation equivalent (or weakly bisimilar). 
 
-\begin{theorem}
-Let $A$ be a system from abstract GSP Protocol, defined as  then both system are weakly bisimilar, written $A \approx C$, if $(A,C)  \in \ \mathcal{R}$, where $\mathcal{R}$ be a binary relation defined as $\{ (\parallel_{i \ \in\ I_{\{0 \ldots n\}}} A_i \parallel \ \queuemessage_A),(\parallel_{i \ \in\ I_{\{0 \ldots n\}}} C_i \parallel \ \queuemessage_C) \ | \ \forall i \ \in\ \mathbb{N}, \forall r: \readtype, A_i = \ \tclient{\tprogram_i}{\tknown_i}{\tpending_i}{\ttransactionbuffer_i}{\tsent_i}{\treceivebuffer_i} \land C_i = \client{P_i}{\stateclient_i}$ and the conjunction of the following properties: %\land \ \rvalue{r}{\flatten(\queuemessage_{A}[0..\tknown-1] \cdot \tpending) \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}} \land \ \queuemessage_C.\state \triangleleft \queuemessage_A \land \ E_{i}.\transactionbuffer = [\ttransactionbuffer_i] \land \ E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i] - 1 \ \land \ E_{i}.known \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1] \ \land \  E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i \ \land \ \forall l, 1 \leq l < |\inclient|, E_{i}.\inclient[l] \triangleleft \queuemessage_A[\tknown + \treceivebuffer - 1 +l] \ \land \ \tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0 \ \land \ \forall \beta \ \in \ \tsent_i, \beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver
-\marginpar{Ac\'á deber\'ia decir que R cumple las propiedades de weak bisimulation. C\'omo lo escribo mejor?}
+\begin{definition} Let  $\systemterm = \abstsyst[@][@][{\abstcliJ}]$ be a \tgspcalculus\ system and $\isystemterm = \concsyst$ an implementation
+system. We say $\isystemterm$ implements $\systemterm$ if the following conditions hold:
+
 \begin{enumerate}
-	\item $\rvalue{r}{\flatten(\queuemessage_{A}[0..\tknown-1] \cdot \tpending) \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}}$
+	\item $\rvalue{r}{\flatten{\queuemessage_{A}[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}}$
 	\item $\queuemessage_C.\state \triangleleft \queuemessage_A$
 	\item $\ E_{i}.\transactionbuffer \triangleleft [\ttransactionbuffer_i]$
 	\item $E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i - 1]$
@@ -635,10 +635,12 @@ Let $A$ be a system from abstract GSP Protocol, defined as  then both system are
 	\item $\tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0$
 	\item For all update sequence $\beta \ \in \ \tsent_i$ then $\beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver$
 		\item For all natural $m$, such that $0 \leq m < |\outserver(i)| - 1$ then $\outserver(i)[m] \triangleleft \queuemessage_A[\tknown + \treceivebuffer + |\inclient| + m]$
-
-		
-
 \end{enumerate}
+ 
+\end{definition}
+\begin{theorem}
+Let $A$ be a system from abstract GSP Protocol, defined as  then both system are weakly bisimilar, written $A \approx C$, if $(A,C)  \in \ \mathcal{R}$, where $\mathcal{R}$ be a binary relation defined as $\{ (\parallel_{i \ \in\ I_{\{0 \ldots n\}}} A_i \parallel \ \queuemessage_A),(\parallel_{i \ \in\ I_{\{0 \ldots n\}}} C_i \parallel \ \queuemessage_C) \ | \ \forall i \ \in\ \mathbb{N}, \forall r: \readtype, A_i = \ \tclient{\tprogram_i}{\tknown_i}{\tpending_i}{\ttransactionbuffer_i}{\tsent_i}{\treceivebuffer_i} \land C_i = \client{P_i}{\stateclient_i}$ and the conjunction of the following properties: %\land \ \rvalue{r}{\flatten(\queuemessage_{A}[0..\tknown-1] \cdot \tpending) \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}} \land \ \queuemessage_C.\state \triangleleft \queuemessage_A \land \ E_{i}.\transactionbuffer = [\ttransactionbuffer_i] \land \ E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i] - 1 \ \land \ E_{i}.known \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1] \ \land \  E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i \ \land \ \forall l, 1 \leq l < |\inclient|, E_{i}.\inclient[l] \triangleleft \queuemessage_A[\tknown + \treceivebuffer - 1 +l] \ \land \ \tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0 \ \land \ \forall \beta \ \in \ \tsent_i, \beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver
+\marginpar{Ac\'á deber\'ia decir que R cumple las propiedades de weak bisimulation. C\'omo lo escribo mejor?}
 \end{theorem}
 
 
