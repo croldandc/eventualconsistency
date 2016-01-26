@@ -41,7 +41,8 @@ We have introduced an abstract GSP protocol and a robust streaming server-client
 %
 % 
 
-\begin{definition} Let  $\systemterm = \abstsyst[@][@][\Absclient_j]$ with $\Absclient_l={\abstcliJ}$be a \tgspcalculus\ system and 
+\begin{definition} \label{def:implementation}
+Let  $\systemterm = \abstsyst[@][@][\Absclient_j]$ with $\Absclient_l={\abstcliJ}$be a \tgspcalculus\ system and 
 $\isystemterm = \concsyst $  with $\iserver = \iserverins$ and $\iclient_l = \addid{\iclientinstJ}[{\cid{_l}}]$ 
 an streaming implementation
 system. We say $\isystemterm$ implements $\systemterm$ if the following conditions hold for all $l \in L$,
@@ -76,7 +77,7 @@ We use $\approx$ for standard weak bisimulation.
 
 \begin{proof} We show that the following relation is a weak bisimulation.
 \[
-\mathcal{R} = \{ (\isystemterm, \systemterm) \ |\ \isystemterm{}\ \mathit{ implements}	\ {\systemterm} \}
+\mathcal{R} = \{ (\isystemterm, \systemterm) \ |\ \implements{\isystemterm{}}{\systemterm} \}
 \]
 
 
@@ -91,33 +92,71 @@ We use $\approx$ for standard weak bisimulation.
    
 	
    \item{\bf n=k+1}. $\forall (\systemterm ,\isystemterm ) \ \in \ \mathcal{R}^{-1}$
-	
+   
+  % \henote{Para no escribir $\mathcal{R}^{-1}$ podemos cambiar la definici\'on $\mathcal{R}$}
+		
 			
 			\begin{itemize}
-				\item {\bf rule (\textsc{t-read})}. If $\systemterm  \arroi{\readtran{r}} \systemterm '$, then by rule (\textsc{\footnotesize{t-read}}), $\systemterm $ must be the following term: 
-				$\tsystem{\tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}$
-				, therefore, the client $i^{th}$ is the only one who have changed. So that, $\systemterm'$ is 
-				$\tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}$
-				. As $(\systemterm,\isystemterm)$ belongs $\mathcal{R}^{-1}$ then $\isystemterm$ must be $\clientr{\readins{x}{r}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the read transition is the only one that $\isystemterm$ can perform.
-				Then by rule (\textsc{read}), $\isystemterm' = \clientr{\update{P}{x}{v}}{\stateclient}\ \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We will prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}^{-1}$ if the ten properties introduced are keeping.				
+%				\item {\bf rule (\textsc{t-read})}. If $\systemterm  \arroi{\readtran{r}} \systemterm '$, then by rule (\textsc{\footnotesize{t-read}}), $\systemterm $ must be the following term: 
+%				$\tsystem{\tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}$
+%				, therefore, the client $i^{th}$ is the only one who have changed. So that, $\systemterm'$ is 
+%				$\tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}$
+%				. As $(\systemterm,\isystemterm)$ belongs $\mathcal{R}^{-1}$ then $\isystemterm$ must be $\clientr{\readins{x}{r}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the read transition is the only one that $\isystemterm$ can perform.
+%				Then by rule (\textsc{read}), $\isystemterm' = \clientr{\update{P}{x}{v}}{\stateclient}\ \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We will prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}^{-1}$ if the ten properties introduced are keeping.				
+				\item {\bf rule \ruleName{t-read}}. Then, $\systemterm  \arroi{\readtran{r}} \systemterm '$ with 
+				\[\begin{array}{r@{=}l}
+					\systemterm & \tsystem{\tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]
+					\\
+					\systemterm['] & \tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]	
+					\\
+					v &  \rvalue{r}{\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}	
+				  \end{array}
+				\]
+		
+				\henote{Ac\'a es $\systemterm['']$ porque $N$ es el que estas usando}.
+				
+				Since $(\systemterm,\isystemterm)\in \mathcal{R}^{-1}$,
+				\[ \addid{\iclientinst[\treadins{x}{r}]} \ \bigpar \ \isystemterm['']\]
+				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
+				$\isystemterm \arroi{\readtran{r}} \isystemterm[']$ with
+				\[\begin{array}{r@{=}l}
+					\isystemterm['] & \addid{\iclientinst[{P}\subst{x}{v'}]}\ \bigpar \ \isystemterm['']	\\
+					v' & \iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}
+				  \end{array}		
+				\]
+				
+				We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}^{-1}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				by checking the properties in \defref{def:implementation}.			
 					\begin{enumerate}
-						\item The only terms that have changed are the programs from i-esimo client respectively. In particular, the client programs are equals, then, we should show that the value got is the same in both systems, i.e., 
-						$\rvalue{r}{\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}$ 
-						= 
-						$\iread{r}{\iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}}$.
-						Then by \triangread \ It is worth when:
-						$\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer$
-						$\triangleleft$
-						$\iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}$. By \triangapply \ It’s worth if the following relations are satisfied:
-						
+						\item The only terms that have changed are the programs in client $\cid$.  We show that $v=v'$ holds. Since 
+						$\implements{\isystemterm}{\systemterm}$, the following holds
 						\begin{itemize}
-							\item $\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}$; but It’s worth by Property \ref{prop_state_known}
-							\item $\igetdeltas{\pending}\cdot{\pushbuffer} \triangleleft \flatten{\tpending} \ $; It finally is worth by \ref{prop_pending}
-							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$; It finally is worth by Property \ref{prop_transactions}
+							\item $\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}$ by property \ref{prop_state_known};
+							\item $\igetdeltas{\pending}\cdot{\pushbuffer} \triangleleft \flatten{\tpending} \ $ by property \ref{prop_pending};
+							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by property \ref{prop_transactions};
 						\end{itemize}
 						
+						Then, we can build the following proof for 
+						$\rvalue{r}{\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}
+						= 
+						\iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}$
+						\[
+						  \mathrulean{\triangread}
+						      {\mathrulean{\triangapply}
+  							{\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}
+							  \quad 
+							  \igetdeltas{\pending}\cdot{\pushbuffer} \triangleleft \flatten{\tpending}
+							  \quad
+							  \transactionbuffer \triangleleft \ttransactionbuffer
+							}
+						        {\iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}  
+								\triangleleft {\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}}
+						     }
+  						{v'  = v}  
+					\]
+
 						 
-						\item to 9. Do not change.
+						\item to 9 straightforwardly hold.
 						
 
 					\end{enumerate}

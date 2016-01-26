@@ -143,9 +143,9 @@
 
 %%%%SYNTAX GSP
 
-\newcommand{\Absclient}{\textcolor{OliveGreen}{C}}
+\newcommandx{\Absclient}[1][1={}]{\textcolor{OliveGreen}{C{#1}}}
 \newcommand{\queuemessage}{\textcolor{OliveGreen}{S}}
-\newcommand{\systemterm}{\textcolor{OliveGreen}{N}}
+\newcommandx{\systemterm}[1][1={}]{\textcolor{OliveGreen}{N{#1}}}
 
 \newcommand{\Absserver}{\textcolor{OliveGreen}{C}}
 
@@ -343,9 +343,9 @@
 
 
 
-\newcommand{\isystemterm}{\textcolor{Brown}{\mathtt{N}}}
-\newcommand{\iserver}{\textcolor{Brown}{\mathtt{S}}}
-\newcommand{\iclient}{\textcolor{Brown}{\mathtt{C}}}
+\newcommandx{\isystemterm}[1][1={}]{\textcolor{Brown}{\mathtt{N{#1}}}}
+\newcommandx{\iserver}[1][1={}]{\textcolor{Brown}{\mathtt{S{#1}}}}
+\newcommandx{\iclient}[1][1={}]{\textcolor{Brown}{\mathtt{C{#1}}}}
 
 \newcommandx{\clientr}[3][3=\cid]{\client{#1}{#2}_{#3}}
 \newcommand{\client}[2]{\langle#1 , #2\rangle}
@@ -635,5 +635,5 @@
 \newcommand{\triangapply}{$\triangleleft$-\iapplyname}
 \newcommand{\triangread}{$\triangleleft$-\ireadname}
 
-
+\newcommand{\implements}[2]{{#1}\ \mathit{ implements}	\ {#2}}
 %volver
