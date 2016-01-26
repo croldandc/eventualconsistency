@@ -437,13 +437,13 @@ over well-formed terms, up-to the structural congruence.
 		\end{array}}
 \\
 	 \mathrule{send}
-	         {\pushbuffer \neq \epsilon \qquad \cid\in\dom\inserver \qquad \around = \aroundtuple[\cid][\nround][\pushbuffer]}
+	         {\pushbuffer \neq \emptydelta \qquad \cid\in\dom\inserver \qquad \around = \aroundtuple[\cid][\nround][\pushbuffer]}
  		{\begin{array}{l}
 		\addid{\iclientinst} \ \bigpar \ \iserverins[\astate[']] \ \bigpar\ \iclient
 		\arro{\tau} 
 		\\
 		\hspace{2cm}
-		\addid{\iclientinst[@][@][\pending \cdot \around][\epsilon]}
+		\addid{\iclientinst[@][@][\pending \cdot \around][\emptydelta]}
 		\ \bigpar \ \iserverins[{\astate[']}][@][\inserver\upd{\cid}{\inserver(\cid)\cdot\around}]
 		\ \bigpar\ \iclient
 	 	\end{array}
