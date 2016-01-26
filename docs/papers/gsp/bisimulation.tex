@@ -13,24 +13,45 @@ We have introduced an abstract GSP protocol and a robust streaming server-client
 		{\iappend \adelta \anupd  \triangleleft \anupdseq \cdot \anupd}
   &
    \mathrule{\triangreduce}
-   		{\adelta_1 \triangleleft \anupdseq_1 \ldots \adelta_n \triangleleft \anupdseq_n}
-		{\ireduce {\adelta_1 \cdots \adelta_n} \triangleleft \anupdseq_1 \cdots \anupdseq_n}
+   		{\adelta[_1] \triangleleft \anupdseq[_1] \ldots \adelta[_n] \triangleleft \anupdseq[_n]}
+		{\ireduce {\adelta[_1] \cdots \adelta[_n]} \triangleleft \anupdseq[_1] \cdots \anupdseq[_n]}
 \\
   \mathax{\trianginitialstate\medskip\medskip}{\medskip\medskip\initialstate \triangleleft \epsilon}{} 
   &
   \mathrule{\triangapply}
-  		{\astate \triangleleft \anupdseq \quad \adelta_1 \triangleleft \anupdseq_1 \ldots \adelta_n \triangleleft \anupdseq_n}
-		{\iapply \astate {\adelta_1\cdots\adelta_n}  \triangleleft \anupdseq \cdot\anupdseq_1 \cdots \anupdseq_n}
+  		{\astate \triangleleft \anupdseq \quad \adelta[_1] \triangleleft \anupdseq[_1] \ldots \adelta[_n] \triangleleft \anupdseq[_n]}
+		{\iapply \astate {\adelta[_1]\cdots\adelta[_n]}  \triangleleft \anupdseq \cdot\anupdseq[_1] \cdots \anupdseq[_n]}
   & 
   \mathrule{\triangread}
   		{\astate \triangleleft \anupdseq}
 		{\iread r \astate  = \rvalue r  \anupdseq}  
 \\
   \multicolumn{3}{c}{\mathrule{\triangremove}
-  		{\adelta_1 \triangleleft \anupdseq_1\ \ldots\ \adelta_n \triangleleft \anupdseq_n}
-		{\iremove{\adelta_1 \cdots \adelta_n}{\adelta_n} \triangleleft \anupdseq_1 \cdots \anupdseq_{n-1}}  }
+  		{\adelta[_1] \triangleleft \anupdseq[_1]\ \ldots\ \adelta[_n] \triangleleft \anupdseq[_n]}
+		{\iremove{\adelta[_1] \cdots \adelta[_n]}{\adelta[_n]} \triangleleft \anupdseq[_1] \cdots \anupdseq[_{n-1}]}  }
 \end{array}
 \]
+
+
+\begin{lemma} $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq$ iff $\iapply{\astate}{\adelta[_0]\cdots\adelta[_n]}\triangleleft \anupdseq$.
+\end{lemma}
+
+\begin{proof} $\Rightarrow)$ The only possible derivation for $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq$ is
+
+\[
+   \mathrulean{\triangapply}
+  		{ \astate \triangleleft \anupdseq['] \qquad\qquad
+	   		\mathrulean{\triangreduce}
+   				{\adelta[_1] \triangleleft \anupdseq[_1] \ldots \adelta[_n] \triangleleft \anupdseq[_n]}
+				{\ireduce {\adelta[_1] \cdots \adelta[_n]} \triangleleft \anupdseq[_1] \cdots \anupdseq[_n]}	  
+		}
+		{\iapply \astate {\ireduce{\adelta[_0]\cdots\adelta[_n]}}  \triangleleft  \anupdseq['] \cdot \anupdseq[_1] \cdots \anupdseq[_n]}
+\]
+and $\anupdseq =\anupdseq['] \cdot \anupdseq[_1] \cdots \anupdseq[_n]$. By  rule \ruleName{\triangapply} on the premises of the 
+above proof, we conclude that  $\iapply{\astate}{\adelta[_0]\cdots\adelta[_n]}\triangleleft \anupdseq$.
+
+$\Leftarrow)$ Follows analogously. 
+\end{proof}
 %\begin{itemize}
 %	\item On $\mathit{Delta} \times \mathit{Update}^*$, let $\triangleleft$ be the smallest relation such that (1) $\emptydelta \triangleleft []$, and
 %(2) $d \triangleleft a$ implies $append(d,u) \triangleleft a \cdot u$ for all updates $u$, and (3) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $reduce(d_1 \ldots d_n) \triangleleft a_1 \cdots a_n$ and (4) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $\remove{d_1 \ldots d_{n}}{d_n} \triangleleft a_1 \cdots a_{n-1}$. \marginpar{El (4) lo agregamos nosotros. ¿Se aclara? ¿C\'omo?}
@@ -132,7 +153,7 @@ We use $\approx$ for standard weak bisimulation.
 						$\implements{\isystemterm}{\systemterm}$, the following holds
 						\begin{itemize}
 							\item $\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}$ by property \ref{prop_state_known};
-							\item $\igetdeltas{\pending}\cdot{\pushbuffer} \triangleleft \flatten{\tpending} \ $ by property \ref{prop_pending};
+							\item $\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}}\triangleleft \flatten{\tpending} \ $ by property \ref{prop_pending};
 							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by property \ref{prop_transactions};
 						\end{itemize}
 						
