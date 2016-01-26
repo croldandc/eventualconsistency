@@ -24,7 +24,7 @@ We have introduced an abstract GSP protocol and a robust streaming server-client
   & 
   \mathrule{\triangread}
   		{\astate \triangleleft \anupdseq}
-		{\iread r \astate  \triangleleft \rvalue r  \anupdseq}  
+		{\iread r \astate  = \rvalue r  \anupdseq}  
 \\
   \multicolumn{3}{c}{\mathrule{\triangremove}
   		{\adelta_1 \triangleleft \anupdseq_1\ \ldots\ \adelta_n \triangleleft \anupdseq_n}
@@ -50,11 +50,11 @@ system. We say $\isystemterm$ implements $\systemterm$ if the following conditio
 	\item \henote{eliminada}
 	% $\rvalue{r}{\flatten{\queuemessage_{A}[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}}$
 	\item $\astate \triangleleft \queuemessage$
-	\item  ${\transactionbuffer}_j\triangleleft{\ttransactionbuffer}_j$ 
+	\item \label{prop_transactions} ${\transactionbuffer}_j\triangleleft{\ttransactionbuffer}_j$ 
 	\item \henote{eliminada}	
 	%$E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i - 1]$
-	\item $\astate_l \triangleleft \flatten {\queuemessage[0 .. \tknown_l - 1]}$
-	\item $\pending_l = \aroundtuplei[0]\ldots\aroundtuplei[h]$ and $\adelta_0\cdots\adelta_h\cdot {\pushbuffer}_l \triangleleft \tpending_l$
+	\item \label{prop_state_known} $\astate_l \triangleleft \flatten {\queuemessage[0 .. \tknown_l - 1]}$
+	\item \label{prop_pending} $\pending_l = \aroundtuplei[0]\ldots\aroundtuplei[h]$ and $\ireduce{\adelta_0\cdots\adelta_h\cdot {\pushbuffer}_l} \triangleleft \flatten{\tpending_l}$
 	\item ${\inclient}_l = \agssegpairi \cdots \agssegpairi[h]$ and $\ireduce{\adelta_0\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..\treceivebuffer_l-1]$
 	% $\length{\inclient}_l = \treceivebuffer_l$ and for all $0 \leq h < \treceivebuffer_l$,  $\inclient[h] = \agssegpair$ and $\adelta\triangleleft{\queuemessage[\tknown + l]}$
 	\item $\tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0$
@@ -90,20 +90,39 @@ We use $\approx$ for standard weak bisimulation.
 \begin{itemize}
    
 	
-   \item{\bf n=k+1}. $\forall (A,C) \ \in \ \mathcal{R}$
+   \item{\bf n=k+1}. $\forall (\systemterm ,\isystemterm ) \ \in \ \mathcal{R}^{-1}$
 	
 			
 			\begin{itemize}
-				\item {\bf rule (\textsc{t-read})}. If $A \arroi{\readtran{r}} A'$, then by rule (\textsc{\footnotesize{t-read}}), $A$ must be the following term: $ \tsystem{\tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ \tilde{A}}{\queuemessage_A}$, therefore, the client $i^{th}$ is only one who changes. So that, $A'$ will be $\tsystem{\tclienti{\update{\tprogram}{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ \tilde{A}}{\queuemessage_A}$. As $(A,C)$ belongs $\mathcal{R}$ then $C$ must be $\clientr{\readins{x}{r}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the read transition is the only one that $C$ could perform.
-				Then, looking at the rule, $C' = \clientr{\update{P}{x}{v}}{\stateclient}\ \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We prove that $(A',C') \ \in \ \mathcal{R}$ if ten properties introduced are keeping.				
+				\item {\bf rule (\textsc{t-read})}. If $\systemterm  \arroi{\readtran{r}} \systemterm '$, then by rule (\textsc{\footnotesize{t-read}}), $\systemterm $ must be the following term: 
+				$\tsystem{\tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}$
+				, therefore, the client $i^{th}$ is the only one who have changed. So that, $\systemterm'$ is 
+				$\tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}$
+				. As $(\systemterm,\isystemterm)$ belongs $\mathcal{R}^{-1}$ then $\isystemterm$ must be $\clientr{\readins{x}{r}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the read transition is the only one that $\isystemterm$ can perform.
+				Then by rule (\textsc{read}), $\isystemterm' = \clientr{\update{P}{x}{v}}{\stateclient}\ \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We will prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}^{-1}$ if the ten properties introduced are keeping.				
 					\begin{enumerate}
-						\item It is easy to see, since $P$ is the same in both clients and the value got back by each read operations is equals because of $(A,C) \ \in \ \mathcal{R}$ then property 1 is worth. 
+						\item The only terms that have changed are the programs from i-esimo client respectively. In particular, the client programs are equals, then, we should show that the value got is the same in both systems, i.e., 
+						$\rvalue{r}{\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}$ 
+						= 
+						$\iread{r}{\iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}}$.
+						Then by \triangread \ It is worth when:
+						$\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer$
+						$\triangleleft$
+						$\iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}$. By \triangapply \ It’s worth if the following relations are satisfied:
+						
+						\begin{itemize}
+							\item $\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}$; but It’s worth by Property \ref{prop_state_known}
+							\item $\igetdeltas{\pending}\cdot{\pushbuffer} \triangleleft \flatten{\tpending} \ $; It finally is worth by \ref{prop_pending}
+							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$; It finally is worth by Property \ref{prop_transactions}
+						\end{itemize}
+						
+						 
 						\item to 9. Do not change.
 						
 
 					\end{enumerate}
 	
-			\item {\bf rule (\textsc{t-update})}. If $A \arroi{\updatetran{u}} A'$, then by rule (\textsc{\footnotesize{t-update}}), $A$ must be the following term: $ \tsystem{\tclienti{\tupdateins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ \tilde{A}}{\queuemessage_A}$, therefore, the client $i^{th}$ is only one who changes. So that, $A'$ will be $\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer \cdot \tupdate}{\tsent}{\treceivebuffer}\bigpar\ \tilde{A}}{\queuemessage_A}$. We know that $(A,C)$ belongs $\mathcal{R}$, then $C$ must be $\clientr{\updateins{u}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the update transition is the only one that $C$ could perform. Then, $C' = \clientr{P}{\update{E}{\transactionbuffer}{\appendplus{E.\transactionbuffer}{u}}}\ \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We prove that $(A',C') \ \in \ \mathcal{R}$ if ten properties introduced are keeping.					
+			\item {\bf rule (\textsc{t-update})}. If $A \arroi{\updatetran{u}} A'$, then by rule (\textsc{\footnotesize{t-update}}), $A$ must be the following term: $ \tsystem{\tclienti{\tupdateins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ \tilde{A}}{\queuemessage_A}$, therefore, the client $i^{th}$ is only one who changes. So that, $A'$ will be $\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer \cdot \tupdate}{\tsent}{\treceivebuffer}\bigpar\ \tilde{A}}{\queuemessage_A}$. We know that $(A,C)$ belongs $\mathcal{R}$, then $\isystemterm$ must be $\clientr{\updateins{u}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the update transition is the only one that $C$ could perform. Then, $C' = \clientr{P}{\update{E}{\transactionbuffer}{\appendplus{E.\transactionbuffer}{u}}}\ \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We prove that $(A',C') \ \in \ \mathcal{R}$ if ten properties introduced are keeping.					
 						\begin{enumerate}
 							\item States $\rvalue{r}{\flatten(\queuemessage_{A}[0..\tknown_i-1] \cdot \tpending_i) \cdot \ttransactionbuffer_i} = \readp{r}{\applyplus{E_{i}.\known}{E_{i}.\pending \cdot E_{i}.\pushbuffer \cdot E_{i}.\transactionbuffer}}$ however after applying rules, the transaction buffers change. Then, performing a read action in abstract GSP, $\rvalue{r}{\flatten(\queuemessage_{A}[0..\tknown_i-1] \cdot \tpending_i) \cdot \ttransactionbuffer_i \cdot \tupdate}$ and the implementation, $\readp{r}{\applyplus{E_{i}.\known}{E_{i}.\pending \cdot E_{i}.\pushbuffer \cdot \appendplus{E.\transactionbuffer}{u}}}$. We rename $\ttransactionbuffer \cdot \tupdate$ by $\ttransactionbuffer$' and  $\appendplus{E.\transactionbuffer}{u}$ by $E_{i}.\transactionbuffer$'. If we show that $\forall u: Update$ such that $\appendplus{E.\transactionbuffer}{u} \triangleleft \ttransactionbuffer \cdot \tupdate$, we will prove that $(A',C') \ \in \ \mathcal{R}$. By property 3, we know that $\ E_{i}.\transactionbuffer \triangleleft [\ttransactionbuffer_i]$, using the property of relation between Delta and Update, $\appendplus{E.\transactionbuffer}{u} \triangleleft \ttransactionbuffer \cdot \tupdate$.
 							\item to 9. Do not change.
