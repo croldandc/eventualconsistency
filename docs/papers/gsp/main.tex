@@ -639,15 +639,15 @@ We have introduced an abstract GSP protocol and a robust streaming server-client
 		{\iremove{\adelta_1 \cdots \adelta_n}{\adelta_n} \triangleleft \anupdseq_1 \cdots \anupdseq_{n-1}}  }
 \end{array}
 \]
-%\begin{itemize}
-%	\item On $\mathit{Delta} \times \mathit{Update}^*$, let $\triangleleft$ be the smallest relation such that (1) $\emptydelta \triangleleft []$, and
-%(2) $d \triangleleft a$ implies $append(d,u) \triangleleft a \cdot u$ for all updates $u$, and (3) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $reduce(d_1 \ldots d_n) \triangleleft a_1 \cdots a_n$ and (4) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $\remove{d_1 \ldots d_{n}}{d_n} \triangleleft a_1 \cdots a_{n-1}$. \marginpar{El (4) lo agregamos nosotros. ¿Se aclara? ¿C\'omo?}
-%  
-%\item On $State \times Update^*$, let $\triangleleft$ be the smallest relation such that (1) $\initialstate \triangleleft []$, and
-%(2) $s \triangleleft a \land \ d_1 \triangleleft a_1 \land \ \ldots \ \land \ d_n \triangleleft a_n$ implies $apply(s,d_1 \ldots d_n) \triangleleft a \cdot a_1 \cdots a_n$.
-%\end{itemize}
-%
-% 
+\begin{itemize}
+	\item On $\mathit{Delta} \times \mathit{Update}^*$, let $\triangleleft$ be the smallest relation such that (1) $\emptydelta \triangleleft []$, and
+(2) $d \triangleleft a$ implies $append(d,u) \triangleleft a \cdot u$ for all updates $u$, and (3) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $reduce(d_1 \ldots d_n) \triangleleft a_1 \cdots a_n$ and (4) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $\remove{d_1 \ldots d_{n}}{d_n} \triangleleft a_1 \cdots a_{n-1}$. \marginpar{El (4) lo agregamos nosotros. ¿Se aclara? ¿C\'omo?}
+  
+\item On $State \times Update^*$, let $\triangleleft$ be the smallest relation such that (1) $\initialstate \triangleleft []$, and
+(2) $s \triangleleft a \land \ d_1 \triangleleft a_1 \land \ \ldots \ \land \ d_n \triangleleft a_n$ implies $apply(s,d_1 \ldots d_n) \triangleleft a \cdot a_1 \cdots a_n$.
+\end{itemize}
+
+ 
 
 \begin{definition} Let  $\systemterm = \abstsyst[@][@][\Absclient_j]$ with $\Absclient_l={\abstcliJ}$be a \tgspcalculus\ system and 
 $\isystemterm = \concsyst $  with $\iserver = \iserverins$ and $\iclient_l = \addid{\iclientinstJ}[{\cid{_l}}]$ 
