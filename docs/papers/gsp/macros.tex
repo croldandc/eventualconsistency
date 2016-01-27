@@ -151,16 +151,17 @@
 
 
 %sets 
-\newcommand{\idset}{\mathcal{\mathcal{I}}}
+\newcommand{\idset}{\textcolor{blue}{\mathcal{I}}}
 
-\newcommand{\verticesets}{\mathbb{V}}
-\newcommand{\updatesets}{\mathcal{U}}
-\newcommand{\readset}{\mathcal{R}}
-\newcommand{\varset}{\mathcal{X}}
-\newcommand{\valueset}{\mathcal{V}}
+\newcommand{\verticesets}{\textcolor{blue}{\mathbb{V}}}
+\newcommand{\updatesets}{\textcolor{blue}{\mathcal{U}}}
+\newcommand{\readset}{\textcolor{blue}{\mathcal{R}}}
+\newcommand{\varset}{\textcolor{blue}{\mathcal{X}}}
+\newcommand{\valueset}{\textcolor{blue}{\mathcal{V}}}
+\newcommand{\opset}{\textcolor{blue}{\mathcal{O} }}
+\newcommand{\cid}{\textcolor{blue}{{\sf i}}}
 
-\newcommand{\cid}{{\sf i}}
-
+\newcommand{\relrestriccion}[1]{\downarrow_{#1}}
 
 \newcommand{\bigpar}{|\!|}
 \newcommandx{\tsystem}[2][2=\systemterm]{#1\ \bigpar\ #2}
@@ -220,7 +221,7 @@
 \newcommand{\plet}[3]{{\tt let}\ #1 = #2 \ {\tt in}\ #3}
 
 
-\newcommand{\environmentterm}{E}
+\newcommand{\environmentterm}{\mathbb{A}}
 
 \newcommand{\nat}{\mathbbm{N}}
 
@@ -230,8 +231,8 @@
 
 %Labels
 
-\newcommandx{\udec}[2][1=u,2=\vertice]{{#1\!^{\scalebox{.8}{$#2$}}}}
-\newcommandx{\vertice}[1][1=v]{\mathbbmss{v}}
+\newcommandx{\udec}[2][1=u,2=\vertice,usedefault=@]{{#1\!^{\scalebox{.8}{$#2$}}}}
+\newcommandx{\vertice}[2][1=v, 2={}]{\mathbbmss{#1}{#2}}
 \newcommand{\readtran}[1]{\textit{rd}(#1)}
 \newcommand{\receive}{\textit{receive}}
 
@@ -543,13 +544,16 @@
 
 %CONSISTENCY GRAMMAR
 
-\newcommand{\environment}[5]{\{#1 , #2, #3, #4, #5\}}
+\newcommandx{\environment}[6][6=\sse]{\langle #1 , #2, #6,  #3, #4, #5\rangle}
 \newcommand{\environmenttran}[8]{\{#1 , #2, #3, #4, #5, #6, #7, #8\}}
 
 \newcommand{\vis}{\textsc{\scriptsize{VIS}}}
 \newcommand{\op}{\textsc{\scriptsize{OP}}}
 \newcommand{\arb}{\textsc{\scriptsize{AR}}}
 \newcommand{\so}{\textsc{\scriptsize{SO}}}
+\newcommand{\sse}{\textsc{\scriptsize{SS}}}
+
+
 \newcommand{\soby}[2]{#1\triangleright_i{#2}}
 \newcommand{\updateinqueuemessage}[2]{\queuemessage[#1]_#2}
 \newcommand{\rb}{\textsc{\scriptsize{RB}}}

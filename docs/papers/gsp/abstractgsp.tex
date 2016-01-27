@@ -1,13 +1,14 @@
 % !TEX root = main.tex
 
 
-\section{Abstract Global Sequence Protocol Language}
+\section{Global Sequence Protocol Calculus}
+\label{sec:gsp}
 
 \subsection{Syntax}
 
 We rely on countable sets $\varset$ of program variables $x,x',\ldots$ 
 and $\idset$ of client identifiers $\cid,\cid',\ldots,\cid_1,\ldots$.
-Clients interact with a storage by performing operations in $\mathcal{O} = \updatesets\cup\readset$,
+Clients interact with a storage by performing operations in $= \updatesets\cup\readset$,
 where the elements in $\updatesets$ denote update operations and those in $\readset$ 
 stand for read operations. 
 None operation can simultaneously read and update a store, therefore we assume
