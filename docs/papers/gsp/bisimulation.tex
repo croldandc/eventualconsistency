@@ -94,11 +94,14 @@ system. We say $\isystemterm$ implements $\systemterm$ if the following conditio
 	% $\rvalue{r}{\flatten{\queuemessage_{A}[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}}$
 	\item $\astate \triangleleft \queuemessage$
 	\item \label{prop_transactions} ${\transactionbuffer}_j\triangleleft{\ttransactionbuffer}_j$ 
-	\item \henote{eliminada}	
+	\item \chnote{revivi}	
 	%$E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i - 1]$
+		\label {prop_inclient} if $\inclient_l = \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]$ then 
+		$\adelta[_1] \triangleleft \queuemessage_A[\tknown_i] \ldots \adelta[_k] \triangleleft \queuemessage_A[\tknown_l + \treceivebuffer_l - 1]$
 	\item \label{prop_state_known} $\astate_l \triangleleft \flatten {\queuemessage[0 .. \tknown_l - 1]}$
 	\item \label{prop_pending} $\pending_l = \aroundtuplei[0]\ldots\aroundtuplei[h]$ and $\ireduce{\adelta_0\cdots\adelta_h\cdot {\pushbuffer}_l} \triangleleft \flatten{\tpending_l}$
 	\item \label{prop_size_buffersent} $|\tsent_l| = n$ \chnote{esto no lo tenia en el modelo original. Chequear que n ni send en abstracto no se modifiquen}
+	%\item \label{prop_size_inclient} $|\inclient_l| = \treceivebuffer_l$ \chnote{esto es nuevo.}
 	
 	\item ${\inclient}_l = \agssegpairi \cdots \agssegpairi[h]$ and $\ireduce{\adelta_0\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..\treceivebuffer_l-1]$
 	% $\length{\inclient}_l = \treceivebuffer_l$ and for all $0 \leq h < \treceivebuffer_l$,  $\inclient[h] = \agssegpair$ and $\adelta\triangleleft{\queuemessage[\tknown + l]}$
@@ -311,19 +314,66 @@ We use $\approx$ for standard weak bisimulation.
 					\end{enumerate}
 					
 	
+	\item {\bf rule \ruleName{t-pull}}. Then, $\systemterm  \arroi{\pulltran} \systemterm '$ with 
+				\[\begin{array}{r@{=}l}
+					\systemterm & \tsystem{\tclienti{\tpullins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]
+					\\
+					\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown+\treceivebuffer}{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer {\ -1}]}{\ttransactionbuffer}{\tsent}{0}}[{\systemterm['']}]	
+				  \end{array}
+				\]
+		
+				Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
+				\[ \addid{\iclientinst[\tpullins][@]
+						[@]%[\aseqround\cdot{\aroundtuple}\cdot{\aseqround[']}]
+						[@][@][@][n][{\agssegpair[{\adelta[']}]}\cdot\inclient]}
+								\ \bigpar \ \isystemterm['']\]
+				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
+				$\isystemterm \arroi{\pulltran} \isystemterm[']$ with
+				\[\begin{array}{r@{=}l}
+					\isystemterm['] & \addid{\iclientinst[P]
+						 [\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}]
+						 [\aseqround']
+						 [@][@]
+						 [{\receivebuffer}][n][\epsilon]}\ \bigpar \ \isystemterm['']	\\
+					   \aseqround['] & filter\ (\geq \amxrf[_k](\cid)) \ \aseqround \\
+						\inclient & \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]
+				  \end{array}		
+				\]
+				
+				We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				by checking the properties in \defref{def:implementation}.	
+						\chnote{esta oka la regla pull1? el in del cliente no entiendo porque tiene el delta y la f, para que la usas?}
+					\begin{enumerate}
+						\item We will inspect the terms that have changed in client $\cid$ knowing as hypothesis that $\implements{\isystemterm}{\systemterm}$.
+						\begin{itemize}
+							\item By \propref{prop_state_known}, $\astate_l \triangleleft \flatten {\queuemessage[0 .. \tknown_l - 1]} \ $, however, after $\pulltran$ transition, we should build the following proof for 
+						$\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_l +\treceivebuffer_l - 1]} \ $
+					\[
+						  \mathrulean{\lemref{lemma:apply}}
+						  {
+							\mathrulean{\triangapply}
+								{
+								\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}
+								\quad 
+								\adelta[_1] \triangleleft \queuemessage_A[\tknown_l] \ldots \adelta[_k] \triangleleft \queuemessage_A[\tknown_l + \treceivebuffer_l - 1]
+								}
+								{\iapply{\known}{\adelta[_1]\cdots\adelta[_k]}\triangleleft \flatten{\queuemessage[0 .. \tknown_l +\treceivebuffer_l - 1]}
+								}
+							}
+  						{\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_l +\treceivebuffer_l - 1]}}  
+					\]
+					  The last step is worth by \propref{prop_inclient}.
+						\item By \propref{prop_inclient}, if $\inclient_l = \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]$ then 
+		$\adelta[_1] \triangleleft \queuemessage_A[\tknown_i] \ldots \adelta[_k] \triangleleft \queuemessage_A[\tknown_l + \treceivebuffer_l - 1]$. After $\pulltran$ transition, $\inclient_l$['] = $\epsilon$ and $\treceivebuffer_l$ = 0, then by 
+		\triangemptydelta, this property is hold.
+						\item We have to prove that $\ireduce{\adelta[_m]\cdots\adelta[_h]} \triangleleft \flatten{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer -1]}$ (PENDIENTE)
+						\end{itemize}
+		
+				
+
+					\end{enumerate}
 	
-						\item {\bf rule (\textsc{t-pull})}. If $A \arroi{\pulltran} A'$, then by rule (\textsc{\footnotesize{t-pull}}), $A$ must be the following term: $ \tsystem{\tclienti{\tpullins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ \tilde{A}}{\queuemessage_A}$, therefore, the client $i^{th}$ is only one who changes. So that, $A'$ will be $\tclienti{\tprogram}{\tknown+\treceivebuffer}{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer]}{\ttransactionbuffer}{\tsent}{0} \bigpar \ \tilde{A} \bigpar\ \queuemessage_A$. Due to $(A,C)$ belongs $\mathcal{R}$, then $C$ must be $\clientr{\pullins}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the pull transition is the only one that $C$ could perform. Then, after applying the rule, $C' = \clientr{P}{\updatethree{E}{\known}{\reducestate{E.\known}{E.\receivebuffer}}{\receivebuffer}{\epsilon}{E.\pending}{\remove{E.\pending}{E.\receivebuffer}}} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We prove that $(A',C') \ \in \ \mathcal{R}$ if ten properties introduced are keeping.	
 						
-						\begin{enumerate}
-							\item We have to prove that after push transitions, the operations $rvalue$ and $read$ get back the same value. Then 
-							$\rvalue{r}{\flatten{\queuemessage_{A}[0..\tknown_i+\treceivebuffer-1] \cdot (\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer])} \cdot \ttransactionbuffer_i} = \readp{r}{\curstate{\reducestate{E.\known}{E.\receivebuffer}}{\remove{E.\pending}{E.\receivebuffer}}{E.\pushbuffer}{E.\transactionbuffer}}$ = $\readp{r}{\applyplus{\reducestate{E.\known}{E.\receivebuffer}}{\remove{E.\pending}{E.\receivebuffer} \cdot E.\pushbuffer \cdot E.\transactionbuffer}}$. On the one hand, property 5 states that $E_{i}.known \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1]$, on the other hand by property 4, $E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i -1]$, after, using the property of the relation $\triangleleft$ between state and updates, we know that $\applyplus{E_{i}.\known}{E_{i}.\receivebuffer[0].delta \cdots \ E_{i}.\receivebuffer[\treceivebuffer_i-1].delta} \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1] \cdot  \cdots  \cdot \ \queuemessage_A[\tknown_i + \treceivebuffer_i -1]$. As you note, the left side is reducestate's definition, then $\reducestate{E.\known}{E.\receivebuffer} u\triangleleft \queuemessage_A[0 \ldots \tknown_i + \treceivebuffer_i -1]$. Next, property by 6., we know that $E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i$, if we apply the extra axiom of $\triangleleft$, we will get that $\remove{E_i.\pending \cdot E_i.\pushbuffer}{E_i.\receivebuffer[0].delta} \triangleleft \tpending \setminus \queuemessage[\tknown]$, so that, $\remove{E_i.\pending \cdot E_i.\pushbuffer}{E_i.\receivebuffer} \triangleleft \tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer]$. Therefore it is guaranteed.
-							\item It does not change.
-							\item It does not change.
-							\item $E_{i}.\receivebuffer$ is $\epsilon$ and $\treceivebuffer$ is 0, therefore it property is guaranteed.
-							\item It does not change.
-							\item We know that $E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i$, if we apply the extra axiom of $\triangleleft$, we will get that $\remove{E_i.\pending \cdot E_i.\pushbuffer}{E_i.\receivebuffer[0].delta} \triangleleft \tpending \setminus \queuemessage[\tknown]$, so that, $\remove{E_i.\pending \cdot E_i.\pushbuffer}{E_i.\receivebuffer} \triangleleft \tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer]$.
-							\item to 9. do not change.
-						\end{enumerate}
 					\item {\bf rule (\textsc{t-confirmed})} If $A \arroi{\confirmedtran} A'$, then by rule (\textsc{\footnotesize{t-confirmed}}), $A$ must be the following term: $ \tsystem{\tclienti{\tconfirmedins{x}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ \tilde{A}}{\queuemessage_A}$, therefore, the client $i^{th}$ is only one who changes. So that, $A'$ will be $\tsystem{\tclienti{\update{\tprogram}{x}{\tpending \neq \emptysequence \vee\ \ttransactionbuffer \neq \epsilon}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ \tilde{A}}{\queuemessage_A}$. As $(A,C)$ belongs $\mathcal{R}$ then $C$ must be $\clientr{\confirmedins{x}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the read transition is the only one that $C$ could perform.
 				Then, looking at the rule, $C' = \clientr{\update{P}{x \mapsto E.\pending = \epsilon \lor E.\pushbuffer = \epsilon \lor E.\transactionbuffer = \epsilon}{\textbf{true}}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We prove that $(A',C') \ \in \ \mathcal{R}$ if ten properties introduced are keeping.				
 					\begin{enumerate}
