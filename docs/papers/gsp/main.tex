@@ -614,16 +614,24 @@ computes the states of the internal queues,i.e., if these has any element. Rules
 \section{Consistency Guarantees}
 \label{sec:properties-gsp}
 
-We shall introduce a series of store-level consistency guarantees and then we shall show which are captured by application written in GSP. We start identifying three kinds of relations between actions of update and read:
+Consistency guarantees of models are usually characterised in terms of abstract executions~\cite{}, defined in terms of 
+relations different relations between read and write events.  In particular, we will use the following relations:
 
- \paragraph{Session Order} relates whatever pair of actions from the same client, indicating the program order. It is a total order on actions. 
+ 
+%
+%We shall introduce a series of store-level consistency guarantees and then we shall show which 
+%are captured by application written in GSP. We start identifying three kinds of relations between actions of update and read:º
 
- \paragraph{Visibility} relates Updates with Reads. It is used to indicate is if an action of Update is visible for an action of Read.
+\begin{itemize}
+ \item {\bf Session Order}: it relates pairs of events corresponding to operations performed by the same client, indicating the program order. 
+  This is a total order over the events of the same client. 
 
- \paragraph{Arbitration} relates Updates with Updates. It is used to resolve update conflicts. It is a total order on actions of update.
+ \item{\bf Visibility}: it   relates updates and reads. It is used to indicate is if an action of Update is visible for an action of Read.
 
+ \item{\bf Arbitration}: it  Updates with Updates. It is used to resolve update conflicts. It is a total order on actions of update.
+\end{itemize}
 
-
+We know provide an operational approah to associate abstract executions to systems.
 
 We extend the GSP language with a new term which capture the relations amount operation in our system. 
  

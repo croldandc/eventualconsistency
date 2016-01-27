@@ -10,7 +10,7 @@ We have introduced an abstract GSP protocol and a robust streaming server-client
   &
   \mathrule{\triangappend}
   		{\adelta \triangleleft \anupdseq}
-		{\iappend \adelta \anupd  \triangleleft \anupdseq \cdot \anupd}
+		{\iappend \adelta \anupd  \triangleleft \anupdseq \cdot \tupdate}
   &
    \mathrule{\triangreduce}
    		{\adelta[_1] \triangleleft \anupdseq[_1] \ldots \adelta[_n] \triangleleft \anupdseq[_n]}
@@ -25,10 +25,10 @@ We have introduced an abstract GSP protocol and a robust streaming server-client
   \mathrule{\triangread}
   		{\astate \triangleleft \anupdseq}
 		{\iread r \astate  = \rvalue r  \anupdseq}  
-\\
-  \multicolumn{3}{c}{\mathrule{\triangremove}
-  		{\adelta[_1] \triangleleft \anupdseq[_1]\ \ldots\ \adelta[_n] \triangleleft \anupdseq[_n]}
-		{\iremove{\adelta[_1] \cdots \adelta[_n]}{\adelta[_n]} \triangleleft \anupdseq[_1] \cdots \anupdseq[_{n-1}]}  }
+%\\
+%  \multicolumn{3}{c}{\mathrule{\triangremove}
+%  		{\adelta[_1] \triangleleft \anupdseq[_1]\ \ldots\ \adelta[_n] \triangleleft \anupdseq[_n]}
+%		{\iremove{\adelta[_1] \cdots \adelta[_n]}{\adelta[_n]} \triangleleft \anupdseq[_1] \cdots \anupdseq[_{n-1}]}  }
 \end{array}
 \]
 
@@ -50,6 +50,8 @@ We have introduced an abstract GSP protocol and a robust streaming server-client
 and $\anupdseq =\anupdseq['] \cdot \anupdseq[_1] \cdots \anupdseq[_n]$. By  rule \ruleName{\triangapply} on the premises of the 
 above proof, we conclude that  $\iapply{\astate}{\adelta[_0]\cdots\adelta[_n]}\triangleleft \anupdseq$.
 
+
+
 $\Leftarrow)$ Follows analogously. 
 \end{proof}
 
@@ -61,13 +63,19 @@ $\Leftarrow)$ Follows analogously.
 
 \[
    \mathrulean{\triangreduce}
-  		{\mathrulean{}
-   			{}
-				{\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_{n-1}] \triangleleft \anupdseq[_{n-1}]}	\qquad\qquad
+  					{\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_{n-1}] \triangleleft \anupdseq[_{n-1}]\qquad\qquad
 	   		\adelta[_n] \triangleleft \anupdseq[_n]  
 		}
-		{\ireduce {\adelta[_1] \cdots \adelta[_{n-1}] \cdot \adelta[_{n}]} \triangleleft \anupdseq \cdot \anupdseq[_n]}	
+		{\ireduce {\adelta[_0] \cdots \adelta[_{n-1}] \cdot \adelta[_{n}]} \triangleleft \anupdseq_0\cdots\anupdseq_n \cdot \anupdseq[_{n-1}]}	
 \]
+Hence, $\anupdseq = \anupdseq[_0]\cdots\anupdseq[_{n-1}]$. The proof is completed by using rule \ruleName{\triangreduce} on
+$\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_{n-1}] \triangleleft \anupdseq[_{n-1}]$.
+
+ \[  \mathrule{\triangreduce}
+   		{\adelta[_1] \triangleleft \anupdseq[_1] \ldots \adelta[_n] \triangleleft \anupdseq[_{n-1}]}
+		{\ireduce {\adelta[_1] \cdots \adelta[_n]} \triangleleft \anupdseq[_1] \cdots \anupdseq[_{n-1}]}
+\]
+ 
 %and $\anupdseq =\anupdseq['] \cdot \anupdseq[_1] \cdots \anupdseq[_n]$. By  rule \ruleName{\triangapply} on the premises of the 
 %above proof, we conclude that  $\iapply{\astate}{\adelta[_0]\cdots\adelta[_n]}\triangleleft \anupdseq$.
 
