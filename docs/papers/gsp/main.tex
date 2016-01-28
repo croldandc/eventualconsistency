@@ -674,10 +674,11 @@ by inference rules in \figref{fig:comp-abst-executions}
  \begin{figure}[t]
  \[
  \begin{array}{l}
-\mathrule{e-update}
+\mathrule{a-update}
 	{
 	\begin{array}{l}
-		\systemterm \arroi{\updatetran{u}} \systemterm' \qquad v \notin dom(\op)
+		\systemterm \arroi{\updatetran{u}} \systemterm' 
+		\qquad \vertice \notin dom(\op)
 		\qquad \op' = \op\upd \vertice u
 		 \\[2pt]
 		 \sse' = \sse\upd \cid {\sse(\cid)\cup\{\vertice\}}
@@ -689,8 +690,8 @@ by inference rules in \figref{fig:comp-abst-executions}
 		  \arroi{\updatetran{u}}  
 		  \environment{\systemterm'}{\op \ \cup \ \{v \mapsto \updatetran{u} \}}{\soby{\so}{v}}{\vis}{\arb}
 	}
-\\[27pt]	
-\mathrule{e-read}
+\\[32pt]	
+\mathrule{a-read}
 	{ 
 	\begin{array}{l}
 		\systemterm \arroi{\readtran{r}} \systemterm' 
@@ -705,17 +706,30 @@ by inference rules in \figref{fig:comp-abst-executions}
 	 {\environment{\systemterm}{\op}{\so}{\vis}{\arb} 
 	   \arroi{\readtran{\udec[r]}} \environment{\systemterm'}{\op'}{\so'}{\vis'}{\arb}[\sse']}
 \\[27pt]	
-\mathrule{e-other}
+\mathrule{a-int}
 	{ 
 	\begin{array}{l}
-		\systemterm \tr{\mu} \systemterm' 
-		 \qquad \mu \neq  (\cid, \updatetran{u}), (\cid,\readtran{r})
-		 \\[2pt]
-		 \arb' = \arb \cup \{ (\vertice, \vertice[w])\ | \ \ell = |S|-1 \land \udec \in S[0..\ell-1] \land \udec[@][{\vertice[w]}]= S[\ell]\}
+		\queuemessage \bigpar \Absclient \tr{\mu} \queuemessage \bigpar \Absclient' 
+		\qquad \mu \neq  (\cid, \updatetran{u}), (\cid,\readtran{r})
 	\end{array}
 	 }
-	 {\environment{\systemterm}{\op}{\so}{\vis}{\arb} 
-	   \tr{\mu} \environment{\systemterm'}{\op}{\so}{\vis}{\arb'}}
+	 {\environment{\queuemessage \bigpar \Absclient}{\op}{\so}{\vis}{\arb} 
+	   \tr{\mu} 
+	   \environment{\queuemessage' \bigpar \Absclient'}{\op}{\so}{\vis}{\arb}}
+\\[27pt]	
+\mathrule{a-arb}
+	{ 
+	\begin{array}{l}
+		\queuemessage \bigpar \Absclient \tr{\mu} \queuemessage' \bigpar \Absclient' 
+		\qquad \queuemessage\neq\queuemessage'
+		 \qquad \mu \neq  (\cid, \updatetran{u}), (\cid,\readtran{r})
+		 \\[2pt]
+		 \arb' = \arb \cup \{ (\vertice, \vertice[w])\ | \ \ell = |\queuemessage'|-1 \land \udec \in \queuemessage'[0..\ell-1] \land \udec[@][{\vertice[w]}]= \queuemessage'[\ell]\}
+	\end{array}
+	 }
+	 {\environment{\queuemessage \bigpar \Absclient}{\op}{\so}{\vis}{\arb} 
+	   \tr{\mu} 
+	   \environment{\queuemessage' \bigpar \Absclient'}{\op}{\so}{\vis}{\arb'}}
 
 \end{array}
  \]
@@ -763,28 +777,32 @@ and $\udec \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransa
 case analysis on the last transition:
 	
 	\begin{itemize}
-        \item {\bf rule (\textsc{E-READ})}. Then,        $\op' = \op\upd\vertice r$ with $r\in\readset$.  
-        If $\vertice[v][']\in\dom\op$ and $\op(\vertice[v]['])\in\updatesets$, then
-        $\vertice\in\dom{\op'}$ because the new event $\vertice$ is associated with the read operation $r$. 
-        Moreover,  $\systemterm''{\arroi{\readtran{\udec[r]}}}\systemterm'$ implies 
-                $\queuemessage = \queuemessage'$ and for all ${\cid}$,  ${\tknown'}_{\cid} = \tknown_{\cid}$ and 
-        $\tpending'_{\cid} = \tpending_{\cid}$.
-                Since $\queuemessage[0..\tknown_i-1] = \queuemessage'[0..\tknown_i-1]$ because of 
-        \henote{lemma.....}.
-        Hence, the case follows by inductive hypothesis.
-$\vertice[w]$
-%        
+        
+        \item rule \ruleName{a-read}. Then,  $\systemterm''{\arro{\readtranaux{r^{\vertice[w]}}}[\cidj]}\systemterm'$ and     
+        $\op = \op'\upd{\vertice[w]}r$ with $r\in\readset$.  
+        If $\vertice[v]\in\dom\op$ and $\op(\vertice[v])\in\updatesets$, then
+        $\vertice\in\dom{\op'}$ because the new event $\vertice[w]$ is associated with the read operation $r$. 
+        Moreover,  $\systemterm''{\arro{\readtran{\udec[r]}}[\cidj]}\systemterm'$ implies 
+        $\queuemessage = \queuemessage'$ and for all ${\cid}$,  ${\tknown'}_{\cid} = \tknown_{\cid}$ and 
+        $\tpending'_{\cid} = \tpending_{\cid}$. Therefore, 
+        $\queuemessage[0..\tknown_{\cid}-1] = \queuemessage'[0..\tknown_{\cid}-1]$ for all $\cid$.
+                Hence, the case follows by inductive hypothesis.
+        
 %        ate operation then it must not be $v$, so that $\{x \mapsto \updatebyclient{i} \} \in\ \op$, then by inductive hypothesis $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$. When $\systemterm \arroi{\readtran{r}} \systemterm'$, $\tknown_i$, $\tpending_i$,$\ttransactionbuffer_i$ do not change.
-	\item {\bf rule (\textsc{E-UPDATE})}. Then, $\systemterm''{\arroi{\updatetranaux{u^{\vertice[w]}}}}\systemterm'$. There are two possibilities:
-				
-				
-					\begin{itemize}
-						\item {\bf $\vertice \neq \vertice[w] $}. Then, the case follows by inductive hypothesis. 
+	
+	
+	\item rule \ruleName{a-update}. Then, $\systemterm''{\arro{\updatetranaux{u^{\vertice[w]}}}[\cidj]}\systemterm'$
+	and     
+        $\op = \op'\upd{\vertice[w]}r$ with $u\in\updatesets$. There are two possibilities:
+		\begin{itemize}
+			\item {\bf $\vertice \neq \vertice[w] $}. Then, the case follows  analogously to the previous case by using inductive hypothesis. 
 						%Then we can use inductive hypothesis, so that it is easy to see that if $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$ then $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i] \cdot u_{t}^v$ too.
-						\item  {\bf $\vertice = \vertice[w] $}. When $\systemterm \arroi{\updatevtran{u}{v}} \systemterm'$, $u^v \in \ttransactionbuffer'_i$ (with $\ttransactionbuffer'_i$ transaction queue in $\systemterm'$) because $\ttransactionbuffer'_i = \ttransactionbuffer_i \cdot u^v$. It is immediate to note that $u^x \in\  \queuemessage[0..\tknown'_i-1] \cdot \tpending'_i \cdot [\ttransactionbuffer'_i]$.
+			
+			\item  {\bf $\vertice = \vertice[w] $}. Note that $\systemterm''{\arro{\updatetranaux{u^{\vertice[w]}}}[\cidj]}\systemterm'$ 
+			implies  $u^{\vertice[w]} \in \ttransactionbuffer'_{\cidj}$ (with $\ttransactionbuffer'_i$ transaction queue in $\systemterm'$) because $\ttransactionbuffer'_i = \ttransactionbuffer_i \cdot u^v$. It is immediate to note that $u^x \in\  \queuemessage[0..\tknown'_i-1] \cdot \tpending'_i \cdot [\ttransactionbuffer'_i]$.
 					\end{itemize}
-				\item {\bf rule (\textsc{E-PUSH})}. As $\op$ do not change, then by inductive hypothesis, $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i] \equiv\ u^x \in\  \queuemessage[0..\tknown_i-1] \cdot (\tpending_i \cdot [\ttransactionbuffer_i]) \cdot \epsilon$. When $\systemterm \arroi{\pushtran} \systemterm'$, $\tknown_i$' = $\tknown_i$, $\tpending_i$' = $\tpending_i \cdot [\ttransactionbuffer_i]$ and $\ttransactionbuffer_i$' = $\epsilon$.
-\item {\bf rule (\textsc{E-PULL})}. As $\op$ do not change, then by inductive hypothesis, $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$. We should prove that it is equivalent to $u^x \in\  \queuemessage[0..\tknown_i - 1 + \treceivebuffer_i] \cdot \tpending_i \setminus \queuemessage[\tknown_i .. \tknown_i + \treceivebuffer_i] \cdot [\ttransactionbuffer_i]$. There are two interesting cases to consider:
+				\item {\bf rule (\textsc{a-PUSH})}. As $\op$ do not change, then by inductive hypothesis, $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i] \equiv\ u^x \in\  \queuemessage[0..\tknown_i-1] \cdot (\tpending_i \cdot [\ttransactionbuffer_i]) \cdot \epsilon$. When $\systemterm \arroi{\pushtran} \systemterm'$, $\tknown_i$' = $\tknown_i$, $\tpending_i$' = $\tpending_i \cdot [\ttransactionbuffer_i]$ and $\ttransactionbuffer_i$' = $\epsilon$.
+\item {\bf rule (\textsc{a-PULL})}. As $\op$ do not change, then by inductive hypothesis, $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$. We should prove that it is equivalent to $u^x \in\  \queuemessage[0..\tknown_i - 1 + \treceivebuffer_i] \cdot \tpending_i \setminus \queuemessage[\tknown_i .. \tknown_i + \treceivebuffer_i] \cdot [\ttransactionbuffer_i]$. There are two interesting cases to consider:
 		\begin{itemize}
 			\item If $u^x \in\ \tpending_i\  \land\ u^x \notin\ \queuemessage[\tknown_i .. \tknown_i + \treceivebuffer_i]$, then $u^x \in \ \tpending_i$'.
 			\item If $u^x \in\ \tpending_i\  \land\ u^x \in\ \queuemessage[\tknown_i .. \tknown_i + \treceivebuffer_i]$, then $u^x \notin \ \tpending_i$' but $u^x \in\ \queuemessage[\tknown_i .. \tknown_i + \treceivebuffer_i]$. 
@@ -833,14 +851,14 @@ Let $\textsc{\small{SO}}_R$ the se\cond component of the relation $\textsc{\smal
 case analysis on the last transition:
 	
 	\begin{itemize}
-        \item {\bf rule (\textsc{E-READ})}. We know that $v$ is fresh, therefore, $v$ have not be neither $x$ nor $y$ because there exists $z$ such that, $z$ happens after from $x$ and $y$. There are only two possibilities:
+        \item {\bf rule (\textsc{a-READ})}. We know that $v$ is fresh, therefore, $v$ have not be neither $x$ nor $y$ because there exists $z$ such that, $z$ happens after from $x$ and $y$. There are only two possibilities:
 					
 					\begin{itemize}
 						\item $z = v$. As $(y,z) \in \ \textsc{\small{SO}}_R$, then $y$ and $z$ are from the same client, called $i$. We are only interested in relations of $update \times\ read$. We know that $v$ is associated to an read action besides $x$ have to be an update action. As $(x,y) \in \ \textsc{\small{VIS}}$' then $y$ is an read action,i.e., $\{y \mapsto \readbyclient{i} \}\ \in \ \op$.By Lemma xx, there exists an update $u$ such that $u^x \in\ \ \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$. Substituting $w$ by $v$ in $\textsc{\small{VIS}}$', we prove that $(x,z) \in \textsc{\small{VIS}}$'.
 						item $z \neq v$. This case follows immediately by inductive hypothesis.
 					\end{itemize}
 					
-			  \item{\bf rule (\textsc{E-UPDATE})}. Visibility relation does not change,i.e.,$\textsc{\small{VIS}}$ = $\textsc{\small{VIS}}$'. Let $v$ be a vertex associated an update action, then $\textsc{\small{SO}}_R$' = $\textsc{\small{SO}}_R \cup\ \{(w,v) / \{w \mapsto \readtran{r}\} \lor\ \{w \mapsto \ \updatebyclient{j}\} \}$. As we are only interested in relations of $update \times\ read$, then $(\textsc{\small{VIS}}';\textsc{\small{SO}'}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \equiv \ (\textsc{\small{VIS}};\textsc{\small{SO}}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R})$. By inductive hypothesis we can prove that $(\textsc{\small{VIS}}';\textsc{\small{SO}}_R)' \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \ \subseteq \ \textsc{\small{VIS}} \subseteq \ \textsc{\small{VIS}}$'.				
+			  \item{\bf rule (\textsc{a-UPDATE})}. Visibility relation does not change,i.e.,$\textsc{\small{VIS}}$ = $\textsc{\small{VIS}}$'. Let $v$ be a vertex associated an update action, then $\textsc{\small{SO}}_R$' = $\textsc{\small{SO}}_R \cup\ \{(w,v) / \{w \mapsto \readtran{r}\} \lor\ \{w \mapsto \ \updatebyclient{j}\} \}$. As we are only interested in relations of $update \times\ read$, then $(\textsc{\small{VIS}}';\textsc{\small{SO}'}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \equiv \ (\textsc{\small{VIS}};\textsc{\small{SO}}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R})$. By inductive hypothesis we can prove that $(\textsc{\small{VIS}}';\textsc{\small{SO}}_R)' \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \ \subseteq \ \textsc{\small{VIS}} \subseteq \ \textsc{\small{VIS}}$'.				
 				The proof for the remaining cases follow are not interesting because the relations does not change.
 \end{itemize}
 \end{itemize}
@@ -961,7 +979,7 @@ E \arrobyclient{\updatevtran{aList.add('a')}{{v_0}}}{1} \environment{\tclient{pu
 \end{array}
 \]
 
-The action $\updatetran{aList.add('a')}$ of the client $1$ will be identified by vertex $v_0$ by rule $\textsc{\small{E-UPDATE}}$. In particular, the update action will be left into the transactional queue of Client $1$ besides the new vertex will be added to vertices in $\so$. Now, Client 1 performs $\pushtran$: 
+The action $\updatetran{aList.add('a')}$ of the client $1$ will be identified by vertex $v_0$ by rule $\textsc{\small{a-UPDATE}}$. In particular, the update action will be left into the transactional queue of Client $1$ besides the new vertex will be added to vertices in $\so$. Now, Client 1 performs $\pushtran$: 
 
 \[
 \begin{array}{l}
@@ -972,7 +990,7 @@ E \arrobyclient{\pushtran}{1} \environment{\tclient{0}{0}{[aList.add('a')]}{\eps
 \end{array}
 \]
 		
-When it happens, $aList.add('a')$ is moved to the sent queue and pending queue. At this moment, Client 2 can perform an update action however Client 1 will realize an internal action which is given by $\textsc{\small{E-PROCESS}}$.  			
+When it happens, $aList.add('a')$ is moved to the sent queue and pending queue. At this moment, Client 2 can perform an update action however Client 1 will realize an internal action which is given by $\textsc{\small{a-PROCESS}}$.  			
 
 \[
 \begin{array}{l}
@@ -1013,7 +1031,7 @@ E \arrobyclient{\updatetran{aList.add('b')}}{2} \environment{\tclient{0}{0}{[aLi
 \end{array}
 \]
 		
-Note that $\arb$ is modified because the message queue has two elements. The value returned will be the list with a only element, ['b'], because of the internal action associated to the rule $\textsc{\small{e-receive}}$ did not perform it. Then, if the rule $\textsc{\small{e-receive}}$ were performed, the value of the list would be ['a','b']. It is because the content of the pending queue is removed when the server left their message. 
+Note that $\arb$ is modified because the message queue has two elements. The value returned will be the list with a only element, ['b'], because of the internal action associated to the rule $\textsc{\small{a-receive}}$ did not perform it. Then, if the rule $\textsc{\small{a-receive}}$ were performed, the value of the list would be ['a','b']. It is because the content of the pending queue is removed when the server left their message. 
 
 The guarantee Consistent Prefix, which rules is $(\textsc{\small{ar}};\textsc{\small{vis}}) \subseteq \ \textsc{\small{ar}};\textsc{\small{VIS}}$, states that if we see an result from a client in a particular order, we will never see this result in a different order.
 
