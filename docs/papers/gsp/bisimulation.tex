@@ -98,12 +98,12 @@ an streaming implementation
 system. We say $\isystemterm$ implements $\systemterm$ if the following conditions hold for all $l \in L$,
 
 \begin{enumerate}
-	\item \henote{eliminada}
+	%\item \henote{eliminada}
 	% $\rvalue{r}{\flatten{\queuemessage_{A}[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}}$
-	\item $\astate \triangleleft \queuemessage$
+	\item \label{prop_stateserver} $\astate \triangleleft \queuemessage$
 	\item \label{prop_transactions} ${\transactionbuffer}_j\triangleleft{\ttransactionbuffer}_j$ 
 	\item \chnote{revivi}	\label{prop_inclient}
-	if ${\inclient}_l = \agssegpairi \cdots \agssegpairi[h]$ then $\ireduce{\adelta_0\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..\treceivebuffer_l-1]$
+	if ${\inclient}_l = \agssegpairi \cdots \agssegpairi[h]$ then $\ireduce{\adelta_0\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]$
 	
 	%$E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i - 1]$
 	%	\label {prop_inclient} if $\inclient_l = \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]$ then 
@@ -116,7 +116,7 @@ system. We say $\isystemterm$ implements $\systemterm$ if the following conditio
 	\henote{no muy seguro}
 	\item For all update sequence $\beta \ \in \ \tsent_i$ then $\beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver$
 	\item \label{prop_outserver} For all natural $m$, such that $0 \leq m \leq |\outserver(i)|$ then $\outserver(i)[m] \triangleleft \queuemessage[\tknown + \treceivebuffer - 1 + m]$
-\item \label{prop_size_buffersent} $|\tsent_l| = n$ \chnote{esto no lo tenia en el modelo original. Chequear que n ni send en abstracto no se modifiquen}
+\item \label{prop_size_buffersent} $|n_l| = n$ \chnote{Esta mal escrita. Falta la macro}
 	
 
 \end{enumerate}
@@ -150,7 +150,7 @@ We use $\approx$ for standard weak bisimulation.
 \begin{itemize}
    
 	
-   \item{\bf n=k+1}. $\forall (\systemterm ,\isystemterm ) \ \in \ \mathcal{R}$
+   \item{\bf n=k+1}. $\forall (\isystemterm ,\systemterm ) \ \in \ \mathcal{R}$
    
   % \henote{Para no escribir $\mathcal{R}^{-1}$ podemos cambiar la definici\'on $\mathcal{R}$}
 		
@@ -161,30 +161,238 @@ We use $\approx$ for standard weak bisimulation.
 %				, therefore, the client $i^{th}$ is the only one who have changed. So that, $\systemterm'$ is 
 %				$\tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}$
 %				. As $(\systemterm,\isystemterm)$ belongs $\mathcal{R}^{-1}$ then $\isystemterm$ must be $\clientr{\readins{x}{r}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the read transition is the only one that $\isystemterm$ can perform.
-%				Then by rule (\textsc{read}), $\isystemterm' = \clientr{\update{P}{x}{v}}{\stateclient}\ \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We will prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}^{-1}$ if the ten properties introduced are keeping.				
-				\item {\bf rule \ruleName{read}}. Then, $\systemterm  \arroi{\readtran{r}} \systemterm '$ with 
+%				Then by rule (\textsc{read}), $\isystemterm' = \clientr{\update{P}{x}{v}}{\stateclient}\ \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We will prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}^{-1}$ if the ten properties introduced are keeping.
+\item {\bf rule \ruleName{update}}. Then, $\isystemterm  \arroi{\updatetran{u}} \isystemterm '$ with 
 				\[\begin{array}{r@{=}l}
-					\systemterm & \tsystem{\tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]
+					\isystemterm & \addid{\iclientinst[\tupdateins]} \ \bigpar \ \isystemterm['']
 					\\
-					\systemterm['] & \tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]	
+					\isystemterm['] & \addid{\iclientinst[P][@][@][@][\iappend{\transactionbuffer}{u}]} \ \bigpar \   \isystemterm['']	
+				  \end{array}
+				\]
+				
+				Since $(\isystemterm,\systemterm)\in \mathcal{R}$,
+				\[ \tsystem{\tclienti{\tupdateins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] \]
+				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
+				$\systemterm \arroi{\updatetran{u}} \systemterm[']$ with
+				\[\begin{array}{r@{=}l}
+						\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer \cdot \tupdate}{\tsent}{\treceivebuffer}}[{\systemterm['']}]	
+				  \end{array}		
+				\]
+				
+				
+				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				by checking the properties in \defref{def:implementation}.			
+					\begin{enumerate}
+						\item[\ref{prop_transactions}.] The only terms that have changed are the transaction buffers in client $\cid$. Since 
+						$\implements{\isystemterm}{\systemterm}$, the following holds
+						\begin{itemize}
+							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by property \ref{prop_transactions};
+						\end{itemize}
+						
+						Then, we can build the following proof for 
+						$\iappend{\transactionbuffer}{u}
+						\triangleleft 
+						\ttransactionbuffer \cdot \tupdate$
+						\[
+						  \mathrulean{\triangappend}
+						      {
+						      \transactionbuffer \triangleleft{\ttransactionbuffer}
+						      }
+  						{\iappend{\transactionbuffer}{u}]
+						\triangleleft 
+						\ttransactionbuffer \cdot \tupdate}  
+					\]
+
+						 \chnote{Esta prueba es m\'as inmediata, creo que aca no haria falta mostrar el detalle ya que es solo un paso. Con mencionar la regla del append tiene que alcanzar, lo dejo por si preferis que quede asi.}.
+
+						\item[{--}] The remaining properties straightforwardly hold.
+						
+
+					\end{enumerate}
+
+
+\item {\bf rule \ruleName{push}}. Then, $\isystemterm  \arroi{\pushtran} \isystemterm '$ with 
+				\[\begin{array}{r@{=}l}
+					\isystemterm & \addid{\iclientinst[\tpushins]} \ \bigpar \ \isystemterm[''] 
 					\\
-					v &  \rvalue{r}{\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}	
+					\isystemterm['] & {\addid{\iclientinst[P][@][@][\ireduce{\pushbuffer\cdot \transactionbuffer}][\epsilon][@][n+1]}\ \bigpar \ \isystemterm['']}
 				  \end{array}
 				\]
 		
-				\henote{Ac\'a es $\systemterm['']$ porque $N$ es el que estas usando}.
-				
 				Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
-				\[ \addid{\iclientinst[\treadins{x}{r}]} \ \bigpar \ \isystemterm['']\]
+				\[ \tsystem{\tclienti{\tpushins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}['']} \]
 				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
-				$\isystemterm \arroi{\readtran{r}} \isystemterm[']$ with
+				$\systemterm \arroi{\pushtran} \isystemterm[']$ with
 				\[\begin{array}{r@{=}l}
-					\isystemterm['] & \addid{\iclientinst[{P}\subst{x}{v'}]}\ \bigpar \ \isystemterm['']	\\
-					v' & \iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}
+					\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending \cdot [\ttransactionbuffer]}{\epsilon}{\tsent \cdot [\ttransactionbuffer]}{\treceivebuffer}}[{\systemterm['']}]\\
+				  \end{array}		
+				\]
+								
+				We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				by checking the properties in \defref{def:implementation}.			
+					\begin{enumerate}
+						\item[\ref{prop_transactions}.] Now, the term in our abstract model is $\epsilon$ and in the implementation is $\emptydelta$, then, by \triangemptydelta this property holds.
+							\chnote{en las reglas de la implementacion donde ponemos epsilon, revisar que deberia ser emptydelta o emptystate}
+						
+						\item[\ref{prop_pending}] We should build the following proof for 
+						$\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}\cdot \transactionbuffer}\triangleleft \flatten{\tpending\cdot [\ttransactionbuffer]} \ $
+						
+					\[
+						  \mathrulean{\lemref{lemma:reduce}}
+						  {\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}} \triangleleft \flatten{\tpending}
+								\quad
+								\transactionbuffer \triangleleft \ttransactionbuffer}
+  						{\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}\cdot \transactionbuffer}\triangleleft \flatten{\tpending\cdot [\ttransactionbuffer]}}  
+					\]
+					We have used that $\flatten{\tpending\cdot [\ttransactionbuffer]}$ = $\flatten{\tpending} \cdot \ttransactionbuffer$, besides, we use \propref{prop_transactions}.
+					  \item[\ref{prop_size_buffersent}.] $n_l = n_l$, both have been incremented by one, so that this property is hold.
+						\chnote{falta agregar el contador de rounds n en el abstracto.}			
+						\item[{--}] The remaining properties straightforwardly hold.
+						\chnote{IMPORTANTE: Falta la relacion que explica que pasa con el send del abstracto. Cuando termine todas las reglas quizas entienda que hacer.}			
+
+					\end{enumerate}
+
+
+\item {\bf rule \ruleName{send}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
+				\[\begin{array}{r@{=}l}
+					\isystemterm & \addid{\iclientinst} \ \bigpar \ \iserverins[\astate[']] \ \bigpar\ \iclient['']\ \\
+					\isystemterm['] & \addid{\iclientinst[@][@][\pending \cdot \around][\emptydelta]}
+		\ \bigpar \ \iserverins[{\astate[']}][@][\inserver\upd{\cid}{\inserver(\cid)\cdot\around}]
+		\ \bigpar\ \iclient[''] \\
+					\around & \aroundtuple[\cid][\nround][\pushbuffer]
+					\end{array}
+				\]
+							
+				We  prove that $(\isystemterm',\systemterm) \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm}$ 
+				by checking the properties in \defref{def:implementation}.			
+
+						\begin{itemize}
+							\item[\ref{prop_pending}.] We have to prove that $\pending[']_l = \aroundtuplei[0]\ldots\aroundtuplei[h]\aroundtuplei[p]$ and $\ireduce{\adelta_0\cdots\adelta_h\cdot\adelta_p\cdot\emptydelta} \triangleleft \flatten{\tpending_l}$. It is easy to see that it is the same relation that our hypothesis, hence, $\adelta_p$ was moved to the pending sequence , leaving a $\emptydelta$.
+						\end{itemize}
+
+
+\item {\bf rule \ruleName{receive}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
+				\[\begin{array}{r@{=}l}
+					\isystemterm & \addid{\iclientinst[@][@][@][@][@][@][@][\inclient]} \ \bigpar \ \iserverins[\astate['']] \ \bigpar\ \iclient['']
+					\\
+					\isystemterm['] & \addid{\iclientinst[@][@][@][@][@][@][@][\inclient\cdot \aseg]} \ \bigpar \ \iserverins[{\astate[']}][@][@][\outserver\upd{\cid}\aseqseg] \ \bigpar\ \iclient['']
+					
+				  \end{array}
+				\]
+				
+				
+				Since $(\isystemterm,\systemterm)\in \mathcal{R}$,
+				\[\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]\]
+				%with $\implements{\isystemterm['']}{\systemterm['']}$. 
+				by inspection of rules in \figref{}, 
+				$\systemterm \arroi{\tau} \systemterm[']$ with
+				\[\begin{array}{r@{=}l}
+					\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}[{\systemterm['']}] \\
+				  \end{array}		
+				\]
+				
+				
+				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				by checking the properties in \defref{def:implementation}.			
+
+						\begin{itemize}
+							\item[\ref{prop_inclient}.] By \propref{prop_outserver}, we know that the firt element in $\outserver(i)$ = $\queuemessage[\tknown_l+\treceivebuffer_l]$ when $m$ = 1. Let $\adelta_{h+1}$ be a delta object associated to $\aseg$. Now, we should build the following proof for 
+							
+						${\ireduce{\adelta_0\cdots\adelta_{h+1}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l]} \ $
+					\[
+						  \mathrulean{\lemref{lemma:reduce}}
+						  {
+								\ireduce{\adelta_0\cdots\adelta_{h}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l - 1]
+								\quad 
+								\adelta[_{h+1}] \triangleleft \queuemessage[\tknown_l + \treceivebuffer_l] 							
+							}
+  						{\ireduce{\adelta_0\cdots\adelta_{h+1}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l]}  
+					\]
+					We used that $\queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l]$ = $\queuemessage[\tknown_l..\tknown_l - 1] \cdot \queuemessage[\tknown_l + \treceivebuffer_l]$. Furthermore, we used the hypothesis from \propref{prop_inclient} that states $\ireduce{\adelta_0\cdots\adelta_{h}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l - 1]$.
+							\item[\ref{prop_outserver}.] \propref{prop_outserver} states that for all natural $m$, such that $0 \leq m \leq |\outserver(i)|$ then $\outserver(i)[m] \triangleleft \queuemessage[\tknown + \treceivebuffer - 1 + m]$. Now, $|\outserver(i)|$ was decremented by one, then this property is hold. (Si valia para los menores a longitud outserver, entonces es trivial digamos ya que ahora vale para longitud outserver - 1) 
+						\end{itemize}
+					
+
+
+	
+	\item {\bf rule \ruleName{pull-1}}. Then, $\isystemterm  \arroi{\pulltran} \isystemterm '$ with 
+				\[\begin{array}{r@{=}l}
+					\isystemterm & \addid{\iclientinst[\tpullins][@]
+						[@]%[\aseqround\cdot{\aroundtuple}\cdot{\aseqround[']}]
+						[@][@][@][n][{\agssegpair[{\adelta[']}]}\cdot\inclient]}
+								\ \bigpar \ \isystemterm['']
+					\\
+					\isystemterm['] & \addid{\iclientinst[P]
+						 [\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}]
+						 [\aseqround']
+						 [@][@]
+						 [{\receivebuffer}][n][\epsilon]}\ \bigpar \ \isystemterm['']	\\
+					   \aseqround['] & filter\ (\geq \amxrf[_k](\cid)) \ \aseqround \\
+						\inclient & \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]
+				  \end{array}
+				\]
+		
+				Since $(\isystemterm,\systemterm)\in \mathcal{R}$,
+				\[\tsystem{\tclienti{\tpullins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] \]
+				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
+				$\systemterm \arroi{\pulltran} \systemterm[']$ with
+				\[\begin{array}{r@{=}l}
+					\systemterm['] &  \tsystem{\tclienti{\tprogram}{\tknown+\treceivebuffer}{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer {\ -1}]}{\ttransactionbuffer}{\tsent}{0}}[{\systemterm['']}]	
 				  \end{array}		
 				\]
 				
 				We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				by checking the properties in \defref{def:implementation}.	
+						\chnote{esta oka la regla pull1? el in del cliente no entiendo porque tiene el delta y la f, para que la usas?}
+					\begin{enumerate}
+							\item[\ref{prop_state_known}.] We should build the following proof for 
+						$\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_l +\treceivebuffer_l - 1]} \ $
+					\[
+						  \mathrulean{\lemref{lemma:apply}}
+						  {
+							\mathrulean{\triangapply}
+								{
+								\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}
+								\quad 
+								\adelta[_1] \triangleleft \queuemessage_A[\tknown_l] \ldots \adelta[_k] \triangleleft \queuemessage_A[\tknown_l + \treceivebuffer_l - 1]
+								}
+								{\iapply{\known}{\adelta[_1]\cdots\adelta[_k]}\triangleleft \flatten{\queuemessage[0 .. \tknown_l +\treceivebuffer_l - 1]}
+								}
+							}
+  						{\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_l +\treceivebuffer_l - 1]}}  
+					\]
+					  The last step is worth by \propref{prop_inclient}.
+						\item[\ref{prop_inclient}.] $\inclient_l$['] = $\epsilon$ and $\treceivebuffer_l$ = 0, then by 
+		\triangemptydelta, this property is hold.
+						\item[\ref{prop_pending}.] We have to prove that $\ireduce{\adelta[_m]\cdots\adelta[_h]} \triangleleft \flatten{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer -1]}$ (PENDIENTE)
+		
+				
+
+					\end{enumerate}
+
+
+
+
+				\item {\bf rule \ruleName{read}}. Then, $\isystemterm  \arroi{\readtran{r}} \isystemterm '$ with 
+				\[\begin{array}{r@{=}l}
+					\isystemterm & \addid{\iclientinst[\treadins{x}{r}]} \ \bigpar \ \isystemterm['']
+					\\
+					\isystemterm['] & \addid{\iclientinst[{P}\subst{x}{v'}]}\ \bigpar \ \isystemterm['']	\\
+					v & \iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}
+					\end{array}
+				\]
+		
+				Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
+				\[ \tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]\]
+				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
+				$\systemterm \arroi{\readtran{r}} \systemterm[']$ with
+				\[\begin{array}{r@{=}l}
+					\systemterm['] & \tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]\\
+					v' &  \rvalue{r}{\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}	
+				  \end{array}		
+				\]
+				
+				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
 				by checking the properties in \defref{def:implementation}.			
 					\begin{enumerate}
 						\item The only terms that have changed are the programs in client $\cid$.  We show that $v=v'$ holds. Since 
@@ -226,189 +434,34 @@ We use $\approx$ for standard weak bisimulation.
   						  {v'  = v}  
 					\]
 											
-						\item to 9 straightforwardly hold.
+						\item[{--}] The remaining properties straightforwardly hold.
 						
 
 					\end{enumerate}
-					
-					
-			\item {\bf rule \ruleName{update}}. Then, $\systemterm  \arroi{\updatetran{u}} \systemterm '$ with 
+
+\item {\bf rule \ruleName{confirm}}. Then, $\isystemterm  \arroi{\confirmedtran} \isystemterm '$ with 
 				\[\begin{array}{r@{=}l}
-					\systemterm & \tsystem{\tclienti{\tupdateins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]
+					\isystemterm & \addid{\iclientinst[\tconfirmedins{x}]} \bigpar \ \isystemterm['']
 					\\
-					\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer \cdot \tupdate}{\tsent}{\treceivebuffer}}[{\systemterm['']}]	
-				  \end{array}
-				\]
-				\chnote{Deberi\'amos cambiar la regla del update en la imple para que guarde updates con vertices como hacemos en abs}.
-		
-				Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
-
-				\[\addid{\iclientinst[\tupdateins]} \ \bigpar \ \isystemterm['']\]
-				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
-				$\isystemterm \arroi{\updatetran{u}} \isystemterm[']$ with
-				\[\begin{array}{r@{=}l}
-					\isystemterm['] & \addid{\iclientinst[P][@][@][@][\iappend{\transactionbuffer}{u}]} \ \bigpar \   \isystemterm['']	\\
-				  \end{array}		
-				\]
-				
-				We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
-				by checking the properties in \defref{def:implementation}.			
-					\begin{enumerate}
-						\item The only terms that have changed are the transaction buffers in client $\cid$. Since 
-						$\implements{\isystemterm}{\systemterm}$, the following holds
-						\begin{itemize}
-							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by property \ref{prop_transactions};
-						\end{itemize}
-						
-						Then, we can build the following proof for 
-						$\iappend{\transactionbuffer}{u}
-						\triangleleft 
-						\ttransactionbuffer \cdot \tupdate$
-						\[
-						  \mathrulean{\triangappend}
-						      {
-						      \transactionbuffer \triangleleft{\ttransactionbuffer}
-						      }
-  						{\iappend{\transactionbuffer}{u}]
-						\triangleleft 
-						\ttransactionbuffer \cdot \tupdate}  
-					\]
-
-						 \chnote{Esta prueba es m\'as inmediata, creo que aca no haria falta mostrar el detalle ya que es solo un paso. Con mencionar la regla del append tiene que alcanzar, lo dejo por si preferis que quede asi.}.
-
-						\item to 9 straightforwardly hold.
-						
-
-					\end{enumerate}
-	
-	
-			\item {\bf rule \ruleName{push}}. Then, $\systemterm  \arroi{\pushtran} \systemterm '$ with 
-				\[\begin{array}{r@{=}l}
-					\systemterm & \tsystem{\tclienti{\tpushins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}['']}
+					\isystemterm['] & \addid{\iclientinst[P\subst{x}{v}]} \bigpar \ \isystemterm['']	
 					\\
-					\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending \cdot [\ttransactionbuffer]}{\epsilon}{\tsent \cdot [\ttransactionbuffer]}{\treceivebuffer}}[{\systemterm['']}]
+					v & (\pending  \cdot \pushbuffer \cdot\transactionbuffer == \epsilon) 
 				  \end{array}
 				\]
 		
-				Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
-				\[ \addid{\iclientinst[\tpushins]} \ \bigpar \ \isystemterm['']\]
-				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
-				$\isystemterm \arroi{\pushtran} \isystemterm[']$ with
-				\[\begin{array}{r@{=}l}
-					\isystemterm['] & {\addid{\iclientinst[P][@][@][\ireduce{\pushbuffer\cdot \transactionbuffer}][\epsilon][@][n+1]}\ \bigpar \ \isystemterm['']}	\\
-				  \end{array}		
-				\]
-				
-				We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
-				by checking the properties in \defref{def:implementation}.			
-					\begin{enumerate}
-						\item We will inspect the terms that have changed in client $\cid$ knowing as hypothesis that $\implements{\isystemterm}{\systemterm}$.
-						\begin{itemize}
-							
-							\item By \propref{prop_transactions}, $\transactionbuffer \triangleleft{\ttransactionbuffer}$. Now, the term in our abstract model is $\epsilon$ and in the implementation is $\emptydelta$, then, by \triangemptydelta this property holds.
-							\chnote{en las reglas de la implementacion donde ponemos epsilon, revisar que deberia ser emptydelta o emptystate}
-							
-						\item By \propref{prop_pending}, $\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}}\triangleleft \flatten{\tpending} \ $ however, after $\pushtran$ transition, we should build the following proof for 
-						$\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}\cdot \transactionbuffer}\triangleleft \flatten{\tpending\cdot [\ttransactionbuffer]} \ $
-						
-					\[
-						  \mathrulean{\lemref{lemma:reduce}}
-						  {\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}} \triangleleft \flatten{\tpending}
-								\quad
-								\transactionbuffer \triangleleft \ttransactionbuffer}
-  						{\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}\cdot \transactionbuffer}\triangleleft \flatten{\tpending\cdot [\ttransactionbuffer]}}  
-					\]
-					  \item By \propref{prop_size_buffersent}, $|\tsent_l| = n$, but $\tsent_l$ has incremented by one his size as $n$, so that this property is hold.
-						\end{itemize}
-						
-						
-
-					\end{enumerate}
-					
-	
-	\item {\bf rule \ruleName{pull}}. Then, $\systemterm  \arroi{\pulltran} \systemterm '$ with 
-				\[\begin{array}{r@{=}l}
-					\systemterm & \tsystem{\tclienti{\tpullins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]
-					\\
-					\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown+\treceivebuffer}{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer {\ -1}]}{\ttransactionbuffer}{\tsent}{0}}[{\systemterm['']}]	
-				  \end{array}
-				\]
 		
-				Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
-				\[ \addid{\iclientinst[\tpullins][@]
-						[@]%[\aseqround\cdot{\aroundtuple}\cdot{\aseqround[']}]
-						[@][@][@][n][{\agssegpair[{\adelta[']}]}\cdot\inclient]}
-								\ \bigpar \ \isystemterm['']\]
+				Since $(\isystemterm,\systemterm)\in \mathcal{R}$,
+				\[\tsystem{\tclienti{\tconfirmedins{x}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]\]
 				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
-				$\isystemterm \arroi{\pulltran} \isystemterm[']$ with
+				$\systemterm \arroi{\confirmedtran} \isystemterm[']$ with
 				\[\begin{array}{r@{=}l}
-					\isystemterm['] & \addid{\iclientinst[P]
-						 [\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}]
-						 [\aseqround']
-						 [@][@]
-						 [{\receivebuffer}][n][\epsilon]}\ \bigpar \ \isystemterm['']	\\
-					   \aseqround['] & filter\ (\geq \amxrf[_k](\cid)) \ \aseqround \\
-						\inclient & \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]
-				  \end{array}		
-				\]
-				
-				We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
-				by checking the properties in \defref{def:implementation}.	
-						\chnote{esta oka la regla pull1? el in del cliente no entiendo porque tiene el delta y la f, para que la usas?}
-					\begin{enumerate}
-						\item We will inspect the terms that have changed in client $\cid$ knowing as hypothesis that $\implements{\isystemterm}{\systemterm}$.
-						\begin{itemize}
-							\item By \propref{prop_state_known}, $\astate_l \triangleleft \flatten {\queuemessage[0 .. \tknown_l - 1]} \ $, however, after $\pulltran$ transition, we should build the following proof for 
-						$\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_l +\treceivebuffer_l - 1]} \ $
-					\[
-						  \mathrulean{\lemref{lemma:apply}}
-						  {
-							\mathrulean{\triangapply}
-								{
-								\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}
-								\quad 
-								\adelta[_1] \triangleleft \queuemessage_A[\tknown_l] \ldots \adelta[_k] \triangleleft \queuemessage_A[\tknown_l + \treceivebuffer_l - 1]
-								}
-								{\iapply{\known}{\adelta[_1]\cdots\adelta[_k]}\triangleleft \flatten{\queuemessage[0 .. \tknown_l +\treceivebuffer_l - 1]}
-								}
-							}
-  						{\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_l +\treceivebuffer_l - 1]}}  
-					\]
-					  The last step is worth by \propref{prop_inclient}.
-						\item By \propref{prop_inclient}, if $\inclient_l = \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]$ then 
-		$\adelta[_1] \triangleleft \queuemessage[\tknown_i] \ldots \adelta[_k] \triangleleft \queuemessage[\tknown_l + \treceivebuffer_l - 1]$. After $\pulltran$ transition, $\inclient_l$['] = $\epsilon$ and $\treceivebuffer_l$ = 0, then by 
-		\triangemptydelta, this property is hold.
-						\item We have to prove that $\ireduce{\adelta[_m]\cdots\adelta[_h]} \triangleleft \flatten{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer -1]}$ (PENDIENTE)
-						\end{itemize}
-		
-				
-
-					\end{enumerate}
-	
-	
-	        \item {\bf rule \ruleName{confirm}}. Then, $\systemterm  \arroi{\confirmedtran} \systemterm '$ with 
-				\[\begin{array}{r@{=}l}
-					\systemterm & \tsystem{\tclienti{\tconfirmedins{x}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]
-					\\
 					\systemterm['] & \tsystem{\tclienti{{\tprogram}\subst{x}{v}}
-		{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]	
-					\\
-					v & \eval{(\tpending \cdot  \ttransactionbuffer == \epsilon)}
-				  \end{array}
-				\]
-		
-		
-				Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
-				\[\addid{\iclientinst[\tconfirmedins{x}]} \bigpar \ \isystemterm['']\]
-				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
-				$\isystemterm \arroi{\confirmedtran} \isystemterm[']$ with
-				\[\begin{array}{r@{=}l}
-					\isystemterm['] & \addid{\iclientinst[P\subst{x}{v}]} \bigpar \ \isystemterm['']	\\
-					v' & (\pending  \cdot \pushbuffer \cdot\transactionbuffer == \epsilon) 
+		{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]	\\
+					v' & \eval{(\tpending \cdot  \ttransactionbuffer == \epsilon)}
 				  \end{array}		
 				\]
 				
-				We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
 				by checking the properties in \defref{def:implementation}.			
 					\begin{enumerate}
 						\item The only terms that have changed are the programs in client $\cid$.  We show that $v=v'$ holds. Since 
@@ -420,164 +473,386 @@ We use $\approx$ for standard weak bisimulation.
 						Then, we know that the value of $\pending \cdot \pushbuffer$ is related to $\tpending$, thereby, when E.$\pending$ or E.$\pushbuffer$ have any elements then $\tpending$ also has it. Finally, $\transactionbuffer$ has elements iff $\ttransactionbuffer_i$ also has any elements.
 			
 					\end{enumerate}
-				
-				
-				\item {\bf rule \ruleName{receive}}. Then, $\systemterm  \arroi{\tau} \systemterm '$ with 
+	
+	
+	
+	
+	
+	\item {\bf rule \ruleName{batch}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
 				\[\begin{array}{r@{=}l}
-					\systemterm & \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]
+					\isystemterm & \iserverins\ \bigpar \ \iclient
 					\\
-					\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}[{\systemterm['']}]	
-					
+					\isystemterm['] & {\iserverins[{\astate[']}][{\amxrf[{'}]}][{\inserver[']}][{\outserver[']}]}\ \bigpar \ \iclient \\
+					\agssegpair[@][{\amxrf[{'}]}] &\receiveroundsname{\inserver} \\ %=\append{\emptygssegment}{rs} \qquad 
+					\astate[']&\iapply{\astate}{\adelta} \\
+					\forall\cid.(\outserver['] (\cid)& \outserver(\cid)\cdot\agssegpair[@][{\amxrf[{'}]}]) \\
+					\forall\cid.(\inserver['](\cid) & \epsilon)
 				  \end{array}
 				\]
-				Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
-				\[\addid{\iclientinst[@][@][@][@][@][@][@][\inclient]} \ \bigpar \ \iserverins[\astate['']] \ \bigpar\ \iclient['']\]
-				%with $\implements{\isystemterm['']}{\systemterm['']}$. 
-				by inspection of rules in \figref{}, 
-				$\isystemterm \arroi{\tau} \isystemterm[']$ with
+		
+				Since $(\isystemterm,\systemterm)\in \mathcal{R}$,
+				\[\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\tsenthead] \cdot \tsent}{\treceivebuffer}} \]
+				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
+				$\systemterm \arroi{\tau} \ldots\ \arroi{\tau} \systemterm^{h}$ with
 				\[\begin{array}{r@{=}l}
-					\isystemterm['] & \addid{\iclientinst[@][@][@][@][@][@][@][\inclient\cdot \aseg]} \ \bigpar \ \iserverins[{\astate[']}][@][@][\outserver\upd{\cid}\aseqseg] \ \bigpar\ \iclient[''] \\
+					\systemterm^{h} &  \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[\queuemessage \cdot [\tsenthead]]
 				  \end{array}		
 				\]
-				
-				We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
-				by checking the properties in \defref{def:implementation}.			
-
-						\begin{itemize}
-							\item[4.] By \propref{prop_outserver}, we know that the firt element in $\outserver(i)$ = $\queuemessage[\tknown_l+\treceivebuffer_l]$ when $m$ = 1. Now, we should build the following proof for 
-							
-						${\ireduce{\adelta_0\cdots\adelta_{h+1}}\triangleleft  \queuemessage[\tknown_l..\treceivebuffer_l]} \ $
-					\[
-						  \mathrulean{\lemref{lemma:reduce}}
-						  {
-								\ireduce{\adelta_0\cdots\adelta_{h}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l - 1]
-								\quad 
-								\adelta[_{h+1}] \triangleleft \queuemessage[\tknown_l + \treceivebuffer_l] 							
-							}
-  						{\ireduce{\adelta_0\cdots\adelta_{h+1}}\triangleleft  \queuemessage[\tknown_l..\treceivebuffer_l]}  
-					\]
-							\item[9.] By \propref{prop_outserver}, we know that for all natural $m$, such that $0 \leq m \leq |\outserver(i)|$ then $\outserver(i)[m] \triangleleft \queuemessage[\tknown + \treceivebuffer - 1 + m]$. Now, $|\outserver(i)|$ was decremented by one, however, this property holds.
-						\end{itemize}
+				Note, that $h$ represents the amount of internal transition that performed by client $\cid$. In particular,  $h$ = $|\inserver|$, hence the implementation send a only delta, it is a reduction of segments in $\inserver$, the abstract model can send tantos bloques de updates como cantidad de segmentos usados para construir el delta.(CAMBIAR!). 
+				We  prove that $(\isystemterm',\systemterm^{h}) \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm^{h}}$ 
+				by checking the properties in \defref{def:implementation}.	
+					\begin{enumerate}
+							\item[\ref{prop_stateserver}.] We should build the following proof for 
+						$\iapply{\astate}{\ireduce{\adelta[_1]\cdots\adelta[_h]}} \triangleleft \queuemessage\cdot [\tsenthead_1]\cdots[\tsenthead_h] \ $
 					
 				
-				
-				\item {\bf rule \ruleName{send}}. Then, $\systemterm  \arroi{\tau} \systemterm '$ with 
-				\[\begin{array}{r@{=}l}
-					\systemterm & \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\tsenthead] \cdot \tsent}{\treceivebuffer}} [{\systemterm['']}]
-					\\
-					\systemterm['] & \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[\queuemessage \cdot [\tsenthead]]	
-					
-				  \end{array}
-				\]
-				Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
-				\[\addid{\iclientinst} \ \bigpar \ \iserverins[\astate[']] \ \bigpar\ \iclient\]
-				%with $\implements{\isystemterm['']}{\systemterm['']}$. 
-				by inspection of rules in \figref{}, 
-				$\isystemterm \arroi{\tau} \isystemterm[']$ with
-				\[\begin{array}{r@{=}l}
-					\isystemterm['] & \addid{\iclientinst[@][@][\pending \cdot \around][\emptydelta]}
-		\ \bigpar \ \iserverins[{\astate[']}][@][\inserver\upd{\cid}{\inserver(\cid)\cdot\around}]
-		\ \bigpar\ \iclient[''] \\
-				  \end{array}		
-				\]
-				
-				We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
-				by checking the properties in \defref{def:implementation}.			
-
-						\begin{itemize}
-							\item[4.] By \propref{prop_outserver}, we know that the firt element in $\outserver(i)$ = $\queuemessage[\tknown_l+\treceivebuffer_l]$ when $m$ = 1. Now, we should build the following proof for 
-							
-						${\ireduce{\adelta_0\cdots\adelta_{h+1}}\triangleleft  \queuemessage[\tknown_l..\treceivebuffer_l]} \ $
-					\[
-						  \mathrulean{\lemref{lemma:reduce}}
-						  {
-								\ireduce{\adelta_0\cdots\adelta_{h}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l - 1]
-								\quad 
-								\adelta[_{h+1}] \triangleleft \queuemessage[\tknown_l + \treceivebuffer_l] 							
-							}
-  						{\ireduce{\adelta_0\cdots\adelta_{h+1}}\triangleleft  \queuemessage[\tknown_l..\treceivebuffer_l]}  
-					\]
-							\item[9.] By \propref{prop_outserver}, we know that for all natural $m$, such that $0 \leq m \leq |\outserver(i)|$ then $\outserver(i)[m] \triangleleft \queuemessage[\tknown + \treceivebuffer - 1 + m]$. Now, $|\outserver(i)|$ was decremented by one, however, this property holds.
-						\end{itemize}
-					
-						
-\item {\bf rule (\textsc{t-process})} If $A \arroi{\tau} A'$, then by rule (\textsc{\footnotesize{t-process}}), $A$ must be the following term: $\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\tsenthead] \cdot \tsent}{\treceivebuffer}\ \bigpar\ \tilde{A}}{\queuemessage_A}$, therefore, the client $i^{th}$ is only one who changes. So that, $A'$ will be $\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ C}{\queuemessage \cdot \tsenthead}$. Property 9 states that for all $\beta$ such that $\beta \ \in \ \tsent_i$ then $\beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver$. Analyzing cases:
-					
-					
-					
-					\begin{itemize}
-						\item If $\beta \ \in\ E_{i}.\outclient$ then, by rule (\textsc{\footnotesize{comm-client-server}}), $C \arroi{\tau} C'$, so that, $C'$ = $\clientr{P}{\update{E}{\outclient}{\tailround}} \bigpar\ \tilde{C} \ \bigpar\ \ \server{\state}{\update{\inserver}{i}{\headerround}}{\outserver}_C$ and $\delta_0 \triangleleft \beta$. Performing a new internal action by rule (\textsc{\footnotesize{batch}}),i.e., $C' \arroi{\tau} C''$, then $C''$ = $\server{\apply{\persistedstate}{d}}{\inserver}{\notify{dom(\outserver)}{\outserver}{gs}}  \bigpar\ \tilde{C} \bigpar \clientr{P}{\stateclient}$. We have to prove that $(A',C'')$ belongs $\mathcal{R}$.
-						
-						\begin{enumerate}
-							\item Theirs terms do not change.
-							\item Our hypothesis is $\queuemessage_C.\state \triangleleft \queuemessage_A$ besides $\delta_0 \triangleleft \beta$, then using the property of the relation $\triangleleft$ between state and updates, we will get that $apply(\queuemessage_C.\state,\delta_0) \triangleleft \queuemessage_A \cdot \beta$.
-							\item It does not change.
-							\item It does not change.
-							\item It does not change.
-							\item It does not change.
-							\item It does not change.
-							\item $\queuemessage_A$  has incremented by one, so that, by Hypothesis, $\tknown + \treceivebuffer + 1 \leq |\queuemessage_A| < |\queuemessage_A| + 1$, besides, $\Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0$ because of neither $E_{i}.\inclient$ nor $\queuemessage_C.\outserver$ have changed.
-\item By Hypothesis, for all element in $\tsent$, those belongs to $E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver$, in particular, $\tsent$ without a element keeps these guarantee.
-						\end{enumerate}
-\item If $\beta \ \in\ E_{i}.\inserver$ then, applying rule (\textsc{\footnotesize{batch}}), we can see that we are at above case.
-					\end{itemize}
-					
-\end{itemize}
-
-\end{itemize}
-
-We have prove that if $A$ perform an action, $C$ also can perform an action, the terms after both transitions are in $\mathcal{R}$. Now, we will prove the opposite side. When $C$ perform an action, then A can perform an action and the news terms are in $\mathcal{R}$.
 
 
-\begin{itemize}
-   \item{\bf n=0}. Then $C$ = $\clientr{E}{\initialstate}$ and $A$ = $\tsystem{\tclienti{0}{\emptyset}{\emptyset}{\emptyset}{\emptyset}{0}\ \bigpar\ \tilde{A}}{\queuemessage_A}$. It is analogous to the base case previously proved.
-			
-   \item{\bf n=k+1}. $\forall (C,A) \ \in \ \mathcal{R}$
+
+					\end{enumerate}
+	
+	
+	
+%
+				%
+				%\item {\bf rule \ruleName{read}}. Then, $\systemterm  \arroi{\readtran{r}} \systemterm '$ with 
+				%\[\begin{array}{r@{=}l}
+					%\systemterm & \tsystem{\tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]
+					%\\
+					%\systemterm['] & \tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]	
+					%\\
+					%v &  \rvalue{r}{\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}	
+				  %\end{array}
+				%\]
+		%
+				%\henote{Ac\'a es $\systemterm['']$ porque $N$ es el que estas usando}.
+				%
+				%Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
+				%\[ \addid{\iclientinst[\treadins{x}{r}]} \ \bigpar \ \isystemterm['']\]
+				%with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
+				%$\isystemterm \arroi{\readtran{r}} \isystemterm[']$ with
+				%\[\begin{array}{r@{=}l}
+					%\isystemterm['] & \addid{\iclientinst[{P}\subst{x}{v'}]}\ \bigpar \ \isystemterm['']	\\
+					%v' & \iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}
+				  %\end{array}		
+				%\]
+				%
+				%We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				%by checking the properties in \defref{def:implementation}.			
+					%\begin{enumerate}
+						%\item The only terms that have changed are the programs in client $\cid$.  We show that $v=v'$ holds. Since 
+						%$\implements{\isystemterm}{\systemterm}$, the following holds
+						%\begin{itemize}
+							%\item $\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}$ by property \ref{prop_state_known};
+							%\item $\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}}\triangleleft \flatten{\tpending} \ $ by property \ref{prop_pending};
+							%\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by property \ref{prop_transactions};
+						%\end{itemize}
+						%
+						%Then, we can build the following proof for 
+						%$\rvalue{r}{\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}
+						%= 
+						%\iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}$
+						%\[
+						  %\mathrulean{\triangread}
+						    %{
+								  %\mathrulean{\lemref{lemma:apply}}
+									%{
+										%\mathrulean{\triangapply}
+										%{
+										%\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}
+										%\quad 
+										%\mathrulean{\lemref{lemma:reduce}}
+											%{
+												%\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}} \triangleleft \flatten{\tpending}
+												%\quad
+												%\transactionbuffer \triangleleft \ttransactionbuffer
+											%}
+											%{\ireduce{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}} 
+											%\triangleleft {\flatten {\tpending} \cdot \ttransactionbuffer}}
+										%}
+										%{\iapply{\known}{\ireduce{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}}
+									%\triangleleft {\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}}
+									%}
+									%{\iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}  
+									%\triangleleft {\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}}
+								%}
+  						  %{v'  = v}  
+					%\]
+											%
+						%\item to 9 straightforwardly hold.
+						%
+%
+					%\end{enumerate}
+					%
+					%
+			%\item {\bf rule \ruleName{update}}. Then, $\systemterm  \arroi{\updatetran{u}} \systemterm '$ with 
+				%\[\begin{array}{r@{=}l}
+					%\systemterm & \tsystem{\tclienti{\tupdateins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]
+					%\\
+					%\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer \cdot \tupdate}{\tsent}{\treceivebuffer}}[{\systemterm['']}]	
+				  %\end{array}
+				%\]
+				%\chnote{Deberi\'amos cambiar la regla del update en la imple para que guarde updates con vertices como hacemos en abs}.
+		%
+				%Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
+%
+				%\[\addid{\iclientinst[\tupdateins]} \ \bigpar \ \isystemterm['']\]
+				%with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
+				%$\isystemterm \arroi{\updatetran{u}} \isystemterm[']$ with
+				%\[\begin{array}{r@{=}l}
+					%\isystemterm['] & \addid{\iclientinst[P][@][@][@][\iappend{\transactionbuffer}{u}]} \ \bigpar \   \isystemterm['']	\\
+				  %\end{array}		
+				%\]
+				%
+				%We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				%by checking the properties in \defref{def:implementation}.			
+					%\begin{enumerate}
+						%\item The only terms that have changed are the transaction buffers in client $\cid$. Since 
+						%$\implements{\isystemterm}{\systemterm}$, the following holds
+						%\begin{itemize}
+							%\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by property \ref{prop_transactions};
+						%\end{itemize}
+						%
+						%Then, we can build the following proof for 
+						%$\iappend{\transactionbuffer}{u}
+						%\triangleleft 
+						%\ttransactionbuffer \cdot \tupdate$
+						%\[
+						  %\mathrulean{\triangappend}
+						      %{
+						      %\transactionbuffer \triangleleft{\ttransactionbuffer}
+						      %}
+  						%{\iappend{\transactionbuffer}{u}]
+						%\triangleleft 
+						%\ttransactionbuffer \cdot \tupdate}  
+					%\]
+%
+						 %\chnote{Esta prueba es m\'as inmediata, creo que aca no haria falta mostrar el detalle ya que es solo un paso. Con mencionar la regla del append tiene que alcanzar, lo dejo por si preferis que quede asi.}.
+%
+						%\item to 9 straightforwardly hold.
+						%
+%
+					%\end{enumerate}
+	
 	
 			
-			\begin{itemize}
-				\item {\bf rule (\textsc{comm-server-client})}. If $C \arroi{\tau} C'$, then by rule (\textsc{\footnotesize{comm-server-client}}), $C'$ must be the following term: $\server{\state}{\inserver}{\update{\outserver}{i}{\gss}} \bigpar 
-		\clientr{P}{\update{E}{\inclient}{E.\inclient \cup \{\gs\}}}$, therefore, the client $i^{th}$ at C, is the only one who changed. We will prove that $(C',A) \ \in \ \mathcal{R}$ if ten properties introduced are keeping.				
-					\begin{enumerate}
-						\item to 6. Their terms do not changed.
-						\setcounter{enumi}{6}	
-							\item $l'$ = $(|E_{i}.\inclient| + 1)$, so that, we have to prove that $E_{i}.\inclient[l'] \triangleleft \queuemessage_A[\tknown + \treceivebuffer - 1 + l']$, however, it easy to see because by property 10. when $m$ = 0 then $\outserver(i)[0] \triangleleft \queuemessage_A[\tknown + \treceivebuffer + |\inclient|]$.
-						\item It is easy to see that $(|E_{i}.\inclient| + 1) + (|\queuemessage_C.\outserver|-1) > 0$.
-						\item It does not change.
-						\item It is easy to see, because, Property 10 is guaranteed with $0 \leq l$ therefore $1 \leq l$. 
-					\end{enumerate}
+					%
+	%
+	%\item {\bf rule \ruleName{pull}}. Then, $\systemterm  \arroi{\pulltran} \systemterm '$ with 
+				%\[\begin{array}{r@{=}l}
+					%\systemterm & \tsystem{\tclienti{\tpullins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]
+					%\\
+					%\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown+\treceivebuffer}{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer {\ -1}]}{\ttransactionbuffer}{\tsent}{0}}[{\systemterm['']}]	
+				  %\end{array}
+				%\]
+		%
+				%Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
+				%\[ \addid{\iclientinst[\tpullins][@]
+						%[@]%[\aseqround\cdot{\aroundtuple}\cdot{\aseqround[']}]
+						%[@][@][@][n][{\agssegpair[{\adelta[']}]}\cdot\inclient]}
+								%\ \bigpar \ \isystemterm['']\]
+				%with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
+				%$\isystemterm \arroi{\pulltran} \isystemterm[']$ with
+				%\[\begin{array}{r@{=}l}
+					%\isystemterm['] & \addid{\iclientinst[P]
+						 %[\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}]
+						 %[\aseqround']
+						 %[@][@]
+						 %[{\receivebuffer}][n][\epsilon]}\ \bigpar \ \isystemterm['']	\\
+					   %\aseqround['] & filter\ (\geq \amxrf[_k](\cid)) \ \aseqround \\
+						%\inclient & \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]
+				  %\end{array}		
+				%\]
+				%
+				%We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				%by checking the properties in \defref{def:implementation}.	
+						%\chnote{esta oka la regla pull1? el in del cliente no entiendo porque tiene el delta y la f, para que la usas?}
+					%\begin{enumerate}
+						%\item We will inspect the terms that have changed in client $\cid$ knowing as hypothesis that $\implements{\isystemterm}{\systemterm}$.
+						%\begin{itemize}
+							%\item By \propref{prop_state_known}, $\astate_l \triangleleft \flatten {\queuemessage[0 .. \tknown_l - 1]} \ $, however, after $\pulltran$ transition, we should build the following proof for 
+						%$\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_l +\treceivebuffer_l - 1]} \ $
+					%\[
+						  %\mathrulean{\lemref{lemma:apply}}
+						  %{
+							%\mathrulean{\triangapply}
+								%{
+								%\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}
+								%\quad 
+								%\adelta[_1] \triangleleft \queuemessage_A[\tknown_l] \ldots \adelta[_k] \triangleleft \queuemessage_A[\tknown_l + \treceivebuffer_l - 1]
+								%}
+								%{\iapply{\known}{\adelta[_1]\cdots\adelta[_k]}\triangleleft \flatten{\queuemessage[0 .. \tknown_l +\treceivebuffer_l - 1]}
+								%}
+							%}
+  						%{\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_l +\treceivebuffer_l - 1]}}  
+					%\]
+					  %The last step is worth by \propref{prop_inclient}.
+						%\item By \propref{prop_inclient}, if $\inclient_l = \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]$ then 
+		%$\adelta[_1] \triangleleft \queuemessage[\tknown_i] \ldots \adelta[_k] \triangleleft \queuemessage[\tknown_l + \treceivebuffer_l - 1]$. After $\pulltran$ transition, $\inclient_l$['] = $\epsilon$ and $\treceivebuffer_l$ = 0, then by 
+		%\triangemptydelta, this property is hold.
+						%\item We have to prove that $\ireduce{\adelta[_m]\cdots\adelta[_h]} \triangleleft \flatten{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer -1]}$ (PENDIENTE)
+						%\end{itemize}
+		%
+				%
+%
+					%\end{enumerate}
+	
+	
+	        %\item {\bf rule \ruleName{confirm}}. Then, $\systemterm  \arroi{\confirmedtran} \systemterm '$ with 
+				%\[\begin{array}{r@{=}l}
+					%\systemterm & \tsystem{\tclienti{\tconfirmedins{x}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]
+					%\\
+					%\systemterm['] & \tsystem{\tclienti{{\tprogram}\subst{x}{v}}
+		%{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]	
+					%\\
+					%v & \eval{(\tpending \cdot  \ttransactionbuffer == \epsilon)}
+				  %\end{array}
+				%\]
+		%
+		%
+				%Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
+				%\[\addid{\iclientinst[\tconfirmedins{x}]} \bigpar \ \isystemterm['']\]
+				%with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
+				%$\isystemterm \arroi{\confirmedtran} \isystemterm[']$ with
+				%\[\begin{array}{r@{=}l}
+					%\isystemterm['] & \addid{\iclientinst[P\subst{x}{v}]} \bigpar \ \isystemterm['']	\\
+					%v' & (\pending  \cdot \pushbuffer \cdot\transactionbuffer == \epsilon) 
+				  %\end{array}		
+				%\]
+				%
+				%We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				%by checking the properties in \defref{def:implementation}.			
+					%\begin{enumerate}
+						%\item The only terms that have changed are the programs in client $\cid$.  We show that $v=v'$ holds. Since 
+						%$\implements{\isystemterm}{\systemterm}$, the following holds
+						%\begin{itemize}
+							%\item $\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}}\triangleleft \flatten{\tpending} \ $ by property \ref{prop_pending};
+							%\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by property \ref{prop_transactions};
+						%\end{itemize}
+						%Then, we know that the value of $\pending \cdot \pushbuffer$ is related to $\tpending$, thereby, when E.$\pending$ or E.$\pushbuffer$ have any elements then $\tpending$ also has it. Finally, $\transactionbuffer$ has elements iff $\ttransactionbuffer_i$ also has any elements.
+			%
+					%\end{enumerate}
+				%
+				%
+				%\item {\bf rule \ruleName{receive}}. Then, $\systemterm  \arroi{\tau} \systemterm '$ with 
+				%\[\begin{array}{r@{=}l}
+					%\systemterm & \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]
+					%\\
+					%\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}[{\systemterm['']}]	
+					%
+				  %\end{array}
+				%\]
+				%Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
+				%\[\addid{\iclientinst[@][@][@][@][@][@][@][\inclient]} \ \bigpar \ \iserverins[\astate['']] \ \bigpar\ \iclient['']\]
+				%%with $\implements{\isystemterm['']}{\systemterm['']}$. 
+				%by inspection of rules in \figref{}, 
+				%$\isystemterm \arroi{\tau} \isystemterm[']$ with
+				%\[\begin{array}{r@{=}l}
+					%\isystemterm['] & \addid{\iclientinst[@][@][@][@][@][@][@][\inclient\cdot \aseg]} \ \bigpar \ \iserverins[{\astate[']}][@][@][\outserver\upd{\cid}\aseqseg] \ \bigpar\ \iclient[''] \\
+				  %\end{array}		
+				%\]
+				%
+				%We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				%by checking the properties in \defref{def:implementation}.			
+%
+						%\begin{itemize}
+							%\item[4.] By \propref{prop_outserver}, we know that the firt element in $\outserver(i)$ = $\queuemessage[\tknown_l+\treceivebuffer_l]$ when $m$ = 1. Now, we should build the following proof for 
+							%
+						%${\ireduce{\adelta_0\cdots\adelta_{h+1}}\triangleleft  \queuemessage[\tknown_l..\treceivebuffer_l]} \ $
+					%\[
+						  %\mathrulean{\lemref{lemma:reduce}}
+						  %{
+								%\ireduce{\adelta_0\cdots\adelta_{h}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l - 1]
+								%\quad 
+								%\adelta[_{h+1}] \triangleleft \queuemessage[\tknown_l + \treceivebuffer_l] 							
+							%}
+  						%{\ireduce{\adelta_0\cdots\adelta_{h+1}}\triangleleft  \queuemessage[\tknown_l..\treceivebuffer_l]}  
+					%\]
+							%\item[9.] By \propref{prop_outserver}, we know that for all natural $m$, such that $0 \leq m \leq |\outserver(i)|$ then $\outserver(i)[m] \triangleleft \queuemessage[\tknown + \treceivebuffer - 1 + m]$. Now, $|\outserver(i)|$ was decremented by one, however, this property holds.
+						%\end{itemize}
+					%
+				
+				
+				%
+					%
+						%
+%\item {\bf rule (\textsc{t-process})} If $A \arroi{\tau} A'$, then by rule (\textsc{\footnotesize{t-process}}), $A$ must be the following term: $\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\tsenthead] \cdot \tsent}{\treceivebuffer}\ \bigpar\ \tilde{A}}{\queuemessage_A}$, therefore, the client $i^{th}$ is only one who changes. So that, $A'$ will be $\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ C}{\queuemessage \cdot \tsenthead}$. Property 9 states that for all $\beta$ such that $\beta \ \in \ \tsent_i$ then $\beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver$. Analyzing cases:
+					%
+					%
+					%
+					%\begin{itemize}
+						%\item If $\beta \ \in\ E_{i}.\outclient$ then, by rule (\textsc{\footnotesize{comm-client-server}}), $C \arroi{\tau} C'$, so that, $C'$ = $\clientr{P}{\update{E}{\outclient}{\tailround}} \bigpar\ \tilde{C} \ \bigpar\ \ \server{\state}{\update{\inserver}{i}{\headerround}}{\outserver}_C$ and $\delta_0 \triangleleft \beta$. Performing a new internal action by rule (\textsc{\footnotesize{batch}}),i.e., $C' \arroi{\tau} C''$, then $C''$ = $\server{\apply{\persistedstate}{d}}{\inserver}{\notify{dom(\outserver)}{\outserver}{gs}}  \bigpar\ \tilde{C} \bigpar \clientr{P}{\stateclient}$. We have to prove that $(A',C'')$ belongs $\mathcal{R}$.
+						%
+						%\begin{enumerate}
+							%\item Theirs terms do not change.
+							%\item Our hypothesis is $\queuemessage_C.\state \triangleleft \queuemessage_A$ besides $\delta_0 \triangleleft \beta$, then using the property of the relation $\triangleleft$ between state and updates, we will get that $apply(\queuemessage_C.\state,\delta_0) \triangleleft \queuemessage_A \cdot \beta$.
+							%\item It does not change.
+							%\item It does not change.
+							%\item It does not change.
+							%\item It does not change.
+							%\item It does not change.
+							%\item $\queuemessage_A$  has incremented by one, so that, by Hypothesis, $\tknown + \treceivebuffer + 1 \leq |\queuemessage_A| < |\queuemessage_A| + 1$, besides, $\Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0$ because of neither $E_{i}.\inclient$ nor $\queuemessage_C.\outserver$ have changed.
+%\item By Hypothesis, for all element in $\tsent$, those belongs to $E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver$, in particular, $\tsent$ without a element keeps these guarantee.
+						%\end{enumerate}
+%\item If $\beta \ \in\ E_{i}.\inserver$ then, applying rule (\textsc{\footnotesize{batch}}), we can see that we are at above case.
+					%\end{itemize}
 					
-					
-				\item {\bf rule (\textsc{comm-client-server})}. If $C \arroi{\tau} C'$, then by rule (\textsc{\footnotesize{comm-client-server}}), $C'$ must be the following term: $\server{ps'}{\inserver}{\notify{dom(\outserver)}{\outserver}{gs}}$, therefore, the client $i^{th}$ is the only one who has changed. We will prove that $(C',A) \ \in \ \mathcal{R}$ if the ten properties introduced are keeping.				
-					\begin{enumerate}
-						\item to 8. Their terms do not changed.
-						\setcounter{enumi}{8}	
-						\item It is easy to see, because, we have exchanged a sequence from $\outclient$ to $\inserver$. 
-						\item It does not change.
-						\end{enumerate}
-				
+\end{itemize}
 
-
-				
-						\item {\bf rule (\textsc{batch})}. If $C \arroi{\tau} C'$, then by rule (\textsc{\footnotesize{batch}}), $C'$ must be the following term: $\server{\state}{\inserver}{\update{\outserver}{i}{\gss}} \bigpar 
-		\clientr{P}{\update{E}{\inclient}{E.\inclient \cup \{\gs\}}}$, therefore, the client $i^{th}$ at C, is the only one who changed. Hence	$(C,A)$ belongs to $\mathcal{R}$ then $A$ after of internal transition $\tau$ is $\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ S_C}{\queuemessage \cdot \tsenthead}$. We will prove that $(C',A') \ \in \ \mathcal{R}$ if the ten properties introduced are keeping.	
-				\begin{enumerate}
-						\item Their terms do not change.
-						\item Property 9 states that for all $\beta$ such that $\beta \ \in \ \tsent_i$ then $\beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver$. In particular, we consider $\beta \ \in \ \queuemessage_C.\inserver$, then there exists $\delta_o$ such that $\delta_0 \triangleleft \beta$, besides by Property 2., $\queuemessage_C.\state \triangleleft \queuemessage_A$, so that using the property of the relation $\triangleleft$ between state and updates, we will get that $apply(\queuemessage_C.\state,\delta_0) \triangleleft \queuemessage_A \cdot \beta$.
-							\item It does not change.
-							\item It does not change.
-							\item It does not change.
-							\item It does not change.
-							\item It does not change.
-							\item $\queuemessage_C.\outserver$ is updated with the new persisted state however its size does not change. By Hypothesis 9, $\tknown + \treceivebuffer + 1 \leq |\queuemessage_A| < |\queuemessage_A| + 1$.
-							\item It does not change.
-							\item It does not change.
-
-						\end{enumerate}
-		
-
-				
-			\end{itemize}
-		\end{itemize}
+\end{itemize}
+%
+%We have prove that if $A$ perform an action, $C$ also can perform an action, the terms after both transitions are in $\mathcal{R}$. Now, we will prove the opposite side. When $C$ perform an action, then A can perform an action and the news terms are in $\mathcal{R}$.
+%
+%
+%\begin{itemize}
+   %\item{\bf n=0}. Then $C$ = $\clientr{E}{\initialstate}$ and $A$ = $\tsystem{\tclienti{0}{\emptyset}{\emptyset}{\emptyset}{\emptyset}{0}\ \bigpar\ \tilde{A}}{\queuemessage_A}$. It is analogous to the base case previously proved.
+			%
+   %\item{\bf n=k+1}. $\forall (C,A) \ \in \ \mathcal{R}$
+	%
+			%
+			%\begin{itemize}
+				%\item {\bf rule (\textsc{comm-server-client})}. If $C \arroi{\tau} C'$, then by rule (\textsc{\footnotesize{comm-server-client}}), $C'$ must be the following term: $\server{\state}{\inserver}{\update{\outserver}{i}{\gss}} \bigpar 
+		%\clientr{P}{\update{E}{\inclient}{E.\inclient \cup \{\gs\}}}$, therefore, the client $i^{th}$ at C, is the only one who changed. We will prove that $(C',A) \ \in \ \mathcal{R}$ if ten properties introduced are keeping.				
+					%\begin{enumerate}
+						%\item to 6. Their terms do not changed.
+						%\setcounter{enumi}{6}	
+							%\item $l'$ = $(|E_{i}.\inclient| + 1)$, so that, we have to prove that $E_{i}.\inclient[l'] \triangleleft \queuemessage_A[\tknown + \treceivebuffer - 1 + l']$, however, it easy to see because by property 10. when $m$ = 0 then $\outserver(i)[0] \triangleleft \queuemessage_A[\tknown + \treceivebuffer + |\inclient|]$.
+						%\item It is easy to see that $(|E_{i}.\inclient| + 1) + (|\queuemessage_C.\outserver|-1) > 0$.
+						%\item It does not change.
+						%\item It is easy to see, because, Property 10 is guaranteed with $0 \leq l$ therefore $1 \leq l$. 
+					%\end{enumerate}
+					%
+					%
+				%\item {\bf rule (\textsc{comm-client-server})}. If $C \arroi{\tau} C'$, then by rule (\textsc{\footnotesize{comm-client-server}}), $C'$ must be the following term: $\server{ps'}{\inserver}{\notify{dom(\outserver)}{\outserver}{gs}}$, therefore, the client $i^{th}$ is the only one who has changed. We will prove that $(C',A) \ \in \ \mathcal{R}$ if the ten properties introduced are keeping.				
+					%\begin{enumerate}
+						%\item to 8. Their terms do not changed.
+						%\setcounter{enumi}{8}	
+						%\item It is easy to see, because, we have exchanged a sequence from $\outclient$ to $\inserver$. 
+						%\item It does not change.
+						%\end{enumerate}
+				%
+%
+%
+				%
+						%\item {\bf rule (\textsc{batch})}. If $C \arroi{\tau} C'$, then by rule (\textsc{\footnotesize{batch}}), $C'$ must be the following term: $\server{\state}{\inserver}{\update{\outserver}{i}{\gss}} \bigpar 
+		%\clientr{P}{\update{E}{\inclient}{E.\inclient \cup \{\gs\}}}$, therefore, the client $i^{th}$ at C, is the only one who changed. Hence	$(C,A)$ belongs to $\mathcal{R}$ then $A$ after of internal transition $\tau$ is $\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\bigpar\ S_C}{\queuemessage \cdot \tsenthead}$. We will prove that $(C',A') \ \in \ \mathcal{R}$ if the ten properties introduced are keeping.	
+				%\begin{enumerate}
+						%\item Their terms do not change.
+						%\item Property 9 states that for all $\beta$ such that $\beta \ \in \ \tsent_i$ then $\beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver$. In particular, we consider $\beta \ \in \ \queuemessage_C.\inserver$, then there exists $\delta_o$ such that $\delta_0 \triangleleft \beta$, besides by Property 2., $\queuemessage_C.\state \triangleleft \queuemessage_A$, so that using the property of the relation $\triangleleft$ between state and updates, we will get that $apply(\queuemessage_C.\state,\delta_0) \triangleleft \queuemessage_A \cdot \beta$.
+							%\item It does not change.
+							%\item It does not change.
+							%\item It does not change.
+							%\item It does not change.
+							%\item It does not change.
+							%\item $\queuemessage_C.\outserver$ is updated with the new persisted state however its size does not change. By Hypothesis 9, $\tknown + \treceivebuffer + 1 \leq |\queuemessage_A| < |\queuemessage_A| + 1$.
+							%\item It does not change.
+							%\item It does not change.
+%
+						%\end{enumerate}
+		%
+%
+				%
+			%\end{itemize}
+		%\end{itemize}
 		
 \end{proof}
