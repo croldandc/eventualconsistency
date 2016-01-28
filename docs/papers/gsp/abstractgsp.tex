@@ -146,7 +146,7 @@ by the client $\cid$. The set of actions is defined by the following grammar:
 \[ 
 \begin{array}{r@{\ ::= \ }l}
   \action & \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran \\
-  \actbyc &  \tau \ |\ (\cid,\mu)
+  \actbyc &  \tau \ |\ (\mu,\cid)
 \end{array}
 \]
 As usual,  $\tau$ stands for an internal, unobservable action, while the remaining actions allow 
