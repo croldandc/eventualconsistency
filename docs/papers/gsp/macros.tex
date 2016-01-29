@@ -653,4 +653,7 @@
 %volver
 
 %SECTION 4
-\newcommand{\restUR}[1]{#1\cap \ (\mathbb{U}\ \times \ \mathbb{R})}
+\newcommand{\restRel}[3]{#1\!\!\downarrow_{#2\times#3}}
+\newcommand{\restUR}[1]{\restRel{#1}{\mathbb{U}}{\mathbb{R}}}
+\newcommand{\restUO}[1]{\restRel{#1}{\mathbb{U}}{\mathbb{O}}}
+\newcommand{\restRO}[1]{\restRel{#1}{\mathbb{R}}{\mathbb{O}}}

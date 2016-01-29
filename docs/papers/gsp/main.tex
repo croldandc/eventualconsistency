@@ -465,7 +465,7 @@ over well-formed terms, up-to the structural congruence.
 		 {\begin{array}{l}
 			\addid{\iclientinst[\tpullins][@]
 			[@]%[\aseqround\cdot{\aroundtuple}\cdot{\aseqround[']}]
-			[@][@][@][n][{\agssegpair[{\adelta[']}]}\cdot\inclient]}
+			[@][@][@][n][\inclient]}
 			    \ \bigpar \ \isystemterm
 			\arro{\pulltran} 
 			\\
@@ -562,6 +562,33 @@ over well-formed terms, up-to the structural congruence.
 \\
 \mathax{crash}{\server{\astate}{\inserver}{\outserver}\ \bigpar \ \iclient
  \tr{\tau} \server{\astate}{\undefined}{\undefined}\ \bigpar \ \iclient}
+\\
+
+\\
+	\mathrule{pull-2}
+	{\aseqround['] = filter\ (\geq \amxrf(\cid)) \ \aseqround
+	\qquad \inclient = \aseqseg\cdot\agssegpair[{\astate[']}]\cdot\agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]
+	 }
+		 {\begin{array}{l}
+			\addid{\iclientinst[\tpullins][@][\aseqround][@][@][@][@][\inclient]}
+			     \ \bigpar \ \iserverins[{\astate['']}][{\amxrf[']}] \ \bigpar\ \iclient
+ %[]\ \bigpar \ \isystemterm
+			\arro{\pulltran} 
+			\\
+			\hspace{1.5cm}
+			\addid{\iclientinst[P]
+						 [\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}]
+						 [{\aseqround'}]
+						 [@][@]
+						 [{\receivebuffer}]}
+		\ \bigpar \ \iserverins[{\astate['']}][{\amxrf[']}][\inserver\upd{\cid}{\inserver(\cid)\cdot\aseqround[']}]
+		\ \bigpar\ \iclient
+	 	\end{array}
+		}
+\\
+
+
+
 \\
 	\mathrule{pull-2}
 	{\aseqround['] = filter\ (\geq \amxrf(\cid)) \ \aseqround}
@@ -1087,6 +1114,41 @@ $\restUR{(\so \cup \vis ) ^{+} } \subseteq \vis$.
 
 \end{theorem}
  
+\begin{proof}
+	We show by induction on $n$   that 
+	   \[\restUO{(\so \cup \vis ) ^{+}}  = \bigcup_{n=1}^{\infty} \restUO{(\so \cup \vis )^{n}} \subseteq  \so  \cup \vis\]
+
+	\begin{itemize}
+	    \item {\bf n=1}. Trivially, because ${(\so \cup \vis )} \subseteq  (\so  \cup \vis)$.
+	    \item {\bf n=k+1}. By definition of composition, 
+	    ${(\so \cup \vis ) ^{n} }  = {(\so \cup \vis ) ^{k};(\so \cup \vis )}$.
+	    \[(\so \cup \vis ) ^{k} = \restUO{(\so \cup \vis ) ^{k}} \cup\ \restRO{(\so \cup \vis)^k}\]
+	    
+	    Then, 
+	    \[\restUO{((\so \cup \vis ) ^{k};(\so\cup\vis))} = \restUO{(\restUO{(\so \cup \vis ) ^{k}} ;(\so\cup\vis))}\]
+	    
+	  because    
+	    	$\restRO{(\so \cup \vis)^k}; $
+
+  
+
+
+
+
+
+	    \henote{a}
+
+	    By inductive hypothesis, 
+	    \[(\so \cup \vis ) ^{k}\subseteq (\so\cup\vis)\]
+	    Hence, 
+	    \[ {(\so \cup \vis ) ^{k};(\so \cup \vis )}\subseteq (\so\cup\vis);(\so\cup\vis)\]
+	    By definition,
+	    \[(\so\cup\vis);(\so\cup\vis) =  \so;\so\ \cup\ \vis;\so\ \cup\ \vis;\so\ \cup\ \vis;\vis\]
+	    
+	\end{itemize}
+
+\end{proof}
+
 
 \begin{proof} 
   	The proof follows by induction on the number of union sets between $\textsc{\small{SO}}_R$ and $\textsc{\small{VIS}}$. Then, $\bigcup_{n=1}^{\infty} (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{n} \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \subseteq \textsc{\small{VIS}}.$
