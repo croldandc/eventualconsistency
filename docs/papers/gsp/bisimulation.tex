@@ -66,14 +66,14 @@ $\Leftarrow)$ Follows analogously.
   					{\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_{n-1}] \triangleleft \anupdseq[_{n-1}]\qquad\qquad
 	   		\adelta[_n] \triangleleft \anupdseq[_n]  
 		}
-		{\ireduce {\adelta[_0] \cdots \adelta[_{n-1}] \cdot \adelta[_{n}]} \triangleleft \anupdseq_0\cdots\anupdseq_n \cdot \anupdseq[_{n-1}]}	
+		{\ireduce {\adelta[_0] \cdots \adelta[_{n-1}] \cdot \adelta[_{n}]} \triangleleft \anupdseq[_0]\cdots\anupdseq[_{n-1}] \cdot \anupdseq[_n]}	
 \]
 Hence, $\anupdseq = \anupdseq[_0]\cdots\anupdseq[_{n-1}]$. The proof is completed by using rule \ruleName{\triangreduce} on
 $\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_{n-1}] \triangleleft \anupdseq[_{n-1}]$.
 
  \[  \mathrule{\triangreduce}
-   		{\adelta[_1] \triangleleft \anupdseq[_1] \ldots \adelta[_n] \triangleleft \anupdseq[_{n-1}]}
-		{\ireduce {\adelta[_1] \cdots \adelta[_n]} \triangleleft \anupdseq[_1] \cdots \anupdseq[_{n-1}]}
+   		{\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_{n-1}] \triangleleft \anupdseq[_{n-1}]}
+		{\ireduce {\adelta[_0] \cdots \adelta[_{n-1}]} \triangleleft \anupdseq[_0] \cdots \anupdseq[_{n-1}]}
 \]
  
 %and $\anupdseq =\anupdseq['] \cdot \anupdseq[_1] \cdots \anupdseq[_n]$. By  rule \ruleName{\triangapply} on the premises of the 
@@ -90,6 +90,34 @@ $\Leftarrow)$ Follows analogously.
 %\end{itemize}
 %
 % 
+
+
+\begin{lemma}\label{lemma:storechanged} Let $\adelta[_0]\cdots\adelta[_{n-1}]$ a delta sequence, such that, $\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_0] \triangleleft \anupdseq[_n]$ and the following relation $\astate \triangleleft \anupdseq$ then $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_n]$
+\end{lemma}
+
+\begin{proof} The proof follows by induction on the length of the sequence.
+
+\begin{itemize}
+   \item{\bf n=0}. It is easy to see that $\iapply{\astate}{\ireduce{\emptydelta}}\triangleleft \anupdseq$ is $\astate \triangleleft \anupdseq$.
+   \item{\bf n=k+1}. Then, our inductive hypothesis is $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_k]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_k]$, we should build the following proof for 
+							
+						$\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_{k+1}]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_{k+1}] \ $
+					\[
+						  \mathrulean{\lemref{lemma:apply}}
+						  {
+								\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_k]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_k]
+								\quad \quad 
+								\anupdseq[_{k+1}]\triangleleft\anupdseq[_{k+1}] 							
+							}
+  						{\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_{k+1}]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_{k+1}]}  
+					\]
+	
+
+\end{itemize}
+
+
+\end{proof}
+
 
 \begin{definition} \label{def:implementation}
 Let  $\systemterm = \abstsyst[@][@][\Absclient_j]$ with $\Absclient_l={\abstcliJ}$be a \tgspcalculus\ system and 
@@ -112,10 +140,10 @@ system. We say $\isystemterm$ implements $\systemterm$ if the following conditio
 	\item \label{prop_pending} $\pending_l = \aroundtuplei[0]\ldots\aroundtuplei[h]$ and $\ireduce{\adelta_0\cdots\adelta_h\cdot {\pushbuffer}_l} \triangleleft \flatten{\tpending_l}$
 	%\item ${\inclient}_l = \agssegpairi \cdots \agssegpairi[h]$ and $\ireduce{\adelta_0\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..\treceivebuffer_l-1]$
 	% $\length{\inclient}_l = \treceivebuffer_l$ and for all $0 \leq h < \treceivebuffer_l$,  $\inclient[h] = \agssegpair$ and $\adelta\triangleleft{\queuemessage[\tknown + l]}$
-	\item $\tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0$
-	\henote{no muy seguro}
-	\item For all update sequence $\beta \ \in \ \tsent_i$ then $\beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver$
-	\item \label{prop_outserver} For all natural $m$, such that $0 \leq m \leq |\outserver(i)|$ then $\outserver(i)[m] \triangleleft \queuemessage[\tknown + \treceivebuffer - 1 + m]$
+	%\item $\tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0$
+%	\henote{no muy seguro}
+	\item \label{prop_send} $\tsent_l$ = ${\tsent}_h \cdot {\tsent}_t $ then $ {\pushbuffer}_l \triangleleft {\tsent}_t \lor \exists \adelta_h\ \in \ \igetdeltas{\inserver(i)}$ such that $\adelta_h \triangleleft \ {\tsent}_h$
+	\item \label{prop_outserver} For all natural $m$, such that $1 \leq m \leq |\outserver(i)|$ then $\outserver(l)[m] \triangleleft \queuemessage[\tknown_l + \treceivebuffer_l - 1 + m]$
 \item \label{prop_size_buffersent} $|n_l| = n$ \chnote{Esta mal escrita. Falta la macro}
 	
 
@@ -134,7 +162,7 @@ We use $\approx$ for standard weak bisimulation.
 
 
 
-\begin{proof} We show that the following relation is a weak bisimulation.
+\begin{proof} We show that the following relation is a weak simulation.
 \[
 \mathcal{R} = \{ (\isystemterm, \systemterm) \ |\ \implements{\isystemterm{}}{\systemterm} \}
 \]
@@ -145,12 +173,12 @@ We use $\approx$ for standard weak bisimulation.
 
 
 %The proof follows by induction on the length of the derivation $\arro{} ^*$.
- We use $\tilde{A}$ and $\tilde{C}$ to denote clients, except client $i^{th}$, interacting concurrently, i.e., $\parallel_{j \ \in\ I_{\{0 \ldots n\} - i}}$ $A_j$ or $C_j$ respectively.
+ %We use $\tilde{A}$ and $\tilde{C}$ to denote clients, except client $i^{th}$, interacting concurrently, i.e., $\parallel_{j \ \in\ I_{\{0 \ldots n\} - i}}$ $A_j$ or $C_j$ respectively.
 
 \begin{itemize}
    
 	
-   \item{\bf n=k+1}. $\forall (\isystemterm ,\systemterm ) \ \in \ \mathcal{R}$
+   \item%{\bf n=k+1}. $\forall (\isystemterm ,\systemterm ) \ \in \ \mathcal{R}$
    
   % \henote{Para no escribir $\mathcal{R}^{-1}$ podemos cambiar la definici\'on $\mathcal{R}$}
 		
@@ -245,12 +273,22 @@ We use $\approx$ for standard weak bisimulation.
   						{\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}\cdot \transactionbuffer}\triangleleft \flatten{\tpending\cdot [\ttransactionbuffer]}}  
 					\]
 					We have used that $\flatten{\tpending\cdot [\ttransactionbuffer]}$ = $\flatten{\tpending} \cdot \ttransactionbuffer$, besides, we use \propref{prop_transactions}.
-					  \item[\ref{prop_size_buffersent}.] $n_l = n_l$, both have been incremented by one, so that this property is hold.
+					  
+						\item[\ref{prop_send}] The hypothesis is that $\tsent$ = ${\tsent}_h \cdot {\tsent}_t $ then $ {\pushbuffer}_l \triangleleft {\tsent}_t \lor \exists \adelta_h\ \in \ \igetdeltas{\inserver(i)}$ such that $\adelta_h \triangleleft \ {\tsent}_h$. Now, $\tsent$ and $\pushbuffer$ have changed, in particular ${\tsent}_t $ has a new block. $\inserver$ has not changed. We should build the following proof for $\ireduce{{\pushbuffer}\cdot \transactionbuffer}\triangleleft {\tsent}_t\cdot\ttransactionbuffer \ $.
+						\[
+						  \mathrulean{\lemref{lemma:reduce}}
+						  {\pushbuffer \triangleleft {\tsent}_t
+								\quad
+								\transactionbuffer \triangleleft \ttransactionbuffer}
+  						{\ireduce{{\pushbuffer}\cdot \transactionbuffer}\triangleleft {\tsent}_t\cdot\ttransactionbuffer}  
+					\]
+						Then, this property holds.
+						\item[\ref{prop_size_buffersent}.] $n_l = n_l$, both have been incremented by one, so that this property is hold.
 						\chnote{falta agregar el contador de rounds n en el abstracto.}			
 						\item[{--}] The remaining properties straightforwardly hold.
-						\chnote{IMPORTANTE: Falta la relacion que explica que pasa con el send del abstracto. Cuando termine todas las reglas quizas entienda que hacer.}			
-
+								
 					\end{enumerate}
+	\item \label{prop_send} $\tsent_l$ = ${\tsent}_h \cdot {\tsent}_t $ then $ {\pushbuffer}_l \triangleleft {\tsent}_t \lor \exists \adelta_h\ \in \ \igetdeltas{\inserver(i)}$ such that $\adelta_h \triangleleft \ {\tsent}_h$
 
 
 \item {\bf rule \ruleName{send}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
@@ -268,6 +306,9 @@ We use $\approx$ for standard weak bisimulation.
 
 						\begin{itemize}
 							\item[\ref{prop_pending}.] We have to prove that $\pending[']_l = \aroundtuplei[0]\ldots\aroundtuplei[h]\aroundtuplei[p]$ and $\ireduce{\adelta_0\cdots\adelta_h\cdot\adelta_p\cdot\emptydelta} \triangleleft \flatten{\tpending_l}$. It is easy to see that it is the same relation that our hypothesis, hence, $\adelta_p$ was moved to the pending sequence , leaving a $\emptydelta$.
+							\item[\ref{prop_send}.] It is easy to see, because ${\pushbuffer}$ was moved to $\inserver(i)$, then, $\exists \adelta_k\ \in \ \igetdeltas{\inserver(i)}$ such that $\adelta_h \triangleleft \ {\tsent}_h$, in particular, $\adelta_k$ = $\pushbuffer$.
+						\item[{--}] The remaining properties straightforwardly hold.
+							
 						\end{itemize}
 
 
@@ -309,7 +350,7 @@ We use $\approx$ for standard weak bisimulation.
   						{\ireduce{\adelta_0\cdots\adelta_{h+1}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l]}  
 					\]
 					We used that $\queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l]$ = $\queuemessage[\tknown_l..\tknown_l - 1] \cdot \queuemessage[\tknown_l + \treceivebuffer_l]$. Furthermore, we used the hypothesis from \propref{prop_inclient} that states $\ireduce{\adelta_0\cdots\adelta_{h}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l - 1]$.
-							\item[\ref{prop_outserver}.] \propref{prop_outserver} states that for all natural $m$, such that $0 \leq m \leq |\outserver(i)|$ then $\outserver(i)[m] \triangleleft \queuemessage[\tknown + \treceivebuffer - 1 + m]$. Now, $|\outserver(i)|$ was decremented by one, then this property is hold. (Si valia para los menores a longitud outserver, entonces es trivial digamos ya que ahora vale para longitud outserver - 1) 
+							\item[\ref{prop_outserver}.] \propref{prop_outserver} states that for all natural $m$, such that $1 \leq m \leq |\outserver(i)|$ then $\outserver(i)[m] \triangleleft \queuemessage[\tknown + \treceivebuffer - 1 + m]$. Now, $|\outserver(i)|$ was decremented by one, then this property is hold. (Si valia para los menores a longitud outserver, entonces es trivial digamos ya que ahora vale para longitud outserver - 1) 
 						\end{itemize}
 					
 
@@ -502,13 +543,9 @@ We use $\approx$ for standard weak bisimulation.
 				We  prove that $(\isystemterm',\systemterm^{h}) \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm^{h}}$ 
 				by checking the properties in \defref{def:implementation}.	
 					\begin{enumerate}
-							\item[\ref{prop_stateserver}.] We should build the following proof for 
-						$\iapply{\astate}{\ireduce{\adelta[_1]\cdots\adelta[_h]}} \triangleleft \queuemessage\cdot [\tsenthead_1]\cdots[\tsenthead_h] \ $
-					
-				
-
-
-
+							\item[\ref{prop_stateserver}.] We have to prove that 
+						$\iapply{\astate}{\ireduce{\adelta[_1]\cdots\adelta[_h]}} \triangleleft \queuemessage\cdot [\tsenthead_1]\cdots[\tsenthead_h] \ $. The proof is immediate by \lemref{lemma:storechanged}.
+						\item[\ref{prop_sent}.] $\inserver$ has not rounds,i.e., is $\epsilon$. After $h$ transition in the abstract model, ${\tsent}_h$ is $\epsilon$, using \triangemptydelta we can see that this property holds.
 					\end{enumerate}
 	
 	
