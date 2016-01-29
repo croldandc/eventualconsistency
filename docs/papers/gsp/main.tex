@@ -872,13 +872,13 @@ case analysis on the inference rule applied for the last transition:
 
 \begin{lemma}
 \label{lemma:update-ever-belong-different-client} 
-Let $\systemterm$ a \gsp\ system. For all  $\systemterm[']$ and $u\in\updatesets$, if 
+Let $\systemterm$ a \gsp\ system. For all  $\systemterm[']$, if 
 \[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}\]
 then for all $(\vertice,\vertice[w])\in\vis$ if $\vertice\in\sse(\cid)$, 
 $\vertice[w]\in\sse(\cidj)$ and $\cid\neq\cidj$ then
 % u an update action, $\queuemessage$ a message queue, $\tpending_i$ and
  % $\ttransactionbuffer_i$ a pending queue and transaction queue from the client i, if $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \environment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $\{x \mapsto \updatebyclient{i} \}\ \in \ \op\ \Rightarrow\ 
-and $\udec \in\  \queuemessage[0..\tknown_{\cidj}-1]$.
+and there exists $\anupd$ s.t. $\udec \in\  \queuemessage[0..\tknown_{\cidj}-1]$.
 
 
 \end{lemma}
@@ -1005,8 +1005,8 @@ then $\restUR{\vis;\so}  \subseteq  \vis$.
 		Consequently, $(\vertice[x],\vertice) \in\vis$.
 		\item  $\vertice[x]\notin\sse'(\cid)$. By \lemref{lemma:update-ever-belong-different-client},
 		there exists an update $\anupd$ 
-		such that $\anupd^{\vertice[x]} \in\ \ \queuemessage[0..\tknown_{\cidj}-1]$. Therefore
-		$\udec[@][{\vertice[x]}] \in\  \queuemessage''[0..\tknown''_{\cidj}-1] \cdot \tpending''_{\cidj} \cdot [\ttransactionbuffer''_{\cidj}]$. 
+		such that $\anupd^{\vertice[x]} \in\ \ \queuemessage[0..\tknown_{\cid}-1]$. Therefore
+		$\udec[@][{\vertice[x]}] \in\  \queuemessage''[0..\tknown''_{\cid}-1] \cdot \tpending''_{\cid} \cdot [\ttransactionbuffer''_{\cid}]$. 
 		Consequently, $(\vertice[x],\vertice) \in\vis$.
 
 	\end{itemize}
@@ -1088,7 +1088,8 @@ $\restUR{(\so \cup \vis ) ^{+} } \subseteq \vis$.
 \end{theorem}
  
 
-\begin{proof} The proof follows by induction on the number of union sets between $\textsc{\small{SO}}_R$ and $\textsc{\small{VIS}}$. Then, $\bigcup_{n=1}^{\infty} (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{n} \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \subseteq \textsc{\small{VIS}}.$
+\begin{proof} 
+  	The proof follows by induction on the number of union sets between $\textsc{\small{SO}}_R$ and $\textsc{\small{VIS}}$. Then, $\bigcup_{n=1}^{\infty} (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{n} \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \subseteq \textsc{\small{VIS}}.$
 \begin{itemize}
    \item{\bf n=0}. This means that $\textsc{\small{SO}}_R$ and $\textsc{\small{VIS}}$ are $\emptyset$, so that $\emptyset \subseteq \emptyset$.
    \item{\bf n=k+1}. Suppose that we have proved that the number of union sets $< k+1$. Now, we have to prove that: $\forall (a,b) \mid (a,b \in \verticesets \Rightarrow\ (a,b)\ \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1} \cap \ (\mathbb{U}\ \times \ \mathbb{R})) \Rightarrow\ (a,b) \in \textsc{\small{VIS}}$.
