@@ -145,8 +145,8 @@ Transitions will be labelled by pairs $(\mu,\cid)$ where $\mu$ is the action per
 by the client $\cid$. The set of actions is defined by the following grammar:
 \[ 
 \begin{array}{r@{\ ::= \ }l}
-  \action & \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran \\
-  \actbyc &  \tau \ |\ (\mu,\cid)
+  \action & \tau \ |\  \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran \\
+  \actbyc &  (\mu,\cid)
 \end{array}
 \]
 As usual,  $\tau$ stands for an internal, unobservable action, while the remaining actions allow 

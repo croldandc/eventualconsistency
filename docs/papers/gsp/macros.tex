@@ -238,7 +238,7 @@
 %Labels
 
 \newcommandx{\udec}[2][1=u,2=\vertice,usedefault=@]{{#1\!^{\scalebox{.8}{$#2$}}}}
-\newcommandx{\vertice}[2][1=v, 2={}]{\mathbbmss{#1}{#2}}
+\newcommandx{\vertice}[2][1=v, 2={},usedefault=@]{\mathbbmss{#1}{#2}}
 \newcommand{\readtran}[1]{\textit{rd}(#1)}
 \newcommand{\readtranaux}[1]{\textit{rd}(#1)}
 \newcommand{\receive}{\textit{receive}}
@@ -651,3 +651,6 @@
 
 \newcommand{\implements}[2]{{#1}\ \mathit{ implements}	\ {#2}}
 %volver
+
+%SECTION 4
+\newcommand{\restUR}[1]{#1\cap \ (\mathbb{U}\ \times \ \mathbb{R})}
