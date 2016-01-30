@@ -129,9 +129,8 @@ system. We say $\isystemterm$ implements $\systemterm$ if the following conditio
 	%\item \henote{eliminada}
 	% $\rvalue{r}{\flatten{\queuemessage_{A}[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}}$
 	\item \label{prop_stateserver} $\astate \triangleleft \queuemessage$
-	\item \label{prop_transactions} ${\transactionbuffer}_j\triangleleft{\ttransactionbuffer}_j$ 
-	\item \chnote{revivi}	\label{prop_inclient}
-	if ${\inclient}_l = \agssegpairi \cdots \agssegpairi[h]$ then $\ireduce{\adelta_0\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]$
+	\item \label{prop_transactions} ${\transactionbuffer}_l\triangleleft{\ttransactionbuffer}_l$ 
+	\item \label{prop_inclient} if ${\inclient}_l = \agssegpairi \cdots \agssegpairi[h]$ then $\ireduce{\adelta_0\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]$
 	
 	%$E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i - 1]$
 	%	\label {prop_inclient} if $\inclient_l = \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]$ then 
@@ -142,8 +141,11 @@ system. We say $\isystemterm$ implements $\systemterm$ if the following conditio
 	% $\length{\inclient}_l = \treceivebuffer_l$ and for all $0 \leq h < \treceivebuffer_l$,  $\inclient[h] = \agssegpair$ and $\adelta\triangleleft{\queuemessage[\tknown + l]}$
 	%\item $\tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0$
 %	\henote{no muy seguro}
-	\item \label{prop_send} $\tsent_l$ = ${\tsent}_h \cdot {\tsent}_t $ then $ {\pushbuffer}_l \triangleleft {\tsent}_t \lor \exists \adelta_h\ \in \ \igetdeltas{\inserver(i)}$ such that $\adelta_h \triangleleft \ {\tsent}_h$
-	\item \label{prop_outserver} For all natural $m$, such that $1 \leq m \leq |\outserver(i)|$ then $\outserver(l)[m] \triangleleft \queuemessage[\tknown_l + \treceivebuffer_l - 1 + m]$
+	\item \label{prop_send} $\tsent_l$ = ${\tsent}_h \cdot {\tsent}_t $ then $ {\pushbuffer}_l \triangleleft {\tsent}_t$ and $\ireduce{\igetdeltas{\inserver(l)}} \triangleleft \ {\tsent}_h$
+	%\item \label{prop_outserver} For all natural $m$, such that $1 \leq m \leq |\outserver(i)|$ then $\outserver(l)[m] \triangleleft \queuemessage[\tknown_l + \treceivebuffer_l - 1 + m]$
+
+\item \label{prop_outserver2} $\outserver(l)$ = $\agssegpair[\adelta_0][{\amxrf[^{0}]}]\cdots\agssegpair[\adelta_h][{\amxrf[^{h}]}]$ and $\ireduce{\adelta_0\cdots\adelta_h}\triangleleft \ \queuemessage[\tknown_l + \treceivebuffer_l \ldots  |\queuemessage| - 1]$
+
 \item \label{prop_size_buffersent} $|n_l| = n$ \chnote{Esta mal escrita. Falta la macro}
 	
 
@@ -337,24 +339,24 @@ We use $\approx$ for standard weak bisimulation.
 				by checking the properties in \defref{def:implementation}.			
 
 						\begin{itemize}
-							\item[\ref{prop_inclient}.] By \propref{prop_outserver}, we know that the firt element in $\outserver(i)$ = $\queuemessage[\tknown_l+\treceivebuffer_l]$ when $m$ = 1. Let $\adelta_{h+1}$ be a delta object associated to $\aseg$. Now, we should build the following proof for 
+							\item[\ref{prop_inclient}.] By \propref{prop_outserver2}, we know that the first element in $\outserver(i)$ = $\queuemessage[\tknown_i+\treceivebuffer_i]$ when $m$ = 1. Let $\adelta_{h+1}$ be a delta object associated to $\aseg$. Now, we should build the following proof for 
 							
-						${\ireduce{\adelta_0\cdots\adelta_{h+1}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l]} \ $
+						${\ireduce{\adelta_0\cdots\adelta_{h+1}}\triangleleft  \queuemessage[\tknown_i..\tknown_i+\treceivebuffer_i]} \ $
 					\[
 						  \mathrulean{\lemref{lemma:reduce}}
 						  {
-								\ireduce{\adelta_0\cdots\adelta_{h}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l - 1]
+								\ireduce{\adelta_0\cdots\adelta_{h}}\triangleleft  \queuemessage[\tknown_i..\tknown_i+\treceivebuffer_i - 1]
 								\quad 
-								\adelta[_{h+1}] \triangleleft \queuemessage[\tknown_l + \treceivebuffer_l] 							
+								\adelta[_{h+1}] \triangleleft \queuemessage[\tknown_i + \treceivebuffer_i] 							
 							}
-  						{\ireduce{\adelta_0\cdots\adelta_{h+1}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l]}  
+  						{\ireduce{\adelta_0\cdots\adelta_{h+1}}\triangleleft  \queuemessage[\tknown_i..\tknown_i+\treceivebuffer_i]}  
 					\]
-					We used that $\queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l]$ = $\queuemessage[\tknown_l..\tknown_l - 1] \cdot \queuemessage[\tknown_l + \treceivebuffer_l]$. Furthermore, we used the hypothesis from \propref{prop_inclient} that states $\ireduce{\adelta_0\cdots\adelta_{h}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l - 1]$.
-							\item[\ref{prop_outserver}.] \propref{prop_outserver} states that for all natural $m$, such that $1 \leq m \leq |\outserver(i)|$ then $\outserver(i)[m] \triangleleft \queuemessage[\tknown + \treceivebuffer - 1 + m]$. Now, $|\outserver(i)|$ was decremented by one, then this property is hold. (Si valia para los menores a longitud outserver, entonces es trivial digamos ya que ahora vale para longitud outserver - 1) 
+					We used that $\queuemessage[\tknown_i..\tknown_i+\treceivebuffer_i]$ = $\queuemessage[\tknown_i..\tknown_i - 1] \cdot \queuemessage[\tknown_i + \treceivebuffer_i]$. Furthermore, we used the hypothesis from \propref{prop_inclient} that states $\ireduce{\adelta_0\cdots\adelta_{h}}\triangleleft  \queuemessage[\tknown_i..\tknown_i+\treceivebuffer_i - 1]$.
+							\item[\ref{prop_outserver2}.] \propref{prop_outserver2} states that $\outserver(i)$ = $\agssegpair[\adelta_0][{\amxrf[^{0}]}]\cdots\agssegpair[\adelta_h][{\amxrf[^{h}]}]$ and $\ireduce{\adelta_0\cdots\adelta_h}\triangleleft \ \queuemessage[\tknown_l + \treceivebuffer_l \ldots  |\queuemessage| - 1]$. $\outserver(i)[']$. In particular, the head of the sequence $\outserver(i)$ is related with a subsequence from $\queuemessage$. Let $m$ be natural such that $\adelta_0\triangleleft \ \queuemessage[\tknown_l + \treceivebuffer_l \ldots  \tknown_l + \treceivebuffer_l  + m - 1]$. By \lemref{lemma:reduce} we can see that this property holds.
+						\item[{--}] The remaining properties straightforwardly hold.
+
 						\end{itemize}
 					
-
-
 	
 	\item {\bf rule \ruleName{pull-1}}. Then, $\isystemterm  \arroi{\pulltran} \isystemterm '$ with 
 				\[\begin{array}{r@{=}l}
@@ -544,11 +546,87 @@ We use $\approx$ for standard weak bisimulation.
 				by checking the properties in \defref{def:implementation}.	
 					\begin{enumerate}
 							\item[\ref{prop_stateserver}.] We have to prove that 
-						$\iapply{\astate}{\ireduce{\adelta[_1]\cdots\adelta[_h]}} \triangleleft \queuemessage\cdot [\tsenthead_1]\cdots[\tsenthead_h] \ $. The proof is immediate by \lemref{lemma:storechanged}.
-						\item[\ref{prop_sent}.] $\inserver$ has not rounds,i.e., is $\epsilon$. After $h$ transition in the abstract model, ${\tsent}_h$ is $\epsilon$, using \triangemptydelta we can see that this property holds.
+						$\iapply{\astate}{\ireduce{\adelta[']_1\cdots\adelta[']_h}} \triangleleft \queuemessage\cdot [\tsenthead_1]\cdots[\tsenthead_h] \ $. The proof is immediate by \lemref{lemma:storechanged}.
+						\item[\ref{prop_send}.] $\inserver$ has not rounds,i.e., is $\epsilon$. After $h$ transition in the abstract model, ${\tsent}_h$ is $\epsilon$, using \triangemptydelta we can see that this property holds.
+						\item[\ref{prop_outserver2}.] We can build the following proof for 
+						$\ireduce{\adelta_0\cdots\adelta_m\cdot\adelta[']_1\cdots\adelta[']_h} \triangleleft \ \queuemessage[\tknown_l + \treceivebuffer_l  \ldots  |\queuemessage| - 1]\cdot [\tsenthead_1]\cdots[\tsenthead_h]$
+						\[
+						  \mathrulean{\lemref{lemma:reduce}}
+						  {
+								\ireduce{\adelta_0\cdots\adelta_m}\triangleleft  \queuemessage[\tknown_l + \treceivebuffer_l \ldots  |\queuemessage| - 1]
+								\quad 
+								\ireduce{\adelta[']_1\cdots\adelta[']_h} \triangleleft [\tsenthead_1]\cdots[\tsenthead_h]							
+							}
+  						{\ireduce{\adelta_0\cdots\adelta_m\cdot\adelta[']_1\cdots\adelta[']_h} \triangleleft \ \queuemessage[\tknown_l + \treceivebuffer_l  \ldots  |\queuemessage| - 1]\cdot [\tsenthead_1]\cdots[\tsenthead_h]}  
+					\]
+											
+						\item[{--}] The remaining properties straightforwardly hold.
+
 					\end{enumerate}
 	
-	
+	%	\mathrule{pull-2}
+	%{\aseqround['] = filter\ (\geq \amxrf(\cid)) \ \aseqround
+	%\qquad \inclient = \aseqseg\cdot\agssegpair[{\astate[']}]\cdot\agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]
+	 %}
+		 
+	\item {\bf rule \ruleName{pull-2}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
+				\[\begin{array}{r@{=}l}
+					\isystemterm & \addid{\iclientinst[\tpullins][@][\aseqround][@][@][@][@][\inclient]}
+			     \ \bigpar \ \iserverins[{\astate['']}][{\amxrf[']}] \ \bigpar\ \iclient
+					\\
+					\isystemterm['] & \addid{\iclientinst[P]
+						 [\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_m]}}]
+						 [{\aseqround'}]
+						 [@][@]
+						 [{\receivebuffer}]}
+						\ \bigpar \ \iserverins[{\astate['']}][{\amxrf[']}][\inserver\upd{\cid}{\inserver(\cid)\cdot\aseqround[']}]
+						\ \bigpar\ \iclient
+				  \end{array}
+				\]
+			
+			
+			Since $(\isystemterm,\systemterm)\in \mathcal{R}$,
+				\[\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} \]
+				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
+				$\systemterm \arroi{\tau} \ldots\ \arroi{\tau} \systemterm^{h}$ with
+				\[\begin{array}{r@{=}l}
+					\systemterm^{h} &  \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer + h}}[{\systemterm['']}] \\
+				  \end{array}		
+				\]
+			
+				
+				Note that $h$ represents the amount of internal transition that performed by client $\cid$. In particular, the internal transition which rule is \ruleName{t-receive}. By \propref{prop_stateserver} we know that  $\astate['] \triangleleft \queuemessage'$, then $l$ = $|\queuemessage'| - \tknown_i$. Furthermore $\ireduce{\adelta[_1]\cdots\adelta[_m]}\triangleleft[\tsenthead]$ with $|[\tsenthead]|$ = $r$, then $h$ = $l$ + $r$.
+				
+				By inspection of rules in \figref{}, 
+				$\systemterm^{h} \arroi{\pulltran} \systemterm[']$ with
+				\[\begin{array}{r@{=}l}
+					\systemterm['] &  \tsystem{\tclienti{\tprogram}{\tknown+h}{\tpending \setminus \queuemessage[\tknown .. \tknown + h {\ -1}]}{\ttransactionbuffer}{\tsent}{0}}[{\systemterm[''']}]	
+				  \end{array}		
+				\]
+				
+				
+				We  prove that $(\isystemterm',\systemterm^{h}) \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				by checking the properties in \defref{def:implementation}.	
+				\begin{enumerate}
+							\item[\ref{prop_state_known}.] $\astate['] = \iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_l]}}$. We should build the following proof for 
+						$\iapply{\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_l]}}}{\ireduce{\adelta[_1]\cdots\adelta[_m]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_i +h - 1]} \ $
+					\[
+						  \mathrulean{\triangapply}
+						  {
+							\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_l]}} \triangleleft \flatten {\queuemessage[0..\tknown + l -1]}
+							\quad 
+							\ireduce{\adelta[_1]\cdots\adelta[_m]} \triangleleft \queuemessage[\tknown_i.. \tknown_i + r  - 1]
+															}
+  						{\iapply{\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_l]}}}{\ireduce{\adelta[_1]\cdots\adelta[_m]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_i +h - 1]} }  
+					\]
+						\item[\ref{prop_inclient}.] $\inclient'_l$ = $\epsilon$ and $\treceivebuffer_l$ = 0, then by 
+		\triangemptydelta, this property is hold. \chnote{modificar regla para inclient sea epsilon}
+						\item[\ref{prop_pending}.] We have to prove that $\ireduce{\adelta[_1]\cdots\adelta[_h]} \triangleleft \flatten{\tpending \setminus \queuemessage[\tknown .. \tknown + h -1]}$ (PENDIENTE)
+		\chnote{por que ocurre lo del inserver en pull 2?}
+											
+						\item[{--}] The remaining properties straightforwardly hold.
+
+					\end{enumerate}
 	
 %
 				%
