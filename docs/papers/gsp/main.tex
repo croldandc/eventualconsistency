@@ -1179,26 +1179,26 @@ reduction step only add pairs $(\vertice,\vertice[w])$ with $\vertice[w]$. Then,
 \henote{low priority: escribir mejor}\qed
 \end{proof}
 
-%\begin{theorem}[\textsc{No Circular Causality}]
-%If $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm'}{\op}{\so}{\vis}{\arb}$ 
-%then 
-%%Let $\textsc{\small{SO}}_R$ the se\cond component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, if $\environment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \environment{\systemterm}{\op}{\so}{\vis}{\arb}$ then 
-%$(\so \cup \vis ) ^+$ is acyclic.
-%
-%\end{theorem}
-%
-%\begin{proof}
+\begin{theorem}[\textsc{No Circular Causality}]
+If $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm'}{\op}{\so}{\vis}{\arb}$ 
+then 
+%Let $\textsc{\small{SO}}_R$ the se\cond component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, if $\environment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \environment{\systemterm}{\op}{\so}{\vis}{\arb}$ then 
+$(\so \cup \vis ) ^+$ is acyclic.
+
+\end{theorem}
+
+\begin{proof}
 %\textcolor{Green}{Old: Since $\textsc{\small{VIS}}$ is acyclic and $\textsc{\small{SO}}_R \cap \ (\mathbb{U}\ \times \ \mathbb{R})  \subseteq \ \textsc{\small{VIS}}$ by Theorem~\ref{lemma:update-ever-belong}, we have to prove that $\textsc{\small{VIS}} ^+$ is acyclic. In particular, the transitive closure of an acyclic graph is the reachability relation of the directed acyclic graph and a strict partial order.}
 %
 %\henote{Falta probar todo para los pares de $(\so\cup\vis)$ que no están en $\textsc{\small{SO}}_R \cap \ (\mathbb{U}\ \times \ \mathbb{R}) $ de estos pares no se si están en $\vis$ o no}
-%
-%By \lemref{lem:soUvis-acyclic},
-% $(\so \cup \vis )$ is acyclic. Then, the proof follows from the fact that
-%  the transitive closure of an 
-%acyclic relation is a strict partial order.
-%\qed
-%\end{proof}
-%
+
+By \lemref{lem:soUvis-acyclic},
+ $(\so \cup \vis )$ is acyclic. Then, the proof follows from the fact that
+  the transitive closure of an 
+acyclic relation is a strict partial order.
+\qed
+\end{proof}
+
 
 
 
