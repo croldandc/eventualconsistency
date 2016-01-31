@@ -209,7 +209,9 @@
 \newcommand{\tupdins}{\updcmd}
 \newcommand{\tupdateins}{\tupdins;P}
 
-\newcommand{\treadins}[2]{{\tt let}\ #1 = {\tt read}(#2)\ {\tt in}\ P}
+\newcommandx{\treadins}[3][3=P]{{\tt let}\ #1 = {\tt read}(#2)\ {\tt in}\ #3}
+
+%\newcommand{\treadins}[2]{{\tt let}\ #1 = {\tt read}(#2)\ {\tt in}\ P}
 \newcommand{\tpushins}{{\tt push};P}
 \newcommand{\tconfirmedins}[1]{{\tt let}\ #1 = {\tt confirmed};P}
 \newcommand{\tpullins}{{\tt pull};P}

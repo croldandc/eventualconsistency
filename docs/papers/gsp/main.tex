@@ -1471,7 +1471,12 @@ The following example shows that the \gsp\ model does not enjoy the consistent p
 Consider the following system consisting of two clients and the empty store: 
 different client:
 
-$\Absclient[_1] = \anabstcli[@][{\updcmd[{\anupd};P}]$
+\[
+\begin{array}{lll}
+   \Absclient[_1] & = & {\anabstcli[{}][{\updcmd[{\anupd_1}];\pushcmd;P}][\epsilon][\epsilon][\epsilon][0][0]}_{1}\\
+   \Absclient[_2] & = & {\anabstcli[{}][{\updcmd[{\anupd_2}];\pushcmd;Q}][\epsilon][\epsilon][\epsilon][0][0]}_{2}\\
+\end{array}
+\]
 \[
 \begin{array}{l}
 E = \environment{\tclient{\textit{update(aList.add('a'));push();}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
@@ -1486,7 +1491,7 @@ In this state, $C_1$ and $C_2$ can perform their update actions. E may non-deter
 
 \[
 \begin{array}{l}
-E \arrobyclient{\updatevtran{aList.add('a')}{{v_0}}}{1} \environment{\tclient{push();}{0}{\epsilon}{[aList.add('a')]}{\epsilon}{0}[1]\ \bigpar\
+E \arrobyclient{\updatevtran{aList.add('a')}{{v_0}}}{1} \environment{\tclient{p ush();}{0}{\epsilon}{[aList.add('a')]}{\epsilon}{0}[1]\ \bigpar\
 \\
 \tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[2]  \bigpar\ \epsilon} 
 {\\ \emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
