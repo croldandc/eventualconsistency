@@ -130,8 +130,11 @@ system. We say $\isystemterm$ implements $\systemterm$ if the following conditio
 	% $\rvalue{r}{\flatten{\queuemessage_{A}[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}}$
 	\item \label{prop_stateserver} $\astate \triangleleft \queuemessage$
 	\item \label{prop_transactions} ${\transactionbuffer}_l\triangleleft{\ttransactionbuffer}_l$ 
-	\item \label{prop_inclient} if ${\inclient}_l = \agssegpairi \cdots \agssegpairi[h]$ then $\ireduce{\adelta_0\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]$
+	\item \label{prop_inclient} (${\inclient}_l = \epsilon \ \land \ \treceivebuffer = 0)\  \lor \ $ 
+	  					     (${\inclient}_l = \agssegpair[{\astate[']}]\cdot\agssegpairi \cdots \agssegpairi[h] \land \ireduce{\adelta_0\cdots\adelta_h}\triangleleft  \queuemessage[t..|\queuemessage| - 1])\ \land \ \iapply{\astate[']}{\ireduce{\adelta[_0]\cdots\adelta[_{h}]}}\triangleleft \queuemessage ) \ \lor \ $ 
+						(${\inclient}_l = \agssegpairi \cdots \agssegpairi[h] \land \ireduce{\adelta_0\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]$)
 	
+
 	%$E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i - 1]$
 	%	\label {prop_inclient} if $\inclient_l = \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]$ then 
 	%	$\adelta[_1] \triangleleft \queuemessage_A[\tknown_i] \ldots \adelta[_k] \triangleleft \queuemessage[\tknown_l + \treceivebuffer_l - 1]$
@@ -582,13 +585,13 @@ We use $\approx$ for standard weak bisimulation.
 						\ \bigpar \ \iserverins[{\astate['']}][{\amxrf[']}][\inserver\upd{\cid}{\inserver(\cid)\cdot\aseqround[']}]
 						\ \bigpar\ \iclient \\
 						\aseqround['] & filter\ \geq \amxrf(\cid)) \ \aseqround \\
-						\inclient  & \aseqseg\cdot\agssegpair[{\astate[']}]\cdot\agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]
+						\inclient  &\agssegpair[{\astate[']}]\cdot\agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_z]}][{\amxrf[_z]}]
 				  \end{array}
 				\]
 			
 			
 			Since $(\isystemterm,\systemterm)\in \mathcal{R}$,
-				\[\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} \]
+				\[\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] \]
 				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
 				$\systemterm \arroi{\tau} \ldots\ \arroi{\tau} \systemterm^{h}$ with
 				\[\begin{array}{r@{=}l}
@@ -597,33 +600,53 @@ We use $\approx$ for standard weak bisimulation.
 				\]
 			
 				
-				Note that $h$ represents the amount of internal transition that performed by client $\cid$. In particular, the internal transition which rule is \ruleName{t-receive}. By \propref{prop_stateserver} we know that  $\astate['] \triangleleft \queuemessage'$, then $l$ = $|\queuemessage'| - \tknown_i$. Furthermore $\ireduce{\adelta[_1]\cdots\adelta[_m]}\triangleleft[\tsenthead]$ with $|[\tsenthead]|$ = $r$, then $h$ = $l$ + $r$.
+				$h$ represents the amount of internal transition that performed by client $\cid$ to reach $\astate[']$.Note that $\astate['] = \iapply{\initialstate}{\ireduce{\adelta[_0]\cdots\adelta[_{m}]}}$ and $\astate[']\triangleleft \queuemessage[0..l-1]$. Hence, $h = l - \tknown_i - \treceivebuffer_i$, besides $h \leq l < |\queuemessage|$.   
 				
-				By inspection of rules in \figref{}, 
-				$\systemterm^{h} \arroi{\pulltran} \systemterm[']$ with
+				Furthermore,
+				$\systemterm^{h} \arroi{\tau} \ldots\ \arroi{\tau} \systemterm^{r}$ with
 				\[\begin{array}{r@{=}l}
-					\systemterm['] &  \tsystem{\tclienti{\tprogram}{\tknown+h}{\tpending \setminus \queuemessage[\tknown .. \tknown + h {\ -1}]}{\ttransactionbuffer}{\tsent}{0}}[{\systemterm[''']}]	
+					\systemterm^{r} &  \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer + h + r}}[{\systemterm['']}] \\
 				  \end{array}		
 				\]
 				
+				$r$ represents the amount of internal transition that performed by client $\cid$ to reach $\iapply{\astate[']}{\ireduce{\adelta[_0]\cdots\adelta[_{z}]}}$. Hence, $r =  |\queuemessage| - l - 1$ which always is $< |\queuemessage|$.   
+		
+			%	Since $\inclient  = \agssegpair[{\astate[']}]\cdot\agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_z]}][{\amxrf[_z]}]$ In particular, the internal transition which rule is \ruleName{t-receive}. By \propref{prop_stateserver} we know that  $\astate['] \triangleleft \queuemessage'$, then $l$ = $|\queuemessage'| - \tknown_i$. Furthermore $\ireduce{\adelta[_1]\cdots\adelta[_m]}\triangleleft[\tsenthead]$ with $|[\tsenthead]|$ = $r$, then $h$ = $l$ + $r$.
 				
-				We  prove that $(\isystemterm',\systemterm^{h}) \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				
+				
+				% (${\inclient}_l = \epsilon \ \land \ \treceivebuffer = 0)\  \lor \ $ 
+	  			%		     (${\inclient}_l = \agssegpair[{\astate[']}]\cdot\agssegpairi \cdots \agssegpairi[h] \land \ireduce{\adelta_0\cdots\adelta_h}\triangleleft  \queuemessage[t..|\queuemessage| - 1])\ \land \ \iapply{\astate[']}{\ireduce{\adelta[_0]\cdots\adelta[_{h}]}}\triangleleft \queuemessage ) \ \lor \ $ 
+				%		(${\inclient}_l = \agssegpairi \cdots \agssegpairi[h] \land \ireduce{\adelta_0\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]$)
+	
+
+				
+				Now by inspection of rules in \figref{}, 
+				$\systemterm^{r} \arroi{\pulltran} \systemterm[']$ with
+				\[\begin{array}{r@{=}l}
+					\systemterm['] &  \tsystem{\tclienti{\tprogram}{\tknown_i+h+r}{\tpending_i \setminus \queuemessage[\tknown_i .. \tknown_i + \treceivebuffer_i + h + r {\ -1}]}{\ttransactionbuffer}{\tsent}{0}}[{\systemterm[''']}]	
+				  \end{array}		
+				\]
+				
+			
+				
+				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
 				by checking the properties in \defref{def:implementation}.	
 				\begin{enumerate}
-							\item[\ref{prop_state_known}.] $\astate['] = \iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_l]}}$. We should build the following proof for 
-						$\iapply{\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_l]}}}{\ireduce{\adelta[_1]\cdots\adelta[_m]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_i +h - 1]} \ $
+					\item[\ref{prop_state_known}.] We should build the following proof for 
+						$\iapply{\iapply{\initialstate}{\ireduce{\adelta[_1]\cdots\adelta[_m]}}}{\ireduce{\adelta[_1]\cdots\adelta[_z]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_i +h+r- 1]} \ $
 					\[
 						  \mathrulean{\triangapply}
 						  {
-							\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_l]}} \triangleleft \flatten {\queuemessage[0..\tknown + l -1]}
+							\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_m]}} \triangleleft \flatten {\queuemessage[0..\tknown_i+\treceivebuffer_i + h -1]}
 							\quad 
-							\ireduce{\adelta[_1]\cdots\adelta[_m]} \triangleleft \queuemessage[\tknown_i.. \tknown_i + r  - 1]
+							\ireduce{\adelta[_1]\cdots\adelta[_z]} \triangleleft \queuemessage[\tknown_i+\treceivebuffer_i + h.. \tknown_i+\treceivebuffer_i + h + r  - 1]
 															}
-  						{\iapply{\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_l]}}}{\ireduce{\adelta[_1]\cdots\adelta[_m]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_i +h - 1]} }  
+  						{\iapply{\iapply{\initialstate}{\ireduce{\adelta[_1]\cdots\adelta[_m]}}}{\ireduce{\adelta[_1]\cdots\adelta[_z]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_i +h+r - 1]} }  
 					\]
 						\item[\ref{prop_inclient}.] $\inclient'_l$ = $\epsilon$ and $\treceivebuffer_l$ = 0, then by 
 		\triangemptydelta, this property is hold. \chnote{modificar regla para inclient sea epsilon}
-						\item[\ref{prop_pending}.] We have to prove that $\ireduce{\adelta[_1]\cdots\adelta[_h]} \triangleleft \flatten{\tpending \setminus \queuemessage[\tknown .. \tknown + h -1]}$ (PENDIENTE)
+						\item[\ref{prop_pending}.] We have to prove that $\ireduce{\adelta[_1]\cdots\adelta[_z]} \triangleleft \flatten{\tpending \setminus \queuemessage[\tknown .. \tknown_i + \treceivebuffer_i + h + r -1]}$ (PENDIENTE)
 		\chnote{por que ocurre lo del inserver en pull 2?}
 											
 						\item[{--}] The remaining properties straightforwardly hold.
