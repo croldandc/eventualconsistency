@@ -1188,9 +1188,9 @@ $(\so \cup \vis ) ^+$ is acyclic.
 \end{theorem}
 
 \begin{proof}
-%\textcolor{Green}{Old: Since $\textsc{\small{VIS}}$ is acyclic and $\textsc{\small{SO}}_R \cap \ (\mathbb{U}\ \times \ \mathbb{R})  \subseteq \ \textsc{\small{VIS}}$ by Theorem~\ref{lemma:update-ever-belong}, we have to prove that $\textsc{\small{VIS}} ^+$ is acyclic. In particular, the transitive closure of an acyclic graph is the reachability relation of the directed acyclic graph and a strict partial order.}
-%
-%\henote{Falta probar todo para los pares de $(\so\cup\vis)$ que no están en $\textsc{\small{SO}}_R \cap \ (\mathbb{U}\ \times \ \mathbb{R}) $ de estos pares no se si están en $\vis$ o no}
+\textcolor{Green}{Old: Since $\textsc{\small{VIS}}$ is acyclic and $\textsc{\small{SO}}_R \cap \ (\mathbb{U}\ \times \ \mathbb{R})  \subseteq \ \textsc{\small{VIS}}$ by Theorem~\ref{lemma:update-ever-belong}, we have to prove that $\textsc{\small{VIS}} ^+$ is acyclic. In particular, the transitive closure of an acyclic graph is the reachability relation of the directed acyclic graph and a strict partial order.}
+
+\henote{Falta probar todo para los pares de $(\so\cup\vis)$ que no están en $\textsc{\small{SO}}_R \cap \ (\mathbb{U}\ \times \ \mathbb{R}) $ de estos pares no se si están en $\vis$ o no}
 
 By \lemref{lem:soUvis-acyclic},
  $(\so \cup \vis )$ is acyclic. Then, the proof follows from the fact that
@@ -1464,11 +1464,14 @@ $\restUU{((\so \cup \vis) ^{n} \setminus \so)}\  \subseteq\ \arb$ holds for any 
 %\qed
 %\end{proof}
 
+The following example shows that the \gsp\ model does not enjoy the consistent prefix property. 
 
 \begin{example}[Consistent Prefix] 
-\label{consistent-prefix}Consider the following system built-up from two 
+\label{no-consistent-prefix}
+Consider the following system consisting of two clients and the empty store: 
 different client:
 
+$\Absclient[_1] = \anabstcli[@][{\updcmd[{\anupd};P}]$
 \[
 \begin{array}{l}
 E = \environment{\tclient{\textit{update(aList.add('a'));push();}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[1]\ \bigpar\

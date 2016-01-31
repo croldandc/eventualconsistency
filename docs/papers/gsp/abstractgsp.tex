@@ -183,7 +183,7 @@ In what follows we will write labelled transitions $\arro{\mu}$ instead of $\tr{
 
 \\[25pt]
 \mathrule{receive}
-	{\tknown + \treceivebuffer\leq \text{\textbar} S \text{\textbar} } 
+	{\tknown + \treceivebuffer< \text{\textbar} S \text{\textbar} } 
 	{
 	\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
 	\arro{\tau} 
