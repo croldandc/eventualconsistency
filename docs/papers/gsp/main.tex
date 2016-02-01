@@ -549,10 +549,15 @@ over well-formed terms, up-to the structural congruence.
 \mbox{\henote{este receiveRounds es distinto al tuyo, hace todo de una}}
 \\
 \mathrule{accept-conn}
+%{\cid\notin \inserver \qquad \cid \notin \outserver}
+%{\server{\astate}{\inserver}{\outserver} \ \bigpar\  \iclient 
+%\tr{\tau} 
+%\server{\astate}{\inserver\upd\cid\epsilon}{\update{\outserver}{\cid}{\agsprefpair}}\ \bigpar\  \iclient }
 {\cid\notin \inserver \qquad \cid \notin \outserver}
-{\server{\astate}{\inserver}{\outserver} \ \bigpar\  \iclient 
+{\addid{\iclientinst[@][@][\aseqround][@][@][@][@][\inclient]}
+\ \bigpar \ \server{\astate}{\inserver}{\outserver} \ \bigpar\  \iclient 
 \tr{\tau} 
-\server{\astate}{\inserver\upd\cid\epsilon}{\update{\outserver}{\cid}{\agsprefpair}}\ \bigpar\  \iclient }
+\server{\astate}{\inserver\upd\cid\around}{\update{\outserver}{\cid}{\agsprefpair}}\ \bigpar\  \iclient }
 \\
 \mathrule{drop-conn}
 {\cid \in \inserver \qquad  \cid \in \outserver}
