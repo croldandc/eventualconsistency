@@ -697,7 +697,7 @@ We  provide an operational approach to associate abstract executions to \gsp\ sy
 by inference rules in \figref{fig:comp-abst-executions}
 
 
-
+%%reglas
  \begin{figure}[t]
  \[
  \begin{array}{l}
@@ -716,7 +716,7 @@ by inference rules in \figref{fig:comp-abst-executions}
 	}
 	{\environment{\systemterm}{\op}{\so}{\vis}{\arb} 
 		  \arroi{\updatetran{u}}  
-		  \environment{\systemterm'}{\op'}{\soby{\so}{v}}{\vis}{\arb}
+		  \environment{\systemterm'}{\op'}{\so'}{\vis}{\arb}
 	}
 \\[32pt]	
 \mathrule{a-read}
@@ -1468,24 +1468,88 @@ The following example shows that the \gsp\ model does not enjoy the consistent p
 
 \begin{example}[Consistent Prefix] 
 \label{no-consistent-prefix}
-Consider the following system consisting of two clients and the empty store: 
-different client:
+%Consider the following system consisting of two clients and the empty store $\systemterm = \epsilon \ \bigpar\ \Absclient[_1]  \ \bigpar\ \Absclient[_2]$ where
+%\[
+%\begin{array}{lll}
+%   \Absclient[_1] & = & {\anabstcli[{}][{\updcmd[{\anupd_1}];\pushcmd;P}][0][\epsilon][\epsilon][\epsilon][0]}_{\cid_1}\\
+%   \Absclient[_2] & = & {\anabstcli[{}][{\updcmd[{\anupd_2}];\treadins{y}{r_1}[\pullcmd;\treadins{x}{u_2}[Q]]}][0][\epsilon][\epsilon][\epsilon][0]}_{\cid_2}\\
+%\end{array}
+%\]
+%
+%
+%
+%By using rule \ruleName{a-update}, we have the following transition
+%\[
+%	{\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset} {\emptyset}[\emptyset]
+%		  \arro{\updatetranaux{\anupd_1^{\vertice[v][_1]}}}[\cid_1]
+%		  \environment{\epsilon \ \bigpar\ \Absclient[_1]'  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
+%	}
+%\]
+%with $\op_1 = \{\asoc{\vertice[v][_1]} \anupd_1\}$,  $\sse_1 = \{\asoc{\cid_1}{\{\vertice [v][_1]}\}\}$ and
+%$
+%   \Absclient[_1]'  =  {\anabstcli[{}][{\pushcmd;P}][0][\epsilon][{\anupd_1}^{\vertice[v][_1]}][\epsilon][0]}_{\cid_1}
+%$. By using rule \ruleName{a-int},
+%\[ 
+%	\environment{\epsilon \ \bigpar\ \Absclient[_1]'  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
+%	\arro{\pushtran}[\cid_1]
+%	\environment{\epsilon \ \bigpar\ \Absclient[_1]''  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
+%\]
+%with $\Absclient[_1] '' =  {\anabstcli[{}][{P}][0][{[{\anupd_1}^{\vertice[v][_1]}]}][\epsilon][{[{\anupd_1}^{\vertice[v][_1]}]}][0]}_{\cid_1}$.
+%Then, by rule \ruleName{a-arb},
+%\[ 
+%	\environment{\epsilon \ \bigpar\ \Absclient[_1]''  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
+%	\arro{\tau}[\cid_1]
+%	\environment{{\anupd_1}^{\vertice[v][_1]} \ \bigpar\ \Absclient[_1]'''  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
+%\]
+%By rule  \ruleName{a-update},
+%\[ 
+%	\environment{\epsilon \ \bigpar\ \Absclient[_1]'''  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
+%	 \arro{\updatetranaux{\anupd_1^{\vertice[v][_2]}}}[\cid_2]
+%	\environment{{\anupd_1}^{\vertice[v][_1]} \ \bigpar\ \Absclient[_1]'''  \ \bigpar\ \Absclient[_2]'}{\op_2}{\emptyset}{\emptyset}{\arb_1}[\sse_2]
+%\]
+%with $\op_1 = \{\asoc{\vertice[v][_1]} {\anupd_1},\asoc{\vertice[v][_2]} {\anupd_2}\}$,  
+%$\sse_1 = \{\asoc{\cid_1}{\{\vertice [v][_1]}\},\asoc{\cid_2}{\{\vertice [v][_2]}\}\}$,
+%$\arb_1 = \{(\vertice[v][_1],\vertice[v][_2])\}$ and
+%   $\Absclient[_2]'  =  {\anabstcli[{}][{\treadins{y}{r_1}[\pullcmd;\treadins{x}{u_2}[Q]]}][0][\epsilon][{\anupd_2}^{\vertice[v][_2]}][\epsilon][0]}_{\cid_2}$. 
+%By using rule \ruleName{a-read},
+%\[ 
+%	\environment{{\anupd_1}^{\vertice[v][_1]} \ \bigpar\ \Absclient[_1]'''  \ \bigpar\ \Absclient[_2]'}{\op_2}{\emptyset}{\emptyset}{\arb_1}[\sse_2]
+%	 \arro{\readtran{\udec[r_1][{\vertice[v][_3]}]}}[\cid_2]
+%	\environment{{\anupd_1}^{\vertice[v][_1]} \ \bigpar\ \Absclient[_1]'''  \ \bigpar\ \Absclient[_2]''}{\op_3}{\so_1}{\vis_1}{\arb_1}[\sse_3]
+%\]
+%with $\op_1 = \{\asoc{\vertice[v][_1]} {\anupd_1},\asoc{\vertice[v][_2]} {\anupd_2},\asoc{\vertice[v][_3]} {r_1}\}$,  
+%$\sse_1 = \{\asoc{\cid_1}{\{\vertice [v][_1]\}},\asoc{\cid_2}{\{\vertice [v][_2],\vertice [v][_3]\}}\}$,
+%$\so_1 = \vis_1 = \{(\vertice[v][_2],\vertice[v][_3])\}$.
+%
+%Note that $\arb_1;(\vis_1\cap\neg\sse_3) \not\subseteq \vis_1$. In fact 
+%
+%\[
+%\mathrule{a-read}
+%	{ 
+%	\begin{array}{l}
+%		\systemterm \arroi{\readtran{r}} \systemterm' 
+%		 \qquad \vertice \notin  dom(\op) 
+%		 \qquad \op' = \op\upd \vertice r
+%		 \qquad \sse' = \sse\upd \cid {\sse(\cid)\cup\{\vertice\}}
+%		 \\[2pt]
+%		 \so' = \so\cup (\sse(\cid)\times\{\vertice\})
+%		 \qquad \ \vis' = \vis \cup (\{\vertice[w] \ |\  \udec[@][{\vertice[w]}] \in \queuemessage[0..\tknown_{\,\cid}-1] \cdot \tpending_{\cid} \cdot \ttransactionbuffer_{\,\cid} \}\times\{\vertice\})
+%	\end{array}
+%	 }
+%	 {\environment{\systemterm}{\op}{\so}{\vis}{\arb} 
+%	   \arroi{\readtran{\udec[r]}} \environment{\systemterm'}{\op'}{\so'}{\vis'}{\arb}[\sse']}
+%\]
 
-\[
-\begin{array}{lll}
-   \Absclient[_1] & = & {\anabstcli[{}][{\updcmd[{\anupd_1}];\pushcmd;P}][\epsilon][\epsilon][\epsilon][0][0]}_{1}\\
-   \Absclient[_2] & = & {\anabstcli[{}][{\updcmd[{\anupd_2}];\pushcmd;Q}][\epsilon][\epsilon][\epsilon][0][0]}_{2}\\
-\end{array}
-\]
-\[
-\begin{array}{l}
-E = \environment{\tclient{\textit{update(aList.add('a'));push();}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
-\\
-\tclient{\textit{update(aList.add('b'));push();let v = read(x);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[2]  \bigpar\ \epsilon}{\emptyset}{\emptyset}{\emptyset}{\emptyset}
-\end{array}
-\]
+%\[
+%\begin{array}{l}
+%E = \environment{\tclient{\textit{update(aList.add('a'));push();}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
+%\\
+%\tclient{\textit{update(aList.add('b'));push();let v = read(x);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[2]  \bigpar\ \epsilon}{\emptyset}{\emptyset}{\emptyset}{\emptyset}
+%\end{array}
+%\]
 \end{example}
 		
+
 Environment has a system $\systemterm$ with two clients and a message queue $S$ without updates. Relation sets $\op$,$\so$,$\vis$,$\arb$ are empty, i.e.,there were not an execution in $\systemterm$ captured by the relation sets. The update action add a string to an object called $aList$ which has not elements. 
 In this state, $C_1$ and $C_2$ can perform their update actions. E may non-deterministically choose to do $update(aList.add('a')$ or $update(aList.add('b')$. If the first communication takes place over $update(aList.add('a')$, then the system evolves as follows:
 
