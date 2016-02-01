@@ -1,0 +1,586 @@
+% !TEX root = main.tex
+\section{Implementation of GSP}
+
+The \tgspcalculus\ model formalised in the previous section corresponds to an idealised system that
+abstracts away from important implementation details, mainly, the  problem of maintaining a constantly growing 
+sequence of updates to represent states.  A realistic implementation for such model has been 
+proposed in\henote{~\cite{}}, in which states and updates have a compact representation in 
+terms of two different objects: a {\em state} and {\em delta}. Their precise definition highly depends
+on the datatype of the values kept in the store. \henote{agregar ejemplo?}. 
+In order to keep the description of the model as general as possible, they have been
+characterised \henote{in~\cite{}} with 
+two abstract types, namely $\statetype$ and $\deltatype$, which are equipped with the following  operations.
+\[
+\begin{array}{lll}
+	\textbf{const} & \initialstate & : \statetype \\
+	\textbf{function} & \ireadname & : \partialfunction{\readtype \times \statetype}{\valuetype} \\
+	\textbf{function} & \iapplyname & : \partialfunction{\statetype \times \deltatype^*}{\statetype} \\
+	\textbf{const} & \emptydelta & : \deltatype \\
+	\textbf{function} & \iappendname & : \partialfunction{\deltatype \times \updatetype}{\deltatype} \\
+	\textbf{function} & \ireducename & : \partialfunction{\deltatype^*}{\deltatype} \\
+\end{array}
+\] 
+
+Operations $\initialstate$ and $\emptydelta$ are the constructors for the respective types. Function $\ireadname$ is the 
+interpretation function for read operations (\ie, the implementation counterpart of the operation $\rvalue{\_}{\_}$  in the 
+idealised model) while $\iapplyname$ is for state transformations. The remaining operations $\iappendname$ and
+$\ireducename$ account for compacting the description of several updates. 
+%
+We shall use  $\astate,\astate['],\ldots, \astate[{_1}],\ldots$ to denote values of  type $\statetype$ and 
+$\adelta,\adelta['],\ldots, \adelta[{_1}],\ldots$ for values of type $\pushbuffertype$.
+
+In addition,  we will use partial functions  $\amxrf,\amxrf['],\ldots, \amxrf[{_1}],\ldots$ in  $\idset\rightarrow \nat$
+assigning clients with a natural number denoting \henote{the number of the last round exchanged with ...}
+
+%Let $\idset$ be a set of clients' name ranged over by $b$, $b_1$, $b_2$, $\ldots$; 
+
+The global state of the store is now represented by a pair $\gsprefixtype$ be a set over sets \statetype\ $\times$ $\idset$ $\rightarrow$ $\mathbb{N}$, \gssegmenttype\ be a set operation over sets \deltatype $\times$ $\idset$ $\rightarrow$ $\mathbb{N}$ and \roundtype\ the set over sets $\idset$ $\times$ $\mathbb{N}$ $\times$ \deltatype; $\emptygssegment$\ is a fresh element of \gssegmenttype.
+%
+\henote{Explain gsspref... round}
+
+For convenience, notational conventions are in~\figref{}
+\begin{figure}
+  \[
+   \begin{array}{lrll}
+%       &\astate,\astate['],\ldots, \astate[{_1}],\ldots &{\ \in\ }& \statetype
+%       \\
+%       &\adelta,\adelta['],\ldots, \adelta[{_1}],\ldots &{\ \in\ }& \deltatype
+%       \\
+%       &,\amxrf['],\ldots, \amxrf[{_1}],\ldots &{\ \in\ }& \idset\rightarrow \nat 
+       & \cid & \in & \idset
+       \\
+       & n & \in & \nat
+       \\
+       &\astate & \in & \statetype
+       \\
+       &\adelta & \in & \deltatype %\cup \{\nodelta\}
+       \\
+       &\adeltaseq & \in & \deltatype^* \quad \mbox{\henote{antes $\rho$ y $\sigma$}}\\
+       &\amxrf & \in & \idset\rightarrow \nat
+       \\
+%       \rName{GSprefix}
+%       &
+%       \agspref & ::= & \agsprefpair
+%       \\
+%       \rName{GSSegment}
+%       &
+%       \agsseg & ::= & \agssegpair
+%       \\
+%       \rName{Segment}
+%       &
+%       \aseg & ::= & \agspref \; |\;  \agsseg
+%        \\
+       \rName{Segment}
+       &
+       \aseg & ::= & \agsprefpair \; |\;  \agssegpair
+        \\
+       \rName{Round}
+       &
+       \around &::= & \aroundtuple
+        \\
+       \rName{Round Seq}
+       &
+       \aseqround &\in & \around^*
+        \\
+       \rName{Seg Seq}
+       &
+       \aseqseg &\in & \aseg^*
+        \\
+       &
+       {\inclient} &::= &  \aseqseg%{{\agsseg}^* \cup \agspref}
+%       \\
+%       & 
+%       \outclient &\in & {\aseqround}
+      \\
+       &
+       {\inserver} & \in  & \partialfunction{\idset}\aseqround%\outclient
+       \\
+       & 
+       \outserver &\in & \partialfunction{\idset}\aseqseg%\inclient
+   \end{array}
+  \]
+  \caption{Syntax}
+  \label{fig:syntax-implementation}
+\end{figure}
+
+%Furthermore, we assume the following parametric functions defined over the abstract data types above borrowed from :
+
+
+%Let $\pendingtype$, $\sigma$ be sequence defined:
+
+%$\pendingtype$,$\sigma$ := $\epsilon$ \text{\textbar} [$\delta$]$\cdot$ $\pendingtype$
+ 
+
+We assume the following countable sets of persisted state $\gsprefixtype$ ranged over by $\agspref$, $\agspref_1$, $\ldots$; 
+
+Let \\
+
+
+
+\subsection{Syntax}
+ \begin{definition}[Implementation of GSP] 
+	The syntax of clients and server is given by the following grammar 
+  \[
+    \begin{array}{l@{\quad}r@{\;::=\;}l}
+	\rName{system} & \isystemterm &  \iserver\ \bigpar\ \iclient \\
+	\rName{server} & \iserver & \server{\astate}{\inqueue}{\outqueue} \\
+	\rName{clients}& \iclient & \zero \;|\; 
+	 						%\client{P}{<\astate,\pendingtype,\pushbuffertype,\transactionbuffertype,\receivebuffertype,n,\inqueue,\outqueue>} 
+							\addid{\iclientsyntax}
+							\;|\; \ 
+							\iclient \bigpar \iclient  \\
+%			 (\textsc{program}) & P & \zero \;|\; \readins{x}{r} \;|\; \updateins{u} \;|\; 	\pushins \;|\; \pullins
+     \end{array}
+  \]
+ \end{definition}
+ 
+The implementation of a system is a server and clients interacting concurrently. A server will be represented with a persisted state denoted by $\persistedstate$, input messages $\inserver$ and output messages $\outserver$.
+We will refer to clients, as tuple of program $P$ and set of states and sequences $E$. A program client stores a state ($E.\known$), a pending queue ($E.\pending$),i.e., updates sent to the server without confirmation of their reception, a push buffer ($E.\pushbuffer$) which holds updates that were pushed by the client but have not been sent to the server, a transaction buffer ($E.\transactionbuffer$) which holds updates for sending with another ones, a receive buffer ($E.\receivebuffertype$) for updates which were sent by the server, the number of round sent ($E.\nround$), a input message queue ($E.\inclient$) and a output message queue ($E.\outclient$).
+
+
+\subsection{Operational Semantics}
+
+The operational semantics of \gspcalculus\ is defined by a labeled transition system 
+over well-formed terms, up-to the structural congruence.
+
+%The labeled transition system considers the following actions:
+%\[ 
+%\begin{array}{r@{\ ::= \ }l}
+%  \alpha & \tau \ | \ \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran 
+%  \\
+%\end{array}
+%\]
+
+
+
+% \[
+% \begin{array}{l}
+%   \hspace{-.3cm} \textsc{CLIENTS}\\
+%%		\mathax{update}{\clientr{\updateins{u}}{\stateclient} \arro{\updatetran{u}} \clientr{P}{\update{E}{\transactionbuffer}{\appendplus{E.\transactionbuffer}{u}}}} \\[15pt]
+%%		
+%	\mathax{update}
+%		{\begin{array}{l}
+%		\addid{\iclientinst[\tupdateins]} \ \bigpar \ \isystemterm
+%		\arro{\updatetran{u}} 
+%		\\[5pt]
+%		\hspace{5.5cm}
+%		{\addid{\iclientinst[P][@][@][@][\iappend{\transactionbuffer}{u}]} \ \bigpar \   \isystemterm}
+%		\end{array}}
+%\\
+%% 		\mathax{push}{\clientr{\pushins}{\stateclient} \arro{\pushtran} \clientr{P}{\updatethree{E}{\pushbuffer}{\reduce{E.\pushbuffer\cdot E.\transactionbuffer}}{\transactionbuffer}{\epsilon}{\nround}{E.\nround+1}  }} \\[25pt]
+%	\mathax{push}
+%		{\begin{array}{l}
+%		\addid{\iclientinst[\tpushins]} \ \bigpar \ \isystemterm
+%		\arro{\pushtran} 
+%		\\[5pt]
+%		\hspace{5cm}
+%		{\addid{\iclientinst[P][@][@][\ireduce{\pushbuffer\cdot \transactionbuffer}][\epsilon][@][n+1]}\ \bigpar \ \isystemterm}
+%		\end{array}}
+%%\updatethree{E}{\pushbuffer}{\appendplus{\pushbuffer}{\transactionbuffer}}{\transactionbuffer}{\epsilon}{\nround}{\nround+1}
+%\\
+%%	 {\clientr{P}{\stateclient} \arro{\sendtran} \clientr{P}{\updatethree{E}{\pending}{E.\pending \cdot E.\pushbuffer}{\pushbuffer}{\epsilon}{\outclient(i)}{\outclient(i) \cdot \round{i}{E.\nround}{E.\pushbuffer}}}}
+%
+%	 \mathrule{send}
+%	         {\pushbuffer \neq \epsilon}
+% 		{\begin{array}{l}
+%		\addid{\iclientinst} \ \bigpar \ \isystemterm
+%		\arro{\tau} 
+%		\\[5pt]
+%		\hspace{5.3cm}
+%		\addid{\iclientinst[@][@][\pending \cdot \pushbuffer][\epsilon][@][@][@][@][\outclient \cdot {\aroundtuple[\cid][\nround][\pushbuffer]}]}\ \bigpar \ \isystemterm
+%	 	\end{array}
+%		}	
+%\\
+%%		\mathrule{receive}{E.\inclient = \gs_0 \cdot \gs_t}{\clientr{P}{\stateclient} \arro{\receive} \clientr{P}{\updatetwo{E}{\receivebuffer}{E.\receivebuffer \cdot \gs_0)}{\inclient}{\gs_t)}}}\\[25pt]
+%	\mathax{receive}
+% 		{\begin{array}{l}
+%		\addid{\iclientinst[@][@][@][@][@][@][@][\aseg \cdot \inclient]} \ \bigpar \ \isystemterm
+%		\arro{\tau} 
+%		\\[5pt]
+%		\hspace{6.4cm}
+%		\addid{\iclientinst[@][@][@][@][@][\receivebuffer \cdot \aseg]}\ \bigpar \ \isystemterm
+%	 	\end{array}
+%		}	
+%\\
+%
+%%		\mathrule{pull}{E.\inclient(i) \neq \undefined \qquad E.\outclient(i) \neq \undefined \qquad |E.\receivebuffer| > 0}{\clientr{\pullins}{\stateclient}\arro{\pulltran} \clientr{P}{\updatethree{E}{\known}{\reducestate{E.\known}{E.\receivebuffer}}{\receivebuffer}{\epsilon}{E.\pending}{\remove{E.\pending}{E.\receivebuffer}}}}
+%	\mathaxiom{pull}
+%		 {\begin{array}{l}
+%			\addid{\iclientinst[\tpullins][@][@][@][@][{\agssegpair[x]}\cdot\receivebuffer]}\ \bigpar \ \isystemterm
+%			\arro{\pulltran} 
+%			\\[5pt]
+%			\hspace{5.2cm}
+%			\addid{\iclientinst[P]
+%						 [\iapply{\known}{x}]
+%						 [{\pending}\setminus x]
+%						 [@][@]
+%						 [{\receivebuffer}]}\ \bigpar \ \isystemterm
+%	 	\end{array}
+%		}
+%		\\
+%\henote{\mbox{el apply no está en el paper, ellos usan reducestate}}
+%\\
+%
+%%		\mathrule{read}{\readplus{r}{\curstate{\known}{\pending}{\pushbuffer}{\transactionbuffer}}}{\clientr{\readins{x}{r}}{\stateclient} \arro{\readtran{r}} \clientr{\update{P}{x}{v}}{\stateclient}}
+%	\mathrule{read}
+%		{\iread{r}{\curstate{\known}{\pending}{\pushbuffer}{\transactionbuffer}}}
+%		{\begin{array}{l}
+%		\addid{\iclientinst[\treadins{x}{r}]} \ \bigpar \ \isystemterm
+%		\arro{\readtran{r}} 
+%		\\[5pt]
+%		\hspace{6.1cm}
+%		\addid{\iclientinst[{P}\subst{x}{v}]}\ \bigpar \ \isystemterm
+%		\end{array}
+%		}
+%\\
+%%		\mathrule{pull}{E.\inclient(i) \neq \undefined \qquad E.\outclient(i) \neq \undefined \qquad |E.\receivebuffer| > 0}{\clientr{\pullins}{\stateclient}\arro{\pulltran} \clientr{P}{\updatethree{E}{\known}{\reducestate{E.\known}{E.\receivebuffer}}{\receivebuffer}{\epsilon}{E.\pending}{\remove{E.\pending}{E.\receivebuffer}}}}
+%%	\mathrule{pull}
+%%		{\appf{\inqueue}{\cid} \neq \undefined \qquad\qquad \appf{\outqueue}{\cid} \neq \undefined \qquad\qquad |\receivebuffer| > 0}
+%%		{
+%%			\addid{\iclientinst[\tpullins]}
+%%			\arro{\pulltran} 
+%%			\addid{\iclientinst[P]
+%%						 [\reducestate{\known}{\receivebuffer}]
+%%						 [\remove{\pending}{\receivebuffer}]
+%%						 [@][@]
+%%						 [{\epsilon}]
+%%				}
+%%		}
+%%		\\
+%%\\[15pt]
+%%		\mathax{confirmed}{\clientr{\confirmedins{x}}{\stateclient} \arro{\confirmedtran}
+% %\clientr{\update{P}{x \mapsto E.\pending = \epsilon \lor E.\pushbuffer = \epsilon \lor E.\transactionbuffer = \epsilon}{\textbf{true}}}{\stateclient}} 
+%		\mathrule{confirm}
+%		{ v = (\pending \cdot \pushbuffer \cdot\transactionbuffer == \epsilon) }
+%		{\begin{array}{l}
+%			\addid{\iclientinst[\tconfirmedins]} \bigpar \ \isystemterm
+%			\arro{\confirmedtran} 
+%			\\[5pt]
+%			\hspace{6.1cm}
+%			\addid{\iclientinst[P\subst{x}{v}]} \bigpar \ \isystemterm
+%		\end{array}
+%		}
+%\\[25pt]
+%\mathrule{while-true}
+%	{\eval \cond {true}}
+%	{
+%		{\begin{array}{l}
+%			\addid{\iclientinst[\pwhile{\cond}{P}[Q]]} \bigpar \ \isystemterm
+%			\arro{\confirmedtran} 
+%			\\[5pt]
+%			\hspace{4.5cm}
+%			\addid{\iclientinst[P;\pwhile{\cond}{P}[Q]]} \bigpar \ \isystemterm
+%		\end{array}
+%		}
+%%	\tsystem{\tclienti{\pwhile{\cond}{\tprogram}[Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+%%	\arro{\tau} 
+%%	\tsystem{\tclienti{\tprogram;\pwhile{\cond}{\tprogram}[Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}
+%	}
+%
+%\\[25pt]
+%\mathrule{while-false}
+%	{\eval \cond {false}}
+%	{
+%		{\begin{array}{l}
+%			\addid{\iclientinst[\pwhile{\cond}{P}[Q]]} \bigpar \ \isystemterm
+%			\arro{\confirmedtran} 
+%			\\[5pt]
+%			\hspace{7cm}
+%			\addid{\iclientinst[Q]} \bigpar \ \isystemterm
+%		\end{array}
+%%	\tsystem{\tclienti{\pwhile{\cond}{\tprogram}[Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+%%	\arro{\tau} 
+%%	\tsystem{\tclienti{Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}
+%	}}
+%	\\
+%
+%
+%
+%
+%%	\mathrule{receive}
+%%		{\inclient(\cid) = \gs_0 \cdot \gs_t}
+%%		{\begin{array}{l}
+%%			{\addid{\iclientinst[@]}} \arro{\tau}
+%%			\\
+%%			\hspace{5cm} 
+%%			{\addid{\iclientinst[@][@][@][@][@][\receivebuffer \cdot \gs_0.gssegment][@][\inclient{[\cid\mapsto\gs_t]}]}}
+%%		\end{array}}
+%
+%\end{array}
+% \]
+
+
+
+
+
+% \[
+% \begin{array}{l}
+%    \hspace{-.3cm} \textsc{SERVER}\\
+%    
+%\mathrule{drop-conn}{b_i \in \inserver \qquad  b_i \in \outserver}{\server{\persistedstate}{\inserver}{\outserver} \auxarro{\dropconn{b_i}} \server{\persistedstate}{\inserver \setminus b_i}{\outserver \setminus b_i}} 
+%\hfill
+%\mathax{crash-and-recover}{\server{\persistedstate}{\inserver}{\outserver} \auxarro{\crashandrecover} \server{\persistedstate}{\undefined}{\undefined}}
+%
+%\\[25pt]
+%
+%\mathrule{batch}{rs=\receiveroundsname{\inserver} \qquad \agssegpair[@][{\amxrf[{'}]}] =\append{\emptygssegment}{rs} \qquad 
+%  \astate[']=\iapply{\astate}{\adelta}}{\server{\agsprefpair }{\inserver}{\outserver} \arro{\tau} 
+%  \server{\agsprefpair[{\astate[']}][{\amxrf[{'}]}] }{\clean{\inserver}}{\notify{dom(\outserver)}{\outserver}{gs}}}
+%
+%\\[25pt]
+%
+%\mathrule{accept-conn}{b_i \notin \inserver \qquad b_i \notin \outserver}{\server{\persistedstate}{\inserver}{\outserver} \auxarro{\acceptconn{b_i}} \server{\persistedstate}{\inserver}{\update{\outserver}{b_i}{\persistedstate}}}
+%
+%    \\[35pt]
+%    \hspace{-.3cm} \textsc{COMMUNICATION}
+%		
+%\\
+%    \mathrule{comm server-client}{\outserver(i)=\gs \cdot \gss}{\server{\state}{\inserver}{\outserver} \bigpar \clientr{P}{\stateclient} \arro{\tau} \server{\state}{\inserver}{\update{\outserver}{i}{\gss}} \bigpar 
+%		\clientr{P}{\update{E}{\inclient}{E.\inclient \cdot \gs}}}
+%		
+%\\[25pt]
+%
+%	    \mathrule{comm client-server}{\outclient=\headerround \cdot \tailround}{\server{\state}{\inserver}{\outserver} \bigpar \clientr{P}{\stateclient} \arro{\tau} \server{\state}{\update{\inserver}{i}{\inserver(i) \cdot \headerround}}{\outserver} \bigpar 
+%		\clientr{P}{\update{E}{\outclient}{\tailround}}}	
+% \\
+%
+% \end{array}
+% \]
+
+ \[
+ \begin{array}{l}
+   \hspace{-.3cm} \textsc{CLIENTS}\\
+	\mathax{update}
+		{\begin{array}{l}
+		\addid{\iclientinst[\tupdateins]} \ \bigpar \ \isystemterm
+		\arro{\updatetran{u}} 
+		\\
+		\hspace{5.5cm}
+		{\addid{\iclientinst[P][@][@][@][\iappend{\transactionbuffer}{u}]} \ \bigpar \   \isystemterm}
+		\end{array}}
+\\
+	\mathax{push}
+		{\begin{array}{l}
+		\addid{\iclientinst[\tpushins]} \ \bigpar \ \isystemterm
+		\arro{\pushtran} 
+		\\
+		\hspace{5cm}
+		{\addid{\iclientinst[P][@][@][\ireduce{\pushbuffer\cdot \transactionbuffer}][\emptydelta][@][n+1]}\ \bigpar \ \isystemterm}
+		\end{array}}
+\\
+	 \mathrule{send}
+	         {\pushbuffer \neq \emptydelta \qquad \cid\in\dom\inserver \qquad \around = \aroundtuple[\cid][\nround][\pushbuffer]}
+ 		{\begin{array}{l}
+		\addid{\iclientinst} \ \bigpar \ \iserverins[\astate[']] \ \bigpar\ \iclient
+		\arro{\tau} 
+		\\
+		\hspace{2cm}
+		\addid{\iclientinst[@][@][\pending \cdot \around][\emptydelta]}
+		\ \bigpar \ \iserverins[{\astate[']}][@][\inserver\upd{\cid}{\inserver(\cid)\cdot\around}]
+		\ \bigpar\ \iclient
+	 	\end{array}
+		}	
+\\
+	\mathrule{receive}
+	         { \outserver(\cid) = \aseg\cdot\aseqseg}
+		{\begin{array}{l}
+		\addid{\iclientinst[@][@][@][@][@][@][@][\inclient]} \ \bigpar \ \iserverins[\astate[']] \ \bigpar\ \iclient
+		\arro{\tau} 
+		\\
+		\hspace{2.1cm}
+		\addid{\iclientinst[@][@][@][@][@][@][@][\inclient\cdot \aseg]} \ \bigpar \ \iserverins[{\astate[']}][@][@][\outserver\upd{\cid}\aseqseg] \ \bigpar\ \iclient
+	 	\end{array}
+		}	
+\\
+	\mathrule{pull-1}
+	{\aseqround['] = filter\ (\geq \amxrf[_k](\cid)) \ \aseqround \qquad \inclient = \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]}
+		 {\begin{array}{l}
+			\addid{\iclientinst[\tpullins][@]
+			[@]%[\aseqround\cdot{\aroundtuple}\cdot{\aseqround[']}]
+			[@][@][@][n][\inclient]}
+			    \ \bigpar \ \isystemterm
+			\arro{\pulltran} 
+			\\
+			\hspace{5.5cm}
+			\addid{\iclientinst[P]
+						 [\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}]
+						 [\aseqround']
+						 [@][@]
+						 [{\receivebuffer}][n][\epsilon]}\ \bigpar \ \isystemterm
+	 	\end{array}
+		}
+\\
+
+	\mathrule{read}
+		{\iread{r}{\iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}}=v}
+		{\begin{array}{l}
+		\addid{\iclientinst[\treadins{x}{r}]} \ \bigpar \ \isystemterm
+		\arro{\readtran{r}} 
+		\\
+		\hspace{6.1cm}
+		\addid{\iclientinst[{P}\subst{x}{v}]}\ \bigpar \ \isystemterm
+		\end{array}
+		}
+\\
+		\mathrule{confirm}
+		{ v = (\pending  \cdot \pushbuffer \cdot\transactionbuffer == \epsilon) }
+		{\begin{array}{l}
+			\addid{\iclientinst[\tconfirmedins{x}]} \bigpar \ \isystemterm
+			\arro{\confirmedtran} 
+			\\
+			\hspace{6.1cm}
+			\addid{\iclientinst[P\subst{x}{v}]} \bigpar \ \isystemterm
+		\end{array}
+		}
+\\[25pt]
+\mathrule{while-true}
+	{\eval \cond {true}}
+	{
+		{\begin{array}{l}
+			\addid{\iclientinst[\pwhile{\cond}{P}[Q]]} \bigpar \ \isystemterm
+			\arro{\tau} 
+			\\
+			\hspace{4.5cm}
+			\addid{\iclientinst[P;\pwhile{\cond}{P}[Q]]} \bigpar \ \isystemterm
+		\end{array}
+		}
+	}
+\\[25pt]
+\mathrule{while-false}
+	{\eval \cond {false}}
+	{
+		{\begin{array}{l}
+			\addid{\iclientinst[\pwhile{\cond}{P}[Q]]} \bigpar \ \isystemterm
+			\arro{\tau} 
+			\\
+			\hspace{7cm}
+			\addid{\iclientinst[Q]} \bigpar \ \isystemterm
+		\end{array}
+	}}
+	\\
+\end{array}
+ \]
+
+ \[
+ \begin{array}{l}
+    \hspace{-.3cm} \textsc{SERVER}\\
+    
+
+\mathrule{batch}
+{\begin{array}{c}
+  \agssegpair[@][{\amxrf[{'}]}] =\receiveroundsname{\inserver} \qquad\qquad %=\append{\emptygssegment}{rs} \qquad 
+  \astate[']=\iapply{\astate}{\adelta} \\
+  \forall\cid.(\outserver['] (\cid)= \outserver(\cid)\cdot\agssegpair[@][{\amxrf[{'}]}] \quad \land\quad 
+  \inserver['](\cid) = \epsilon)
+\end{array}
+  }
+  {\iserverins\ \bigpar \ \iclient
+  \tr{\tau} 
+  {\iserverins[{\astate[']}][{\amxrf[{'}]}][{\inserver[']}][{\outserver[']}]}\ \bigpar \ \iclient}
+\\
+\mbox{\henote{este receiveRounds es distinto al tuyo, hace todo de una}}
+\\
+\mathrule{accept-conn}
+{\cid\notin \inserver \qquad \cid \notin \outserver}
+{\server{\astate}{\inserver}{\outserver} \ \bigpar\  \iclient 
+\tr{\tau} 
+\server{\astate}{\inserver\upd\cid\epsilon}{\update{\outserver}{\cid}{\agsprefpair}}\ \bigpar\  \iclient }
+\\
+\mathrule{drop-conn}
+{\cid \in \inserver \qquad  \cid \in \outserver}
+{\addid{\iclientinst[@][@][\aseqround][@][@][@][@][\inclient]}
+\ \bigpar \ \server{\astate}{\inserver}{\outserver} \ \bigpar \ \iclient
+\tr{\tau} 
+\addid{\iclientinst[@][@][\aseqround][@][@][@][@][\epsilon]}
+\ \bigpar \server{\astate}{\inserver \setminus\cid}{\outserver \setminus\cid}\ \bigpar \ \iclient} 
+\\
+
+%{\cid \in \inserver \qquad  \cid \in \outserver}
+%{\server{\astate}{\inserver}{\outserver} \ \bigpar \ \iclient
+%\tr{\tau} 
+%\server{\astate}{\inserver \setminus\cid}{\outserver \setminus\cid}\ \bigpar \ \iclient} 
+%\\
+\mathax{crash}{\server{\astate}{\inserver}{\outserver}\ \bigpar \ \iclient
+ \tr{\tau} \server{\astate}{\undefined}{\undefined}\ \bigpar \ \iclient}
+
+			     
+%{\cid \in \inserver \qquad  \cid \in \outserver}
+%{\server{\astate}{\inserver}{\outserver} \ \bigpar \ \iclient
+%\tr{\tau} 
+%\server{\astate}{\inserver \setminus\cid}{\outserver \setminus\cid}\ \bigpar \ \iclient} 
+%\\
+%\mathax{crash}{\server{\astate}{\inserver}{\outserver}\ \bigpar \ \iclient
+ %\tr{\tau} \server{\astate}{\undefined}{\undefined}\ \bigpar \ \iclient}
+\\
+
+\\
+	\mathrule{pull-2}
+	{\aseqround['] = filter\ (\geq \amxrf(\cid)) \ \aseqround
+	\qquad \inclient = \agssegpair[{\astate[']}]\cdot\agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]
+	 }
+		 {\begin{array}{l}
+			\addid{\iclientinst[\tpullins][@][\aseqround][@][@][@][@][\inclient]}
+			     \ \bigpar \ \iserverins[{\astate['']}][{\amxrf[']}] \ \bigpar\ \iclient
+ %[]\ \bigpar \ \isystemterm
+			\arro{\pulltran} 
+			\\
+			\hspace{1.5cm}
+			\addid{\iclientinst[P]
+						 [\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}]
+						 [{\aseqround'}]
+						 [@][@]
+						 [{\receivebuffer}]}
+		\ \bigpar \ \iserverins[{\astate['']}][{\amxrf[']}][\inserver\upd{\cid}{\inserver(\cid)\cdot\aseqround[']}]
+		\ \bigpar\ \iclient
+	 	\end{array}
+		}
+\\
+
+
+
+\\
+	\mathrule{pull-2}
+	{\aseqround['] = filter\ (\geq \amxrf(\cid)) \ \aseqround}
+		 {\begin{array}{l}
+			\addid{\iclientinst[\tpullins][@][\aseqround][@][@][@][@][{\agssegpair[{\astate[']}]}\cdot\inclient]}
+			     \ \bigpar \ \iserverins[{\astate['']}][{\amxrf[']}] \ \bigpar\ \iclient
+ %[]\ \bigpar \ \isystemterm
+			\arro{\pulltran} 
+			\\
+			\hspace{1.5cm}
+			\addid{\iclientinst[P]
+						 [{\astate[']}]
+						 [{\aseqround'}]
+						 [@][@]
+						 [{\receivebuffer}]}
+		\ \bigpar \ \iserverins[{\astate['']}][{\amxrf[']}][\inserver\upd{\cid}{\inserver(\cid)\cdot\aseqround[']}]
+		\ \bigpar\ \iclient
+	 	\end{array}
+		}
+\\
+\mbox{\henote{Este se necesita para el crash y recover y el inicial}}
+\\
+
+%    \\[35pt]
+%    \hspace{-.3cm} \textsc{COMMUNICATION}
+%		
+%\\
+%    \mathrule{comm server-client}{\outserver(i)=\gs \cdot \gss}{\server{\state}{\inserver}{\outserver} \bigpar \clientr{P}{\stateclient} \arro{\tau} \server{\state}{\inserver}{\update{\outserver}{i}{\gss}} \bigpar 
+%		\clientr{P}{\update{E}{\inclient}{E.\inclient \cdot \gs}}}
+%		
+%\\[25pt]
+%
+%	    \mathrule{comm client-server}{\outclient=\headerround \cdot \tailround}{\server{\state}{\inserver}{\outserver} \bigpar \clientr{P}{\stateclient} \arro{\tau} \server{\state}{\update{\inserver}{i}{\inserver(i) \cdot \headerround}}{\outserver} \bigpar 
+%		\clientr{P}{\update{E}{\outclient}{\tailround}}}	
+% \\
+%
+ \end{array}
+ \]
+
+
+Rule $\textsc{(drop-conn)}$ removes from the server's queues the client called $b_i$. Rule $\textsc{(crash-and-recover)}$ leaves undefined the server's queues and preserves the server's persistent state.  Rule $\textsc{(accept-conn)}$ show how to add a new connecti(Read)send to its the persistent state. Last rule from \textbf{\textsc{(server)}} is Rule $\textsc{(batch)}$, the most interesting of this group. Its has three hypothesis, the first one, is responsible for receiving rounds from the queue of in-messages. Se\cond one, let $\emptygssegment$ be a empty segment, it gives back a delta object who represents the combination of numbers of rounds into a single object. Finally, this object is applied to the persistent state. As result, the persistent state is putted into the queues messages-out.
+
+There are two \textbf{\textsc{(communications)}} rules. Rule $\textsc{(comm-server-client)}$ when the server has a message for client $i^{th}$, this is removed from the server's queue message-out and is putted into the queue message-in from client $i^{th}$. Rule $\textsc{(comm-client-server)}$ states when a round from client $i^{th}$ is left into server queue message-in.
+
+Rule $\textsc{(Read)}$ gives the result of performing a lecture on messages queues from the client. Rule $\textsc{(update)}$ adds an update to the transaction buffer. Rule $\textsc{(push)}$ leaves into push buffer a delta object resulted of reducing the push buffer with transaction buffer. The transaction buffer is cleaned and the number of rounds sent is incremented by one. Rule $\textsc{(pull)}$ shows when a persisted state from a client is modified. The hypothesis are that a channel have been accepted, i.e., these must be defined for client $i^{th}$ besides the receive buffer should have an element at least. $\textsc{(confirmed)}$
+computes the states of the internal queues,i.e., if these has any element. Rules $\textsc{(while-true)}$ and $\textsc{(while-false)}$ are standard. Rule $\textsc{(send)}$ creates a new round setting who is the client ($i^{th}$), how many rounds client ($i^{th}$) has sent and content from the push buffer. Finally rule $\textsc{(receive)}$ move out segments from the client's queue message-in to receive buffer.

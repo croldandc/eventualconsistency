@@ -1,0 +1,980 @@
+% !TEX root = main.tex
+\section{Consistency Guarantees}
+\label{sec:properties-gsp}
+
+Consistency guarantees are usually defined over abstract executions~\cite{} given as a set of 
+relations between read and update events. In particular,  the following relations are used
+ 
+%
+%We shall introduce a series of store-level consistency guarantees and then we shall show which 
+%are captured by application written in GSP. We start identifying three kinds of relations between actions of update and read:º
+
+\begin{itemize}
+ \item {\em Session Order} (\so) describes the sequential order in which operations executed within a session (i.e., a single thread of 
+ execution) are performed. This relation is a total order over the events associated with operations belonging to the same session.
+ Hereafter, we will 
+ associate a session with a \gsp\ client.  
+
+ \item{\em Visibility} (\vis) indicates whether the effects of an update event are visible to a read event.
+
+ \item{\em Arbitration} (\arb) describes the resolution strategy for concurrent update conflicts. This is a total order over update events.
+
+ \item{\em Same Session} (\sse) ...
+
+\end{itemize}
+
+
+We extend the GSP language with a new term which capture the relations amount operation in our system. 
+\begin{definition} Let $\systemterm$ be a \gsp\ system in \secref{sec:gsp}, an abstract history is a tuple 
+$ \environmentterm =  \environment{\systemterm}{\op}{\so}{\vis}{\arb} $
+%\[
+%    \begin{array}{l@{\quad}r@{\;::=\;}l}
+%			 (\textsc{Abstract Exec.}) & \environmentterm &  \environment{\systemterm}{\op}{\so}{\vis}{\arb} \\
+%	    \end{array}
+%  \]
+where
+ \begin{itemize}
+     \item $\op: \verticesets\rightarrow\opset$ mapping each event to its corresponding operation;
+     \item $\sse: \idset\rightarrow\verticesets$ associating each client with its executed events;
+     \item $\so\subseteq \verticesets\times\verticesets$, s.t. 
+     \item $\vis\subseteq\verticesets\times\verticesets$;
+     \item $\arb\subseteq\verticesets\times\verticesets$;
+ \end{itemize}
+ 
+ Satisfying the following restrictions:
+ \begin{itemize}
+     \item for all $\cid\in\dom\sse$, $\sse(\cid) \subseteq \dom\op$;
+     \item for all $\cid$, $\so\relrestriccion{\sse(\cid)}$ is a total order;
+     \item if  $(\vertice[@][_1],\vertice[@][_2])\in\vis$, then $\op(\vertice[@][_1])\in\updatesets$ and $\op(\vertice[@][_2])\in\readset$;
+     \item if  $(\vertice[@][_1],\vertice[@][_2])\in\arb$, then $\{\op(\vertice[@][_1]),\op(\vertice[@][_2])\}\subseteq\updatesets$;
+ \end{itemize}
+\end{definition}
+
+%	 
+%Let $\environmentterm$, a new term, where $\systemterm$ represents our system introduced in Definition 1.1, $\op$ is a mapping of vertices to actions, $\so$ is a session order relation defined from vertices to relations of vertices $\verticesets$ $\times$ ($\verticesets$ $\times$ $\verticesets$) and $\vis$,$\arb$ are visibility and arbitration relation.
+%
+%
+We  provide an operational approach to associate abstract executions to \gsp\ systems. They are provided 
+by inference rules in \figref{fig:comp-abst-executions}
+
+
+%%reglas
+ \begin{figure}[t]
+ \[
+ \begin{array}{l}
+\mathrule{a-update}
+	{
+	\begin{array}{l}
+		\systemterm \arroi{\updatetran{u}} \systemterm' 
+		\qquad \vertice \notin dom(\op)
+		\qquad \op' = \op\upd \vertice u
+		\qquad \sse' = \sse\upd \cid {\sse(\cid)\cup\{\vertice\}}
+		 \\[2pt]
+		 \so' = \so\cup (\sse(\cid)\times\{\vertice\})
+		 \qquad
+		 \arb' = \arb \cup (\{ \vertice[w] \ |\ \udec[@][{\vertice[w]}]\in \queuemessage \}\times\{\vertice\})
+	\end{array}
+	}
+	{\environment{\systemterm}{\op}{\so}{\vis}{\arb} 
+		  \arroi{\updatetran{u}}  
+		  \environment{\systemterm'}{\op'}{\so'}{\vis}{\arb'}
+	}
+\\[32pt]	
+\mathrule{a-read}
+	{ 
+	\begin{array}{l}
+		\systemterm \arroi{\readtran{r}} \systemterm' 
+		 \qquad \vertice \notin  dom(\op) 
+		 \qquad \op' = \op\upd \vertice r
+		 \qquad \sse' = \sse\upd \cid {\sse(\cid)\cup\{\vertice\}}
+		 \\[2pt]
+		 \so' = \so\cup (\sse(\cid)\times\{\vertice\})
+		 \qquad \ \vis' = \vis \cup (\{\vertice[w] \ |\  \udec[@][{\vertice[w]}] \in \queuemessage[0..\tknown_{\,\cid}-1] \cdot \tpending_{\cid} \cdot \ttransactionbuffer_{\,\cid} \}\times\{\vertice\})
+	\end{array}
+	 }
+	 {\environment{\systemterm}{\op}{\so}{\vis}{\arb} 
+	   \arroi{\readtran{\udec[r]}} \environment{\systemterm'}{\op'}{\so'}{\vis'}{\arb}[\sse']}
+\\[27pt]	
+\mathrule{a-int}
+	{ 
+	\begin{array}{l}
+		\queuemessage \bigpar \Absclient \arroi{\lambda} \queuemessage \bigpar \Absclient' 
+		\qquad \lambda \neq  \updatetran{u},\readtran{r}
+	\end{array}
+	 }
+	 {\environment{\queuemessage \bigpar \Absclient}{\op}{\so}{\vis}{\arb} 
+	   \arroi{\lambda} 
+	   \environment{\queuemessage\bigpar \Absclient'}{\op}{\so}{\vis}{\arb}}
+\\[27pt]	
+\mathrule{a-arb}
+	{ 
+	\begin{array}{l}
+		\queuemessage \bigpar \Absclient \arroi{\lambda} \queuemessage' \bigpar \Absclient' 
+		\hspace{2cm} \queuemessage\neq\queuemessage'
+		\hspace{2cm} \lambda \neq  \updatetran{u},\readtran{r}
+		 \\[2pt]
+%		 \arb' = \arb \cup \{ (\vertice, \vertice[w])\ | \ \ell = |\queuemessage'|-1 \land \udec \in \queuemessage'[0..\ell-1] \land \udec[@][{\vertice[w]}]= \queuemessage'[\ell]\}
+		\arb' = \arb \cup \{ (\vertice, \vertice[w])\ \ |\ \  \queuemessage'[|\queuemessage'| - 1] = \udec, \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
+		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage'\}
+	\end{array}
+	 }
+	 {\environment{\queuemessage \bigpar \Absclient}{\op}{\so}{\vis}{\arb} 
+	 \arroi{\lambda}	   
+	 \environment{\queuemessage' \bigpar \Absclient'}{\op}{\so}{\vis}{\arb'}}
+\end{array}
+ \]
+ \caption{Computation of abstract executions} 
+ \label{fig:comp-abst-executions}
+ \end{figure}
+ 
+ 
+ 
+%  \paragraph{Notation.} Given a session order relation $\so$ from client $i$ and a vertex $v$, we shall write $\soby{\so}{v}$  meaning that $\soby{(\mathcal{V}, \mathcal{R})}{v} = (\mathcal{V} \ \cup \ \{v\}, \mathcal{R}\ \cup \ \{(x,v) / x \in \verticesets\})$. We shall refer to an update action on the queue message as $\updateinqueuemessage{n}{i}$.The arbitration relation $\arb$ is defined as $\{ (v,w) / \{v \mapsto \updateinqueuemessage{m}{h}\} \in \op \land \ \{w \mapsto \updateinqueuemessage{n}{i} \} \in \op \land \ m < n \}$. A transition $\arroi{\alpha}$ denotes the fact that action $\alpha$ is perfomed by client $i$.
+ 
+
+\subsection{Ordering Guarantees}
+
+We now study the properties enjoyed by the \gsp\ model. We focused on the hierarchy in~\cite{}. That are listed in ~\figref{}.
+% now prove what ordering guarantees are assured by GSP language and what do not. 
+
+
+First, we prove a useful lemma: 
+
+
+\begin{lemma}
+\label{lemma:update-ever-belong} 
+Let $\systemterm$ a \gsp\ system. For all  $\systemterm[']$ and $u\in\updatesets$, if 
+\[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}\]
+then for all $\vertice\in\dom\op$ if $\op(\vertice)\in\updatesets$ {and $\vertice\in\sse(\cid)$} then
+$\systemterm' = \anabstcli \ \bigpar\ \queuemessage\ \bigpar\ \Absclient$
+% u an update action, $\queuemessage$ a message queue, $\tpending_i$ and
+ % $\ttransactionbuffer_i$ a pending queue and transaction queue from the client i, if $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \environment{\systemterm}{\op}{\so}{\vis}{\arb}$ then $\{x \mapsto \updatebyclient{i} \}\ \in \ \op\ \Rightarrow\ 
+and $\udec \in\  \queuemessage[0..\tknown_{\cid}-1] \cdot \tpending_{\cid} \cdot [\ttransactionbuffer_{\cid}]$.
+\end{lemma}
+
+\begin{proof} The proof follows by induction on the length of the derivation $\tr{} ^n$.
+\begin{itemize}
+   \item{\bf n=0}. Then $\op$ is $\emptyset$, and hence the thesis trivially holds. 
+      \item{\bf n=k+1}. Then 
+      \[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] 
+         \tr{} ^n\ 
+         \environment{\systemterm['']}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+         \arro{\lambda}[\cidj]
+ 	\environment{\systemterm[']}{\op}{\so}{\vis}{\arb}
+	 \]
+	 
+	By inductive hypothesis, if $\vertice\in\dom{\op'}$ s.t. $\op'(\vertice) = u$ then
+	\[\systemterm'' = \anabstcliprime \ \bigpar\ \queuemessage'\ \bigpar\ \Absclient'\]
+       and $\udec\in\  \queuemessage[0..\tknown'_{\cid}-1] \cdot \tpending'_{\cid} \cdot [\ttransactionbuffer'_{\cid}]$. We proceed by 
+case analysis on the inference rule applied for the last transition:
+	
+	\begin{itemize}
+        
+        \item rule \ruleName{a-read}. Then,  $\systemterm''{\arro{\readtranaux{r^{\vertice[w]}}}[\cidj]}\systemterm'$ and     
+        $\op = \op'\upd{\vertice[w]}r$ with $r\in\readset$.  
+        If $\vertice[v]\in\dom\op$ and $\op(\vertice[v])\in\updatesets$, then
+        $\vertice\in\dom{\op'}$ because the new event $\vertice[w]$ is associated with the read operation $r$. 
+        Moreover,  $\systemterm''{\arro{\readtran{\udec[r]}}[\cidj]}\systemterm'$ implies 
+        $\queuemessage = \queuemessage'$ and for all ${\cid}$,  ${\tknown'}_{\cid} = \tknown_{\cid}$ and 
+        $\tpending'_{\cid} = \tpending_{\cid}$. Therefore, 
+        $\queuemessage[0..\tknown_{\cid}-1] = \queuemessage'[0..\tknown_{\cid}-1]$ for all $\cid$.
+                Hence, the case follows by inductive hypothesis.
+        
+%        ate operation then it must not be $v$, so that $\{x \mapsto \updatebyclient{i} \} \in\ \op$, then by inductive hypothesis $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$. When $\systemterm \arroi{\readtran{r}} \systemterm'$, $\tknown_i$, $\tpending_i$,$\ttransactionbuffer_i$ do not change.
+	
+	
+	\item rule \ruleName{a-update}. Then, $\systemterm''{\arro{\updatetranaux{\anupd^{\vertice[w]}}}[\cidj]}\systemterm'$
+	and     
+        $\op = \op'\upd{\vertice[w]}\anupd$ with $\anupd\in\updatesets$. There are two possibilities:
+		\begin{itemize}
+			\item {\bf $\vertice \neq \vertice[w] $}. Then, the case follows  analogously to the previous case by using inductive hypothesis. 
+						%Then we can use inductive hypothesis, so that it is easy to see that if $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$ then $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i] \cdot u_{t}^v$ too.
+			
+			\item  {\bf $\vertice = \vertice[w] $}. Note that $\systemterm''{\arro{\updatetranaux{\anupd^{\vertice[w]}}}[\cidj]}\systemterm'$ 
+			implies  $\ttransactionbuffer_{\cidj} = \ttransactionbuffer'_{\cidj}\cdot \anupd^{\vertice[w]}$. Then,
+			take $\cid = \cidj$ and conclude that  
+			$\anupd^{\vertice[w]}\in\  \queuemessage[0..\tknown_{\cidj}-1] \cdot \tpending_{\cidj} \cdot [\ttransactionbuffer'_{\cidj}\cdot\anupd^{\vertice[w]}]$.
+		\end{itemize}
+        
+        \item rule \ruleName{a-arb}. Then, $\queuemessage \neq \queuemessage'$. By rule inspection, the only possibility is 
+        $\systemterm''\arro{\tau}[\cidj]\systemterm'$ by using rule \ruleName{send}.
+        \henote{Completar} 
+        \item rule \ruleName{a-int}. We note that $\op' = \op$ and $\queuemessage = \queuemessage'$. Then, we proceed by case analysis on 
+        the reduction $\systemterm''\arro{\tau}[{\cidj}]\systemterm'$
+            \begin{itemize}
+		\item rule \ruleName {push}.  Then,  $\tknown_{\cidj} = \tknown_{\cidj}'$, $\tpending_{\cidj} = \tpending_{\cidj}' \cdot [\ttransactionbuffer_{\cidj}']$  
+		and $\ttransactionbuffer_{\cidj} = \epsilon$ while  $\tknown_{\cid} = \tknown_{\cid}'$, $\tpending_{\cid} = \tpending_{\cid}$ and  
+		$\ttransactionbuffer_{\cid}=\ttransactionbuffer_{\cid}'$
+		for all $\cid \neq \cidj$.
+		By inductive hypothesis, there exists $\cid$ s.t.
+		 $\udec \in\  \queuemessage[0..\tknown'_{\cid}-1] \cdot \tpending'_{\cid} \cdot [\ttransactionbuffer'_{\cid}]$.
+		 %
+		 When $\cid = \cidj$, note that $\udec \in\  \queuemessage[0..\tknown'_{\cidj}-1] \cdot \tpending'_{\cidj} \cdot [\ttransactionbuffer'_{\cidj}]$
+		 implies $\udec\in\  \queuemessage[0..\tknown'_{\cidj}-1] \cdot (\tpending'_{\cidj}\cdot [\ttransactionbuffer'_{\cidj}]) \cdot [\epsilon] =
+		  \queuemessage[0..\tknown_{\cidj}-1] \cdot \tpending_{\cidj} \cdot [\ttransactionbuffer_{\cidj}]$.
+		 Otherwise ($\cid \neq \cidj$), the case follows from the inductive hypothesis.
+%		 When $\systemterm \arroi{\pushtran} \systemterm'$, 
+%		 $\tknown_i$' = $\tknown_i$, $\tpending_i$' = $\tpending_i \cdot [\ttransactionbuffer_i]$ 
+%		 and $\ttransactionbuffer_i$' = $\epsilon$.
+		 
+		 \item  rule \ruleName {pull}. Then,  $\tknown_{\cidj} = \tknown_{\cidj}'+\treceivebuffer_{\cidj}'$, 
+		 $\tpending_{\cidj} = \tpending_{\cidj}' \setminus \queuemessage[\tknown_{\cidj}' .. \tknown_{\cidj}' + 
+		 \treceivebuffer_{\cidj}'-1]$  
+		and $\ttransactionbuffer_{\cidj} = \ttransactionbuffer_{\cidj}'$ 
+		while  $\tknown_{\cid} = \tknown_{\cid}'$, $\tpending_{\cid} = \tpending_{\cid}$ and  
+		$\ttransactionbuffer_{\cid}=\ttransactionbuffer_{\cid}'$
+		for all $\cid \neq \cidj$.
+		%
+		By inductive hypothesis, there exists $\cid$ s.t.
+		 $\udec \in\  \queuemessage[0..\tknown'_{\cid}-1] \cdot \tpending'_{\cid} \cdot [\ttransactionbuffer'_{\cid}]$.
+		 %
+		 When $\cid = \cidj$, we show that 
+		 $\udec \in\  \queuemessage[0..\tknown'_{\cidj}-1] \cdot \tpending'_{\cidj} \cdot [\ttransactionbuffer'_{\cidj}]$ implies
+		 $\udec \in\  \queuemessage[0..\tknown_{\cidj}-1] \cdot \tpending_{\cidj} \cdot [\ttransactionbuffer_{\cidj}] =
+		 \queuemessage[0..\tknown'_{\cidj}+ \treceivebuffer'_{\cidj}-1] \cdot \tpending_{\cidj} 
+		 	\setminus (\queuemessage[\tknown'_{\cidj}..\tknown'_{\cidj}+ \treceivebuffer'_{\cidj}-1]) \cdot [\ttransactionbuffer_{\cid}]$.
+%		 We should prove that it is equivalent to $\anupd^{\vertice[w]} \in\  \queuemessage[0..\tknown_{\cidj} - 1 + 
+%		 \treceivebuffer_{\cidj}] \cdot \tpending_i \setminus \queuemessage[\tknown_i .. \tknown_i + 
+%		 \treceivebuffer_i] \cdot [\ttransactionbuffer_i]$. 
+		 In fact, there are two interesting cases:
+		\begin{itemize}
+			\item If $\udec \in\ \tpending_{\cidj}'\  \land\ \udec \notin\ \queuemessage[\tknown'_{\cidj}..\tknown'_{\cidj}+ \treceivebuffer'_{\cidj}-1]$, 
+			then $\udec \in \ \tpending_{\cidj}$.
+			\item If $\udec \in\ \tpending'_{\cidj}\  \land\ \udec \in\ \queuemessage[\tknown'_{\cidj}..\tknown'_{\cidj}+ \treceivebuffer'_{\cidj}-1]$, 
+				then $\udec \notin \ \tpending_{\cidj}$ but 
+				$\udec \in\ \queuemessage[0 .. \tknown'_{\cidj}+ \treceivebuffer'_{\cidj}-1]=\queuemessage[0 .. \tknown_{\cidj} -1] $. 
+		\end{itemize}
+		The remaining cases ($\udec \in \queuemessage[0..\tknown'_{\cidj}-1]$ or $\udec\in\ttransactionbuffer'_{\cidj}$) are straightforward.
+		
+		\item rules \ruleName{receive}, \ruleName{confirm}, \ruleName{while-true}, \ruleName{while-false}, \henote{reglas para if}
+		The proof follows from inductive hypothesis because $\tknown_{\cid}=\tknown_{\cid}$, $\tpending_{\cid}=\tpending_{\cid}$ 
+		and $\ttransactionbuffer_{\cid}=\ttransactionbuffer_{\cid}$ for all $\cid$ and $\op'=\op$.
+
+
+	\end{itemize}
+	
+\end{itemize}
+\end{itemize}
+\qed
+\end{proof}
+
+
+\begin{lemma}
+\label{lemma:local-updates-preserver-order} 
+Let $\systemterm$ a \gsp\ system. For all  $\systemterm[']$, if 
+\[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}\]
+then for all $(\vertice,\vertice[w])\in\so$ s.t. $\op(\vertice)\in\updatesets$ and
+$\op(\vertice[w])\in\updatesets$, if  $\anupd^{\vertice[w]}\in\queuemessage[0..k]$
+then $\anupd^{\vertice}\in\queuemessage[0..k-1]$
+\end{lemma}
+
+\begin{proof} \henote{ToDO}\qed
+\end{proof}
+
+\begin{lemma}
+\label{lemma:update-ever-belong-different-client} 
+Let $\systemterm$ a \gsp\ system. For all  $\systemterm[']$, if 
+\[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}\]
+then for all $(\vertice,\vertice[w])\in\vis$ if $\vertice\in\sse(\cid)$, 
+$\vertice[w]\in\sse(\cidj)$ and $\cid\neq\cidj$ then
+ there exists $\anupd$ s.t. $\udec \in\  \queuemessage[0..\tknown_{\cidj}-1]$.
+
+
+\end{lemma}
+
+
+
+\begin{proof} \henote{To Do}\qed
+\end{proof}
+
+\begin{lemma}
+\label{lemma:sovis-in-vis} 
+Let $\systemterm$ a \gsp\ system. For all  $\systemterm[']$, if 
+\[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}\]
+then $\restUR{(\so;\vis)}\subseteq \vis$.
+\end{lemma}
+
+\begin{proof} It follows by induction on the length of
+the derivation  $\tr{} ^*$.
+% that for all $(\vertice,\vertice[x])\in\so$ if $(\vertice[x],\vertice[w])\in\vis$ then  $(\vertice,\vertice[w])\in\vis$.
+\begin{itemize}
+   \item{\bf n=0}. It holds trivially, because $\op=\vis=\emptyset$.
+      \item{\bf n=k+1}. Then $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset]
+    \tr{} ^n\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+    \arroi{\lambda} \environment{\systemterm'}{\op}{\so}{\vis}{\arb}[\sse]$. 
+    By inductive hypothesis, $\restUR{(\so';\vis')}  \subseteq \ \vis'$.
+    We proceed by 
+    case analysis on the last applied rule:
+	
+    \begin{itemize}
+	\item rule \ruleName{a-update}. Then, $\vis=\vis'$ and $\so = \so'\cup (\sse(\cid)\times\{\vertice\})$ with $\op(\vertice)\in\updatesets$. Therefore,
+	 \[\restUR{(\so;\vis)} = \restUR{((\so'\cup (\sse(\cid)\times\{\vertice\}));\vis')} \] 
+	 Note that $(\sse(\cid)\times\{\vertice\});\vis' = \emptyset$ because $\vertice$ is fresh and does not appears in $\vis'$. Then, by 
+	 using inductive hypothesis,
+	 \[\restUR{(\so;\vis)} = \restUR{(\so';\vis')} \subseteq\vis' = \vis \] 
+	 
+	 \item rule \ruleName{a-read}. Then, $\so = \so'\cup  \so_{\mbox{\sf new}}$ with  
+	  $\so_{\mbox{\sf new}} = (\sse'(\cid)\times\{\vertice\})$, 
+	  %
+	 \[\vis= \vis' \cup  \vis_{\mbox{\sf new}} \ \mbox{with} \ 
+	  \vis_{\mbox{\sf new}} = (\{\vertice[w] \ |\  \udec[@][{\vertice[w]}] \in \queuemessage''[0..\tknown''_{\,\cid}-1] \cdot \tpending''_{\cid} \cdot \ttransactionbuffer''_{\,\cid} \}\times\{\vertice\})\]
+	  %
+	  and $\op(\vertice)\in\readset$. Therefore, 
+	 %
+	 \[\restUR{(\so;\vis)} = \restUR{(( \so'\cup  \so_{\mbox{\sf new}}); (\vis'\cup	\vis_{\mbox{\sf new}}))}\]
+	Note that $ \so_{\mbox{\sf new}}; (\vis\cup	\vis_{\mbox{\sf new}})) = \emptyset$ because the second component 
+	of each pair in  $ \so_{\mbox{\sf new}}$ is the fresh vertex $\vertice$. Hence,
+	%
+		 \[\restUR{(\so;\vis)} = \restUR{(\so'; (\vis'\cup	\vis_{\mbox{\sf new}}))} = \restUR{(\so';\vis')} \cup\restUR{(\so';\vis_{\mbox{\sf new}})}  \]
+	By inductive hypothesis,  $\restUR{(\so';\vis')}\subseteq \vis'\subseteq\vis$. 
+	It remains to prove that $\restUR{(\so';\vis_{\mbox{\sf new}})}\subseteq\vis$.
+	Then,
+		    for all $(\vertice[x],\vertice[y])\in\restUR{(\so';\vis_{\mbox{\sf new}})}$, 
+		    $\op(\vertice[x])\in\updatesets$ and $\vertice[y] = \vertice$. Moreover, 
+	     there exists $\vertice[z]$ s.t. $(\vertice[x],\vertice[z])\in\so'$ and $(\vertice[z],\vertice)\in\vis_{\mbox{\sf new}}$.
+	    Since $(\vertice[z],\vertice[w])\in\vis_{\mbox{\sf new}}$, $\op(\vertice[z])\in\updatesets$. Moreover, 
+	    $(\vertice[x],\vertice[z])\in\so'$ implies  $\{\vertice,\vertice[x]\} \in \sse(\cidj)$ for 
+	    some $\cidj$. There are two cases, 
+	    \begin{itemize}
+	    	\item $\cidj = \cid$. Then, it follows from \lemref{lemma:update-ever-belong} that
+		$\anupd^{\vertice[x]} \in\  \queuemessage[0..\tknown_{\cid}-1] \cdot \tpending_{\cid} \cdot [\ttransactionbuffer_{\cid}]$.
+		Hence $(\vertice[x],\vertice)\in\restUR{\vis_{\mbox{\sf new}}} \subseteq \vis$.
+		\item $\cidj \neq \cid$. Then, $\anupd^{\vertice[x]} \in\  \queuemessage[0..\tknown_{\cid}-2]$ by
+		\lemref{lemma:local-updates-preserver-order}. Therefore  $(\vertice[x],\vertice)\in\restUR{\vis_{\mbox{\sf new}}} \subseteq \vis$.
+	    \end{itemize}
+	   	
+	
+	
+	
+	\item rules \ruleName{a-arb} and \ruleName{a-int} follow immediately by inductive hypothesis
+	after noticing that  $\vis = \vis'$ and $\so = \so'$.
+	\end{itemize}
+
+\end{itemize}\qed
+\end{proof}
+
+
+\begin{lemma} 
+\label{lem:so-transitive}
+Let $\systemterm$ a \gsp\ system. For all  $\systemterm[']$, if 
+\[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}\]
+then $\so$ is transitive.
+\end{lemma}
+
+\begin{proof} \henote{To Do}\qed
+\end{proof}
+
+
+\begin{theorem}[\textsc{Read My Writes}]
+\label{theorem:read-my-writes}
+% $\textsc{\small{SO}}_R$ the se\cond component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, if
+ If $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \arro{}^*\ 
+     \environment{\systemterm'}{\op}{\so}{\vis}{\arb}$
+    then $\restUR\so  \subseteq  \vis$
+
+\end{theorem}
+
+
+\begin{proof} The proof follows by induction on the length of the derivation $\tr{} ^*$.
+\begin{itemize}
+   \item{\bf n=0}. It holds trivially, because $\op=\vis=\emptyset$%, so that $\emptyset \subseteq \emptyset$.
+   \item{\bf n=k+1}. Then $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset]
+    \tr{} ^n\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+    \arroi{\lambda} \environment{\systemterm'}{\op}{\so}{\vis}{\arb}[\sse]$. 
+    By inductive hypothesis, $\restUR{\so'}  \subseteq \ \vis'$.
+    We proceed by 
+    case analysis on the last applied rule:
+	
+    \begin{itemize}
+	\item rule \ruleName{a-update}. Then, $\vis=\vis'$ and $\so = \so'\cup (\sse(\cid)\times\{\vertice\})$ with $\op(\vertice)\in\updatesets$. Therefore,
+	 $\restUR{\so} = \restUR{\so'}\subseteq\vis' = \vis$.
+	 
+	 \item rule \ruleName{a-read}. Then, $\so = \so'\cup (\sse'(\cid)\times\{\vertice\})$ and 
+	 \[\vis= \vis' 
+	 \cup (\{\vertice[w] \ |\  \udec[@][{\vertice[w]}] \in \queuemessage''[0..\tknown''_{\,\cid}-1] \cdot \tpending''_{\cid} \cdot \ttransactionbuffer''_{\,\cid} \}\times\{\vertice\})\]
+	  with $\op(\vertice)\in\readset$. Therefore, 
+	 \[\restUR{\so} = \restUR{\so'}\cup \{(\vertice[w],\vertice)\ |\ \vertice[w] \in \sse'(\cid) \ \land \op'(\vertice[w])\in\updatesets\}\]
+	
+        % $\textsc{\small{SO}}_R$' = $\textsc{\small{SO}}_R \cup\ \{(w,v) / \{w \mapsto \readtran{r}\} \lor\ \{w \mapsto \ \updatebyclient{j}\} \}$. Applying the intersection $(\mathbb{U}\ \times \ \mathbb{R})$, we shall obtain $\textsc{\small{SO}}_R \ \cup\ \{(w,v) / \{w \mapsto \updatebyclient{j}\} \}$.				
+%				\item $\vis' = \vis \ \cup \ \{ (x,v) / \{x \mapsto \updatebyclient{h}\} \in \op \ \land \  u^x \in \ \queuemessage[0..\tknown-1] \cdot \tpending \cdot [\ttransactionbuffer] \}$. 
+	By inductive hypothesis, $\restUR{\so'} \subseteq \vis'\subseteq \vis$. It remains to prove that 
+	\[
+	 \{(\vertice[w],\vertice)\ |\ \vertice[w] \in \sse'(\cid) \ \land \op'(\vertice[w])\in\updatesets\} \subseteq \vis
+	\]
+	Actually, we show that 
+	\[
+	\{(\vertice[w],\vertice)\ |\ \vertice[w] \in \sse'(\cid) \ \land \op'(\vertice[w])\in\updatesets\} 
+	\subseteq
+	(\{\vertice[w] \ |\  \udec[@][{\vertice[w]}] \in \queuemessage''[0..\tknown''_{\,\cid}-1] \cdot \tpending''_{\cid} \cdot \ttransactionbuffer''_{\,\cid} \}\times\{\vertice\})
+	\]
+	
+	%We only have to prove that $\{(w,v) / \{w \mapsto \updatebyclient{j}\} \in \op  \ \} \subseteq \{ (x,v) / \{x \mapsto \updatebyclient{h}\} \in \op \ \land \  u^x \in \ \queuemessage[0..\tknown-1] \cdot \tpending \cdot [\ttransactionbuffer] \}$. 
+	By using \lemref{lemma:update-ever-belong}, which allows us to conclude that $\vertice[w] \in \sse'(\cid) \ \land \op'(\vertice[w])\in\updatesets$ 
+	implies
+	$\vertice[w] \in \queuemessage''[0..\tknown''_{\,\cid}-1] \cdot \tpending''_{\cid} \cdot \ttransactionbuffer''_{\,\cid}$
+	
+	\item rules \ruleName{a-arb} and \ruleName{a-int} follow immediately by inductive hypothesis
+	after noticing that  $\vis = \vis'$ and $\so = \so'$.
+	\end{itemize}
+\end{itemize}\qed
+\end{proof}
+
+
+
+
+\begin{theorem}[\textsc{Monotonic Read}]
+\label{theorem:monotonic-read}
+%Let $\textsc{\small{SO}}_R$ the se\cond component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation,
+If $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm'}{\op}{\so}{\vis}{\arb}$ 
+then $\restUR{\vis;\so}  \subseteq  \vis$.
+
+\end{theorem}
+
+
+\begin{proof} The proof follows by induction on the length of the derivation $\tr{} ^*$.
+\begin{itemize}
+   \item{\bf n=0}. It holds trivially, because $\op=\vis=\emptyset$.
+   \item{\bf n=k+1}. 
+   Then $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset]
+    \tr{} ^n\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+    \arroi{\lambda} \environment{\systemterm'}{\op}{\so}{\vis}{\arb}[\sse]$. 
+    By inductive hypothesis, $\restUR{(\vis';\so')}  \subseteq \ \vis'$.
+    
+    We proceed by 
+    case analysis on the last applied rule.
+    
+%%    to show that
+%%    for all $\vertice,\vertice[w],\vertice[x]$, if $(\vertice,\vertice[w])\in\vis$ and $(\vertice[w],\vertice[x])\in\so$  then $(\vertice,\vertice[w])\in\vis$.
+%%    
+%%    
+%%        Moreover $(\vertice,\vertice[w]) \in \restUR{\vis;\so} $ iff $\ \exists \vertice[w] \in\ \verticesets\ $ 
+%%    such that $(\vertice,\vertice[w]) \in\ \vis \land \ (\vertice[w],\vertice[x]) \in\  \so$. We have to prove that $(\vertice,\vertice[x]) \in \ \textsc{\small{VIS}}$'. We proceed by 
+%%case analysis on the last transition:
+%
+%   Then $\environment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^n\ \environment{\systemterm}{\op}{\so}{\vis}{\arb} \arroi{\alpha} \environment{\systemterm'}{\op'}{\so'}{\vis'}{\arb}$. Let $R$ be a composition of relations. 
+
+%case analysis on the last transition:
+	
+	\begin{itemize}
+        \item rule \ruleName {a-read}. 
+        Then, $\so = \so'\cup (\sse'(\cid)\times\{\vertice\})$ and 
+	 \[\vis= \vis' 
+	 \cup \vis_{\mbox{\sf new}} \ \mbox{with} \ 
+	  \vis_{\mbox{\sf new}} = (\{\vertice[w] \ |\  \udec[@][{\vertice[w]}] \in \queuemessage''[0..\tknown''_{\,\cid}-1] \cdot \tpending''_{\cid} \cdot \ttransactionbuffer''_{\,\cid} \}\times\{\vertice\})\]
+	  with $\op(\vertice)\in\readset$. Therefore, 
+	  
+	  \[\vis;\so = \vis';\so \cup\  \vis_{\mbox{\sf new}};\so\] 
+	  
+	  Since $\vertice$ is fresh, $\vertice\notin\sse'(\cid)$ and there is no $\vertice[@][']$ s.t. $(\vertice, \vertice[@]['])\in \so'$.
+	  Hence, there is no  $\vertice[@][']$ s.t. $(\vertice, \vertice[@]['])\in \so$. Therefore,  $\vis_{\mbox{\sf new}};\so = \emptyset$.
+	  It remains to prove that $\restUR{(\vis';\so)} \subseteq \vis$. 
+	 \[\vis';\so = \vis';\so'\cup \vis';(\sse'(\cid)\times\{\vertice\})\]
+	
+	By inductive hypothesis,  $\vis';\so'\subseteq\vis'$. By definition,  $\vis'\subseteq\vis$. Hence, $\vis';\so'\subseteq\vis$ holds. 
+	It remains to prove that 
+        	\[
+	 \restUR{(\vis';(\sse'(\cid)\times\{\vertice\}))} \subseteq \vis
+	\]
+
+        Take  $(\vertice[x],\vertice[y]) \in \vis'$ and $(\vertice[y],\vertice) \in (\sse'(\cid)\times\{\vertice\})$. Then, $\vertice[y]\in\sse'(\cid)$, 
+        $\op'{(\vertice[y])}\in\readset$ and $\op'({\vertice[x]})\in\updatesets$. There are two cases: 
+         \begin{itemize}
+         	\item  $\vertice[x]\in\sse'(\cid)$. By \lemref{lemma:update-ever-belong}, there exists
+		$\udec[@][{\vertice[x]}] \in\  \queuemessage''[0..\tknown''_{\cid}-1] \cdot \tpending''_{\cid} \cdot [\ttransactionbuffer''_{\cid}]$. 
+		Consequently, $(\vertice[x],\vertice) \in\vis$.
+		\item  $\vertice[x]\notin\sse'(\cid)$. By \lemref{lemma:update-ever-belong-different-client},
+		there exists an update $\anupd$ 
+		such that $\anupd^{\vertice[x]} \in\ \ \queuemessage[0..\tknown_{\cid}-1]$. Therefore
+		$\udec[@][{\vertice[x]}] \in\  \queuemessage''[0..\tknown''_{\cid}-1] \cdot \tpending''_{\cid} \cdot [\ttransactionbuffer''_{\cid}]$. 
+		Consequently, $(\vertice[x],\vertice) \in\vis$.
+
+	\end{itemize}
+        
+%        By \lemref{}, there exists an update $\anupd$ 
+%	such that $\anupd^{\vertice[x]} \in\ \ \queuemessage[0..\tknown_{\cidj}-1]$. Therefore
+%						  
+%						 Substituting $w$ by $v$ in $\textsc{\small{VIS}}$', we prove that $(\vertice,\vertice[x]) \in \textsc{\small{VIS}}$'.
+%						\item $\vertice[x] \neq v$. This case follows immediately by inductive hypothesis.
+%
+%             % $\textsc{\small{SO}}_R$' = $\textsc{\small{SO}}_R \cup\ \{(w,v) / \{w \mapsto \readtran{r}\} \lor\ \{w \mapsto \ \updatebyclient{j}\} \}$. Applying the intersection $(\mathbb{U}\ \times \ \mathbb{R})$, we shall obtain $\textsc{\small{SO}}_R \ \cup\ \{(w,v) / \{w \mapsto \updatebyclient{j}\} \}$.				
+%%				\item $\vis' = \vis \ \cup \ \{ (x,v) / \{x \mapsto \updatebyclient{h}\} \in \op \ \land \  u^x \in \ \queuemessage[0..\tknown-1] \cdot \tpending \cdot [\ttransactionbuffer] \}$. 
+% 
+%        
+%        $\ \exists \vertice[w] \in\ \verticesets\ $ such that $(\vertice,\vertice[w]) \in\ \textsc{\small{VIS}}' \land \ (\vertice[w],\vertice[x]) \in\  \textsc{\small{SO}}_R$'. We have to prove that $(\vertice,\vertice[x]) \in \ \textsc{\small{VIS}}$'. We proceed by 
+%
+%        We know that $v$ is fresh, therefore, $v$ have not be neither $\vertice$ nor $\vertice[w]$ because there exists $\vertice[x]$ such that, $\vertice[x]$ happens after from $\vertice$ and $\vertice[w]$. There are only two possibilities:
+%					
+%					\begin{itemize}
+%						\item $\vertice[x] = v$. As $(\vertice[w],\vertice[x]) \in \ \textsc{\small{SO}}_R$, then $\vertice[w]$ and $\vertice[x]$ 
+%						are from the same client, called $i$. We are only interested in relations of $update \times\ read$. We know that
+%						 $v$ is associated to an read action besides $\vertice$ have to be an update action. 					\end{itemize}
+%					
+			  \item rule \ruleName{a-update}. 
+			  Then $\so = \so'\cup (\sse'(\cid)\times\{\vertice\})$, $\vis= \vis'$  and $\op(\vertice)\in\updatesets$.
+			  By definition of $\so$
+			  \[\restUR{(\vis;\so)} = \restUR{(\vis;(\so'\cup(\sse'(\cid)\times\{\vertice\})))}\] 
+			  Since $\op(\vertice)\in\updatesets$, 
+			  \[\restUR{(\vis;\so)} = \restUR{(\vis;\so')}\]
+			  By using inductive hypothesis, we conclude  
+			  \[\restUR{(\vis;\so)} = \restUR{(\vis;\so')} \subseteq \vis\]
+%			  			   Visibility relation does not change,i.e.,$\textsc{\small{VIS}}$ = $\textsc{\small{VIS}}$'. Let $v$ be a vertex associated an update action, then $\textsc{\small{SO}}_R$' = $\textsc{\small{SO}}_R \cup\ \{(w,v) / \{w \mapsto \readtran{r}\} \lor\ \{w \mapsto \ \updatebyclient{j}\} \}$. As we are only interested in relations of $update \times\ read$, then $(\textsc{\small{VIS}}';\textsc{\small{SO}'}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \equiv \ (\textsc{\small{VIS}};\textsc{\small{SO}}_R) \cap \ (\mathbb{U}\ \times \ \mathbb{R})$. By inductive hypothesis we can prove that $(\textsc{\small{VIS}}';\textsc{\small{SO}}_R)' \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \ \subseteq \ \textsc{\small{VIS}} \subseteq \ \textsc{\small{VIS}}$'.				
+%				The proof for the remaining cases follow are not interesting because the relations does not change.
+	\item rules \ruleName{a-arb} and \ruleName{a-int} follow immediately by inductive hypothesis
+	after noticing that  $\vis = \vis'$ and $\so = \so'$.
+	
+\end{itemize}
+
+\end{itemize}\qed
+\end{proof}
+
+\begin{lemma}
+\label{lem:soUvis-acyclic}
+  If $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm'}{\op}{\so}{\vis}{\arb}$ 
+then $(\so \cup \vis )$ is acyclic.
+\end{lemma}
+
+\begin{proof}
+The proof follows induction on the length of the derivation  $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^n\ \environment{\systemterm'}{\op}{\so}{\vis}{\arb}$. Inductive step follows by case analysis on the last applied rule. Rules that change the
+relations $\so$ and $\vis$ are  \ruleName{a-update} and  \ruleName{a-read}. The fact that $(\so \cup \vis )$ follows from the fact that the 
+reduction step only add pairs $(\vertice,\vertice[w])$ with $\vertice[w]$. Then, no cycles can be introduced.
+\henote{low priority: escribir mejor}\qed
+\end{proof}
+
+\begin{theorem}[\textsc{No Circular Causality}]
+If $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm'}{\op}{\so}{\vis}{\arb}$ 
+then 
+%Let $\textsc{\small{SO}}_R$ the se\cond component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, if $\environment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset} \arro{} ^*\ \environment{\systemterm}{\op}{\so}{\vis}{\arb}$ then 
+$(\so \cup \vis ) ^+$ is acyclic.
+
+\end{theorem}
+
+\begin{proof}
+\textcolor{Green}{Old: Since $\textsc{\small{VIS}}$ is acyclic and $\textsc{\small{SO}}_R \cap \ (\mathbb{U}\ \times \ \mathbb{R})  \subseteq \ \textsc{\small{VIS}}$ by Theorem~\ref{lemma:update-ever-belong}, we have to prove that $\textsc{\small{VIS}} ^+$ is acyclic. In particular, the transitive closure of an acyclic graph is the reachability relation of the directed acyclic graph and a strict partial order.}
+
+\henote{Falta probar todo para los pares de $(\so\cup\vis)$ que no están en $\textsc{\small{SO}}_R \cap \ (\mathbb{U}\ \times \ \mathbb{R}) $ de estos pares no se si están en $\vis$ o no}
+
+By \lemref{lem:soUvis-acyclic},
+ $(\so \cup \vis )$ is acyclic. Then, the proof follows from the fact that
+  the transitive closure of an 
+acyclic relation is a strict partial order.
+\qed
+\end{proof}
+
+
+
+
+
+\begin{theorem}[\textsc{Causal Visibility}]
+If $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm'}{\op}{\so}{\vis}{\arb}$ 
+then
+%Let $\textsc{\small{SO}}_R$ the se\cond component of the relation $\textsc{\small{SO}}$ and $\textsc{\small{VIS}}$ a visibility relation, 
+$\restUR{(\so \cup \vis ) ^{+} } \subseteq \vis$. 
+
+\end{theorem}
+
+ 
+ 
+\begin{proof}
+	We first show by induction on $n$   that 
+	   %\[\restUO{(\so \cup \vis ) ^{+}}  =  \[\bigcup_{n=1}^{\infty}
+	   \[ \restUO{(\so \cup \vis )^{n}}\ \  \subseteq\ \  \so  \cup \vis\]
+
+	\begin{itemize}
+	    \item {\bf n=1}. Trivially, because ${(\so \cup \vis )} \subseteq  (\so  \cup \vis)$.
+	    \item {\bf n=k+1}. By definition of composition, 
+	    ${(\so \cup \vis ) ^{n} }  = {(\so \cup \vis ) ^{k};(\so \cup \vis )}$. Moreover, 
+	    $(\so \cup \vis ) ^{k}$ can be partitioned in two sets: $\restUO{(\so \cup \vis ) ^{k}}$ and $\restRO{(\so \cup \vis)^k}$.
+	    Therefore, 
+	    \[(\so \cup \vis ) ^{k};(\so \cup \vis ) = (\restUO{(\so \cup \vis ) ^{k}} \cup\ \restRO{(\so \cup \vis)^k});(\so \cup \vis )\]
+	    
+	    Note that 	    
+	    $\restUR{(\restRO{(\so \cup \vis)^k};(\so\cup\vis))} = \emptyset$. Consequently,
+	    \[\restUR{(\so \cup \vis ) ^{n}} = \restUR{(\restUO{(\so \cup \vis)^k};(\so\cup\vis))}\]
+	  
+	    By inductive hypothesis, $\restUO{(\so \cup \vis ) ^{k}}\ \ \subseteq\ \ (\so\cup\vis)$
+	    Hence, 
+	    \[\restUR{(\so \cup \vis ) ^{n}}\ \ \subseteq\ \ \restUR{((\so \cup \vis);(\so\cup\vis))}\]
+	    
+	    By using distributivity of operations over sets, 
+	    \[\restUR{(\so \cup \vis ) ^{n}}\subseteq \restUR{(\so;\so)} \cup \restUR{(\so;\vis)} \cup \restUR{(\vis;\so)} \cup \restUR{(\vis;\vis)}\]
+	    
+	    Note that $\vis;\vis = \emptyset$ because $(\vertice,\vertice[w])\in\vis$ implies $\op(\vertice)\in\updatesets$ and 
+	    $\op(\vertice[w])\in\readset$. Moreover $\so;\so = \so$ because of \lemref{lem:so-transitive}. Then,
+	    
+            \[\restUR{(\so \cup \vis ) ^{n}}\ \ \subseteq\ \ \restUR{\so} \cup \restUR{(\so;\vis)} \cup \restUR{(\vis;\so)}\]
+
+	    It is immediate that $\restUR{\so} \subseteq \so\cup\vis$. Moreover, 
+	    $\restUR{(\so;\vis)} \subseteq \vis$ by \lemref{lemma:sovis-in-vis} and
+	     $\restUR{(\vis;\so)} \subseteq \vis$ 
+	    by \thmref{theorem:monotonic-read}.
+	    Hence, $\restUR{(\so \cup \vis ) ^{n}}\subseteq \so\cup\vis$.
+	\end{itemize}
+	
+	The proof follows by noting that
+	  $\restUO{(\so \cup \vis )^{n}}\ \
+	\subseteq\ \ \so\cup\vis$ for all $n$ implies
+	  $\restUO{(\so \cup \vis )^{+}}\ \
+	\subseteq\ \ \so\cup\vis$. Moreover, 
+	\[\restUR{(\restUO{(\so \cup \vis ) ^{+} })}\ \ \subseteq\ \ \restUR{(\so\cup\vis)}\]
+	Note that $\restUR{(\restUO{(\so \cup \vis ) ^{+} })} = \restUR{{(\so \cup \vis ) ^{+} }}$.
+	 Consequently,
+		\[\restUR{{(\so \cup \vis ) ^{+} }}\ \ \subseteq\ \ \restUR{\so}\cup\ \restUR{\vis}\]
+	The proof is completed by noting that $\restUR{\so}\ \ \subseteq\ \ \vis$ by \thmref{theorem:read-my-writes} and 
+	$\restUR{\vis} \subseteq \vis$.
+\qed
+\end{proof}
+
+
+%\begin{proof} 
+%  	The proof follows by induction on the number of union sets between $\textsc{\small{SO}}_R$ and $\textsc{\small{VIS}}$. Then, $\bigcup_{n=1}^{\infty} (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{n} \cap \ (\mathbb{U}\ \times \ \mathbb{R}) \subseteq \textsc{\small{VIS}}.$
+%\begin{itemize}
+%   \item{\bf n=0}. This means that $\textsc{\small{SO}}_R$ and $\textsc{\small{VIS}}$ are $\emptyset$, so that $\emptyset \subseteq \emptyset$.
+%   \item{\bf n=k+1}. Suppose that we have proved that the number of union sets $< k+1$. Now, we have to prove that: $\forall (a,b) \mid (a,b \in \verticesets \Rightarrow\ (a,b)\ \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1} \cap \ (\mathbb{U}\ \times \ \mathbb{R})) \Rightarrow\ (a,b) \in \textsc{\small{VIS}}$.
+%	
+%Assume $(a, x_1),(x_1, x_2),\ldots(x_{k{-}1}, x_k),(x_{k}, b)$ are relations from $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1}$. Then $(a, x_1),(x_1, x_2),\ldots(x_{k{-}1}, x_k)$ are relations from $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k}$. By the induction hypothesis, $(a, x_k) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k}$, and we also have $(x_k, b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} )$. Thus by the definition of $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1}$, $(a, b) \in
+%(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1}$.
+%Conversely, assume $(a,b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1}$ = $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k} \circ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}})$. Then there is a vertex $c \in \verticesets$ such
+%that $(a,c) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k}$ and $(c, b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} )$.
+%
+%We are only interested when $a$ is an update action and $b$ a read action. It is because of the intersection with $(Update \times Read)$. We have two possible cases:
+%
+%\begin{itemize}
+%	\item c is a read action. It means that $(c, b)$ only can be in $\textsc{\small{SO}}_R$ because $\textsc{\small{VIS}}$ requires that $c$ will be an update action. In particular, if  $(c, b) \in\ \textsc{\small{SO}}_R$, they belong to the same client. 
+%	
+%	\begin{itemize}
+%		\item if $(a,c) \in\ \textsc{\small{VIS}}$ and $(c,b) \in\ \textsc{\small{SO}}_R$, by Theorem~\ref{theorem:monotonic-read}, $(a,b) \in\ \textsc{\small{VIS}}$.
+%		
+%		\item if $(a,c) \in\ \textsc{\small{SO}}_R$ then by Theorem~\ref{theorem:read-my-writes}, $(a,c) \in\ \textsc{\small{VIS}}$- Then, it is analogous to the previous case.
+%		
+%	\end{itemize}
+%	\item c is an update action. It means that $(a, c)$ only can be in $\textsc{\small{SO}}_R$ because $\textsc{\small{VIS}}$ requires that $c$ will be an read action. In particular, if  $(a,c) \in\ \textsc{\small{SO}}_R$, they belong to the same client.
+%	
+%	\begin{itemize}
+%		\item if $(a,c) \in\ \textsc{\small{SO}}_R$ and $(c,b) \in \textsc{\small{VIS}}$, by Theorem Monotonic Writes (Falta probar!), $(a,b) \in\ \textsc{\small{VIS}}$.
+%		\item if $(a,c) \in\ \textsc{\small{VIS}}$ ... VER.
+%	\end{itemize}
+%\end{itemize}
+%
+%
+%	
+%	
+%\end{itemize}
+%\end{proof}
+
+\begin{lemma}
+\label{lemma:ar-stable-updates} 
+Let $\systemterm$ a \gsp\ system. For all  $\systemterm[']$ s.t.
+\[\environment{\queuemessage\bigpar\Absclient}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\queuemessage'\bigpar\Absclient'}{\op}{\so}{\vis}{\arb}\]
+ if
+$(\vertice,\vertice[w])\in\arb$, then
+% $\anupd^{\vertice[w]} \in \queuemessage'$ implies 
+there exists $\anupd$ s.t. 
+$\anupd^{\vertice} \in \queuemessage'$.
+\end{lemma}
+
+\begin{proof} By straightforward induction on the  length of the derivation. \qed
+\end{proof}
+
+
+\begin{lemma}
+\label{lemma:arSO-in-arUso} 
+Let $\systemterm$ a \gsp\ system. For all  $\systemterm[']$, if 
+\[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}\]
+then $\arb;\restUU{\so}\subseteq \arb\cup\restUU{\so}$.
+\end{lemma}
+
+\begin{proof} We proceed by induction on the length of the derivation 
+$\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^n\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}$.
+
+\begin{itemize}
+	    \item {\bf n=0}. Trivially, because $\arb=\so=\emptyset$.
+    \item{\bf n=k+1}. Then 
+      \[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] 
+         \tr{} ^n\ 
+         \environment{\systemterm['']}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+         \arro{\lambda}[\cidj]
+ 	\environment{\systemterm[']}{\op}{\so}{\vis}{\arb}
+	 \]
+	 
+	By inductive hypothesis, $\arb';\restUU{\so'}\subseteq \arb'\cup\restUU{\so'}$. We proceed by 
+case analysis on the inference rule applied for the last transition:
+	
+	\begin{itemize}
+        
+        \item rule \ruleName{a-read}. Then, $\arb=\arb'$  and $\so = \so' \cup (\sse(\cid)\times\{\vertice\})$ and $\op(\vertice)\in\readset$. 
+        Hence, $\restUU{\so} =\restUU{\so'}$. Consequently,  
+        \[\arb;\restUU{\so}=\arb';\restUU{\so'}\subseteq \arb'\cup\restUU{\so'}
+        \]
+        holds by inductive hypothesis.
+        
+        
+        \item rule \ruleName{a-update}. $\so = \so'\cup (\sse(\cid)\times\{\vertice\})$, 
+        $\arb = \arb' \cup \arb_{\mbox{\sf new}}$ with  $\arb_{\mbox{\sf new}}= (\{ \vertice[w] \ |\ \udec[@][{\vertice[w]}]\in \queuemessage' \}\times\{\vertice\})$
+        and $\op(\vertice)\in\updatesets$.  Then
+
+        \[\arb;\restUU{\so} = \arb';\restUU{\so}\  \cup\ \arb_{\mbox{\sf new}};\restUU{\so} 
+        \]
+        
+        Since $\vertice$ is fresh, $\arb_{\mbox{\sf new}};\restUU{\so} =\emptyset$. Hence, 
+
+        \[\arb;\restUU{\so} =  \arb';\restUU{\so} = \arb';\restUU{\so'}\cup\  \arb';\restUU{(\sse(\cid)\times\{\vertice\})}\]
+        	\end{itemize}
+
+       By inductive hypothesis, $\arb';\restUU{\so'}\ \subseteq\ {\arb'} \cup \restUU{\so'}\ \subseteq\ \arb \cup \restUU{\so}$.
+       It remains to prove that $\arb';\restUU{(\sse(\cid)\times\{\vertice\})}\ \subseteq\ \arb \cup \restUU{\so}$.
+       If $(\vertice[x],\vertice[y]) \in \arb'$, then there exists $\anupd_0$ s.t.  ${\anupd_0}^{\vertice[x]}\in S'$ by
+       \lemref{lemma:ar-stable-updates}.
+       Therefore,
+       $(\vertice[x],\vertice) \in \arb_{\mbox{\sf new}}$ and, therefore, $(\vertice[x],\vertice) \in \arb\ \subseteq\ \arb \cup \restUU{\so}$.
+       
+       \item rule \ruleName{a-arb}. Then $\so = \so'$, 
+        $\arb = \arb' \cup \arb_{\mbox{\sf new}}$ with 
+         $\arb_{\mbox{\sf new}}= \{ (\vertice, \vertice[w])\ \ |\ \  \queuemessage'[|\queuemessage'| - 1] = \udec, \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
+		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage'\}$
+        
+        Then,         
+        \[\arb;\restUU{\so} = \arb';\restUU{\so'}\  \cup\ \arb_{\mbox{\sf new}};\restUU{\so'} 
+        \]
+        
+         By inductive hypothesis, $\arb';\restUU{\so'}\ \subseteq\ {\arb'} \cup \restUU{\so'}\ \subseteq\ \arb \cup \restUU{\so}$.
+       It remains to prove that $\arb_{\mbox{\sf new}};\restUU{\so'} \subseteq\ \arb \cup \restUU{\so}$. 
+       For all $\vertice[y]$ s.t. $(\vertice,\vertice[y]) \in \arb_{\mbox{\sf new}}$,  there is not $\anupd_0$ s.t.
+       $ \anupd_0^{\vertice[y]}\not\in\queuemessage'$ by definition of $\arb_{\mbox{\sf new}}$.  
+       Moreover, for all $(\vertice[y],\vertice[z])\in \restUU{\so'}$ s.t. there is not $\anupd_0$ s.t.
+       $ \anupd_0^{\vertice[y]}\not\in\queuemessage'$ implies that there is not $ \anupd_1^{\vertice[z]}\not\in\queuemessage'$
+       because of (the contrapositive of) \lemref{lemma:local-updates-preserver-order}.
+       Therefore, $(\vertice,\vertice[y]) \in \arb_{\mbox{\sf new}} \subseteq \arb \cup \restUU{\so}$.
+       \qed
+    \end{itemize}
+	
+
+\end{proof}
+
+ \begin{theorem}[\textsc{Causal Arbitration}]
+ If $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm'}{\op}{\so}{\vis}{\arb}$ 
+then
+$\restUU{((\so \cup \vis) ^{+} \setminus \so)}\  \subseteq\ \arb$. 
+\end{theorem}
+
+\begin{proof} 
+We proof by induction on $n$ that 
+$\restUU{(\so \cup \vis) ^{n}}\  \subseteq\ \arb \cup \restUU{\so}$.
+
+\begin{itemize}
+	\item{\bf n=1}. Then, $\restUU{(\so \cup \vis)} = \restUU{\so}\cup \restUU{\vis}$. 
+	Since $\restUU{\vis}= \emptyset$, we have
+	 \[\restUU{(\so \cup \vis)} =\restUU{\so} \subseteq \arb \cup \restUU{\so}\]
+	
+	
+	\item{\bf n=k+1}.Then
+	\[\restUU{((\so \cup \vis) ^{k}; (\so \cup \vis))} = \restUU{((\so \cup \vis) ^{k}; \so)}\]
+	because $\restUU{((\so \cup \vis) ^{k};  \vis)} =\emptyset$.
+	By using inductive hypothesis, 
+		\[\restUU{((\so \cup \vis) ^{k}; \so)}\  \subseteq\ \restUU{((\arb \cup \restUU{\so}); \so)}\]
+		\[\restUU{((\so \cup \vis) ^{k}; \so)}\  \subseteq\ \restUU{(\arb;\so)} \cup \restUU{(\so;\so)}\]
+   
+      By \lemref{lemma:arSO-in-arUso}, $\restUU{(\arb;\so)} = {\arb;\restUU{\so}} \subseteq \arb \cup \restUU{\so}$. Moreover, 
+       $\restUU{(\so;\so)} \subseteq \restUU{\so}$ because of \lemref{lem:so-transitive}
+	
+\end{itemize}
+%\[ = (\restUU{(\so \cup \vis) ^{k}};\restUU{ \so} ) \setminus \restUU{\so} \cup \restUR{(\so \cup \vis) ^{k}};\restRU{ \so} ) \setminus \restUU{\so}\]
+
+
+%	We consider  partitions for $((\so \cup \vis) ^{k}: \restUR{ ((\so \cup \vis) ^{k}}$ and 
+%	 \[\restUU{((\so \cup \vis) ^{k}; (\so \cup \vis) \setminus \so)} = \restUU{((\so \cup \vis) ^{k}; \so \setminus \so)}\]
+Note that $\restUU{(\so \cup \vis) ^{n}}\  \subseteq\ \arb \cup \restUU{\so}$  implies 
+$\restUU{((\so \cup \vis) ^{n} \setminus \so)}\  \subseteq\ \arb$. Moreover, since
+$\restUU{((\so \cup \vis) ^{n} \setminus \so)}\  \subseteq\ \arb$ holds for any $n$, we have 
+ $\restUU{((\so \cup \vis) ^{+} \setminus \so)}\  \subseteq\ \arb$.
+\qed
+
+
+
+
+
+\end{proof}
+
+
+
+
+%\begin{theorem}[\textsc{Causal Arbitration}]
+%
+%Let $\textsc{\small{SO}}_R$ the se\cond component of the relation $\textsc{\small{SO}}$, $\textsc{\small{VIS}}$ a visibility relation and $\textsc{\small{AR}}$ an arbitration relation then $(\mathbb{U}\ \times \ \mathbb{U}) \cap \ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{+} - \textsc{\small{SO}}_R \subseteq \textsc{\small{AR}}.$ 
+%
+%\end{theorem}
+% 
+%
+%\begin{proof} 
+%The proof follows by induction on the number of union sets between $\textsc{\small{SO}}_R$ and $\textsc{\small{VIS}}$. Then, $(\mathbb{U}\ \times \ \mathbb{U}) \cap \ \bigcup_{n=1}^{\infty} (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{n} - \textsc{\small{SO}}_R \subseteq \textsc{\small{AR}}.$
+%
+%
+%\begin{itemize}
+%   \item{\bf n=0}. This means that $\textsc{\small{SO}}_R$, $\textsc{\small{VIS}}$ and  $\textsc{\small{AR}}$ are $\emptyset$, so that $\emptyset \subseteq \emptyset$.
+%   \item{\bf n=k+1}. Suppose that we have proved that the number of union sets $< k+1$. Now, we have to prove that: $\forall (a,b) \mid (a,b \in \verticesets \Rightarrow\ (a,b)\ \in\ (\mathbb{U}\ \times \ \mathbb{U}) \cap \ \bigcup_{n=1}^{\infty} (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1} - \textsc{\small{SO}}_R \Rightarrow\ (a,b) \in \textsc{\small{AR}}$. 
+%
+%Assume $(a,b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k+1} $ = $(\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k} \circ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}})$. Then there is a vertex $c \in \verticesets$ such
+%that $(a,c) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} ) ^{k}$ and $(c, b) \in\ (\textsc{\small{SO}}_R \ \cup \ \textsc{\small{VIS}} )$.
+%
+%We are only interested when $a$ and $b$ are an update actions. It is because of the intersection with $(Update \times Update)$. We have two possible cases:
+%\begin{itemize}
+%	\item c is a read action. It means that $(c,b)$ only can be in $\textsc{\small{SO}}_R$ because $\textsc{\small{VIS}}$ requires that $c$ will be an update action. In particular, if  $(c,b) \in\ \textsc{\small{SO}}_R$, they belong to the same client. COMPLETAR
+%	
+%	\item c is an update action. COMPLETAR
+%\end{itemize}
+%\end{itemize}
+%\qed
+%\end{proof}
+
+The following example shows that the \gsp\ model does not enjoy the consistent prefix property. 
+
+\begin{example}[Consistent Prefix] 
+\label{no-consistent-prefix}
+%Consider the following system consisting of two clients and the empty store $\systemterm = \epsilon \ \bigpar\ \Absclient[_1]  \ \bigpar\ \Absclient[_2]$ where
+%\[
+%\begin{array}{lll}
+%   \Absclient[_1] & = & {\anabstcli[{}][{\updcmd[{\anupd_1}];\pushcmd;P}][0][\epsilon][\epsilon][\epsilon][0]}_{\cid_1}\\
+%   \Absclient[_2] & = & {\anabstcli[{}][{\updcmd[{\anupd_2}];\treadins{y}{r_1}[\pullcmd;\treadins{x}{u_2}[Q]]}][0][\epsilon][\epsilon][\epsilon][0]}_{\cid_2}\\
+%\end{array}
+%\]
+%
+%
+%
+%By using rule \ruleName{a-update}, we have the following transition
+%\[
+%	{\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset} {\emptyset}[\emptyset]
+%		  \arro{\updatetranaux{\anupd_1^{\vertice[v][_1]}}}[\cid_1]
+%		  \environment{\epsilon \ \bigpar\ \Absclient[_1]'  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
+%	}
+%\]
+%with $\op_1 = \{\asoc{\vertice[v][_1]} \anupd_1\}$,  $\sse_1 = \{\asoc{\cid_1}{\{\vertice [v][_1]}\}\}$ and
+%$
+%   \Absclient[_1]'  =  {\anabstcli[{}][{\pushcmd;P}][0][\epsilon][{\anupd_1}^{\vertice[v][_1]}][\epsilon][0]}_{\cid_1}
+%$. By using rule \ruleName{a-int},
+%\[ 
+%	\environment{\epsilon \ \bigpar\ \Absclient[_1]'  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
+%	\arro{\pushtran}[\cid_1]
+%	\environment{\epsilon \ \bigpar\ \Absclient[_1]''  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
+%\]
+%with $\Absclient[_1] '' =  {\anabstcli[{}][{P}][0][{[{\anupd_1}^{\vertice[v][_1]}]}][\epsilon][{[{\anupd_1}^{\vertice[v][_1]}]}][0]}_{\cid_1}$.
+%Then, by rule \ruleName{a-arb},
+%\[ 
+%	\environment{\epsilon \ \bigpar\ \Absclient[_1]''  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
+%	\arro{\tau}[\cid_1]
+%	\environment{{\anupd_1}^{\vertice[v][_1]} \ \bigpar\ \Absclient[_1]'''  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
+%\]
+%By rule  \ruleName{a-update},
+%\[ 
+%	\environment{\epsilon \ \bigpar\ \Absclient[_1]'''  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
+%	 \arro{\updatetranaux{\anupd_1^{\vertice[v][_2]}}}[\cid_2]
+%	\environment{{\anupd_1}^{\vertice[v][_1]} \ \bigpar\ \Absclient[_1]'''  \ \bigpar\ \Absclient[_2]'}{\op_2}{\emptyset}{\emptyset}{\arb_1}[\sse_2]
+%\]
+%with $\op_1 = \{\asoc{\vertice[v][_1]} {\anupd_1},\asoc{\vertice[v][_2]} {\anupd_2}\}$,  
+%$\sse_1 = \{\asoc{\cid_1}{\{\vertice [v][_1]}\},\asoc{\cid_2}{\{\vertice [v][_2]}\}\}$,
+%$\arb_1 = \{(\vertice[v][_1],\vertice[v][_2])\}$ and
+%   $\Absclient[_2]'  =  {\anabstcli[{}][{\treadins{y}{r_1}[\pullcmd;\treadins{x}{u_2}[Q]]}][0][\epsilon][{\anupd_2}^{\vertice[v][_2]}][\epsilon][0]}_{\cid_2}$. 
+%By using rule \ruleName{a-read},
+%\[ 
+%	\environment{{\anupd_1}^{\vertice[v][_1]} \ \bigpar\ \Absclient[_1]'''  \ \bigpar\ \Absclient[_2]'}{\op_2}{\emptyset}{\emptyset}{\arb_1}[\sse_2]
+%	 \arro{\readtran{\udec[r_1][{\vertice[v][_3]}]}}[\cid_2]
+%	\environment{{\anupd_1}^{\vertice[v][_1]} \ \bigpar\ \Absclient[_1]'''  \ \bigpar\ \Absclient[_2]''}{\op_3}{\so_1}{\vis_1}{\arb_1}[\sse_3]
+%\]
+%with $\op_1 = \{\asoc{\vertice[v][_1]} {\anupd_1},\asoc{\vertice[v][_2]} {\anupd_2},\asoc{\vertice[v][_3]} {r_1}\}$,  
+%$\sse_1 = \{\asoc{\cid_1}{\{\vertice [v][_1]\}},\asoc{\cid_2}{\{\vertice [v][_2],\vertice [v][_3]\}}\}$,
+%$\so_1 = \vis_1 = \{(\vertice[v][_2],\vertice[v][_3])\}$.
+%
+%Note that $\arb_1;(\vis_1\cap\neg\sse_3) \not\subseteq \vis_1$. In fact 
+%
+%\[
+%\mathrule{a-read}
+%	{ 
+%	\begin{array}{l}
+%		\systemterm \arroi{\readtran{r}} \systemterm' 
+%		 \qquad \vertice \notin  dom(\op) 
+%		 \qquad \op' = \op\upd \vertice r
+%		 \qquad \sse' = \sse\upd \cid {\sse(\cid)\cup\{\vertice\}}
+%		 \\[2pt]
+%		 \so' = \so\cup (\sse(\cid)\times\{\vertice\})
+%		 \qquad \ \vis' = \vis \cup (\{\vertice[w] \ |\  \udec[@][{\vertice[w]}] \in \queuemessage[0..\tknown_{\,\cid}-1] \cdot \tpending_{\cid} \cdot \ttransactionbuffer_{\,\cid} \}\times\{\vertice\})
+%	\end{array}
+%	 }
+%	 {\environment{\systemterm}{\op}{\so}{\vis}{\arb} 
+%	   \arroi{\readtran{\udec[r]}} \environment{\systemterm'}{\op'}{\so'}{\vis'}{\arb}[\sse']}
+%\]
+
+%\[
+%\begin{array}{l}
+%E = \environment{\tclient{\textit{update(aList.add('a'));push();}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
+%\\
+%\tclient{\textit{update(aList.add('b'));push();let v = read(x);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[2]  \bigpar\ \epsilon}{\emptyset}{\emptyset}{\emptyset}{\emptyset}
+%\end{array}
+%\]
+\end{example}
+		
+
+Environment has a system $\systemterm$ with two clients and a message queue $S$ without updates. Relation sets $\op$,$\so$,$\vis$,$\arb$ are empty, i.e.,there were not an execution in $\systemterm$ captured by the relation sets. The update action add a string to an object called $aList$ which has not elements. 
+In this state, $C_1$ and $C_2$ can perform their update actions. E may non-deterministically choose to do $update(aList.add('a')$ or $update(aList.add('b')$. If the first communication takes place over $update(aList.add('a')$, then the system evolves as follows:
+
+\[
+\begin{array}{l}
+E \arrobyclient{\updatevtran{aList.add('a')}{{v_0}}}{1} \environment{\tclient{p ush();}{0}{\epsilon}{[aList.add('a')]}{\epsilon}{0}[1]\ \bigpar\
+\\
+\tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[2]  \bigpar\ \epsilon} 
+{\\ \emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
+\end{array}
+\]
+
+The action $\updatetran{aList.add('a')}$ of the client $1$ will be identified by vertex $v_0$ by rule $\textsc{\small{a-UPDATE}}$. In particular, the update action will be left into the transactional queue of Client $1$ besides the new vertex will be added to vertices in $\so$. Now, Client 1 performs $\pushtran$: 
+
+\[
+\begin{array}{l}
+E \arrobyclient{\pushtran}{1} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{[aList.add('a')]}{0}[1]\ \bigpar\
+\\
+\tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[2]  \bigpar\ \epsilon} 
+{\\ \emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
+\end{array}
+\]
+		
+When it happens, $aList.add('a')$ is moved to the sent queue and pending queue. At this moment, Client 2 can perform an update action however Client 1 will realize an internal action which is given by $\textsc{\small{a-PROCESS}}$.  			
+
+\[
+\begin{array}{l}
+E \arrobyclient{\tau}{1} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}[1]\ \bigpar\ \\
+\tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[2]  \bigpar\ \\ 
+aList.add('a')} 
+{\emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
+\end{array}
+\]
+
+Analogously, Client 2 realize its actions leaving to environment evolves as below:
+
+\[
+\begin{array}{l}
+E \arrobyclient{\updatetran{aList.add('b')}}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
+\\
+\tclient{\textit{push();let x = read(aList);}}{0}{\epsilon}{[aList.add('b')]}{\epsilon}{0}[2]  \bigpar\ 
+\\ aList.add('a')} {\emptyset}{\{( \{ v_0,v_1 \} , \{\ (v_0,v_1) \} ) \}}{\emptyset}{\emptyset} 
+\\
+\\
+\arrobyclient{\pushtran}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
+\\
+\tclient{\textit{let x = read(aList);}}{0}{[aList.add('b')]}{\epsilon}{[aList.add('b')]}{0}[2]  \bigpar\ 
+\\ aList.add('a')}{\emptyset}{\{( \{ v_0,v_1 \} , \{\ (v_0,v_1) \} ) \}}{\emptyset}{\emptyset} 
+\\
+\\
+\arrobyclient{\tau}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
+\\
+\tclient{\textit{let x = read(aList);}}{0}{[aList.add('b')]}{\epsilon}{\epsilon}{0}[2]  \bigpar\ 
+\\aList.add('a') \cdot [aList.add('b')]} {\emptyset}{\{( \{ v_0,v_1 \} , \{\ (v_0,v_1) \} ) \}}{\emptyset}{\{ (v_0,v_1) \}} 
+\\
+\\
+\arrobyclient{\readtran{aList}}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
+\\
+\tclient{\update{0}{x}{['b']}}{0}{[aList.add('b')]}{\epsilon}{\epsilon}{0}[2]  \bigpar\ aList.add('a') \cdot [aList.add('b')]} 
+\\
+{\emptyset}{\emptyset}{\emptyset}{\emptyset} 
+\end{array}
+\]
+		
+Note that $\arb$ is modified because the message queue has two elements. The value returned will be the list with a only element, ['b'], because of the internal action associated to the rule $\textsc{\small{a-receive}}$ did not perform it. Then, if the rule $\textsc{\small{a-receive}}$ were performed, the value of the list would be ['a','b']. It is because the content of the pending queue is removed when the server left their message. 
+
+The guarantee Consistent Prefix, which rules is $(\textsc{\small{ar}};\textsc{\small{vis}}) \subseteq \ \textsc{\small{ar}};\textsc{\small{VIS}}$, states that if we see an result from a client in a particular order, we will never see this result in a different order.

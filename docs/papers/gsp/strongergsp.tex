@@ -1,0 +1,87 @@
+% !TEX root = main.tex
+
+ \input{extending_gsp_stronger}
+ \appendix
+ 
+ \section{Functions for implementing datatypes}
+ \subsection{Auxiliar Function}
+
+Before describing the implementation of GSP, we will introduce the following auxiliars functions which will be used when we define the operational semantic.
+
+\footnotesize
+\ttfamily
+
+
+\begin{flushleft}
+\specfunction{append}{\gssegmenttype}{$\roundtype^*$}{\gssegmenttype} \\
+\append{\gssegmentins{$\delta$}{\maxround}}{$\epsilon$} = \gssegmentins{$\delta$}{\maxround} \\
+\append{\gssegmentins{$\delta$}{\maxround}}{$\headerround$:\tailround} = \append{\textless\reduce{$\delta$ $\cdot$ $\delta_0$ $\cdot$ $\epsilon$}, $\update{\maxround}{b_0}{n_0}$\textgreater}{\tailround} 
+\end{flushleft}
+
+\begin{flushleft}
+\specfunction{apply}{\gsprefixtype}{\gssegmenttype}{\gsprefixtype} \\
+\apply{$\gsprefixins{\state}{\maxround}$}{\gssegmentins{$\delta$}{$\maxround'$}} =  \gsprefixins{\applyplus{\state}{$\delta$ $\cdot$ $\epsilon$}}{\maxround[$\maxround'$]}  \\
+\end{flushleft}
+
+\begin{flushleft}
+\specfunctiononeparameter{receivedrounds}{($\partialfunction{\idset}{\textless \dominserver \textgreater^*}$)}{$\roundtype^*$}\\
+receivedrounds($\undefined$) = $\epsilon$ \\
+receivedrounds($\partialfunction{b}{\textless n_0,\ \delta_0 \textgreater} \cdot\ f$) = \textless $b$, \ $n_0$, \ $\delta_0$\textgreater\ $\cdot$ receivedrounds($f$)
+\end{flushleft}
+
+\begin{flushleft}
+\henote{arreglar las lineas comentadas}
+\chnote{hecho}
+\specfunctionforparameters{curstate}{\statetype}{$\roundtype^*$}{\deltatype}{\deltatype}{\statetype} \\
+$curstate(\state, \pending, \pushbuffer, \transactionbuffer$) = $\applyplus{\state}{getdeltas(\pending) \cdot\pushbuffer\cdot \transactionbuffer}$
+\end{flushleft}
+
+
+\begin{flushleft}
+\specfunctiononeparameter{getdeltas}{$\roundtype^*$}{$\deltatype^*$} \\
+getdeltas($\epsilon$) = $\epsilon$ \\
+getdeltas(\textless $n_0$,$\delta_0$ \textgreater $\cdot$ $\delta$) = $\delta_0$ $\cdot$ getdeltas($\delta$)\\
+\end{flushleft}
+
+\begin{flushleft}
+\specfunctiononeparameter{remove}{$\deltatype^*$}{$\deltatype^*$} \\
+remove(rs,$\epsilon$) = $\epsilon$ \\
+remove(rs, xs) = $(foldr (\backslash x\ rec\ ys\to h \ (filter \ (/$=$x) ys))\ id) xs \ rs$\\
+\end{flushleft}
+
+
+\begin{flushleft}
+\specfunctionthreeparameters{notify}{$\idset^*$}{($\partialfunction{\idset}{\gssegmenttype^* \cup \gsprefixtype}$)}{$\gssegmenttype$}{$(\partialfunction{\idset}{\gssegmenttype^* \cup \gsprefixtype})$}\\
+notify($\{\cid\}$, $\outserver$, gs) = $\outserver[\cid \mapsto gss \cdot gs]$\\
+notify($\cid \cdot bs$, $\outserver$, gs) = $\notify{bs}{\outserver}{gs}[\cid \mapsto gss \cdot gs]$ 
+\end{flushleft}
+
+\begin{flushleft}
+\specfunction{\cleannamefun}{$\idset^*$}{$(\partialfunction{\idset}{\dominserver}$)}{$(\partialfunction{\idset}{\dominserver})$}\\
+\cleannamefun($\{\cid\}$, $\outserver$, gs) = $\inserver[\cid \mapsto \emptyset]$\\
+\cleannamefun($\cid \cdot bs$, $\outserver$, gs) = $\clean{bs}{\inserver[\cid \mapsto \emptyset]$}
+\end{flushleft}
+
+
+\normalfont
+\normalsize
+
+\paragraph{Notation.} Let $f$ and $g$ be a partial function, we define the update operator $\_[\_]$ such that
+  $dom(f[g])  = dom(f) \cup dom(g)$ and 
+ \[
+   \begin{array}{l@{\ = \ \Bigg\{}l}
+     f[g](x) & 
+     \begin{array}{ll}
+        f(x) & \mbox{if }\ x\not\in dom(g) \wedge x\in dom(f) \\
+        g(x) & \mbox{if }\ x\in dom(g)\\
+        \mathit{\undefined}  & \mbox{Otherwise} 
+     \end{array}
+   \end{array}
+ \]    
+
+ We write $[x_1 \mapsto y_1, \ldots, x_n \mapsto y_n]$ for the partial function $f$ such that $dom(f)=\{x_1,\ldots,x_n\}$ and $f(x_i)=y_i$; $A \setminus B$ to denote the usual difference of sets.
+
+
+
+The functions \textbf{reduce} and \textbf{apply} are abstract and depend on the data model used. 
+
