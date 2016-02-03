@@ -168,8 +168,8 @@
 \newcommandx{\tsystem}[2][2=\systemterm]{#1\ \bigpar\ #2}
 
 % Clients configuration
-\newcommandx{\tclient}[7][7=\cid]{\langle #1 , #4, #5, #3,  #2, #6\, \rangle_{#7}}
-\newcommand{\tclienti}[6]{\tclient{#1}{#2}{#3}{#4}{#5}{#6}}
+\newcommandx{\tclient}[8][7=\cid,8=n,usedefault=@]{\langle #1 , #4, #5, #3,  #2, #6, #8\, \rangle_{#7}}
+\newcommandx{\tclienti}[7][7=n]{\tclient{#1}{#2}{#3}{#4}{#5}{#6}[@][#7]}
 
 \newcommandx{\anabstcli}[7][1=\cid,2=\tprogram,3=\tknown,4=\tpending,5=\ttransactionbuffer,6=\tsent,7=\treceivebuffer,usedefault=@]
   {\tclient {#2_{#1}}{#3_{#1}}{#4_{#1}}{#5_{#1}}{#6_{#1}}{#7_{#1}}[#1]}
