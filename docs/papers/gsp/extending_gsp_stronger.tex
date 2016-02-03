@@ -1,3 +1,5 @@
+% !TEX root = main.tex
+
 \section{Extending GSP to Stronger Model}
 \label{sec:transactions}
 
@@ -107,7 +109,43 @@ rvalue operation always reads above the store.
 \end{proof}	
 
 
-Single Order is a consistency guarantee that express a single order of operations observed by arbitration and visibility relation. The definition introduced by [] requires that arbitration and visibility are the same except by operations which have not finished, i.e., it considers only operations that belong to $\tc$. However, we do not model if an update is visible to another update since the effects of an update only are seen by a read operations. Furthermore, there not exists conflicts between read operation and update operation, the Store keep update actions. Therefore, we can not compare these sets. 
+Single Order is a consistency guarantee that express a single order of operations observed by arbitration and visibility relation. The definition introduced by \cite{} requires 
+$\ovis = \roarb$, where $F$ stands for the set of finished operations, i.e., when consider visibility restricted to the operations that belong to $\tc$. 
+Since we defined $\arb$ and $\vis$ over restricted domains, the original formulation is not useful. Hence we will use an alternative characterisation, given by the 
+following result.
+
+\begin{lemma} $\ovis = \roarb$ iff 
+\begin{enumerate}
+   \item $\roarb;\ovis \subseteq \ovis$; and
+   \item $\neg\ovis;\neg\roarb \subseteq \neg\ovis$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof} $\Rightarrow$) 
+\begin{enumerate}
+\item
+	\[ \begin{array}{l@{\ =\ }l@{\qquad}l}
+		\roarb;\ovis &  \roarb;\roarb & \roarb =\ovis\\
+		& \roarb & \roarb \mbox{is a partial order (i.e., transitive)}\\
+		&  \ovis & \roarb =\ovis
+   	\end{array}
+	\]
+\item Note that  $\roarb;\ovis =\ovis$ implies $\neg(\roarb;\ovis) =\neg\ovis$. By property of complement and composition, $\neg(\roarb;\ovis) =\neg\ovis;\neg\roarb =\neg\ovis$. 
+\end{enumerate}
+
+$\Leftarrow)$ We divided the proof in two implications
+ \begin{enumerate}
+    \item  $\roarb;\ovis \subseteq \ovis$ implies $\ovis\subseteq \roarb$. We proceed by contradiction. Assume $(a,b)\in\ovis$ but $(a,b)\not\in\roarb$.
+    Since $\roarb$ is a total order, $(b,a)\in\roarb$. By assumption, $(b,a)\in\roarb$ and $(a,b)\in\ovis$ implies $(b,b)\in\ovis$, but this is absurd because
+    $\ovis$ is acyclic. 
+        
+    \item $\neg\ovis;\neg\roarb \subseteq \neg\ovis$ implies $\roarb\subseteq\ovis$. We proceed by contradiction. 
+    Assume $(a,b)\in\roarb$ and $(a,b)\not\in\ovis$, and hence,  $(a,b)\in\neg\ovis$. Since,
+    $\roarb$ is a strict total order $(b,a)\not\in\roarb$. Hence, $(b,a)\in\neg\roarb$. By assumption, $(a,b)\in\neg\ovis$ and $(b,a)\in\neg\roarb$ implies $(a,a)\in\neg\ovis$.
+    Again, by assumption, 
+ \end{enumerate}
+
+\end{proof}
 
 \begin{theorem}[\textsc{Single Order}]
 

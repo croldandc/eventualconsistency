@@ -660,9 +660,17 @@
 %volver
 
 %SECTION 4
-\newcommand{\restRel}[3]{#1\!\!\downarrow_{#2\times#3}}
+\newcommand{\rest}[1]{\!\!\downarrow_{#1}}
+\newcommand{\restRel}[3]{#1\rest{#2\times#3}}
 \newcommand{\restUR}[1]{\restRel{#1}{\mathbb{U}}{\mathbb{R}}}
 \newcommand{\restUO}[1]{\restRel{#1}{\mathbb{U}}{\mathbb{O}}}
 \newcommand{\restRO}[1]{\restRel{#1}{\mathbb{R}}{\mathbb{O}}}
 \newcommand{\restUU}[1]{\restRel{#1}{\mathbb{U}}{\mathbb{U}}}
 \newcommand{\restOU}[1]{\restRel{#1}{\mathbb{O}}{\mathbb{U}}}
+
+
+%Section 5
+\newcommand{\ovis}{\mathsf{\scriptsize{VIS}}}
+\newcommand{\oarb}{\mathsf{\scriptsize{AR}}}
+
+\newcommandx{\roarb}[1][1=F]{\oarb\rest{#1}}
