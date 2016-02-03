@@ -109,18 +109,18 @@ by inference rules in \figref{fig:comp-abst-executions}
 \mathrule{a-arb}
 	{ 
 	\begin{array}{l}
-		\queuemessage \bigpar \Absclient \arroi{\lambda} \queuemessage' \bigpar \Absclient' 
-		\hspace{2cm} \queuemessage\neq\queuemessage'
+		\queuemessage \bigpar \Absclient \arroi{\lambda} \queuemessage\cdot \udec \bigpar \Absclient' 
+		%\hspace{2cm} \queuemessage\neq\queuemessage'
 		\hspace{2cm} \lambda \neq  \updatetran{u},\readtran{r}
 		 \\[2pt]
 %		 \arb' = \arb \cup \{ (\vertice, \vertice[w])\ | \ \ell = |\queuemessage'|-1 \land \udec \in \queuemessage'[0..\ell-1] \land \udec[@][{\vertice[w]}]= \queuemessage'[\ell]\}
-		\arb' = \arb \cup \{ (\vertice, \vertice[w])\ \ |\ \  \queuemessage'[|\queuemessage'| - 1] = \udec, \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
-		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage'\}
+		\arb' = \arb \cup \{ (\vertice, \vertice[w])\ \ |\ \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
+		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage\cdot \udec\}
 	\end{array}
 	 }
 	 {\environment{\queuemessage \bigpar \Absclient}{\op}{\so}{\vis}{\arb} 
 	 \arroi{\lambda}	   
-	 \environment{\queuemessage' \bigpar \Absclient'}{\op}{\so}{\vis}{\arb'}}
+	 \environment{\queuemessage\cdot \udec  \bigpar \Absclient'}{\op}{\so}{\vis}{\arb'}}
 \end{array}
  \]
  \caption{Computation of abstract executions} 
@@ -692,12 +692,12 @@ $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset
       \[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] 
          \tr{} ^n\ 
          \environment{\systemterm['']}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
-         \arro{\lambda}[\cidj]
+         \arro{\lambda}[\cid]
  	\environment{\systemterm[']}{\op}{\so}{\vis}{\arb}
 	 \]
 	 
 	By inductive hypothesis, $\arb';\restUU{\so'}\subseteq \arb'\cup\restUU{\so'}$. We proceed by 
-case analysis on the inference rule applied for the last transition:
+case analysis on the rule applied for the last transition:
 	
 	\begin{itemize}
         
@@ -727,10 +727,10 @@ case analysis on the inference rule applied for the last transition:
        Therefore,
        $(\vertice[x],\vertice) \in \arb_{\mbox{\sf new}}$ and, therefore, $(\vertice[x],\vertice) \in \arb\ \subseteq\ \arb \cup \restUU{\so}$.
        
-       \item rule \ruleName{a-arb}. Then $\so = \so'$, 
+       \item rule \ruleName{a-arb}. Then, $\queuemessage' = \queuemessage''\cdot\udec$, $\so = \so'$, 
         $\arb = \arb' \cup \arb_{\mbox{\sf new}}$ with 
-         $\arb_{\mbox{\sf new}}= \{ (\vertice, \vertice[w])\ \ |\ \  \queuemessage'[|\queuemessage'| - 1] = \udec, \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
-		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage'\}$
+         $\arb_{\mbox{\sf new}}= \{ (\vertice, \vertice[w])\ \ |\  \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
+		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage''\cdot\udec\}$
         
         Then,         
         \[\arb;\restUU{\so} = \arb';\restUU{\so'}\  \cup\ \arb_{\mbox{\sf new}};\restUU{\so'} 
@@ -739,9 +739,9 @@ case analysis on the inference rule applied for the last transition:
          By inductive hypothesis, $\arb';\restUU{\so'}\ \subseteq\ {\arb'} \cup \restUU{\so'}\ \subseteq\ \arb \cup \restUU{\so}$.
        It remains to prove that $\arb_{\mbox{\sf new}};\restUU{\so'} \subseteq\ \arb \cup \restUU{\so}$. 
        For all $\vertice[y]$ s.t. $(\vertice,\vertice[y]) \in \arb_{\mbox{\sf new}}$,  there is not $\anupd_0$ s.t.
-       $ \anupd_0^{\vertice[y]}\not\in\queuemessage'$ by definition of $\arb_{\mbox{\sf new}}$.  
+       $ \anupd_0^{\vertice[y]}\not\in\queuemessage''$ by definition of $\arb_{\mbox{\sf new}}$.  
        Moreover, for all $(\vertice[y],\vertice[z])\in \restUU{\so'}$ s.t. there is not $\anupd_0$ s.t.
-       $ \anupd_0^{\vertice[y]}\not\in\queuemessage'$ implies that there is not $ \anupd_1^{\vertice[z]}\not\in\queuemessage'$
+       $ \anupd_0^{\vertice[y]}\not\in\queuemessage''$ implies that there is not $ \anupd_1^{\vertice[z]}\not\in\queuemessage'$
        because of (the contrapositive of) \lemref{lemma:local-updates-preserver-order}.
        Therefore, $(\vertice,\vertice[y]) \in \arb_{\mbox{\sf new}} \subseteq \arb \cup \restUU{\so}$.
        \qed
@@ -750,7 +750,7 @@ case analysis on the inference rule applied for the last transition:
 
 \end{proof}
 
- \begin{theorem}[\textsc{Causal Arbitration}]
+\begin{theorem}[\textsc{Causal Arbitration}]
  If $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm'}{\op}{\so}{\vis}{\arb}$ 
 then
 $\restUU{((\so \cup \vis) ^{+} \setminus \so)}\  \subseteq\ \arb$. 
@@ -787,12 +787,9 @@ $\restUU{((\so \cup \vis) ^{n} \setminus \so)}\  \subseteq\ \arb$. Moreover, sin
 $\restUU{((\so \cup \vis) ^{n} \setminus \so)}\  \subseteq\ \arb$ holds for any $n$, we have 
  $\restUU{((\so \cup \vis) ^{+} \setminus \so)}\  \subseteq\ \arb$.
 \qed
-
-
-
-
-
 \end{proof}
+
+
 
 
 
@@ -825,7 +822,114 @@ $\restUU{((\so \cup \vis) ^{n} \setminus \so)}\  \subseteq\ \arb$ holds for any 
 %\qed
 %\end{proof}
 
+\begin{lemma}
+\label{lem:server-reflect-arb}
+ Let $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm'}{\op}{\so}{\vis}{\arb}$.
+For all $(\vertice,\vertice[w])\in\arb$, if $\anupd_0^{\vertice[w]}\in\queuemessage[0..i]$ then there exists  $\anupd_1$ s.t 
+$\anupd_1^{\vertice}\in\queuemessage[0..i-1]$.
+\end{lemma}
+
+\begin{proof} By induction on the length of the derivation. \henote{to do}.
+\end{proof}
+
+
+\begin{theorem}[\textsc{Consistent prefix}]
+ If $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm'}{\op}{\so}{\vis}{\arb}$ 
+then
+$\arb;(\vis\setminus\sse)\  \subseteq\ \vis$. 
+\end{theorem}
+
+\begin{proof} We proceed by induction on the length of the derivation 
+$\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^n\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}$.
+
+\begin{itemize}
+	    \item {\bf n=0}. Trivially, because $\arb=\vis=\emptyset$.
+    \item{\bf n=k+1}. Then 
+      \[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] 
+         \tr{} ^n\ 
+         \environment{\systemterm['']}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+         \arro{\lambda}[\cid]
+ 	\environment{\systemterm[']}{\op}{\so}{\vis}{\arb}
+	 \]
+	 
+	By inductive hypothesis, $\arb';(\vis'\setminus\sse')\  \subseteq\ \vis'$. We proceed by 
+case analysis on the inference rule applied for the last transition:
+
+	\begin{itemize}
+      
+        \item rule \ruleName{a-read}. Then, $\arb=\arb'$, $\so = \so' \cup (\sse'(\cid)\times\{\vertice\})$, $\op(\vertice)\in\readset$,
+        $\sse = \sse'\upd \cid {\sse'(\cid)\cup\{\vertice\}}$, and
+        		 $\vis = \vis' \cup \vis_{\mbox{\sf new}}$ with $\vis_{\mbox{\sf new}} =   (\{\vertice[w] \ |\  \udec[@][{\vertice[w]}] \in \queuemessage[0..\tknown_{\,\cid}-1] \cdot \tpending_{\cid} \cdot \ttransactionbuffer_{\,\cid} \}\times\{\vertice\})$.
+        Hence, 
+        \[\arb;(\vis\setminus\sse) = \arb';(\vis'\setminus\sse) \cup \arb';(\vis_{\mbox{\sf new}}\setminus\sse)\]
+        Note that $(\vis'\setminus\sse) =  (\vis'\setminus\sse')$ because $\vertice$ is fresh, and hence it does not appear in $\vis'$. 
+        By inductive hypothesis,    $\arb';(\vis'\setminus\sse) \subseteq \vis'\subseteq \vis$. Therefore, it remains
+        to prove that $\arb';(\vis_{\mbox{\sf new}}\setminus\sse) \subseteq \vis$. For all $(\vertice[x],\vertice[y])$ in $\arb';(\vis_{\mbox{\sf new}}\setminus\sse)$,
+        there exists $\vertice[z]$ s.t. $(\vertice[x],\vertice[z])\in\arb'$ and  $(\vertice[z],\vertice[y])\in(\vis_{\mbox{\sf new}}\setminus\sse)$. Moreover,
+        $\vertice[y] = \vertice$ because $(\vertice[z],\vertice[y])\in\vis_{\mbox{\sf new}}$ and  $\vertice[y]\not\in\sse(\cid)$ because
+         $(\vertice[z],\vertice[y])\notin\sse$. By \lemref{lemma:update-ever-belong-different-client}, there exists $\anupd_0$ s.t.
+         $\anupd_0^{\vertice[z]}\in\queuemessage[0..\tknown_{\,\cid}-1]$. By \lemref{lem:server-reflect-arb}
+         there exists $\anupd_1$ s.t. $\anupd_1^{\vertice[x]}\in\queuemessage[0..\tknown_{\,\cid}-2]$. 
+         Consequently, $(\vertice[x],\vertice[y]) \in \vis_{\mbox{\sf new}} \subseteq \vis$.   
+        
+        
+        
+
+ 
+
+        \item rule \ruleName{a-update}. $\so = \so'\cup (\sse(\cid)\times\{\vertice\})$, $\op(\vertice)\in\updatesets$, 
+        $\vis'=\vis$, $\sse = \sse'\upd \cid {\sse(\cid)\cup\{\vertice\}}$, and
+        $\arb = \arb' \cup \arb_{\mbox{\sf new}}$ with  $\arb_{\mbox{\sf new}}= (\{ \vertice[w] \ |\ \udec[@][{\vertice[w]}]\in \queuemessage' \}\times\{\vertice\})$.  
+	Hence, 
+        \[\arb;(\vis\setminus\sse) =  (\arb' \cup \arb_{\mbox{\sf new}});(\vis'\setminus\sse) =  \arb' ;(\vis'\setminus\sse)\cup \arb_{\mbox{\sf new}};(\vis'\setminus\sse) \]
+	By inductive hypothesis,    $\arb';(\vis'\setminus\sse) \subseteq \vis'= \vis$. It remains
+        to prove that $\arb_{\mbox{\sf new}};(\vis'\setminus\sse) \subseteq \vis$. By definition, if $(\vertice[x],\vertice[y])\in\arb_{\mbox{\sf new}}$,
+        then $\vertice[y]=\vertice$, which is fresh and does not appear in $\vis'$. Therefore, $\arb_{\mbox{\sf new}};(\vis'\setminus\sse) = \emptyset \subseteq \vis$.
+       	Hence, 
+        \[\arb;(\vis\setminus\sse) =  (\arb' \cup \arb_{\mbox{\sf new}});(\vis'\setminus\sse) =  \arb' ;(\vis'\setminus\sse)\cup \arb_{\mbox{\sf new}};(\vis'\setminus\sse) \]
+
+    
+       \item rule \ruleName{a-arb}. Then, $\queuemessage'= \queuemessage''\cdot\udec$, $\vis = \vis'$, $\sse = \sse'$  and
+        $\arb = \arb' \cup \arb_{\mbox{\sf new}}$ with 
+         $\arb_{\mbox{\sf new}}= \{ (\vertice, \vertice[w])\ \ |\ \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
+		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage\cdot \udec\}$.
+		     
+    	Hence, 
+        \[\arb;(\vis\setminus\sse) =  (\arb' \cup \arb_{\mbox{\sf new}});(\vis'\setminus\sse) =  \arb' ;(\vis'\setminus\sse)\cup \arb_{\mbox{\sf new}};(\vis'\setminus\sse) \]
+     Then,         
+        \[\arb;\restUU{\so} = \arb';\restUU{\so'}\  \cup\ \arb_{\mbox{\sf new}};\restUU{\so'} 
+        \]
+        \[\arb;(\vis\setminus\sse) =  (\arb' \cup \arb_{\mbox{\sf new}});(\vis'\setminus\sse) =  \arb' ;(\vis'\setminus\sse)\cup \arb_{\mbox{\sf new}};(\vis'\setminus\sse) \]
+	By inductive hypothesis,    $\arb';(\vis'\setminus\sse) \subseteq \vis'= \vis$. It remains
+        to prove that $\arb_{\mbox{\sf new}};(\vis'\setminus\sse) \subseteq \vis$.
+        If $(\vertice[x],\vertice[y])\in\arb_{\mbox{\sf new}}$ then $\vertice[x]=\vertice$ and
+        \begin{equation}
+        \label{eq:cst-pref-arb-a}
+        \forall\anupd_0. \anupd_0^{\vertice[y]}\not\in\queuemessage''\cdot \udec
+        \end{equation}
+        On the other hand, $(\vertice[y],\vertice[z])\in (\vis'\setminus\sse)$ implies
+         $\vertice[y]\in\sse(\cid_0)$
+         and $\vertice[z]\in\sse(\cid_1)$ with
+        $\cid_0\neq\cid_1$. By \lemref{lemma:update-ever-belong-different-client},
+        \begin{equation}
+        \label{eq:cst-pref-arb-b}
+        \exists\anupd_0. \anupd_0^{\vertice[y]}\in \queuemessage''\cdot\udec
+        \end{equation}
+        From \equref{eq:cst-pref-arb-a} and  \equref{eq:cst-pref-arb-b}, we conclude that 
+        $\arb_{\mbox{\sf new}};(\vis'\setminus\sse) = \emptyset \subseteq \vis$.
+
+       \item rule \ruleName{a-int} follows straightforwardly.
+       \qed
+    \end{itemize}
+    \end{itemize}
+	
+\end{proof}
+
+
+
 The following example shows that the \gsp\ model does not enjoy the consistent prefix property. 
+
+
 
 \begin{example}[Consistent Prefix] 
 \label{no-consistent-prefix}
@@ -882,7 +986,7 @@ The following example shows that the \gsp\ model does not enjoy the consistent p
 %$\sse_1 = \{\asoc{\cid_1}{\{\vertice [v][_1]\}},\asoc{\cid_2}{\{\vertice [v][_2],\vertice [v][_3]\}}\}$,
 %$\so_1 = \vis_1 = \{(\vertice[v][_2],\vertice[v][_3])\}$.
 %
-%Note that $\arb_1;(\vis_1\cap\neg\sse_3) \not\subseteq \vis_1$. In fact 
+%Note that $\arb_1;(\vis_1\setminus\sse_3) \not\subseteq \vis_1$. In fact 
 %
 %\[
 %\mathrule{a-read}
