@@ -136,8 +136,8 @@ following result.
 $\Leftarrow)$ We divided the proof in two implications
  \begin{enumerate}
     \item  $\roarb;\ovis \subseteq \ovis$ implies $\ovis\subseteq \roarb$. We proceed by contradiction. Assume $(a,b)\in\ovis$ but $(a,b)\not\in\roarb$.
-    Since $\roarb$ is a total order, $(b,a)\in\roarb$. By assumption, $(b,a)\in\roarb$ and $(a,b)\in\ovis$ implies $(b,b)\in\ovis$, but this is absurd because
-    $\ovis$ is acyclic. 
+    Since $\roarb$ is a total order, $(b,a)\in\roarb$. By assumption, $(b,a)\in\roarb$ and $(a,b)\in\ovis$ implies $(b,b)\in\ovis$, but this is in contradiction 
+    with the fact that $\ovis$ is acyclic. 
         
     \item $\neg\ovis;\neg\roarb \subseteq \neg\ovis$ implies $\roarb\subseteq\ovis$. We proceed by contradiction. 
     Assume $(a,b)\in\roarb$ and $(a,b)\not\in\ovis$, and hence,  $(a,b)\in\neg\ovis$. Since,

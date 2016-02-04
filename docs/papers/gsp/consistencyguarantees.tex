@@ -927,158 +927,138 @@ case analysis on the inference rule applied for the last transition:
 
 
 
-The following example shows that the \gsp\ model does not enjoy the consistent prefix property. 
+The following example shows that the \gsp\ model exhibits the Dekker anomaly, hence it does 
+not enjoy {\em sequential consistency}~\cite{libro}.
 
 
 
-\begin{example}[Consistent Prefix] 
+\begin{example}[Dekker anomaly] 
 \label{no-consistent-prefix}
-%Consider the following system consisting of two clients and the empty store $\systemterm = \epsilon \ \bigpar\ \Absclient[_1]  \ \bigpar\ \Absclient[_2]$ where
-%\[
-%\begin{array}{lll}
-%   \Absclient[_1] & = & {\anabstcli[{}][{\updcmd[{\anupd_1}];\pushcmd;P}][0][\epsilon][\epsilon][\epsilon][0]}_{\cid_1}\\
-%   \Absclient[_2] & = & {\anabstcli[{}][{\updcmd[{\anupd_2}];\treadins{y}{r_1}[\pullcmd;\treadins{x}{u_2}[Q]]}][0][\epsilon][\epsilon][\epsilon][0]}_{\cid_2}\\
-%\end{array}
-%\]
-%
-%
-%
-%By using rule \ruleName{a-update}, we have the following transition
-%\[
-%	{\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset} {\emptyset}[\emptyset]
-%		  \arro{\updatetranaux{\anupd_1^{\vertice[v][_1]}}}[\cid_1]
-%		  \environment{\epsilon \ \bigpar\ \Absclient[_1]'  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
-%	}
-%\]
-%with $\op_1 = \{\asoc{\vertice[v][_1]} \anupd_1\}$,  $\sse_1 = \{\asoc{\cid_1}{\{\vertice [v][_1]}\}\}$ and
-%$
-%   \Absclient[_1]'  =  {\anabstcli[{}][{\pushcmd;P}][0][\epsilon][{\anupd_1}^{\vertice[v][_1]}][\epsilon][0]}_{\cid_1}
-%$. By using rule \ruleName{a-int},
-%\[ 
-%	\environment{\epsilon \ \bigpar\ \Absclient[_1]'  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
-%	\arro{\pushtran}[\cid_1]
-%	\environment{\epsilon \ \bigpar\ \Absclient[_1]''  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
-%\]
-%with $\Absclient[_1] '' =  {\anabstcli[{}][{P}][0][{[{\anupd_1}^{\vertice[v][_1]}]}][\epsilon][{[{\anupd_1}^{\vertice[v][_1]}]}][0]}_{\cid_1}$.
-%Then, by rule \ruleName{a-arb},
-%\[ 
-%	\environment{\epsilon \ \bigpar\ \Absclient[_1]''  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
-%	\arro{\tau}[\cid_1]
-%	\environment{{\anupd_1}^{\vertice[v][_1]} \ \bigpar\ \Absclient[_1]'''  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
-%\]
-%By rule  \ruleName{a-update},
-%\[ 
-%	\environment{\epsilon \ \bigpar\ \Absclient[_1]'''  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
-%	 \arro{\updatetranaux{\anupd_1^{\vertice[v][_2]}}}[\cid_2]
-%	\environment{{\anupd_1}^{\vertice[v][_1]} \ \bigpar\ \Absclient[_1]'''  \ \bigpar\ \Absclient[_2]'}{\op_2}{\emptyset}{\emptyset}{\arb_1}[\sse_2]
-%\]
-%with $\op_1 = \{\asoc{\vertice[v][_1]} {\anupd_1},\asoc{\vertice[v][_2]} {\anupd_2}\}$,  
-%$\sse_1 = \{\asoc{\cid_1}{\{\vertice [v][_1]}\},\asoc{\cid_2}{\{\vertice [v][_2]}\}\}$,
-%$\arb_1 = \{(\vertice[v][_1],\vertice[v][_2])\}$ and
-%   $\Absclient[_2]'  =  {\anabstcli[{}][{\treadins{y}{r_1}[\pullcmd;\treadins{x}{u_2}[Q]]}][0][\epsilon][{\anupd_2}^{\vertice[v][_2]}][\epsilon][0]}_{\cid_2}$. 
-%By using rule \ruleName{a-read},
-%\[ 
-%	\environment{{\anupd_1}^{\vertice[v][_1]} \ \bigpar\ \Absclient[_1]'''  \ \bigpar\ \Absclient[_2]'}{\op_2}{\emptyset}{\emptyset}{\arb_1}[\sse_2]
-%	 \arro{\readtran{\udec[r_1][{\vertice[v][_3]}]}}[\cid_2]
-%	\environment{{\anupd_1}^{\vertice[v][_1]} \ \bigpar\ \Absclient[_1]'''  \ \bigpar\ \Absclient[_2]''}{\op_3}{\so_1}{\vis_1}{\arb_1}[\sse_3]
-%\]
-%with $\op_1 = \{\asoc{\vertice[v][_1]} {\anupd_1},\asoc{\vertice[v][_2]} {\anupd_2},\asoc{\vertice[v][_3]} {r_1}\}$,  
-%$\sse_1 = \{\asoc{\cid_1}{\{\vertice [v][_1]\}},\asoc{\cid_2}{\{\vertice [v][_2],\vertice [v][_3]\}}\}$,
-%$\so_1 = \vis_1 = \{(\vertice[v][_2],\vertice[v][_3])\}$.
-%
-%Note that $\arb_1;(\vis_1\setminus\sse_3) \not\subseteq \vis_1$. In fact 
-%
-%\[
-%\mathrule{a-read}
-%	{ 
-%	\begin{array}{l}
-%		\systemterm \arroi{\readtran{r}} \systemterm' 
-%		 \qquad \vertice \notin  dom(\op) 
-%		 \qquad \op' = \op\upd \vertice r
-%		 \qquad \sse' = \sse\upd \cid {\sse(\cid)\cup\{\vertice\}}
-%		 \\[2pt]
-%		 \so' = \so\cup (\sse(\cid)\times\{\vertice\})
-%		 \qquad \ \vis' = \vis \cup (\{\vertice[w] \ |\  \udec[@][{\vertice[w]}] \in \queuemessage[0..\tknown_{\,\cid}-1] \cdot \tpending_{\cid} \cdot \ttransactionbuffer_{\,\cid} \}\times\{\vertice\})
-%	\end{array}
-%	 }
-%	 {\environment{\systemterm}{\op}{\so}{\vis}{\arb} 
-%	   \arroi{\readtran{\udec[r]}} \environment{\systemterm'}{\op'}{\so'}{\vis'}{\arb}[\sse']}
-%\]
+Consider the following system consisting of two clients and the empty store $\systemterm = \epsilon \ \bigpar\ \Absclient[_1]  \ \bigpar\ \Absclient[_2]$ where
+\[
+\begin{array}{lll}
+   \Absclient[_1] & = & {\anabstcli[{}][{\updcmd[{\anupd_1}];\treadins{y}{r_1}}][0][\epsilon][\epsilon][\epsilon][0][0]}_{\cid_1}\\
+   \Absclient[_2] & = & {\anabstcli[{}][{\updcmd[{\anupd_2}];\treadins{y}{r_2}[Q]}][0][\epsilon][\epsilon][\epsilon][0][0]}_{\cid_2}\\
+\end{array}
+\]
 
-%\[
-%\begin{array}{l}
-%E = \environment{\tclient{\textit{update(aList.add('a'));push();}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
-%\\
-%\tclient{\textit{update(aList.add('b'));push();let v = read(x);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[2]  \bigpar\ \epsilon}{\emptyset}{\emptyset}{\emptyset}{\emptyset}
-%\end{array}
-%\]
+
+
+By using rule \ruleName{a-update}, we have the following transition
+\[
+	{\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset} {\emptyset}[\emptyset]
+		  \arro{\updatetranaux{\anupd_1^{\vertice[v][_1]}}}[\cid_1]
+		  \environment{\epsilon \ \bigpar\ \Absclient[_1]'  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
+	}
+\]
+with $\op_1 = \{\asoc{\vertice[v][_1]} \anupd_1\}$,  $\sse_1 = \{\asoc{\cid_1}{\{\vertice [v][_1]}\}\}$ and
+\[
+   \Absclient[_1]'  =  {\anabstcli[{}][{\treadins{y}{r_2}}][0][\epsilon][{\anupd_1}^{\vertice[v][_1]}][\epsilon][0][0]}_{\cid_1}
+\]
+Similarly, 
+\[
+	{\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset} {\emptyset}[\emptyset]
+		  \arro{\updatetranaux{\anupd_1^{\vertice[v][_2]}}}[\cid_2]
+		  \environment{\epsilon \ \bigpar\ \Absclient[_1]'  \ \bigpar\ \Absclient[_2]'}{\op_2}{\emptyset}{\emptyset}{\emptyset}[\sse_2]
+	}
+\]
+with $\op_2 = \{\asoc{\vertice[v][_1]},{\anupd_1},\asoc{\vertice[v][_2]} {\anupd_2}\}$,  
+$\sse_2 = \{\asoc{\cid_1}{\{\vertice [v][_1]}\}, \asoc{\cid_2}{\{\vertice [v][_2]}\}\}$ and
+\[
+   \Absclient[_2]'  =  {\anabstcli[{}][{\treadins{y}{r_2}[Q]}][0][\epsilon][{\anupd_2}^{\vertice[v][_2]}][\epsilon][0][0]}_{\cid_2}
+\]
+Then, by using rule \ruleName{a-read},
+\[ 
+	\environment{\epsilon\ \bigpar\ \Absclient[_1]'  \ \bigpar\ \Absclient[_2]'}{\op_2}{\emptyset}{\emptyset}{\emptyset}[\sse_2]
+	 \arro{\readtran{\udec[r_1][{\vertice[v][_3]}]}}[\cid_1]
+	\environment{\epsilon \ \bigpar\ \Absclient[_1]''  \ \bigpar\ \Absclient[_2]'}{\op_3}{\so_1}{\vis_1}{\emptyset}[\sse_3]
+\]
+with $\op_3 = \{\asoc{\vertice[v][_1]} {\anupd_1},\asoc{\vertice[v][_2]} {\anupd_2},\asoc{\vertice[v][_3]} {r_1}\}$,  
+$\sse_3 = \{\asoc{\cid_1}{\{\vertice [v][_1],\vertice [v][_3]\}},\asoc{\cid_2}{\{\vertice [v][_2]\}}\}$,
+$\so_1 = \vis_1 = \{(\vertice[v][_1],\vertice[v][_3])\}$,
+$   \Absclient[_1]''  =  {\anabstcli[{}][P\subst{x}{v}][0][\epsilon][{\anupd_1}^{\vertice[v][_1]}][\epsilon][0][0]}_{\cid_1}$,
+and $\iread{r_1}{{\anupd_1}^{\vertice[v][_1]}}=v$.
+And similarly,
+\[ 
+	\environment{\epsilon \ \bigpar\ \Absclient[_1]''  \ \bigpar\ \Absclient[_2]'}{\op_3}{\so_1}{\vis_1}{\emptyset}[\sse_3]
+	 \arro{\readtran{\udec[r_2][{\vertice[v][_4]}]}}[\cid_2]
+	\environment{\epsilon \ \bigpar\ \Absclient[_1]''  \ \bigpar\ \Absclient[_2]''}{\op_4}{\so_2}{\vis_2}{\emptyset}[\sse_4]
+\]
+with $\op_4 = \{\asoc{\vertice[v][_1]} {\anupd_1},\asoc{\vertice[v][_2]} {\anupd_2},\asoc{\vertice[v][_3]} {r_1}, \asoc{\vertice[v][_4]} {r_4}\}$,  
+$\sse_4 = \{\asoc{\cid_1}{\{\vertice [v][_1],\vertice [v][_3]\}},\asoc{\cid_2}{\{\vertice [v][_2],\vertice [v][_4]\}}\}$,
+$\so_2 = \vis_2 = \{(\vertice[v][_1],\vertice[v][_3]), (\vertice[v][_2],\vertice[v][_4])\}$, 
+$   \Absclient[_1]''  =  {\anabstcli[{}][Q\subst{y}{v'}][0][\epsilon][{\anupd_1}^{\vertice[v][_1]}][\epsilon][0][0]}_{\cid_1}$ and
+ $\iread{r_2}{{\anupd_2}^{\vertice[v][_2]}}=v'$.
+ Since $\iread{r_1}{{\anupd_1}^{\vertice[v][_1]}}=v$ and $\iread{r_2}{{\anupd_2}^{\vertice[v][_2]}}=v'$, 
+  none of the clients read the update performed by the other.
+
 \end{example}
 		
-
-Environment has a system $\systemterm$ with two clients and a message queue $S$ without updates. Relation sets $\op$,$\so$,$\vis$,$\arb$ are empty, i.e.,there were not an execution in $\systemterm$ captured by the relation sets. The update action add a string to an object called $aList$ which has not elements. 
-In this state, $C_1$ and $C_2$ can perform their update actions. E may non-deterministically choose to do $update(aList.add('a')$ or $update(aList.add('b')$. If the first communication takes place over $update(aList.add('a')$, then the system evolves as follows:
-
-\[
-\begin{array}{l}
-E \arrobyclient{\updatevtran{aList.add('a')}{{v_0}}}{1} \environment{\tclient{p ush();}{0}{\epsilon}{[aList.add('a')]}{\epsilon}{0}[1]\ \bigpar\
-\\
-\tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[2]  \bigpar\ \epsilon} 
-{\\ \emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
-\end{array}
-\]
-
-The action $\updatetran{aList.add('a')}$ of the client $1$ will be identified by vertex $v_0$ by rule $\textsc{\small{a-UPDATE}}$. In particular, the update action will be left into the transactional queue of Client $1$ besides the new vertex will be added to vertices in $\so$. Now, Client 1 performs $\pushtran$: 
-
-\[
-\begin{array}{l}
-E \arrobyclient{\pushtran}{1} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{[aList.add('a')]}{0}[1]\ \bigpar\
-\\
-\tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[2]  \bigpar\ \epsilon} 
-{\\ \emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
-\end{array}
-\]
-		
-When it happens, $aList.add('a')$ is moved to the sent queue and pending queue. At this moment, Client 2 can perform an update action however Client 1 will realize an internal action which is given by $\textsc{\small{a-PROCESS}}$.  			
-
-\[
-\begin{array}{l}
-E \arrobyclient{\tau}{1} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}[1]\ \bigpar\ \\
-\tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[2]  \bigpar\ \\ 
-aList.add('a')} 
-{\emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
-\end{array}
-\]
-
-Analogously, Client 2 realize its actions leaving to environment evolves as below:
-
-\[
-\begin{array}{l}
-E \arrobyclient{\updatetran{aList.add('b')}}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
-\\
-\tclient{\textit{push();let x = read(aList);}}{0}{\epsilon}{[aList.add('b')]}{\epsilon}{0}[2]  \bigpar\ 
-\\ aList.add('a')} {\emptyset}{\{( \{ v_0,v_1 \} , \{\ (v_0,v_1) \} ) \}}{\emptyset}{\emptyset} 
-\\
-\\
-\arrobyclient{\pushtran}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
-\\
-\tclient{\textit{let x = read(aList);}}{0}{[aList.add('b')]}{\epsilon}{[aList.add('b')]}{0}[2]  \bigpar\ 
-\\ aList.add('a')}{\emptyset}{\{( \{ v_0,v_1 \} , \{\ (v_0,v_1) \} ) \}}{\emptyset}{\emptyset} 
-\\
-\\
-\arrobyclient{\tau}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
-\\
-\tclient{\textit{let x = read(aList);}}{0}{[aList.add('b')]}{\epsilon}{\epsilon}{0}[2]  \bigpar\ 
-\\aList.add('a') \cdot [aList.add('b')]} {\emptyset}{\{( \{ v_0,v_1 \} , \{\ (v_0,v_1) \} ) \}}{\emptyset}{\{ (v_0,v_1) \}} 
-\\
-\\
-\arrobyclient{\readtran{aList}}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
-\\
-\tclient{\update{0}{x}{['b']}}{0}{[aList.add('b')]}{\epsilon}{\epsilon}{0}[2]  \bigpar\ aList.add('a') \cdot [aList.add('b')]} 
-\\
-{\emptyset}{\emptyset}{\emptyset}{\emptyset} 
-\end{array}
-\]
-		
-Note that $\arb$ is modified because the message queue has two elements. The value returned will be the list with a only element, ['b'], because of the internal action associated to the rule $\textsc{\small{a-receive}}$ did not perform it. Then, if the rule $\textsc{\small{a-receive}}$ were performed, the value of the list would be ['a','b']. It is because the content of the pending queue is removed when the server left their message. 
-
-The guarantee Consistent Prefix, which rules is $(\textsc{\small{ar}};\textsc{\small{vis}}) \subseteq \ \textsc{\small{ar}};\textsc{\small{VIS}}$, states that if we see an result from a client in a particular order, we will never see this result in a different order.
+%
+%Environment has a system $\systemterm$ with two clients and a message queue $S$ without updates. Relation sets $\op$,$\so$,$\vis$,$\arb$ are empty, i.e.,there were not an execution in $\systemterm$ captured by the relation sets. The update action add a string to an object called $aList$ which has not elements. 
+%In this state, $C_1$ and $C_2$ can perform their update actions. E may non-deterministically choose to do $update(aList.add('a')$ or $update(aList.add('b')$. If the first communication takes place over $update(aList.add('a')$, then the system evolves as follows:
+%
+%\[
+%\begin{array}{l}
+%E \arrobyclient{\updatevtran{aList.add('a')}{{v_0}}}{1} \environment{\tclient{p ush();}{0}{\epsilon}{[aList.add('a')]}{\epsilon}{0}[1]\ \bigpar\
+%\\
+%\tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[2]  \bigpar\ \epsilon} 
+%{\\ \emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
+%\end{array}
+%\]
+%
+%The action $\updatetran{aList.add('a')}$ of the client $1$ will be identified by vertex $v_0$ by rule $\textsc{\small{a-UPDATE}}$. In particular, the update action will be left into the transactional queue of Client $1$ besides the new vertex will be added to vertices in $\so$. Now, Client 1 performs $\pushtran$: 
+%
+%\[
+%\begin{array}{l}
+%E \arrobyclient{\pushtran}{1} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{[aList.add('a')]}{0}[1]\ \bigpar\
+%\\
+%\tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[2]  \bigpar\ \epsilon} 
+%{\\ \emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
+%\end{array}
+%\]
+%		
+%When it happens, $aList.add('a')$ is moved to the sent queue and pending queue. At this moment, Client 2 can perform an update action however Client 1 will realize an internal action which is given by $\textsc{\small{a-PROCESS}}$.  			
+%
+%\[
+%\begin{array}{l}
+%E \arrobyclient{\tau}{1} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}[1]\ \bigpar\ \\
+%\tclient{\textit{update(aList.add('b'));push();let x = read(aList);}}{0}{\epsilon}{\epsilon}{\epsilon}{0}[2]  \bigpar\ \\ 
+%aList.add('a')} 
+%{\emptyset}{\{( \{ v_0 \} , \emptyset ) \}}{\emptyset}{\emptyset} 
+%\end{array}
+%\]
+%
+%Analogously, Client 2 realize its actions leaving to environment evolves as below:
+%
+%\[
+%\begin{array}{l}
+%E \arrobyclient{\updatetran{aList.add('b')}}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
+%\\
+%\tclient{\textit{push();let x = read(aList);}}{0}{\epsilon}{[aList.add('b')]}{\epsilon}{0}[2]  \bigpar\ 
+%\\ aList.add('a')} {\emptyset}{\{( \{ v_0,v_1 \} , \{\ (v_0,v_1) \} ) \}}{\emptyset}{\emptyset} 
+%\\
+%\\
+%\arrobyclient{\pushtran}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
+%\\
+%\tclient{\textit{let x = read(aList);}}{0}{[aList.add('b')]}{\epsilon}{[aList.add('b')]}{0}[2]  \bigpar\ 
+%\\ aList.add('a')}{\emptyset}{\{( \{ v_0,v_1 \} , \{\ (v_0,v_1) \} ) \}}{\emptyset}{\emptyset} 
+%\\
+%\\
+%\arrobyclient{\tau}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
+%\\
+%\tclient{\textit{let x = read(aList);}}{0}{[aList.add('b')]}{\epsilon}{\epsilon}{0}[2]  \bigpar\ 
+%\\aList.add('a') \cdot [aList.add('b')]} {\emptyset}{\{( \{ v_0,v_1 \} , \{\ (v_0,v_1) \} ) \}}{\emptyset}{\{ (v_0,v_1) \}} 
+%\\
+%\\
+%\arrobyclient{\readtran{aList}}{2} \environment{\tclient{0}{0}{[aList.add('a')]}{\epsilon}{\epsilon}{0}[1]\ \bigpar\
+%\\
+%\tclient{\update{0}{x}{['b']}}{0}{[aList.add('b')]}{\epsilon}{\epsilon}{0}[2]  \bigpar\ aList.add('a') \cdot [aList.add('b')]} 
+%\\
+%{\emptyset}{\emptyset}{\emptyset}{\emptyset} 
+%\end{array}
+%\]
+%		
+%Note that $\arb$ is modified because the message queue has two elements. The value returned will be the list with a only element, ['b'], because of the internal action associated to the rule $\textsc{\small{a-receive}}$ did not perform it. Then, if the rule $\textsc{\small{a-receive}}$ were performed, the value of the list would be ['a','b']. It is because the content of the pending queue is removed when the server left their message. 
+%
+%The guarantee Consistent Prefix, which rules is $(\textsc{\small{ar}};\textsc{\small{vis}}) \subseteq \ \textsc{\small{ar}};\textsc{\small{VIS}}$, states that if we see an result from a client in a particular order, we will never see this result in a different order.
