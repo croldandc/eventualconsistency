@@ -102,7 +102,7 @@ free variables of a program is  standard. We say that a process $P$ is {\em clos
  free variables.
 
 
-The term $\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}$ 
+The term $\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}{\cid}[n]$ 
 stands for a client that has identifier $\cid$ and it is engaged in the execution of the 
 program $P$. 
 The remaining elements 
@@ -120,7 +120,7 @@ in the global store that have been received and needs to be added to the local r
 A system $\systemterm$ is composed by a store and a  set of clients. 
 
 A system $\systemterm =  \Absclient_0\bigpar \ldots\bigpar \Absclient_n\bigpar\queuemessage$  with 
-$\Absclient_l = \tclienti{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\tsent_l}{\treceivebuffer_l}[\cid_l]$ 
+$\Absclient_l = \tclienti{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\tsent_l}{\treceivebuffer_l}[\cid_l][n_l]$ 
 for all $0\leq j \leq n$  is {\em well-formed} if it 
 satisfies the following conditions: 
 \begin{itemize}

@@ -560,7 +560,6 @@ over well-formed terms, up-to the structural congruence.
 \\
 \mbox{\henote{Este se necesita para el crash y recover y el inicial}}
 \\
-
 %    \\[35pt]
 %    \hspace{-.3cm} \textsc{COMMUNICATION}
 %		
@@ -576,6 +575,9 @@ over well-formed terms, up-to the structural congruence.
 %
  \end{array}
  \]
+
+\henote{well-formedness: $i\in\dom{in}
+ iff i\in\dom{out}$   y no conectado, no mensajes en las colas.}
 
 
 Rule $\textsc{(drop-conn)}$ removes from the server's queues the client called $b_i$. Rule $\textsc{(crash-and-recover)}$ leaves undefined the server's queues and preserves the server's persistent state.  Rule $\textsc{(accept-conn)}$ show how to add a new connecti(Read)send to its the persistent state. Last rule from \textbf{\textsc{(server)}} is Rule $\textsc{(batch)}$, the most interesting of this group. Its has three hypothesis, the first one, is responsible for receiving rounds from the queue of in-messages. Se\cond one, let $\emptygssegment$ be a empty segment, it gives back a delta object who represents the combination of numbers of rounds into a single object. Finally, this object is applied to the persistent state. As result, the persistent state is putted into the queues messages-out.

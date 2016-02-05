@@ -169,7 +169,7 @@
 
 % Clients configuration
 \newcommandx{\tclient}[8][7=\cid,8=n,usedefault=@]{\langle #1 , #4, #5, #3,  #2, #6, #8\, \rangle_{#7}}
-\newcommandx{\tclienti}[7][7=n]{\tclient{#1}{#2}{#3}{#4}{#5}{#6}[@][#7]}
+\newcommandx{\tclienti}[8][7=\cid,8=n,usedefault=@]{{\tclient{#1}{#2}{#3}{#4}{#5}{#6}[@][#8]}}
 
 \newcommandx{\anabstcli}[7][1=\cid,2=\tprogram,3=\tknown,4=\tpending,5=\ttransactionbuffer,6=\tsent,7=\treceivebuffer,usedefault=@]
   {\tclient {#2_{#1}}{#3_{#1}}{#4_{#1}}{#5_{#1}}{#6_{#1}}{#7_{#1}}[#1]}
@@ -385,7 +385,7 @@
 %   	\langle #1,#2,#3,#4,#5,#6,#7,#8,#9\rangle
 %	}
 \newcommandx{\iclientinstJ}{
-	\iclientinst[P_l][\astate_l][{\pending}_l][{\pushbuffer}_l][{\transactionbuffer}_l][\receivebuffer_l][n][\inclient_l][\outclient_l]}
+	\iclientinst[P_l][\astate_l][{\pending}_l][{\pushbuffer}_l][{\transactionbuffer}_l][\receivebuffer_l][n_l][\inclient_l][\outclient_l]}
 
 \newcommandx{\iserverins}[4][1=\astate,2=\amxrf,3=\inserver, 4= \outserver,usedefault=@] {\langle #1,#2,#3,#4\rangle}
 
@@ -635,7 +635,7 @@
 
 \newcommandx{\abstsyst}[4][1=l,2=L,3=\Absclient_j, 4=\queuemessage,usedefault=@]{\paralelo{#1}{#2}{#3}{#4}}
 
-\newcommandx{\abstcliJ}[1][1=l]{\tclienti{\tprogram_{#1}}{\tknown_{#1}}{\tpending_{#1}}{\ttransactionbuffer_{#1}}{\tsent_{#1}}{\treceivebuffer_{#1}}[{\cid_{#1}}]}
+\newcommandx{\abstcliJ}[2][1=l,2=n,usedefault=@]{\tclienti{\tprogram_{#1}}{\tknown_{#1}}{\tpending_{#1}}{\ttransactionbuffer_{#1}}{\tsent_{#1}}{\treceivebuffer_{#1}}[{\cid_{#1}}][{#2}_{#1}]}
 
 
 \newcommandx{\concsyst}[4][1=l,2=L,3={\iclient_l},4=\iserver,usedefault=@]{\paralelo{#1}{#2}{#3}{#4}}
@@ -674,3 +674,6 @@
 \newcommand{\oarb}{\mathsf{\scriptsize{AR}}}
 
 \newcommandx{\roarb}[1][1=F]{\oarb\rest{#1}}
+
+
+\newcommand{\refprop}[1]{\defref{def:implementation}, Prop. \ref{#1}}
