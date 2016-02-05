@@ -5,14 +5,109 @@
 
 In this section we study the extension of the \gsp\ model with atomic updates proposed in~\ref{}. 
 The language of programs is extended in the following way: 
+\[
+ \rName{program} 
+			 \qquad 
+			 \tprogram \ ::=\  \ldots\ |\ \tsyncupdins 
+\]
 
+The intended meaning of the program  $\tsyncupdins$ is that it remains blocked until the 
+update $\anupd$ is performed over the global store.  This is achieved by continuously pulling (i.e., 
+a busy-waiting) until the updates are confirmed by the server. 
 
+To formally define the semantics of atomic updates we consider the following 
+runtime syntax.
+\[
+ \rName{program} 
+			 \qquad 
+			 \tprogram \ ::=\  \ldots\ |\  \ttrans\ |\ \waitcmd \ |\ \tguarded{} 
+			 \]
 
-We know study the 
+We rely  on the following additional labels
+			 
+\[  \actbyc ::= \ldots \ |\ ([\lambda],\cid)\  |\ (\finishsynctran,\cid)
+\]
+
+\[
+ \begin{array}{l}
+
+\mathax{start-upd}
+	{
+	\begin{array}{l}
+	\tsystem{\tclienti{\tsyncupdins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+%	\arroi{\syncupdtran{\tupdate}}
+	\arroi{\tau}
+	\hspace{6cm}\\\hfill
+	\tsystem{\tclienti{\ttrans[\tupdins;\pushcmd;\waitcmd]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	\end{array}
+	 }
  
-The nature of such cases is caused by having no transactions as the usual databases.
+ \\[15pt]
 
-The remaining of this section is proposing a environment that ensures these consistency guarantees. We start by refining the environment in GSP. We will distinguish a new relation:
+\mathrule{trans}
+	{\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+	\arroi{\mu} 
+	\tsystem{\tclienti{\tprogram'}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}}}
+	{\tsystem{\tclienti{[\tprogram];Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	 \arroi{[\mu]} 
+	 \tsystem{\tclienti{[\tprogram'];Q}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}}}
+
+ \\[25pt]
+
+\mathax{end-upd}
+	{\tsystem{\tclienti{[0];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+	\arroi{\finishsynctran{}} 
+	\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}}
+
+\\[25pt]
+\mathax{wait}
+	{
+	\begin{array}{l}
+	\tsystem{\tclienti{\waitcmd}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	\arro{\tau} 
+	\\
+	\hspace{2.2cm}
+	\tsystem{\tclienti{\tconfirmedins{x}[{\tguarded[x][\pullcmd;\waitcmd][0]}]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	\end{array}
+	}
+
+\\[25pt]
+\mathrule{guard-true}
+	{\eval \cond {true}}
+	{
+	\tsystem{\tclienti{\tguarded[e][P][Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	\arro{\tau} 
+	\tsystem{\tclienti{Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	}
+
+\\[25pt]
+\mathrule{guard-false}
+	{\eval \cond {false}}
+	{
+	\tsystem{\tclienti{\tguarded[e][P][Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	\arro{\tau} 
+	\tsystem{\tclienti{P}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	}
+%	\\
+%\henote{\mbox{Agregar reglas para if}}
+
+%
+%
+% 
+%\mathax{t-flush}{\tsystem{\tclienti{[\tflush];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\tau} \tsystem{\tclienti{[\pushtran;\pwhile{!\confirmedtran()}{\pulltran};];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
+%\\
+%\chnote{\mbox{En realidad el programa es: $\pushtran;let x = \confirmedtran();\pwhile{!x}{\pulltran};let x = \confirmedtran();$}}
+%
+% \\[15pt]
+
+ 
+
+ \end{array}
+ \]
+ 
+%The nature of such cases is caused by having no transactions as the usual databases.
+
+%The remaining of this section is proposing a environment that ensures these consistency guarantees. We start by refining the environment in GSP. We will distinguish a new relation:
 
 \paragraph{Return Before} relates updates actions. It indicates the ordering of non-overlapping operations. 
 
@@ -26,6 +121,44 @@ Furthermore, we will add two additional terms; $\tx$ that relates a vertex to se
 			 (\textsc{transactions closed}) & \tc &  \epsilon  \ | \ \vertice\ \cdot \tc 
 	   \end{array}
 \]
+
+\[ 
+\begin{array}{r@{\ ::= \ }l}
+  \zeta & \mu \ | \ \startsynctran \ | \ \finishsynctran  \ | \  [\mu] \\
+\end{array}
+\]
+
+
+
+
+
+
+%\[
+% \begin{array}{l} \hspace{-.3cm} \textsc{PROGRAM}\\
+%
+%
+%\mathax{t-sync-update}{\tsystem{\tclienti{\tsyncupd{u};\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\syncupdtran{\tupdate}} \tsystem{\tclienti{[\tupdins;\tflush];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
+% 
+% \\[15pt]
+%
+%\mathrule{t-tran}{\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\mu} \tsystem{\tclienti{\tprogram'}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}\ \bigpar\ C}{\queuemessage}}{\tsystem{\tclienti{[\tprogram];Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{[\mu]} \tsystem{\tclienti{[\tprogram'];Q}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}\ \bigpar\ C}{\queuemessage}}
+%
+% \\[25pt]
+%
+% 
+%\mathax{t-flush}{\tsystem{\tclienti{[\tflush];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\tau} \tsystem{\tclienti{[\pushtran;\pwhile{!\confirmedtran()}{\pulltran};];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
+% 
+%\\
+%\chnote{\mbox{En realidad el programa es: $\pushtran;let x = \confirmedtran();\pwhile{!x}{\pulltran};let x = \confirmedtran();$}}
+%
+% \\[15pt]
+%
+%\mathax{t-end-sync}{\tsystem{\tclienti{[0];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\finishsynctran(u^{[v]})} \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
+% 
+%
+% \end{array}
+% \]
+% 
 
 
 \subsection{Operational Semantic}
@@ -43,17 +176,19 @@ We assume the following countable sets of transactional vertices names $[\vertic
 
 The labeled transition system for the extension of GSP considers the following actions $\zeta$:	
 
-\[ 
-\begin{array}{r@{\ ::= \ }l}
-  \zeta & \mu \ | \ \startsynctran \ | \ \finishsynctran  \ | \  [\mu] \\
-\end{array}
-\]
+
+
 
 These labels allow system to perform an update synchronous. Label $\startsynctran$ stands for the begining of a transaction, and $\finishsynctran$ the end of it.
 
 \paragraph{Notation} $\updopentx{\epsilon} = \epsilon$, and 
    $\updopentx{\vertice_0 \mapsto \{\instanceset\};tail} = \vertice_0 \mapsto \{\instanceset \cup \{\vertice\}\};\updopentx{tail}$.
 		
+
+
+
+
+
 		
  \[
  \begin{array}{l}    \hspace{-.3cm} \textsc{ENVIRONMENT}\\
@@ -73,32 +208,7 @@ dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\vertice \map
  \]
 
 
-\[
- \begin{array}{l} \hspace{-.3cm} \textsc{PROGRAM}\\
 
-
-\mathax{t-sync-update}{\tsystem{\tclienti{\tsyncupd{u};\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\syncupdtran{\tupdate}} \tsystem{\tclienti{[\tupdins;\tflush];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
- 
- \\[15pt]
-
-\mathrule{t-tran}{\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\mu} \tsystem{\tclienti{\tprogram'}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}\ \bigpar\ C}{\queuemessage}}{\tsystem{\tclienti{[\tprogram];Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{[\mu]} \tsystem{\tclienti{[\tprogram'];Q}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}\ \bigpar\ C}{\queuemessage}}
-
- \\[25pt]
-
- 
-\mathax{t-flush}{\tsystem{\tclienti{[\tflush];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\tau} \tsystem{\tclienti{[\pushtran;\pwhile{!\confirmedtran()}{\pulltran};];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
- 
-\\
-\chnote{\mbox{En realidad el programa es: $\pushtran;let x = \confirmedtran();\pwhile{!x}{\pulltran};let x = \confirmedtran();$}}
-
- \\[15pt]
-
-\mathax{t-end-sync}{\tsystem{\tclienti{[0];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage} \arroi{\finishsynctran(u^{[v]})} \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}\ \bigpar\ C}{\queuemessage}}
- 
-
- \end{array}
- \]
- 
 
 First, we prove a useful lemma: 
 

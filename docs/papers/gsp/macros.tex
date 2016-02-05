@@ -179,6 +179,7 @@
 \newcommand{\tknown}{\textit{k}}
 
 \newcommandx{\anupd}[1][1={}]{\textcolor{OliveGreen}{\textit{u#1}}}
+\newcommandx{\aread}[1][1={}]{\textcolor{OliveGreen}{\textit{r#1}}}
 
 \newcommandx{\anupdseq}[1][1={}]{\textcolor{OliveGreen}{\mathsf{u#1}}}
 
@@ -196,7 +197,7 @@
 
 
 %%%%Syntax of processes
-\newcommandx{\updcmd}[1][1=u]{{\tt update}(#1)}
+\newcommandx{\updcmd}[1][1=\anupd]{{\tt update}(#1)}
 \newcommandx{\readcmd}[1][1= r]{{\tt read}(#1)}
 \newcommand{\pullcmd}{{\tt pull}}
 \newcommand{\pushcmd}{{\tt push}}
@@ -213,7 +214,7 @@
 
 %\newcommand{\treadins}[2]{{\tt let}\ #1 = {\tt read}(#2)\ {\tt in}\ P}
 \newcommand{\tpushins}{{\tt push};P}
-\newcommand{\tconfirmedins}[1]{{\tt let}\ #1 = {\tt confirmed};P}
+\newcommandx{\tconfirmedins}[2][2=P]{{\tt let}\ #1 = {\tt confirmed} \ {\tt in}\ #2}
 \newcommand{\tpullins}{{\tt pull};P}
 
 \newcommand{\cond}{\textcolor{OliveGreen}{{e}}}
@@ -507,10 +508,6 @@
 
 \newcommand{\readins}[2]{\treadins}
 
-\newcommand{\startsynctran}[1]{\dagger(#1)}
-\newcommand{\finishsynctran}[1]{\ddagger(#1)}
-
-
 
 
 
@@ -672,6 +669,25 @@
 
 
 %Section 5
+\newcommandx{\syncupdcmd}[1][1=\anupd]{{\tt syncUpd}(#1)}
+
+
+
+\newcommand{\waitcmd}{{\tt wait}}
+
+\newcommandx{\tsyncupdins}[2][1=\anupd,2=\tprogram,usedefault=@]{\syncupdcmd[#1];#2}
+\newcommandx{\ttrans}[2][1=\tprogram,2=\tprogram,usedefault=@]{[#1];#2}
+
+\newcommandx{\tguarded}[3][1=e,2=\tprogram,3=\tprogram,usedefault=@]{#1\triangleright(#2);#3}
+
+
+
+\newcommand{\startsynctran}{\dagger}
+\newcommand{\finishsynctran}{\ddagger}
+
+
+
+
 \newcommand{\ovis}{\mathsf{\scriptsize{VIS}}}
 \newcommand{\oarb}{\mathsf{\scriptsize{AR}}}
 
@@ -679,3 +695,6 @@
 
 
 \newcommand{\refprop}[1]{\defref{def:implementation}, Prop. \ref{#1}}
+
+
+
