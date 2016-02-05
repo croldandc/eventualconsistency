@@ -72,15 +72,16 @@ The set of \tgspcalculus\ terms is given by the following grammar:
 			 & \tupdateins \;|\; \treadins{x}{r} \;|\; \tpullins \;|\; \tpushins \;|\;
 			 \\
 			&   
-			& \tconfirmedins{x} \;|\; \pwhile{\cond}{\tprogram}  \;|\;
-			\\
-			&
-			& \pifte
+			& \tconfirmedins{x} 
+			%\;|\; \pwhile{\cond}{\tprogram}  \;|\;
+			%\\
+			%&
+			%& \pifte
 			\\
       		\rName{client} 
 			& \Absclient \ ::=\ 
 			& 0 \;|\; \tclient{\tprogram}{n}{\blockseq}{\ttransactionbuffer}{\blockseq}{n} \;|\;
-       				  \Absclient\bigpar \Absclient \hfill \text{with}\  \tknown, \treceivebuffer\ \in \nat
+       				  \Absclient\bigpar \Absclient \hfill \text{with}\  n \in \nat
 			\\
 		\rName{system} 
 		& \systemterm\ ::= \ 
@@ -93,14 +94,16 @@ The state of a global store $\queuemessage$ is represented by a sequence of  blo
 Programs $P$ run by clients are written in a simple sequential language enriched with  primitives 
 for interacting with 
 the store: $\readcmd,  \updcmd, \pullcmd,  \pushcmd, \confcmd$
- (we postpone their description until \secref{sec:gsp-sos}). Conditional and loop statements contain expressions 
-$\cond, \cond', \ldots$ written in some language that we left unspecified. We only assume   
-such language to be equipped with a valuation function  that associates each expression $\cond$  
-with a value $v$ in some domain $\valueset$, written $\eval{\cond}{v}$.  
+ (we postpone their description until \secref{sec:gsp-sos}). 
+ %Conditional and loop statements contain expressions 
+%$\cond, \cond', \ldots$ written in some language that we left unspecified. We only assume   
+%such language to be equipped with a valuation function  that associates each expression $\cond$  
+%with a value $v$ in some domain $\valueset$, written $\eval{\cond}{v}$.  
 A program $\plet{x}{\ldots}{P}$ introduces a bound variable whose  scope is $P$. The definition of 
 free variables of a program is  standard. We say that a process $P$ is {\em closed} when it does not contain  
  free variables.
 
+\henote{agregar algun comentario sobre otras estructuras de control}
 
 The term $\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}{\cid}[n]$ 
 stands for a client that has identifier $\cid$ and it is engaged in the execution of the 
@@ -121,7 +124,7 @@ A system $\systemterm$ is composed by a store and a  set of clients.
 
 A system $\systemterm =  \Absclient_0\bigpar \ldots\bigpar \Absclient_n\bigpar\queuemessage$  with 
 $\Absclient_l = \tclienti{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\tsent_l}{\treceivebuffer_l}[\cid_l][n_l]$ 
-for all $0\leq j \leq n$  is {\em well-formed} if it 
+for all $0\leq l \leq n$  is {\em well-formed} if it 
 satisfies the following conditions: 
 \begin{itemize}
   \item $\cid_l \neq \cid_k$ for all $j\neq k$, \ie,  clients have different identifiers;
@@ -214,7 +217,8 @@ In what follows we will write labelled transitions $\arro{\mu}$ instead of $\tr{
 
 \\[25pt]
 \mathrule{confirm}
- 	{\eval{(\tpending \cdot  \ttransactionbuffer == \epsilon)}  v}
+ %	{\eval{(\tpending \cdot  \ttransactionbuffer == \epsilon)}  v}
+	{v = {(\tpending \cdot  \ttransactionbuffer == \epsilon)}}
 	{
 	\tsystem{\tclienti{\tconfirmedins{x}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
 	\arro{\confirmedtran} 
@@ -222,25 +226,25 @@ In what follows we will write labelled transitions $\arro{\mu}$ instead of $\tr{
 		{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
 	}
 	
-\\[25pt]
-\mathrule{while-true}
-	{\eval \cond {true}}
-	{
-	\tsystem{\tclienti{\pwhile{\cond}{\tprogram}[Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
-	\arro{\tau} 
-	\tsystem{\tclienti{\tprogram;\pwhile{\cond}{\tprogram}[Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}
-	}
-
-\\[25pt]
-\mathrule{while-false}
-	{\eval \cond {false}}
-	{
-	\tsystem{\tclienti{\pwhile{\cond}{\tprogram}[Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
-	\arro{\tau} 
-	\tsystem{\tclienti{Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}
-	}
-	\\
-\henote{\mbox{Agregar reglas para if}}
+%\\[25pt]
+%\mathrule{while-true}
+%	{\eval \cond {true}}
+%	{
+%	\tsystem{\tclienti{\pwhile{\cond}{\tprogram}[Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+%	\arro{\tau} 
+%	\tsystem{\tclienti{\tprogram;\pwhile{\cond}{\tprogram}[Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}
+%	}
+%
+%\\[25pt]
+%\mathrule{while-false}
+%	{\eval \cond {false}}
+%	{
+%	\tsystem{\tclienti{\pwhile{\cond}{\tprogram}[Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+%	\arro{\tau} 
+%	\tsystem{\tclienti{Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}
+%	}
+%	\\
+%\henote{\mbox{Agregar reglas para if}}
  \end{array}
 \]
 \caption{Operational semantics for \tgspcalculus}
