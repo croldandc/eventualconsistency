@@ -134,9 +134,10 @@ Let \\
   \]
  \end{definition}
  
+ \henote{
 The implementation of a system is a server and clients interacting concurrently. A server will be represented with a persisted state denoted by $\persistedstate$, input messages $\inserver$ and output messages $\outserver$.
 We will refer to clients, as tuple of program $P$ and set of states and sequences $E$. A program client stores a state ($E.\known$), a pending queue ($E.\pending$),i.e., updates sent to the server without confirmation of their reception, a push buffer ($E.\pushbuffer$) which holds updates that were pushed by the client but have not been sent to the server, a transaction buffer ($E.\transactionbuffer$) which holds updates for sending with another ones, a receive buffer ($E.\receivebuffertype$) for updates which were sent by the server, the number of round sent ($E.\nround$), a input message queue ($E.\inclient$) and a output message queue ($E.\outclient$).
-
+}
 
 \subsection{Operational Semantics}
 
@@ -432,31 +433,31 @@ over well-formed terms, up-to the structural congruence.
 			\addid{\iclientinst[P\subst{x}{v}]} \bigpar \ \isystemterm
 		\end{array}
 		}
-\\[25pt]
-\mathrule{while-true}
-	{\eval \cond {true}}
-	{
-		{\begin{array}{l}
-			\addid{\iclientinst[\pwhile{\cond}{P}[Q]]} \bigpar \ \isystemterm
-			\arro{\tau} 
-			\\
-			\hspace{4.5cm}
-			\addid{\iclientinst[P;\pwhile{\cond}{P}[Q]]} \bigpar \ \isystemterm
-		\end{array}
-		}
-	}
-\\[25pt]
-\mathrule{while-false}
-	{\eval \cond {false}}
-	{
-		{\begin{array}{l}
-			\addid{\iclientinst[\pwhile{\cond}{P}[Q]]} \bigpar \ \isystemterm
-			\arro{\tau} 
-			\\
-			\hspace{7cm}
-			\addid{\iclientinst[Q]} \bigpar \ \isystemterm
-		\end{array}
-	}}
+%\\[25pt]
+%\mathrule{while-true}
+%	{\eval \cond {true}}
+%	{
+%		{\begin{array}{l}
+%			\addid{\iclientinst[\pwhile{\cond}{P}[Q]]} \bigpar \ \isystemterm
+%			\arro{\tau} 
+%			\\
+%			\hspace{4.5cm}
+%			\addid{\iclientinst[P;\pwhile{\cond}{P}[Q]]} \bigpar \ \isystemterm
+%		\end{array}
+%		}
+%	}
+%\\[25pt]
+%\mathrule{while-false}
+%	{\eval \cond {false}}
+%	{
+%		{\begin{array}{l}
+%			\addid{\iclientinst[\pwhile{\cond}{P}[Q]]} \bigpar \ \isystemterm
+%			\arro{\tau} 
+%			\\
+%			\hspace{7cm}
+%			\addid{\iclientinst[Q]} \bigpar \ \isystemterm
+%		\end{array}
+%	}}
 	\\
 \end{array}
  \]
@@ -487,12 +488,17 @@ over well-formed terms, up-to the structural congruence.
 \server{\astate}{\inserver\upd\cid\epsilon}{\update{\outserver}{\cid}{\agsprefpair}}\ \bigpar\  \iclient }
 \\
 \mathrule{drop-conn}
-{\cid \in \inserver \qquad  \cid \in \outserver}
-{\addid{\iclientinst[@][@][\aseqround][@][@][@][@][\inclient]}
-\ \bigpar \ \server{\astate}{\inserver}{\outserver} \ \bigpar \ \iclient
-\tr{\tau} 
-\addid{\iclientinst[@][@][\aseqround][@][@][@][@][\epsilon]}
-\ \bigpar \server{\astate}{\inserver \setminus\cid}{\outserver \setminus\cid}\ \bigpar \ \iclient} 
+	{\cid \in \inserver \qquad  \cid \in \outserver}
+	{
+	\begin{array}{l}
+	\addid{\iclientinst[@][@][\aseqround][@][@][@][@][\inclient]}
+		\ \bigpar \ \server{\astate}{\inserver}{\outserver} \ \bigpar \ \iclient
+	\tr{\tau} \hspace{4.5cm}\\
+	\hfill
+	\addid{\iclientinst[@][@][\aseqround][@][@][@][@][\epsilon]}
+	\ \bigpar \server{\astate}{\inserver \setminus\cid}{\outserver \setminus\cid}\ \bigpar \ \iclient
+	\end{array}
+	} 
 \\
 
 %{\cid \in \inserver \qquad  \cid \in \outserver}
@@ -515,22 +521,27 @@ over well-formed terms, up-to the structural congruence.
 
 \\
 	\mathrule{pull-2}
-	{\aseqround['] = filter\ (\geq \amxrf(\cid)) \ \aseqround
-	\qquad \inclient = \agssegpair[{\astate[']}]\cdot\agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]
+	{
+	\begin{array}{c}
+	\inclient = \agssegpair[{\astate[''']}][{\amxrf[_0]}]\cdot\agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]
+	\qquad 
+	\aseqround['] = \filter{\amxrf[_k](\cid)} \aseqround\\
+	\astate['']  = \iapply{\astate[''']}{\ireduce{\emptydelta\cdot\adelta[_1]\cdots\adelta[_k]}}
+	\end{array}
 	 }
 		 {\begin{array}{l}
 			\addid{\iclientinst[\tpullins][@][\aseqround][@][@][@][@][\inclient]}
-			     \ \bigpar \ \iserverins[{\astate['']}][{\amxrf[']}] \ \bigpar\ \iclient
+			     \ \bigpar \ \iserverins[{\astate[']}][{\amxrf}] \ \bigpar\ \iclient
  %[]\ \bigpar \ \isystemterm
-			\arro{\pulltran} 
+			\arro{\pulltran} \hspace{3cm}
 			\\
 			\hspace{1.5cm}
-			\addid{\iclientinst[P]
-						 [\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}]
+			\hfill\addid{\iclientinst[P]
+						 [{\astate['']}]
 						 [{\aseqround'}]
 						 [@][@]
 						 [{\receivebuffer}]}
-		\ \bigpar \ \iserverins[{\astate['']}][{\amxrf[']}][\inserver\upd{\cid}{\inserver(\cid)\cdot\aseqround[']}]
+		\ \bigpar \ \iserverins[{\astate[']}][{\amxrf}][\inserver\upd{\cid}{\inserver(\cid)\cdot\aseqround[']}]
 		\ \bigpar\ \iclient
 	 	\end{array}
 		}
@@ -538,27 +549,25 @@ over well-formed terms, up-to the structural congruence.
 
 
 
-\\
-	\mathrule{pull-2}
-	{\aseqround['] = filter\ (\geq \amxrf(\cid)) \ \aseqround}
-		 {\begin{array}{l}
-			\addid{\iclientinst[\tpullins][@][\aseqround][@][@][@][@][{\agssegpair[{\astate[']}]}\cdot\inclient]}
-			     \ \bigpar \ \iserverins[{\astate['']}][{\amxrf[']}] \ \bigpar\ \iclient
- %[]\ \bigpar \ \isystemterm
-			\arro{\pulltran} 
-			\\
-			\hspace{1.5cm}
-			\addid{\iclientinst[P]
-						 [{\astate[']}]
-						 [{\aseqround'}]
-						 [@][@]
-						 [{\receivebuffer}]}
-		\ \bigpar \ \iserverins[{\astate['']}][{\amxrf[']}][\inserver\upd{\cid}{\inserver(\cid)\cdot\aseqround[']}]
-		\ \bigpar\ \iclient
-	 	\end{array}
-		}
-\\
-\mbox{\henote{Este se necesita para el crash y recover y el inicial}}
+%\\
+%	\mathrule{pull-2}
+%	{\aseqround['] = filter\ (\geq \amxrf(\cid)) \ \aseqround}
+%		 {\begin{array}{l}
+%			\addid{\iclientinst[\tpullins][@][\aseqround][@][@][@][@][{\agssegpair[{\astate[']}]}\cdot\inclient]}
+%			     \ \bigpar \ \iserverins[{\astate['']}][{\amxrf[']}] \ \bigpar\ \iclient
+% %[]\ \bigpar \ \isystemterm
+%			\arro{\pulltran} 
+%			\\
+%			\hspace{1.5cm}
+%			\addid{\iclientinst[P]
+%						 [{\astate[']}]
+%						 [{\aseqround'}]
+%						 [@][@]
+%						 [{\receivebuffer}]}
+%		\ \bigpar \ \iserverins[{\astate['']}][{\amxrf[']}][\inserver\upd{\cid}{\inserver(\cid)\cdot\aseqround[']}]
+%		\ \bigpar\ \iclient
+%	 	\end{array}
+%		}
 \\
 %    \\[35pt]
 %    \hspace{-.3cm} \textsc{COMMUNICATION}
@@ -576,13 +585,29 @@ over well-formed terms, up-to the structural congruence.
  \end{array}
  \]
 
+Let $\inserver$ such that $\dom\inserver = \{\cid_0,\ldots,\cid_m\}$ and
+       $\forall\cid_l\in\dom\inserver.\inserver(\cid_l) =  \aroundtuple[\cid_l][\nround^0_l][{\adelta^0_l}]\cdots
+      \aroundtuple[\cid_l][\nround^{k_l}_l][{\adelta^{k_l}_l}]$. Then, 
+$\receiveroundsname{\inserver} = \agssegpair[@][{\amxrf}]$ with
+   \begin{itemize}
+      \item $\adelta = \ireduce{\adelta^0_0\cdots\adelta^{k_0}_0\cdots\adelta^0_m\cdots\adelta^{k_m}_m}$
+      \item $\dom{\amxrf} = \dom{\inserver}$
+      \item $\forall\cid_l\in\dom\inserver.\amxrf(\cid_l) = n^{k_l}_l$
+\end{itemize}
+
+Let $\aseqround =  \aroundtuple[\cid][\nround_0][{\adelta_0}]\cdots
+      \aroundtuple[\cid][\nround_k][{\adelta_k}]$ be a well-formed pending buffer. Then, 
+      
+      $\filter n \aseqround = \aroundtuple[\cid][\nround_j][{\adelta_j}]\cdots
+      \aroundtuple[\cid][\nround_k][{\adelta_k}]$ if $\nround_{j-1}\leq n$ and $\nround_j>n$.
+
+
 \henote{well-formedness: $i\in\dom{in}
- iff i\in\dom{out}$   y no conectado, no mensajes en las colas.}
+ iff i\in\dom{out}$   y no conectado, no mensajes en las colas.
+ todos los r estan crecientes y los f tambien}
 
-
+\henote{
 Rule $\textsc{(drop-conn)}$ removes from the server's queues the client called $b_i$. Rule $\textsc{(crash-and-recover)}$ leaves undefined the server's queues and preserves the server's persistent state.  Rule $\textsc{(accept-conn)}$ show how to add a new connecti(Read)send to its the persistent state. Last rule from \textbf{\textsc{(server)}} is Rule $\textsc{(batch)}$, the most interesting of this group. Its has three hypothesis, the first one, is responsible for receiving rounds from the queue of in-messages. Se\cond one, let $\emptygssegment$ be a empty segment, it gives back a delta object who represents the combination of numbers of rounds into a single object. Finally, this object is applied to the persistent state. As result, the persistent state is putted into the queues messages-out.
-
 There are two \textbf{\textsc{(communications)}} rules. Rule $\textsc{(comm-server-client)}$ when the server has a message for client $i^{th}$, this is removed from the server's queue message-out and is putted into the queue message-in from client $i^{th}$. Rule $\textsc{(comm-client-server)}$ states when a round from client $i^{th}$ is left into server queue message-in.
-
 Rule $\textsc{(Read)}$ gives the result of performing a lecture on messages queues from the client. Rule $\textsc{(update)}$ adds an update to the transaction buffer. Rule $\textsc{(push)}$ leaves into push buffer a delta object resulted of reducing the push buffer with transaction buffer. The transaction buffer is cleaned and the number of rounds sent is incremented by one. Rule $\textsc{(pull)}$ shows when a persisted state from a client is modified. The hypothesis are that a channel have been accepted, i.e., these must be defined for client $i^{th}$ besides the receive buffer should have an element at least. $\textsc{(confirmed)}$
-computes the states of the internal queues,i.e., if these has any element. Rules $\textsc{(while-true)}$ and $\textsc{(while-false)}$ are standard. Rule $\textsc{(send)}$ creates a new round setting who is the client ($i^{th}$), how many rounds client ($i^{th}$) has sent and content from the push buffer. Finally rule $\textsc{(receive)}$ move out segments from the client's queue message-in to receive buffer.
+computes the states of the internal queues,i.e., if these has any element. Rules $\textsc{(while-true)}$ and $\textsc{(while-false)}$ are standard. Rule $\textsc{(send)}$ creates a new round setting who is the client ($i^{th}$), how many rounds client ($i^{th}$) has sent and content from the push buffer. Finally rule $\textsc{(receive)}$ move out segments from the client's queue message-in to receive buffer.}
