@@ -31,12 +31,12 @@ We have introduced an abstract GSP protocol and a robust streaming server-client
    		{\adelta[_1] \triangleleft \anupdseq[_1] \ldots \adelta[_n] \triangleleft \anupdseq[_n]}
 		{\ireduce {\adelta[_1] \cdots \adelta[_n]} \triangleleft \anupdseq[_1] \cdots \anupdseq[_n]}
 \\
-\\
-&
-\mathax{\triangapplyemp\medskip\medskip}{\medskip\medskip\iapply \astate {\emptydelta}  \triangleleft \astate}{} 
+%\\
+%&
+%\mathax{\triangapplyemp\medskip\medskip}{\medskip\medskip\iapply \astate {\emptydelta}  \triangleleft \astate}{} 
   
-&
-\mathax{\triangreduceemp\medskip\medskip}{\medskip\medskip \ireduce{\epsilon} \triangleleft \emptydelta}{} 
+%&
+%\mathax{\triangreduceemp\medskip\medskip}{\medskip\medskip \ireduce{\epsilon} \triangleleft \emptydelta}{} 
   
 %  \mathrule{\triangread}
  % 		{\astate \triangleleft \anupdseq}
@@ -98,6 +98,11 @@ $\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_{n-1}] \triangleleft \a
 
 $\Leftarrow)$ Follows analogously. 
 \end{proof}
+
+\begin{lemma}\label{lemma:reduceinreduce} $\ireduce{\adelta[_0]\cdots\ireduce{\adelta['_{0}]\cdots\adelta['_{m-1}]}\cdots\adelta[_{n-1}]}\triangleleft \anupdseq$ iff $\ireduce{\adelta[_0]\cdots\adelta['_0]\cdots\adelta['_{m-1}]\cdots\adelta[_{n-1}]}\triangleleft \anupdseq$
+
+\end{lemma}
+
 %\begin{itemize}
 %	\item On $\mathit{Delta} \times \mathit{Update}^*$, let $\triangleleft$ be the smallest relation such that (1) $\emptydelta \triangleleft []$, and
 %(2) $d \triangleleft a$ implies $append(d,u) \triangleleft a \cdot u$ for all updates $u$, and (3) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $reduce(d_1 \ldots d_n) \triangleleft a_1 \cdots a_n$ and (4) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $\remove{d_1 \ldots d_{n}}{d_n} \triangleleft a_1 \cdots a_{n-1}$. \marginpar{El (4) lo agregamos nosotros. ¿Se aclara? ¿C\'omo?}
@@ -148,8 +153,8 @@ system. We say $\isystemterm$ implements $\systemterm$ if the following conditio
 	\item \label{prop_sent}  
 	\begin{itemize}
 	   \item   $\cid_l \in \dom\inserver$, $\cid_l \in \dom\outserver$ and
-	 $ \ireduce{\igetdeltas{\inserver(\cid_l)}\cdot {\pushbuffer}_l} \triangleleft \ {\tsent}_l$; or
-	   \item  $\cid_l \not\in\dom\inserver$...
+	 $ \ireduce{\igetdeltas{\inserver(\cid_l)}\cdot {\pushbuffer}_l} \triangleleft \ \flatten{{\tsent}_l}$; or
+	   \item  $\cid_l \not\in\dom\inserver,  {\pushbuffer}_l \triangleleft \ \flatten{{\tsent}_l}$
 	\end{itemize}
 
 	\item \label{prop_pending} $\pending_l = \aroundtuplei[1]\ldots\aroundtuplei[h]$ and 
@@ -366,39 +371,57 @@ We use $\approx$ for standard weak bisimulation.
 %					\]
 %						Then, this property holds.
 
-						\item $\cid\in\dom\inserver$: \henote{Completar}
+						\item $\cid\notin\dom\inserver$: We need to prove that 
+						\[\ireduce{\pushbuffer\cdot \transactionbuffer} \triangleleft \ \flatten{{\tsent}\cdot[\ttransactionbuffer]}\]
+						 Since $\implements{\isystemterm}{\systemterm}$, 
+						 $\pushbuffer \triangleleft \ \flatten{\tsent}$ (\refprop{prop_sent}) 
+						 and  $\transactionbuffer \triangleleft{\ttransactionbuffer}$ (\refprop{prop_transactions}). 
+						 Then, we can build the following proof 
+
+						\[
+						  \mathrulean{\lemref{lemma:reduce}}
+						  {
+						  \igetdeltas{\inserver(\cid)} \triangleleft \ \anupdseq[_1] 
+						  \quad
+						 \transactionbuffer \triangleleft \ttransactionbuffer}
+  						 {\ireduce{\pushbuffer\cdot \transactionbuffer} \triangleleft \ \anupdseq[_1]\cdot\ttransactionbuffer}
+						\]
+						
+						The proof is completed by noting that $\anupdseq[_1] = \flatten{{\tsent}}$.
+
 						\end{itemize}
 						
 						
 						
 						
 						\item[\ref{prop_pending}.] We need to prove 
-						$\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}\cdot \transactionbuffer}\triangleleft \flatten{\tpending\cdot [\ttransactionbuffer]} \ $
-
-						\henote{OJO: 
 						$\ireduce{\igetdeltas{\pending}\cdot\ireduce{{\pushbuffer}\cdot \transactionbuffer}}\triangleleft \flatten{\tpending\cdot [\ttransactionbuffer]}$
-						Ajustar la prueba!
-						}
 						
 						\henote{Conviene anticipar las hipothesis}
 						 Since 
 						$\implements{\isystemterm}{\systemterm}$, the following holds
 						\begin{itemize}
-							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by property \ref{prop_transactions};  \henote{Cambiar por macro}
-							\item $\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}}\triangleleft \flatten{\tpending} \ $ by property \ref{prop_pending};
+							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by property \refprop{prop_transactions};  
+							\item $\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}}\triangleleft \flatten{\tpending} \ $ by property \refprop{prop_pending};
 						\end{itemize}
-
+						We know that $\flatten{\tpending\cdot [\ttransactionbuffer]}$ = $\flatten{\tpending} \cdot \ttransactionbuffer$.
+						 Then, we can build the following proof 
+						 
 
 					\[
+					   \mathrulean{\lemref{lemma:reduceinreduce}}
+					   {
 						  \mathrulean{\lemref{lemma:reduce}}
 						  {\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}} \triangleleft \flatten{\tpending}
-								\quad
-								\transactionbuffer \triangleleft \ttransactionbuffer}
+						    \quad
+						    \transactionbuffer \triangleleft \ttransactionbuffer}
   						{\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}\cdot \transactionbuffer}\triangleleft \flatten{\tpending\cdot [\ttransactionbuffer]}}  
+					   }
+					   {\ireduce{\igetdeltas{\pending}\cdot\ireduce{{\pushbuffer}\cdot \transactionbuffer}}\triangleleft \flatten{\tpending\cdot [\ttransactionbuffer]}}  
 					\]
-					We have used that $\flatten{\tpending\cdot [\ttransactionbuffer]}$ = $\flatten{\tpending} \cdot \ttransactionbuffer$, besides,
+					
 						
-						\item[\ref{prop_size_buffersent}.] It trivially holds since in both cases is $n_l + 1$.
+						\item[\ref{prop_size_buffersent}.] It trivially holds since in both cases the counters are incremented by one. \chnote{Esta hipotesis sospechamos que sobra.}
 						\item[{--}] The remaining properties straightforwardly hold.
 								
 					\end{enumerate}
@@ -420,7 +443,7 @@ We use $\approx$ for standard weak bisimulation.
 
 						\begin{itemize}
 						
-							\item[\ref{prop_sent}.] We have moved the ${\pushbuffer}$ to $\inserver(i)$, leaving in the push buffer, $\emptydelta$. Furthermore, ${\tsent}_t$ is $\epsilon$. By \triangemptydelta this part of the property holds. 	
+							\item[\ref{prop_sent}.] We have moved the ${\pushbuffer}$ to $\inserver(\cid)$, leaving in the push buffer, $\emptydelta$. Furthermore, ${\tsent}_t$ is $\epsilon$. By \triangemptydelta this part of the property holds. 	
 							We build the following proof for 
 						$\ireduce{\igetdeltas{\inserver(l)}\cdot \pushbuffer} \triangleleft \ {\tsent}_h \cdot {\tsent}_t$
 						\henote{Aca no es cualquier l, es la identidad dle cliente que se movio. Revisar con la nueva formulacion}
