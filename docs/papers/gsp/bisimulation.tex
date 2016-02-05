@@ -155,6 +155,26 @@ system. We say $\isystemterm$ implements $\systemterm$ if the following conditio
 	\item \label{prop_pending} $\pending_l = \aroundtuplei[1]\ldots\aroundtuplei[h]$ and 
 		$\ireduce{\adelta_1\cdots\adelta_h\cdot {\pushbuffer}_l} \triangleleft \flatten{\tpending_l}$;
 	\item  \label{prop_size_buffersent} $m_l = n_l$ \chnote{Habría que ponerle otro font a la del abstracto} \henote{le llame m al abst}
+
+\item \label{prop_inclient} if $\cid_l \in \dom{\outserver}$ then:
+    \begin{itemize}
+%    \item  ${\inclient}_l = \epsilon$ and $\treceivebuffer = 0$; or  
+    \item  ${\inclient}_l \cdot \outserver(\cid_l)  = \agssegpair[{\astate[']}]\cdot\agssegpairi[1] \cdots \agssegpairi[h]$
+     % $\ireduce{\adelta_1\cdots\adelta_h}\triangleleft  \queuemessage[\tknown..|\queuemessage| - 1]$ 
+     and  
+     $\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_{h}]}}\triangleleft \queuemessage )$; or 
+     
+     
+     \item ${\inclient}_l = \agssegpairi[1] \cdots \agssegpairi[h']$, $\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$; 
+     \linebreak
+      $\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+x-1])$; and $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft 
+       \queuemessage[\tknown_l+x..|\queuemessage| - 1])$; and $x \leq \tknown_l$.
+     
+%     \item
+%     ${\inclient}_l \cdot \outserver(\cid_l) = \agssegpairi[1] \cdots \agssegpairi[h]$ and $\ireduce{\adelta_1\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..|\queuemessage| - 1])$;
+    \end{itemize}
+
+
 \item \label{prop_inclient} if $\cid_l \in \dom{\outserver}$ then:
     \begin{itemize}
     \item  ${\inclient}_l = \epsilon$ and $\treceivebuffer = 0$; or  
