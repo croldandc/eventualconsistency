@@ -154,8 +154,8 @@ system. We say $\isystemterm$ implements $\systemterm$ if the following conditio
 
 	\item \label{prop_pending} $\pending_l = \aroundtuplei[1]\ldots\aroundtuplei[h]$ and 
 		$\ireduce{\adelta_1\cdots\adelta_h\cdot {\pushbuffer}_l} \triangleleft \flatten{\tpending_l}$;
-	\item  \label{prop_size_buffersent} $m_l = n_l$ \chnote{Habría que ponerle otro font a la del abstracto} \henote{le llame m al abst}
-
+	\item  \label{prop_size_buffersent} $m_l = n_l$ 
+	
 \item \label{prop_inclient} if $\cid_l \in \dom{\outserver}$ then:
     \begin{itemize}
 %    \item  ${\inclient}_l = \epsilon$ and $\treceivebuffer = 0$; or  
@@ -446,6 +446,7 @@ We use $\approx$ for standard weak bisimulation.
 
 
 \item {\bf rule \ruleName{receive}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
+\henote{cambiar prueba con la nueva definición}
 				\[\begin{array}{r@{=}l}
 					\isystemterm & \addid{\iclientinst[@][@][@][@][@][@][@][\inclient]} \ \bigpar \ \iserverins[\astate['']] \ \bigpar\ \iclient['']
 					\\
@@ -458,8 +459,8 @@ We use $\approx$ for standard weak bisimulation.
 				\henote{la macro para i, por todos lados}
 
 				
-				\chnote{Si bien es obvio, lo pregunto. No estamos poniendo como hipotesis que i pertenece al outserver. Se infiere con la hipotesis, pero no es necesario?}
-				\henote{se puede agregar, no da\~na igual las pre no se evaluan en ningun orden, uno tuviese que decir con implicaicones y queda feo}
+%				\chnote{Si bien es obvio, lo pregunto. No estamos poniendo como hipotesis que i pertenece al outserver. Se infiere con la hipotesis, pero no es necesario?}
+%				\henote{se puede agregar, no da\~na igual las pre no se evaluan en ningun orden, uno tuviese que decir con implicaicones y queda feo}
 				
 
 				We  prove that $(\isystemterm',\systemterm) \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm}$ 
