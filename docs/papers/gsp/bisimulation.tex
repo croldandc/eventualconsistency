@@ -167,13 +167,13 @@ system. We say $\isystemterm$ implements $\systemterm$ if the following conditio
     \item  ${\inclient}_l \cdot \outserver(\cid_l)  = \agssegpair[{\astate[']}]\cdot\agssegpairi[1] \cdots \agssegpairi[h]$
      % $\ireduce{\adelta_1\cdots\adelta_h}\triangleleft  \queuemessage[\tknown..|\queuemessage| - 1]$ 
      and  
-     $\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_{h}]}}\triangleleft \queuemessage )$; or 
+     $\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_{h}]}}\triangleleft \flatten{\queuemessage} )$; or 
      
      
      \item ${\inclient}_l = \agssegpairi[1] \cdots \agssegpairi[h']$, $\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$; 
      \linebreak
-      $\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1])$; and $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft 
-       \queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1])$
+      $\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]})$; and $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft 
+       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]})$
 %     \item
 %     ${\inclient}_l \cdot \outserver(\cid_l) = \agssegpairi[1] \cdots \agssegpairi[h]$ and $\ireduce{\adelta_1\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..|\queuemessage| - 1])$;
     \end{itemize}
@@ -443,18 +443,32 @@ We use $\approx$ for standard weak bisimulation.
 
 						\begin{itemize}
 						
-							\item[\ref{prop_sent}.] We have moved the ${\pushbuffer}$ to $\inserver(\cid)$, leaving in the push buffer, $\emptydelta$. Furthermore, ${\tsent}_t$ is $\epsilon$. By \triangemptydelta this part of the property holds. 	
-							We build the following proof for 
-						$\ireduce{\igetdeltas{\inserver(l)}\cdot \pushbuffer} \triangleleft \ {\tsent}_h \cdot {\tsent}_t$
-						\henote{Aca no es cualquier l, es la identidad dle cliente que se movio. Revisar con la nueva formulacion}
-					\[
-						  \mathrulean{\lemref{lemma:reduce}}
-						  {\ireduce{\igetdeltas{\inserver(l)}} \triangleleft \ {\tsent}_h
+							\item[\ref{prop_sent}.] $\around = \aroundtuple[\cid][\nround][\pushbuffer]$ and $\igetdeltas{\inserver(\cid)} = \adelta[_0] \cdots \adelta[_{n-1}]\cdot\pushbuffer$ where the $n$ first deltas belonged to $\inserver(\cid)$ before the send transition.  Furthermore, as $\implements{\isystemterm}{\systemterm}$, the following property holds $\ireduce{\igetdeltas{\inserver(\cid)}\cdot {\pushbuffer}} \triangleleft \ \flatten{{\tsent}}$.
+							
+							Since the hypothesis of the rule states that $\cid\in\dom\inserver$, we have to prove that
+							\[\ireduce{\igetdeltas{\inserver(\cid)}\cdot \emptydelta} \triangleleft \ \flatten{\tsent} \]
+				
+							\[
+						  	\mathrulean{\lemref{lemma:reduce}}
+						  	{\ireduce{\adelta[_0] \cdots \adelta[_{n-1}]\cdot\pushbuffer} \triangleleft \ {\tsent}
 								\quad
-								\pushbuffer \triangleleft {\tsent}_t}
-  						{\ireduce{\igetdeltas{\inserver(l)}\cdot \pushbuffer} \triangleleft \ {\tsent}_h \cdot {\tsent}_t}  
-					\]
-					\henote{estas usando $\delta_p$ en lugar de $\pushbuffer$, gran lio si cambiamos las macros}.
+								\emptydelta \triangleleft \epsilon}
+  							{\ireduce{\adelta[_0] \cdots \adelta[_{n-1}]\cdot\pushbuffer\cdot\emptydelta} \triangleleft \ {\tsent}}  
+							\]
+							
+							
+							%We have moved the ${\pushbuffer}$ to $\inserver(\cid)$, leaving in the push buffer, $\emptydelta$. Furthermore, ${\tsent}_t$ is $\epsilon$. By \triangemptydelta this part of the property holds. 	
+						%	We build the following proof for 
+						%$\ireduce{\igetdeltas{\inserver(l)}\cdot \pushbuffer} \triangleleft \ {\tsent}_h \cdot {\tsent}_t$
+						%\henote{Aca no es cualquier l, es la identidad dle cliente que se movio. Revisar con la nueva formulacion}
+					%\[
+					%	  \mathrulean{\lemref{lemma:reduce}}
+					%	  {\ireduce{\igetdeltas{\inserver(l)}} \triangleleft \ {\tsent}_h
+					%			\quad
+					%			\pushbuffer \triangleleft {\tsent}_t}
+  					%	{\ireduce{\igetdeltas{\inserver(l)}\cdot \pushbuffer} \triangleleft \ {\tsent}_h \cdot {\tsent}_t}  
+					%\]
+					%\henote{estas usando $\delta_p$ en lugar de $\pushbuffer$, gran lio si cambiamos las macros}.
 			
 							\item[\ref{prop_pending}.] By hypothesis, $\pending = \aroundtuplei[0]\ldots\aroundtuplei[h]$ and  
 							$\ireduce{\adelta_0\cdots\adelta_h\cdot\pushbuffer} \triangleleft \flatten{\tpending}$.
@@ -469,35 +483,72 @@ We use $\approx$ for standard weak bisimulation.
 
 
 \item {\bf rule \ruleName{receive}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
-\henote{cambiar prueba con la nueva definición}
 				\[\begin{array}{r@{=}l}
 					\isystemterm & \addid{\iclientinst[@][@][@][@][@][@][@][\inclient]} \ \bigpar \ \iserverins[\astate['']] \ \bigpar\ \iclient['']
 					\\
 					\isystemterm['] & \addid{\iclientinst[@][@][@][@][@][@][@][\inclient\cdot \aseg]} \ \bigpar \ \iserverins[{\astate[']}][@][@][\outserver\upd{\cid}\aseqseg] \ \bigpar\ \iclient['']
 					\\
-					\outserver(i) & \aseg\cdot\aseqseg
+					\outserver(\cid) & \aseg\cdot\aseqseg
 					
 				  \end{array}
 				\]
-				\henote{la macro para i, por todos lados}
+
+				Since $\implements{\isystemterm}{\systemterm}$, the property \refprop{prop_inclient} holds. We have two cases:
+				\begin{itemize}
+					\item  $\outserver(\cid) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, then $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \
+       \flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]}$. By \triangreduce \ we know that $\adelta_{h'+1}\triangleleft \flatten{\queuemessage[\tknown+\treceivebuffer .. m - 1]}$ with $m < |\queuemessage| - \tknown- \treceivebuffer$. Hence, 
+       
+     				\[\systemterm = \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] \]
+				with $\implements{\isystemterm['']}{\systemterm['']}$. As $\tknown+ \treceivebuffer + m < |\queuemessage|$ then by inspection of rules in \henote{\figref{}}, 
+				$\systemterm \arroi{\tau}\cdots\arroi{\tau} \systemterm[']$ with $m$ internal transitions. Then,
+				\[\begin{array}{r@{=}l}
+						\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+m}}[{\systemterm['']}]	
+				  \end{array}		
+				\]
+				
+				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				by checking the properties in \defref{def:implementation}.	
+				\begin{itemize}
+						
+					\item[\ref{prop_inclient}.] ${\inclient} = \agssegpairi[1] \cdots \agssegpairi[h']\cdot\adelta_{h'+1}$ and $\outserver(\cid) = \agssegpairi[h'+2] \cdots \agssegpairi[h]$. We prove that
+					\[\ireduce{\adelta_1\cdots\adelta_{h'+1}}\triangleleft \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer+m-1]}\]
+					
+						\[
+						  \mathrulean{\lemref{lemma:reduce}}
+						       {\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer-1]}
+							\quad
+							\adelta_{h'+1} \triangleleft \flatten{ \queuemessage[\tknown+\treceivebuffer..m-1]}}
+  						       {\ireduce{\adelta_1\cdots\adelta_{h'+1}}\triangleleft \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer+m-1]}}  
+						\]
+					It remains to prove that
+					\[\ireduce{\adelta_{h'+2}\cdots\adelta_h}\triangleleft \flatten{\queuemessage[\tknown+\treceivebuffer+m..|\queuemessage| - 1]}\]
+					
+					\item[{--}] The remaining properties straightforwardly hold.
+							
+					\end{itemize}			
+				\end{itemize}
+% \item ${\inclient}_l = \agssegpairi[1] \cdots \agssegpairi[h']$, $\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$; 
+ %    \linebreak
+  %    $\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1])$; and $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft 
+   %    \queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1])$
 
 				
 %				\chnote{Si bien es obvio, lo pregunto. No estamos poniendo como hipotesis que i pertenece al outserver. Se infiere con la hipotesis, pero no es necesario?}
 %				\henote{se puede agregar, no da\~na igual las pre no se evaluan en ningun orden, uno tuviese que decir con implicaicones y queda feo}
 				
 
-				We  prove that $(\isystemterm',\systemterm) \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm}$ 
-				by checking the properties in \defref{def:implementation}.			
+%				We  prove that $(\isystemterm',\systemterm) \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm}$ 
+%				by checking the properties in \defref{def:implementation}.			
 
 
 
-						\begin{itemize}
-							\item[\ref{prop_inclient}.] It is immediate that this property holds because we move a segment from $\outserver(i)$ to $\inclient(i)$.
+%						\begin{itemize}
+%							\item[\ref{prop_inclient}.] It is immediate that this property holds because we move a segment from $\outserver(i)$ to $\inclient(i)$.
 							
 							
-						\item[{--}] The remaining properties straightforwardly hold.
+%						\item[{--}] The remaining properties straightforwardly hold.
 
-						\end{itemize}
+%						\end{itemize}
 					
 	
 	\item {\bf rule \ruleName{pull-1}}. Then, $\isystemterm  \arroi{\pulltran} \isystemterm '$ with 
