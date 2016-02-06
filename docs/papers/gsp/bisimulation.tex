@@ -167,17 +167,39 @@ system. We say $\isystemterm$ implements $\systemterm$ if the following conditio
 	
 \item \label{prop_inclient} if $\cid_l \in \dom{\outserver}$ then:
     \begin{itemize}
-%    \item  ${\inclient}_l = \epsilon$ and $\treceivebuffer = 0$; or  
-    \item  ${\inclient}_l \cdot \outserver(\cid_l)  = \agssegpair[{\astate[']}]\cdot\agssegpairi[1] \cdots \agssegpairi[h]$
-     % $\ireduce{\adelta_1\cdots\adelta_h}\triangleleft  \queuemessage[\tknown..|\queuemessage| - 1]$ 
-     and  
-     $\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_{h}]}}\triangleleft \flatten{\queuemessage} )$; or 
-     
-     
-     \item ${\inclient}_l = \agssegpairi[1] \cdots \agssegpairi[h']$, $\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$; 
+   % \item  ${\inclient}_l \cdot \outserver(\cid_l)  = \agssegpair[{\astate[']}]\cdot\agssegpairi[1] \cdots \agssegpairi[h]$
+    % and  
+    % $\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_{h}]}}\triangleleft \flatten{\queuemessage} )$; or 
+      \item ${\inclient}_l = \agssegpairi[1] \cdots \agssegpairi[h']$, $\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$; 
      \linebreak
-      $\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]})$; and $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft 
-       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]})$
+      $\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]}$; and $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft 
+       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$; or
+     
+     \item ${\inclient}_l = \agssegpair[{\astate[']}]\cdot\agssegpairi[{z+1}] \cdots \agssegpairi[h']$, 
+              $\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$,
+     		$\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$,
+               $\astate['] \triangleleft \ \queuemessage[0 .. t - 1]$ and $t \leq \tknown_l+\treceivebuffer_l$; 
+
+     
+     $\ireduce{\adelta_{z+1}\cdots\adelta_{h'}}\triangleleft \ \flatten{ \queuemessage[t..\tknown_l+\treceivebuffer_l-1]}$ and 
+     $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \
+       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$; or
+     
+       
+     \item ${\inclient}_l = \epsilon$, 
+     $\outserver(\cid_l) = \agssegpair[{\astate[']}]\cdot\agssegpairi[z+1] \cdots \agssegpairi[h]$, 
+     $\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$
+      $\astate['] \triangleleft \ \queuemessage[0 .. t - 1]$ and $\tknown_l+\treceivebuffer_l \leq t$; 
+     
+     $\ireduce{\adelta_{z+1}\cdots\adelta_{h}}\triangleleft \flatten{ \queuemessage[t..\tknown_l+\treceivebuffer_l-1]}$ 
+     
+     
+%     [2/6/16, 2:46:29 PM] hernan melgratti: outs(i) =  <s, >?.<d?  > ?<d,,,>and apply?. and s? < S[0..l-1] y l >= k+j (o also asi)
+%[2/6/16, 2:47:34 PM] hernan melgratti: -inc = <s, >?.<d?  > ?<d,,,> and outs = .<d?  > ?<d,,,>
+     
+     
+     
+    
 %     \item
 %     ${\inclient}_l \cdot \outserver(\cid_l) = \agssegpairi[1] \cdots \agssegpairi[h]$ and $\ireduce{\adelta_1\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..|\queuemessage| - 1])$;
     \end{itemize}
@@ -496,11 +518,11 @@ We use $\approx$ for standard weak bisimulation.
 				  \end{array}
 				\]
 
-				Since $\implements{\isystemterm}{\systemterm}$, the property \refprop{prop_inclient} holds. We have two cases:
+				Since $\implements{\isystemterm}{\systemterm}$, the property \refprop{prop_inclient} holds. We have three cases:
 				\begin{itemize}
 				
-					\item  $\outserver(\cid) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, then $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \
-       \flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]}$. By \triangreduce \ we know that $\adelta_{h'+1}\triangleleft \flatten{\queuemessage[\tknown+\treceivebuffer .. \tknown+\treceivebuffer +m - 1]}$ with $m < |\queuemessage| - \tknown- \treceivebuffer$. Hence, 
+					\item  ${\inclient} = \agssegpairi[1] \cdots \agssegpairi[h']$, $\outserver(\cid) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, then $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \
+       \flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]}$. By \lemref{lemma:reducefirst} \ we know that $\adelta_{h'+1}\triangleleft \flatten{\queuemessage[\tknown+\treceivebuffer .. \tknown+\treceivebuffer +m - 1]}$ with $m < |\queuemessage| - \tknown- \treceivebuffer$. Hence, 
        
      				\[\systemterm = \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] \]
 				with $\implements{\isystemterm['']}{\systemterm['']}$. As $\tknown+ \treceivebuffer + m < |\queuemessage|$ then by inspection of rules in \henote{\figref{}}, 
@@ -557,7 +579,18 @@ We use $\approx$ for standard weak bisimulation.
 					\end{itemize}	
 					
 					
-					\item  $\outserver(\cid) = \agssegpair[{\astate[']}]\cdot\agssegpairi[1] \cdots \agssegpairi[h]$, then $\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_{h}]}}\triangleleft \flatten{\queuemessage}$. 
+				\item ${\inclient} = \agssegpair[{\astate[']}]\cdot\agssegpairi[{z+1}] \cdots \agssegpairi[h']$, 
+              				  $\outserver(\cid) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, the case follows analogously to the previous case.
+     		%$\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$,
+               %$\astate['] \triangleleft \queuemessage[0 .. t - 1]$ and $t \leq \tknown_l+\treceivebuffer_l$; 
+
+
+					
+					\item  ${\inclient} = \epsilon$, 
+     					          $\outserver(\cid) = \agssegpair[{\astate[']}]\cdot\agssegpairi[z+1] \cdots \agssegpairi[h]$, 
+     						   $\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$
+      						   $\astate['] \triangleleft \queuemessage[0 .. l - 1]$ and $\tknown+\treceivebuffer \leq l$;  
+					then $\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_{h}]}}\triangleleft \flatten{\queuemessage}$. 
 					Since $\astate['] = \iapply{\initialstate}{\ireduce{\adelta[_1]\cdots\adelta[_{z}]}}$, then $\astate[']\triangleleft \queuemessage[0..l-1]$ with $r = l - \tknown - \treceivebuffer$, besides $r \leq l < |\queuemessage|$.  Hence,
 				
 				\[\systemterm = \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] \]
@@ -579,13 +612,7 @@ We use $\approx$ for standard weak bisimulation.
 				$m$ represents the amount of internal transition that performed by client $\cid$ to reach $\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_{z}]}}$. Hence, $m =  |\queuemessage| - l - 1$ which always is $< |\queuemessage|$.   
 
 
-				Now by inspection of rules in \figref{}, 
-				$\systemterm^{r} \arroi{\pulltran} \systemterm[']$ with
-				\[\begin{array}{r@{=}l}
-					\systemterm['] &  \tsystem{\tclienti{\tprogram}{\tknown+r+r}{\tpending_i \setminus \queuemessage[\tknown.. \tknown+ \treceivebuffer +  r + m  {\ -1}]}{\ttransactionbuffer}{\tsent}{0}}[{\systemterm[''']}]	
-				  \end{array}		
-				\]
-				
+								
 				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
 				by checking the properties in \defref{def:implementation}.	
 				\begin{itemize}	
@@ -796,23 +823,36 @@ We use $\approx$ for standard weak bisimulation.
 					\forall\cid.(\inserver['](\cid) & \epsilon)
 				  \end{array}
 				\]
-		
-				Since $(\isystemterm,\systemterm)\in \mathcal{R}$,
-				\[\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\tsenthead] \cdot \tsent}{\treceivebuffer}} \]
-				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
-				$\systemterm \arroi{\tau} \ldots\ \arroi{\tau} \systemterm^{h}$ with
+				
+				
+
+				Since $\implements{\isystemterm}{\systemterm}$, for all $\cid \in\dom{\inserver}$
+				$\ireduce{\igetdeltas{\inserver(\cid)}\cdot {\pushbuffer}} \triangleleft \ \flatten{\tsent}$ (\refprop{prop_sent}) 
+				and  $\transactionbuffer \triangleleft{\ttransactionbuffer}$ (\refprop{prop_transactions}). 
+				By $\lemref{lemma:reduce}$, $\flatten{\tsent} = \anupdseq[_1]\cdot\anupdseq[_2]$, 
+				$\ireduce{\igetdeltas{\inserver(\cid)}} \triangleleft \ \anupdseq[_1]$ and $ {\pushbuffer}  \triangleleft \ \anupdseq[_2]$. 
+			
+
+				Then, $\sum_{\cid=1}^{m} |\anupdseq[_1]_{\cid}| = h$. Furthermore, $(\isystemterm,\systemterm)\in \mathcal{R}$,
+				\[\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_1]] \cdot [\anupdseq[_2]]}{\treceivebuffer}[1]}[]\cdots\ \bigpar \ 
+		              \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_1]] \cdot [\anupdseq[_2]]}{\treceivebuffer}[m]}[\queuemessage] \]
+				By inspection of rules in \figref{}, 
+				Hence, 
+				$\systemterm \tr{\tau}_1 \ldots\ \tr{\tau}_m \systemterm[']$ with
 				\[\begin{array}{r@{=}l}
-					\systemterm^{h} &  \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[\queuemessage \cdot [\tsenthead]]
+					\systemterm['] &  \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_2]]}{\treceivebuffer}[1]}[]\cdots\ \bigpar \ 
+		              \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_2]]}{\treceivebuffer}[n]}[] \queuemessage \cdot[\tsenthead_1]\cdots[\tsenthead_h]\ 
+		              
 				  \end{array}		
 				\]
-				
-				\henote{Ac\'a tienen que avanzar todos los clientes? esto no me cierra mucho. Ac ten\'es que hacer que  el cliente 1 abstracto haga las
-				send de todos los mensajes que  están en ins(1), despues (2) y as\'i con cada uno de los clientes}
-				
-				Note, that $h$ represents the amount of internal transition that performed by client $\cid$. In particular,  $h$ = $|\inserver|$, hence the implementation send a only delta ($\delta$), it is a reduction of segments in $\inserver$, the abstract model can send tantos bloques de updates como cantidad de segmentos usados para construir el delta.(CAMBIAR!). 
-				\henote{que hay que cambiar?}
+
+				 $h$ is the amount of internal transition that performed by the system. In particular,  $h$ = $|\inserver|$, hence the implementation send a only delta ($\delta$), it is a reduction of segments in $\inserver$, the abstract model can send tantos bloques de updates como cantidad de segmentos usados para construir el delta.\chnote{cambiar explicacion en castellano}
 				We  prove that $(\isystemterm',\systemterm^{h}) \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm^{h}}$ 
 				by checking the properties in \defref{def:implementation}.	
+				
+								\henote{Ac\'a tienen que avanzar todos los clientes? esto no me cierra mucho. Ac ten\'es que hacer que  el cliente 1 abstracto haga las
+				send de todos los mensajes que  están en ins(1), despues (2) y as\'i con cada uno de los clientes}
+
 					\begin{enumerate}
 						\item[\ref{prop_sent}.] $\inserver$ has not rounds,i.e., is $\epsilon$. After $h$ transition in the abstract model, ${\tsent}_h$ is $\epsilon$, using \triangemptydelta we can see that this property holds.
 					      	\item[\ref{prop_inclient}.] We build the following proof for 
