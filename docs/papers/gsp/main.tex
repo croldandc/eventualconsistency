@@ -11,6 +11,7 @@
 %\addtolength{\oddsidemargin}{-1.25cm}pu
 %\setlength{\evensidemargin}{\oddsidemargin}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{array}
 
 \usepackage[all]{xy}\CompileMatrices
 \usepackage[english]{babel}
@@ -31,6 +32,8 @@
 \usepackage{color} %para los comentarios
 \usepackage[dvipsnames]{xcolor}
 
+\usepackage[bbgreekl]{mathbbol}
+
 \usepackage{xargs}
 %\usepackage{enumitem}
 \usepackage{enumerate}
@@ -38,7 +41,7 @@
 \input{macros}
 \bibliographystyle{plain}
 
-\title{GSP-Calculus}
+\title{A Formal Analysis of the Global Sequence Protocol}
 
 \author{Hern\'an Melgratti\inst{1,2} \and Christian Rold\'an\inst{1} 
         }
@@ -63,6 +66,17 @@
 \maketitle
 
 \begin{abstract}
+The Global Sequence Protocol (GSP) is an operational model for replicated 
+data stores, in which updates propagates asynchronously. We introduce 
+the GSP-calculus as a formal model for GSP. We  
+give a formal account for its proposed implementation, which addresses
+ communication failures and compact representation of data, and 
+ use simulation to prove that the implementation is correct. 
+ Then, we build on top of the GSP-calculus to reason 
+about execution histories and prove GSP ensures ordering properties
+such as read my writes, monotonic reads, causality and consistent prefix. 
+We also prove that GSP extended with synchronous 
+updates provides strong consistency guarantees.
 \end{abstract}
 
 \input{abstractgsp}

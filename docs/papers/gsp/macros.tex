@@ -1,4 +1,4 @@
-
+\newcommand{\ancho}{ p{\textwidth} <}
 
 %\newcommand{\powerset}{\mathcal{P}_f}
 %\newcommand{\compatible}{compatible}
@@ -132,13 +132,15 @@
 
 \newcommand{\dom}[1]{\textit{dom}(#1)}
 
+\newcommand{\igsp}{\textcolor{red}{\sc igsp}}
+
 \newcommand{\gsp}{\textcolor{red}{\sc gsp}}
 \newcommand{\tgspcalculus}{{\sc gsp}}
 \newcommand{\gspcalculus}{\textit{gsp-calculus}}
 
 % SEQUENCES
 
-\newcommand{\emptysequence}{\epsilon}
+\newcommand{\emptysequence}{\textcolor{OliveGreen}{\epsilon}}
 
 
 %%%%SYNTAX GSP
@@ -159,7 +161,7 @@
 \newcommand{\varset}{\textcolor{blue}{\mathcal{X}}}
 \newcommand{\valueset}{\textcolor{blue}{\mathcal{V}}}
 \newcommand{\opset}{\textcolor{blue}{\mathcal{O} }}
-\newcommand{\cid}{\textcolor{blue}{{\sf i}}}
+\newcommandx{\cid}[1][1={}]{\textcolor{blue}{{\sf i#1}}}
 \newcommand{\cidj}{\textcolor{blue}{{\sf j}}}
 
 \newcommand{\relrestriccion}[1]{\downarrow_{#1}}
@@ -168,33 +170,34 @@
 \newcommandx{\tsystem}[2][2=\systemterm]{#1\ \bigpar\ #2}
 
 % Clients configuration
-\newcommandx{\tclient}[8][7=\cid,8=n,usedefault=@]{\langle #1 , #4, #5, #3,  #2, #6, #8\, \rangle_{#7}}
-\newcommandx{\tclienti}[8][7=\cid,8=n,usedefault=@]{{\tclient{#1}{#2}{#3}{#4}{#5}{#6}[#7][#8]}}
+\newcommandx{\tclient}[8][7=\cid,8=\trounds,usedefault=@]{\langle #1 , #4, #5, #3,  #2, #6, #8\, \rangle_{#7}}
+\newcommandx{\tclienti}[8][7=\cid,8=\trounds,usedefault=@]{{\tclient{#1}{#2}{#3}{#4}{#5}{#6}[#7][{#8}]}}
 
 \newcommandx{\anabstcli}[7][1=\cid,2=\tprogram,3=\tknown,4=\tpending,5=\ttransactionbuffer,6=\tsent,7=\treceivebuffer,usedefault=@]
   {\tclient {#2_{#1}}{#3_{#1}}{#4_{#1}}{#5_{#1}}{#6_{#1}}{#7_{#1}}[#1]}
 \newcommandx{\anabstcliprime}[7][1=\cid,2=\tprogram',3=\tknown',4=\tpending',5=\ttransactionbuffer',6=\tsent',7=\treceivebuffer']
   {\tclient {#2_{#1}}{#3_{#1}}{#4_{#1}}{#5_{#1}}{#6_{#1}}{#7_{#1}}[#1]}
 
-\newcommand{\tknown}{\textit{k}}
+\newcommand{\tknown}{\textcolor{OliveGreen}{k}}
 
-\newcommandx{\anupd}[1][1={}]{\textcolor{OliveGreen}{\textit{u#1}}}
-\newcommandx{\aread}[1][1={}]{\textcolor{OliveGreen}{\textit{r#1}}}
+\newcommandx{\anupd}[1][1={}]{\textcolor{OliveGreen}{{u#1}}}
+\newcommandx{\aread}[1][1={}]{\textcolor{OliveGreen}{{r#1}}}
 
 \newcommandx{\anupdseq}[1][1={}]{\textcolor{OliveGreen}{\mathsf{u#1}}}
 
 \newcommandx{\ttransactionbuffer}[1][1={}]{\anupdseq[#1]}
-\newcommandx{\ublock}[2][1=\ttransactionbuffer,2=\cid]{[#1]}
+\newcommandx{\ublock}[2][1=\ttransactionbuffer,2=\cid]{\textcolor{Gray}{[#1]}}
 
 
 \newcommandx{\blockseq}[1][1={}]{\textcolor{OliveGreen}{\mathsf{b#1}}}
 
-\newcommandx{\tpending}[1][1={}]{\textcolor{OliveGreen}{\textcolor{OliveGreen}{\blockseq[_p]}}}
-\newcommand{\tsent}{\blockseq[_s]}
-\newcommand{\tsenthead}{\ttransactionbuffer[']}
+\newcommandx{\tpending}[1][1={}]{\textcolor{OliveGreen}{\blockseq[_P]}}
+\newcommand{\tsent}{\blockseq[_S]}
+\newcommand{\tsenthead}{\textcolor{Gray}{[\ttransactionbuffer[']]}}
 
-\newcommand{\treceivebuffer}{\textit{j}}
+\newcommand{\treceivebuffer}{\textcolor{OliveGreen}{j}}
 
+\newcommand{\trounds}{\textcolor{OliveGreen}{n}}
 
 %%%%Syntax of processes
 \newcommandx{\updcmd}[1][1=\anupd]{{\tt update}(#1)}
@@ -240,16 +243,17 @@
 
 %Labels
 
-\newcommandx{\udec}[2][1=u,2=\vertice,usedefault=@]{{#1\!^{\scalebox{.8}{$#2$}}}}
-\newcommandx{\vertice}[2][1=v, 2={},usedefault=@]{\mathbbmss{#1}{#2}}
-\newcommand{\readtran}[1]{\textit{rd}(#1)}
-\newcommand{\readtranaux}[1]{\textit{rd}(#1)}
-\newcommand{\receive}{\textit{receive}}
+\newcommandx{\udec}[2][1=u,2=\vertice,usedefault=@]{\textcolor{OliveGreen}{#1\!^{\scalebox{.8}{$#2$}}}}
+\newcommandx{\vertice}[2][1=v, 2={},usedefault=@]{\textcolor{OliveGreen}{\mathbbmss{#1}{#2}}}
+\newcommand{\readtran}[1]{\textcolor{OliveGreen}{\textit{rd}(#1)}}
+\newcommand{\readtranaux}[1]{\textcolor{OliveGreen}{\textit{rd}(#1)}}
+%\newcommand{\receive}{\textcolor{red}{\textit{receive}}}
+\newcommand{\pulltran}{\textcolor{OliveGreen}{\textit{pull}}}
 
-\newcommand{\confirmedtran}{\textit{cfm}}
-\newcommand{\pushtran}{\textit{push}}
-\newcommandx{\updatetran}[2][2=\vertice]{\textit{wr}(\udec[{#1}][#2])}
-\newcommand{\updatetranaux}[1]{\textit{wr}(#1)}
+\newcommand{\confirmedtran}{\textcolor{OliveGreen}{\textit{cfm}}}
+\newcommand{\pushtran}{\textcolor{OliveGreen}{\textit{push}}}
+\newcommandx{\updatetran}[2][2=\vertice]{\textcolor{OliveGreen}{\textit{wr}(\udec[{#1}][#2])}}
+\newcommand{\updatetranaux}[1]{\textcolor{OliveGreen}{\textit{wr}(#1)}}
 
 %\newcommand{\processtran}{\textit{process}}
 
@@ -260,8 +264,8 @@
 %
 
 %IMPLEMENTATION DATA TYPES
-\newcommand{\statetype}{\textit{State}}
-\newcommand{\deltatype}{\textit{Delta}}
+\newcommand{\statetype}{{State}}
+\newcommand{\deltatype}{{Delta}}
 
 
 %\newcommand{\initialstate}{\textcolor{Orange}{\textit{initialstate}}}
@@ -289,8 +293,8 @@
 %%%%GS SOMETHING
 \newcommandx{\astate}[2][1={},2=s,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
 \newcommandx{\adelta}[2][1={},2=\delta,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
-\newcommandx{\adeltaseq}[2][1={},2=d,usedefault=@]{\textcolor{Brown}{\mathbbm{#2#1}}}
-\newcommand{\nodelta}{\epsilon}
+%\newcommandx{\adeltaseq}[2][1={},2=d,usedefault=@]{\textcolor{Brown}{\mathbbm{#2#1}}}
+\newcommand{\nodelta}{\emptysequence}
 \newcommandx{\amxrf}[2][1={},2=f,usedefault=@]{\textcolor{Brown}{\mathtt{#2#1}}}
 
 
@@ -345,7 +349,9 @@
 
 \newcommandx{\inserver}[1][1={}]{\inqueue[_s{#1}]}
 \newcommandx{\outserver}[1][1={}]{\outqueue[_s{#1}]}
+%\newcommand{\inclient}{\inqueue[_c]}
 \newcommand{\inclient}{\inqueue[_c]}
+
 \newcommand{\outclient}{\outqueue[_c]}
 
 
@@ -366,7 +372,7 @@
 
 \newcommandx{\iclientsyntax}[9]
 	[1=P,2=\astate,3={\pendingtype},4=\pushbuffertype,5=\transactionbuffertype,
-			6=\receivebuffertype,7=n,8=\inclient,9=\outclient,usedefault=@]
+			6=\receivebuffertype,7=n,8=\aseqseg,9=\outclient,usedefault=@]
 	{
    	\langle #1,#2,#5,#4,#7,#3,#8\rangle
 	%al cambiar esta, hay que cambiar la de abajo.
@@ -398,8 +404,8 @@
 \newcommand{\known}{\astate}
 
 \newcommand{\pending}{\aseqround}
-\newcommand{\transactionbuffer}{\adelta_{t}}
-\newcommand{\pushbuffer}{\adelta_{p}}
+\newcommand{\transactionbuffer}{\textcolor{Brown}{\adelta_{\sf T}}}
+\newcommand{\pushbuffer}{\textcolor{Brown}{\adelta_{\sf P}}}
 \newcommand{\receivebuffer}{\aseqseg}
 
 
@@ -475,7 +481,6 @@
 \newcommand{\updatebyclient}[1]{\textit{update}(u)_#1}
 \newcommand{\readbyclient}[1]{\textit{read}(r)_#1}
 
-\newcommand{\pulltran}{\textit{pull}}
 \newcommand{\sendtran}{\textit{send}}
 \newcommand{\dropconn}[1]{\dagger(#1)}
 \newcommand{\dropconnectionclient}{\dagger}
@@ -486,7 +491,7 @@
 \newcommand{\acceptconn}[1]{\oplus(#1)}
 \newcommand{\crashandrecover}{\ddagger}
 \newcommand{\undefined}{\perp}
-\newcommand{\receiveroundsname}[1]{\textit{receivedRounds}(#1)}
+\newcommand{\receiveroundsname}[1]{\textit{rnds}(#1)}
 \newcommand{\notify}[3]{\textit{notify}(#1, #2, #3)}
 \newcommand{\clean}[2]{\textit{\cleannamefun}(#1, #2)}
 \newcommand{\sclean}[1]{\textit{\cleannamefun}(#1)}
@@ -652,7 +657,7 @@
 \newcommand{\triangread}{$\triangleleft$-\ireadname}
 
 \newcommand{\triangreduceemp}{$\triangleleft$-\ireducename-$\emptydelta$}
-\newcommand{\triangapplyemp}{$\triangleleft$-\iapplyname-$\epsilon$}
+\newcommand{\triangapplyemp}{$\triangleleft$-\iapplyname-$\emptysequence$}
 
 
 \newcommand{\implements}[2]{{#1}\ \mathit{ implements}	\ {#2}}
