@@ -836,37 +836,48 @@ We use $\approx$ for standard weak bisimulation.
 				Then, $\sum_{\cid=1}^{m} |\anupdseq[_1]_{\cid}| = h$. Furthermore, $(\isystemterm,\systemterm)\in \mathcal{R}$,
 				\[\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_1]] \cdot [\anupdseq[_2]]}{\treceivebuffer}[1]}[]\cdots\ \bigpar \ 
 		              \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_1]] \cdot [\anupdseq[_2]]}{\treceivebuffer}[m]}[\queuemessage] \]
-				By inspection of rules in \figref{}, 
-				Hence, 
+				
+				 $h$ is the amount of internal transitions performed by the system. The first one, corresponds to the first block of update from $\anupdseq[_1]$ of client 1. It is called $\tsenthead_1$. The following transitions correspond to the remaining blocks of update of $\anupdseq[_1]$ from client 1 and  $\anupdseq[_1]$ from the rest of clients.  Then, 
+				 
 				$\systemterm \tr{\tau}_1 \ldots\ \tr{\tau}_m \systemterm[']$ with
 				\[\begin{array}{r@{=}l}
 					\systemterm['] &  \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_2]]}{\treceivebuffer}[1]}[]\cdots\ \bigpar \ 
-		              \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_2]]}{\treceivebuffer}[n]}[] \queuemessage \cdot[\tsenthead_1]\cdots[\tsenthead_h]\ 
+		              \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_2]]}{\treceivebuffer}[n]}[] \queuemessage \cdot[\tsenthead_1]\cdots[\tsenthead_m]\ 
 		              
 				  \end{array}		
 				\]
 
-				 $h$ is the amount of internal transition that performed by the system. In particular,  $h$ = $|\inserver|$, hence the implementation send a only delta ($\delta$), it is a reduction of segments in $\inserver$, the abstract model can send tantos bloques de updates como cantidad de segmentos usados para construir el delta.\chnote{cambiar explicacion en castellano}
-				We  prove that $(\isystemterm',\systemterm^{h}) \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm^{h}}$ 
-				by checking the properties in \defref{def:implementation}.	
+				 
+			%	 In particular,  $h$ = $|\inserver|$, hence the implementation send a only delta ($\delta$), it is a reduction of segments in $\inserver$, the abstract model can send tantos bloques de updates como cantidad de segmentos usados para construir el delta.\chnote{cambiar explicacion en castellano}
 				
 								\henote{Ac\'a tienen que avanzar todos los clientes? esto no me cierra mucho. Ac ten\'es que hacer que  el cliente 1 abstracto haga las
 				send de todos los mensajes que  están en ins(1), despues (2) y as\'i con cada uno de los clientes}
-
+				
+				We  prove that $(\isystemterm',\systemterm[']) \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				by checking the properties in \defref{def:implementation}.	
+			
 					\begin{enumerate}
-						\item[\ref{prop_sent}.] $\inserver$ has not rounds,i.e., is $\epsilon$. After $h$ transition in the abstract model, ${\tsent}_h$ is $\epsilon$, using \triangemptydelta we can see that this property holds.
-					      	\item[\ref{prop_inclient}.] We build the following proof for 
-						$\ireduce{\adelta_1\cdots\adelta_h\cdot\adelta} \triangleleft \ \queuemessage$
+						\item[\ref{prop_sent}.] For all client $\cid$, $\ireduce{\igetdeltas{\inserver(\cid)}\cdot {\pushbuffer}} \triangleleft \ \flatten{{\tsent}}$ holds. Then, $\igetdeltas{\inserver(\cid)}$ is $\emptydelta$ since $\inserver(\cid)$ = $\epsilon$ and $\anupdseq[_1]$ = $\epsilon$. It holds since $\medskip\emptydelta \triangleleft \epsilon$, by rule \ruleName{\triangemptydelta}. Furthermore, we know that $\pushbuffer\triangleleft\anupdseq[_2]$.  We can build the following proof
+						\[ \mathrulean{\lemref{lemma:reduce}}
+						  {
+							\ireduce{\igetdeltas{\inserver(\cid)}} \triangleleft \anupdseq[_1]
+							\quad 
+							\pushbuffer\triangleleft\anupdseq[_2]
+							}
+						{\ireduce{\igetdeltas{\inserver(\cid)}\cdot {\pushbuffer}} \triangleleft \ \anupdseq[_1]\cdot\anupdseq[_2]}  
+						\]
+						
+					      	\item[\ref{prop_inclient}.] For all $\cid$, $\outserver(\cid)$ has a new segment $ \agssegpair[@][{\amxrf[{'}]}]$ where $\adelta\triangleleft [\tsenthead_1]\cdots[\tsenthead_m]$. 
+						Using $\lemref{lemma:reduce}$ and \refprop{prop_inclient} we build the following proof for 
+						$\ireduce{\adelta_1\cdots\adelta_h\cdot\adelta} \triangleleft \ {\queuemessage}\cdot [\tsenthead_1]\cdots[\tsenthead_m]$
 						\[
 						  \mathrulean{\lemref{lemma:reduce}}
 						  {
-								\ireduce{\adelta_1\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_i .. \tknown_i + t - 1]
-								\quad 
-								\delta \triangleleft  \queuemessage[t .. + |\queuemessage|- 1]					
+								\ireduce{\adelta_1\cdots\adelta_h}\triangleleft    \queuemessage[\tknown+\treceivebuffer ..  |\queuemessage|- 1]									\quad 
+								\adelta \triangleleft  \triangleleft [\tsenthead_1]\cdots[\tsenthead_m]				
 							}
-  						{\ireduce{\adelta_1\cdots\adelta_h\cdot\adelta} \triangleleft \ \queuemessage}  
+  						{\ireduce{\adelta_1\cdots\adelta_h\cdot\adelta} \triangleleft \ \queuemessage\cdot [\tsenthead_1]\cdots[\tsenthead_m]}  
 					\]
-					Note that $t$ is the length of $\queuemessage$ before the pull transition.
 						\item[\ref{prop_stateserver}.] We have to prove that 
 						$\iapply{\astate}{\ireduce{\adelta[']_1\cdots\adelta[']_h}} \triangleleft \queuemessage\cdot [\tsenthead_1]\cdots[\tsenthead_h] \ $. The proof is immediate by \lemref{lemma:storechanged}.
 					
