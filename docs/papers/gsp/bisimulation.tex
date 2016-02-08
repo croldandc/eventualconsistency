@@ -814,12 +814,12 @@ We use $\approx$ for standard weak bisimulation.
 				\[\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_1]] \cdot [\anupdseq[_2]]}{\treceivebuffer}[1]}[]\cdots\ \bigpar \ 
 		              \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_1]] \cdot [\anupdseq[_2]]}{\treceivebuffer}[m]}[\queuemessage] \]
 				
-				 $h$ is the amount of internal transitions performed by the system. The first one, corresponds to the first block of update from $\anupdseq[_1]$ of client 1. It is called $\tsenthead_1$. The following transitions correspond to the remaining blocks of update of $\anupdseq[_1]$ from client 1 and  $\anupdseq[_1]$ from the rest of clients.  Then, 
+				 $h$ is the amount of internal transitions performed by the system. The first one, corresponds to the first block of update from $\anupdseq[_1]$ of client 1. It is called $\tsenthead[_1]$. The following transitions correspond to the remaining blocks of update of $\anupdseq[_1]$ from client 1 and  $\anupdseq[_1]$ from the rest of clients.  Then, 
 				 
 				$\systemterm \tr{\tau}_1 \ldots\ \tr{\tau}_m \systemterm[']$ with
 				\[\begin{array}{r@{=}l}
 					\systemterm['] &  \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_2]]}{\treceivebuffer}[1]}[]\cdots\ \bigpar \ 
-		              \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_2]]}{\treceivebuffer}[n]}[] \queuemessage \cdot[\tsenthead_1]\cdots[\tsenthead_m]\ 
+		              \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_2]]}{\treceivebuffer}[n]}[] \queuemessage \cdot\tsenthead[_1]\cdots\tsenthead[_m]\ 
 		              
 				  \end{array}		
 				\]
@@ -842,29 +842,29 @@ We use $\approx$ for standard weak bisimulation.
 						{\ireduce{\igetdeltas{\inserver(\cid)}\cdot {\pushbuffer}} \triangleleft \ \anupdseq[_1]\cdot\anupdseq[_2]}  
 						\]
 						
-					      	\item[\ref{prop_inclient}.] For all $\cid$, $\outserver(\cid)$ has a new segment $ \agssegpair[@][{\amxrf[{'}]}]$ where $\adelta\triangleleft [\tsenthead_1]\cdots[\tsenthead_m]$. 
+					      	\item[\ref{prop_inclient}.] For all $\cid$, $\outserver(\cid)$ has a new segment $ \agssegpair[@][{\amxrf[{'}]}]$ where $\adelta\triangleleft \tsenthead[_1]\cdots\tsenthead[_m]$. 
 						Using $\lemref{lemma:reduce}$ and \refprop{prop_inclient} we build the following proof for 
-						$\ireduce{\adelta_1\cdots\adelta_h\cdot\adelta} \triangleleft \ {\queuemessage}\cdot [\tsenthead_1]\cdots[\tsenthead_m]$
+						$\ireduce{\adelta_1\cdots\adelta_h\cdot\adelta} \triangleleft \ {\queuemessage}\cdot \tsenthead[_1]\cdots\tsenthead[_m]$
 						\[
 						  \mathrulean{\lemref{lemma:reduce}}
 						  {
 								\ireduce{\adelta_1\cdots\adelta_h}\triangleleft    \flatten{\queuemessage[\tknown+\treceivebuffer ..  |\queuemessage|- 1]}									\quad 
-								\adelta \triangleleft  [\tsenthead_1]\cdots[\tsenthead_m]				
+								\adelta \triangleleft  \tsenthead[_1]\cdots\tsenthead[_m]			
 							}
-  						{\ireduce{\adelta_1\cdots\adelta_h\cdot\adelta} \triangleleft \ \flatten{\queuemessage}\cdot [\tsenthead_1]\cdots[\tsenthead_m]}  
+  						{\ireduce{\adelta_1\cdots\adelta_h\cdot\adelta} \triangleleft \ \flatten{\queuemessage}\cdot \tsenthead[_1]\cdots\tsenthead[_m]}  
 					\]
 						\item[\ref{prop_stateserver}.] 
 						
-						Since $\implements{\isystemterm}{\systemterm}$, $\astate \triangleleft \flatten{\queuemessage}$ holds by \refprop{prop_stateserver}. Furthermore, $\adelta \triangleleft  [\tsenthead_1]\cdots[\tsenthead_m]$. Then, by \lemref{lemma:storechanged} we build the following proof for:
+						Since $\implements{\isystemterm}{\systemterm}$, $\astate \triangleleft \flatten{\queuemessage}$ holds by \refprop{prop_stateserver}. Furthermore, $\adelta \triangleleft  \tsenthead_1\cdots\tsenthead_m$. Then, by \lemref{lemma:storechanged} we build the following proof for:
 						
 						\[
 						  \mathrulean{\lemref{lemma:storechanged}}
 						  {
 							\astate \triangleleft \flatten{\queuemessage}
 							\quad 
-							\adelta \triangleleft  [\tsenthead_1]\cdots[\tsenthead_m]
+							\adelta \triangleleft  \tsenthead[_1]\cdots\tsenthead[_m]
 							}
-  						{\iapply{\astate}{\ireduce{\adelta}} \triangleleft \ \flatten{\queuemessage} \cdot [\tsenthead_1]\cdots[\tsenthead_m]}  
+  						{\iapply{\astate}{\ireduce{\adelta}} \triangleleft \ \flatten{\queuemessage} \cdot \tsenthead[_1]\cdots\tsenthead[_m]}  
 					\]
 						
 						\item[{--}] The remaining properties straightforwardly hold.

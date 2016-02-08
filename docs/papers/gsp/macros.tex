@@ -193,7 +193,7 @@
 
 \newcommandx{\tpending}[1][1={}]{\textcolor{OliveGreen}{\blockseq[_P]}}
 \newcommand{\tsent}{\blockseq[_S]}
-\newcommand{\tsenthead}{\textcolor{Gray}{[\ttransactionbuffer[']]}}
+\newcommand{\tsenthead}[1][]{\textcolor{Gray}{[\ttransactionbuffer[']#1]}}
 
 \newcommand{\treceivebuffer}{\textcolor{OliveGreen}{j}}
 
