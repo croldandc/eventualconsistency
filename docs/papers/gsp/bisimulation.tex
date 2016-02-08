@@ -194,26 +194,9 @@ system. We say $\isystemterm$ implements $\systemterm$ if the following conditio
      $\ireduce{\adelta_{z+1}\cdots\adelta_{h}}\triangleleft \flatten{ \queuemessage[t..\tknown_l+\treceivebuffer_l-1]}$ 
      
      
-%     [2/6/16, 2:46:29 PM] hernan melgratti: outs(i) =  <s, >?.<d?  > ?<d,,,>and apply?. and s? < S[0..l-1] y l >= k+j (o also asi)
-%[2/6/16, 2:47:34 PM] hernan melgratti: -inc = <s, >?.<d?  > ?<d,,,> and outs = .<d?  > ?<d,,,>
-     
-     
-     
-    
-%     \item
-%     ${\inclient}_l \cdot \outserver(\cid_l) = \agssegpairi[1] \cdots \agssegpairi[h]$ and $\ireduce{\adelta_1\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..|\queuemessage| - 1])$;
     \end{itemize}
 
 
-%\item \label{prop_inclient} if $\cid_l \in \dom{\outserver}$ then:
-%    \begin{itemize}
-%    \item  ${\inclient}_l = \epsilon$ and $\treceivebuffer = 0$; or  
-%    \item  ${\inclient}_l \cdot \outserver(\cid_l)  = \agssegpair[{\astate[']}]\cdot\agssegpairi[1] \cdots \agssegpairi[h]$
-%     % $\ireduce{\adelta_1\cdots\adelta_h}\triangleleft  \queuemessage[\tknown..|\queuemessage| - 1]$ 
-%     and  
-%     $\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_{h}]}}\triangleleft \queuemessage )$; or 
-%     \item ${\inclient}_l \cdot \outserver(\cid_l) = \agssegpairi[1] \cdots \agssegpairi[h]$ and $\ireduce{\adelta_1\cdots\adelta_h}\triangleleft  \queuemessage[\tknown_l..|\queuemessage| - 1])$;
-%     \end{itemize}
 
 	\item \label{prop_state_known} $\astate_l \triangleleft \flatten {\queuemessage[0 .. \tknown_l - 1]}$;
 	
@@ -873,14 +856,25 @@ We use $\approx$ for standard weak bisimulation.
 						\[
 						  \mathrulean{\lemref{lemma:reduce}}
 						  {
-								\ireduce{\adelta_1\cdots\adelta_h}\triangleleft    \queuemessage[\tknown+\treceivebuffer ..  |\queuemessage|- 1]									\quad 
-								\adelta \triangleleft  \triangleleft [\tsenthead_1]\cdots[\tsenthead_m]				
+								\ireduce{\adelta_1\cdots\adelta_h}\triangleleft    \flatten{\queuemessage[\tknown+\treceivebuffer ..  |\queuemessage|- 1]}									\quad 
+								\adelta \triangleleft  [\tsenthead_1]\cdots[\tsenthead_m]				
 							}
-  						{\ireduce{\adelta_1\cdots\adelta_h\cdot\adelta} \triangleleft \ \queuemessage\cdot [\tsenthead_1]\cdots[\tsenthead_m]}  
+  						{\ireduce{\adelta_1\cdots\adelta_h\cdot\adelta} \triangleleft \ \flatten{\queuemessage}\cdot [\tsenthead_1]\cdots[\tsenthead_m]}  
 					\]
-						\item[\ref{prop_stateserver}.] We have to prove that 
-						$\iapply{\astate}{\ireduce{\adelta[']_1\cdots\adelta[']_h}} \triangleleft \queuemessage\cdot [\tsenthead_1]\cdots[\tsenthead_h] \ $. The proof is immediate by \lemref{lemma:storechanged}.
-					
+						\item[\ref{prop_stateserver}.] 
+						
+						Since $\implements{\isystemterm}{\systemterm}$, $\astate \triangleleft \flatten{\queuemessage}$ holds by \refprop{prop_stateserver}. Furthermore, $\adelta \triangleleft  [\tsenthead_1]\cdots[\tsenthead_m]$. Then, by \lemref{lemma:storechanged} we build the following proof for:
+						
+						\[
+						  \mathrulean{\lemref{lemma:storechanged}}
+						  {
+							\astate \triangleleft \flatten{\queuemessage}
+							\quad 
+							\adelta \triangleleft  [\tsenthead_1]\cdots[\tsenthead_m]
+							}
+  						{\iapply{\astate}{\ireduce{\adelta}} \triangleleft \ \flatten{\queuemessage} \cdot [\tsenthead_1]\cdots[\tsenthead_m]}  
+					\]
+						
 						\item[{--}] The remaining properties straightforwardly hold.
 				\end{enumerate}
 
