@@ -67,13 +67,13 @@
 
 \begin{abstract}
 The Global Sequence Protocol (GSP) is an operational model for replicated 
-data stores, in which updates propagates asynchronously. We introduce 
+data stores, in which updates propagate asynchronously. We introduce 
 the GSP-calculus as a formal model for GSP. We  
 give a formal account for its proposed implementation, which addresses
  communication failures and compact representation of data, and 
  use simulation to prove that the implementation is correct. 
  Then, we build on top of the GSP-calculus to reason 
-about execution histories and prove GSP ensures ordering properties
+about execution histories and prove ordering guarantees,
 such as read my writes, monotonic reads, causality and consistent prefix. 
 We also prove that GSP extended with synchronous 
 updates provides strong consistency guarantees.
