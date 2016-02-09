@@ -290,7 +290,7 @@ Rule \ruleName{i-update}, analogous to rule \ruleName{update}, adds the operatio
 	 	$\end{array}
 		}	
 \\[20pt]
-	\mathrule{i-pull-1}
+	\mathrule{i-pull$_1$}
 	{\aseqround['] = \filter{\amxrf[_k](\cid)} {\aseqround} \qquad \inclient = \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]}
 		 {\begin{array}{p{\linewidth}}
 		 	$\addid{\iclientinst[\tpullins][@]
@@ -348,7 +348,7 @@ Rule \ruleName{i-update}, analogous to rule \ruleName{update}, adds the operatio
   \tr{\tau} 
   {\iserverins[{\astate[']}][{\amxrf[{'}]}][{\inserver[']}][{\outserver[']}]}\ \bigpar \ \iclient}
 \\[25pt]
-\mathrule{i-drop-conn}
+\mathrule{i-drop-cxn}
 	{\cid \in \inserver \qquad  \cid \in \outserver}
 	{
 	\begin{array}{p{\linewidth}}
@@ -361,13 +361,13 @@ Rule \ruleName{i-update}, analogous to rule \ruleName{update}, adds the operatio
 	$\end{array}
 	} 
 \\[25pt]
-\mathrule{i-accept-conn}
+\mathrule{i-accept-cxn}
 {\cid\notin \inserver \qquad \cid \notin \outserver}
 {\server{\astate}{\inserver}{\outserver} \ \bigpar\  \iclient_{\cid} \ \bigpar\  \iclient 
 \tr{\tau} 
 \server{\astate}{\inserver\upd\cid\epsilon}{\update{\outserver}{\cid}{\agsprefpair}}\ \bigpar\  \iclient_{\cid} \ \bigpar\  \iclient   }
 \\[25pt]
-\mathrule{i-pull-2}
+\mathrule{i-pull$_2$}
 	{
 	\begin{array}{c}
 	\inclient = \agssegpair[{\astate[''']}][{\amxrf[_0]}]\cdot\agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]
@@ -392,9 +392,6 @@ Rule \ruleName{i-update}, analogous to rule \ruleName{update}, adds the operatio
 		\ \bigpar\ \iclient
 	 	$\end{array}
 		}
-\\[25pt]
-\mathax{i-crash}{\server{\astate}{\inserver}{\outserver}\ \bigpar \ \iclient
- \tr{\tau} \server{\astate}{\undefined}{\undefined}\ \bigpar \ \iclient}
 
 \end{array}
  \]
@@ -414,7 +411,7 @@ A client terminates a block by executing $\pushcmd$ (rule \ruleName{i-push}). At
  At this time, all 
  available blocks are sent in the same round $\around = \aroundtuple[@][@][\pushbuffer]$, which is labelled with 
   $\irounds$, i.e. the number corresponding to the last finished block. 
-  The new round $\around$ is added at the end of the input buffer of the server corresponding to $\cid$, \ie, $\inserver(\cid)$ 
+  The new round $\around$ is added at the end of the input buffer of the store corresponding to $\cid$, \ie, $\inserver(\cid)$ 
   is updated to $\inserver(\cid)\cdot\around$ (where $\_\upd{\_}{\_}$ is the operator for function update).
   Additionally, $\around$ is added to the sequence of pending rounds $\pending$ and the 
   buffer of finished blocks is reset to $\emptydelta$.
@@ -422,8 +419,8 @@ A client terminates a block by executing $\pushcmd$ (rule \ruleName{i-push}). At
   Symmetrically, with rule \ruleName{i-receive} the client $\cid$  receives a new segment from the 
   global store:  $\aseg$ is removed from the top of the output channel $\outserver(\cid)$ and
    it is added to the input buffer of the client. As for the idealised model, all received changes are applied to 
-   the local replica when $\cid$ performs $\pullcmd$. Rule \ruleName{i-pull-1} handles the normal 
-   execution in which communication with the global store has not been reset. In such case, 
+   the local replica when $\cid$ performs $\pullcmd$. Rule \ruleName{i-pull$_1$} handles the case in which 
+   the connection with the global store has not been previously reset. In such case, 
    all received segments are of the form $\agssegpair$. Therefore, all received 
    changes $\adelta[_1]\cdots\adelta[_k]$ are applied to the local state $\astate$. Moreover, 
    the  pending rounds in $\pending$ are updated by removing the  local changes 
@@ -476,7 +473,25 @@ $\receiveroundsname{\_}$ is defined such as
     every buffer $\outserver(\cid))$. Since all received rounds  are consumed the input buffers  $\inserver(\cid)$
     are emptied. 
 
-The remaining rules handle deal  connectivity issues.     
+The remaining rules  deal with connectivity issues: rule \ruleName{i-drop-cxn} models the disconnection of the client 
+$\cid$: the buffers $\outserver(\cid)$ and $\inserver(\cid)$ are eliminated from the global store, while the 
+input buffer of the client is set to $\epsilon$. When client $\cid$ (re-)establishes the connection, the store
+creates the buffers for $\cid$ and sends the segment containing the current 
+state of the store. Rule \ruleName{i-pull$_2$} is analogous to \ruleName{i-pull$_1$}, but handles the first
+$\pullcmd$ after a reconnection. For this reason, the first received segment  
+$\agssegpair[{\astate[''']}][{\amxrf[_0]}]$ contains a state instead of a delta object. 
+The client uses this new state $\astate[''']$ instead of its local state to  resynchronise. The application of 
+successive segments is analogous to rule \ruleName{i-pull$_1$}.
+
+The proposed implementation allows for a server to crash, i.e., to close all communication buffers. For simplicity, 
+we avoid adding an explicit rule, since its effects can be obtained by applying several times rule 
+\ruleName{i-drop-cxn}.
+%
+%\\[25pt]
+%\mathax{i-crash}{\server{\astate}{\inserver}{\outserver}\ \bigpar \ \iclient
+% \tr{\tau} \server{\astate}{\undefined}{\undefined}\ \bigpar \ \iclient}
+
+
     
 
 % \[
@@ -611,7 +626,7 @@ The remaining rules handle deal  connectivity issues.
 %computes the states of the internal queues,i.e., if these has any element. Rules $\textsc{(while-true)}$ and $\textsc{(while-false)}$ are standard. Rule $\textsc{(send)}$ creates a new round setting who is the client ($i^{th}$), how many rounds client ($i^{th}$) has sent and content from the push buffer. Finally rule $\textsc{(receive)}$ move out segments from the client's queue message-in to receive buffer.}
 %
 
-As for the $\gsp$, well-formedness is preserved by reductions.
+As for the \gsp, well-formedness is preserved by reductions.
 
-\begin{lemma} If $\systemterm$ is well-formed and $\systemterm\arroi{\action}\systemterm[']$, then $\systemterm[']$ is well-formed.
+\begin{lemma} If $\isystemterm$ is well-formed and $\isystemterm\arroi{\action}\isystemterm[']$, then $\isystemterm[']$ is well-formed.
 \end{lemma}
