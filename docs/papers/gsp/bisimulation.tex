@@ -454,10 +454,10 @@ We use $\approx$ for standard weak bisimulation.
 				
 							\[
 						  	\mathrulean{\lemref{lemma:reduce}}
-						  	{\ireduce{\adelta[_0] \cdots \adelta[_{n-1}]\cdot\pushbuffer} \triangleleft \ {\tsent}
+						  	{\ireduce{\adelta[_0] \cdots \adelta[_{n-1}]\cdot\pushbuffer} \triangleleft \ \flatten{\tsent}
 								\quad
 								\emptydelta \triangleleft \epsilon}
-  							{\ireduce{\adelta[_0] \cdots \adelta[_{n-1}]\cdot\pushbuffer\cdot\emptydelta} \triangleleft \ {\tsent}}  
+  							{\ireduce{\adelta[_0] \cdots \adelta[_{n-1}]\cdot\pushbuffer\cdot\emptydelta} \triangleleft \ \flatten{\tsent}}  
 							\]
 							
 							
@@ -476,7 +476,7 @@ We use $\approx$ for standard weak bisimulation.
 			
 							\item[\ref{prop_pending}.] By hypothesis, $\pending = \aroundtuplei[0]\ldots\aroundtuplei[h]$ and  
 							$\ireduce{\adelta_0\cdots\adelta_h\cdot\pushbuffer} \triangleleft \flatten{\tpending}$.
-							 Since $\pending \cdot \around = \aroundtuplei[0]\ldots\aroundtuplei[h]{\aroundtuple[@][@][\pushbuffer]}$,
+							 Since $\pending \cdot \around = \aroundtuplei[0]\ldots\aroundtuplei[h]\cdot{\aroundtuple[@][@][\pushbuffer]}$,
 							we need to prove that  $\ireduce{\adelta_0\cdots\adelta_h\cdot\adelta_p\cdot\emptydelta} \triangleleft \flatten{\tpending}$. 
 							It holds by using \lemref{lemma:reduce}, and the fact that $\emptydelta \triangleleft \epsilon$.
 							%It is easy to see that it is the same relation that our hypothesis, since $\adelta_p$ was moved to the pending sequence. Therefore this property also holds.
@@ -642,7 +642,7 @@ We use $\approx$ for standard weak bisimulation.
 						 [\aseqround']
 						 [@][@]
 						 [{\receivebuffer}][n][\epsilon]}\ \bigpar \ \isystemterm['']	\\
-					   \aseqround['] & filter\ (\geq \amxrf[_n](\cid)) \ \aseqround \\
+					   \aseqround['] & \filter{\amxrf[_k](\cid)}{\aseqround} \\
 						\inclient & \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_n]}][{\amxrf[_n]}]
 				  \end{array}
 				\]
@@ -662,19 +662,18 @@ We use $\approx$ for standard weak bisimulation.
 					\begin{enumerate}
 					
 					\item[\ref{prop_inclient}.] $\inclient$ = $\epsilon$ and $\treceivebuffer$ = 0, hence, $\ireduce{\epsilon} = \emptydelta$ and $\flatten{\queuemessage[\tknown .. \tknown - 1]} = \epsilon$ then It holds since $\medskip\emptydelta \triangleleft \epsilon$, by rule \ruleName{\triangemptydelta}.
-							\item[\ref{prop_state_known}.] We should build the following proof for 
-						$\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_n]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_l +\treceivebuffer_l - 1]} \ $with $\treceivebuffer_l = h$
-					\[
+							\item[\ref{prop_state_known}.] We know that $\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}$ by \refprop{prop_state_known} and $\ireduce{\adelta[_1]\cdots\adelta[_n]}\triangleleft \queuemessage[\tknown ..  \tknown + \treceivebuffer - 1]$ by \refprop{prop_inclient} . Then, we produce the following proof for 
+						$\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_n]}}\triangleleft \flatten{\queuemessage[0 .. \tknown+\treceivebuffer - 1]} \ $					\[
 						  \mathrulean{\triangapply}
 						  {
 							\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}
 							\quad 
-							\ireduce{\adelta[_1]\cdots\adelta[_n]}\triangleleft \queuemessage[\tknown_l ..  \tknown_l + \treceivebuffer_l - 1]
+							\ireduce{\adelta[_1]\cdots\adelta[_n]}\triangleleft \queuemessage[\tknown ..  \tknown + \treceivebuffer - 1]
 							}
-						{\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_n]}}\triangleleft \flatten{\queuemessage[0 .. \tknown_l +\treceivebuffer_l - 1]}}  
+						{\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_n]}}\triangleleft \flatten{\queuemessage[0 .. \tknown +\treceivebuffer - 1]}}  
 					\]
 					
-						\item[\ref{prop_pending}.] We have to prove that $filter\ (\geq \amxrf[_n](\cid)) \ \aseqround \triangleleft \flatten{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer -1]}$  
+						\item[\ref{prop_pending}.] We have to prove that $\filter{\amxrf[_k](\cid)}{\aseqround} \triangleleft \flatten{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer -1]}$  
 						\henote{(PENDIENTE)}
 		
 				
