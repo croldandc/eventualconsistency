@@ -4,7 +4,7 @@
 
 Consistency guarantees are usually defined over abstract executions~\cite{} given as a set of 
 relations between read and update events. In particular,  the following relations are used
- 
+\chnote{Aca de repente se hablan de eventos en lugar de acciones o transitions. Tal vez deberíamos hablar de eventos desde el principio o bien decir algo que los eventos estan asociados con las transiciones que puede realizar gsp} 
 %
 %We shall introduce a series of store-level consistency guarantees and then we shall show which 
 %are captured by application written in GSP. We start identifying three kinds of relations between actions of update and read:º
@@ -22,6 +22,7 @@ relations between read and update events. In particular,  the following relation
  \item{\em Same Session} (\sse) ...
 
 \end{itemize}
+
 
 
 We extend the GSP language with a new term which capture the relations amount operation in our system. 
@@ -44,7 +45,7 @@ where
  Satisfying the following restrictions:
  \begin{itemize}
      \item for all $\cid\in\dom\sse$, $\sse(\cid) \subseteq \dom\op$;
-     \item for all $\cid$, $\so\relrestriccion{\sse(\cid)}$ is a total order;
+     \item for all $\cid$, $\so\relrestriccion{\sse(\cid)}$ is a total order; \chnote{que significa esto?}
      \item if  $(\vertice[@][_1],\vertice[@][_2])\in\vis$, then $\op(\vertice[@][_1])\in\updatesets$ and $\op(\vertice[@][_2])\in\readset$;
      \item if  $(\vertice[@][_1],\vertice[@][_2])\in\arb$, then $\{\op(\vertice[@][_1]),\op(\vertice[@][_2])\}\subseteq\updatesets$;
  \end{itemize}
@@ -54,8 +55,12 @@ where
 %Let $\environmentterm$, a new term, where $\systemterm$ represents our system introduced in Definition 1.1, $\op$ is a mapping of vertices to actions, $\so$ is a session order relation defined from vertices to relations of vertices $\verticesets$ $\times$ ($\verticesets$ $\times$ $\verticesets$) and $\vis$,$\arb$ are visibility and arbitration relation.
 %
 %
+
+\chnote{Regla a-update, aca no se si queda claro que S es el store del modelo. Por otra parte, no es flatten S, o [u] }
+
 We  provide an operational approach to associate abstract executions to \gsp\ systems. They are provided 
 by inference rules in \figref{fig:comp-abst-executions}
+
 
 
 %%reglas
