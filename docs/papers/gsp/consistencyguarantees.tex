@@ -123,6 +123,7 @@ by inference rules in \figref{fig:comp-abst-executions}
 		\{\vertice[@][_0],\ldots,\vertice[@][_n]\}\times 
 		\{ \vertice[w]\ \ |\ \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
 		     \forall\anupd. \anupd^{\vertice[w]}\not\in\queuemessage\cdot\ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]\}
+		     \\ \hfill \cup \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\}
 	\end{array}
 	 }
 	 {\environment{\queuemessage \bigpar \Absclient}{\op}{\so}{\vis}{\arb} 
