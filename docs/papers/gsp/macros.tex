@@ -185,7 +185,7 @@
 
 \newcommandx{\anupdseq}[1][1={}]{\textcolor{OliveGreen}{\mathsf{u#1}}}
 
-\newcommandx{\ttransactionbuffer}[1][1={}]{\anupdseq[#1]}
+\newcommandx{\ttransactionbuffer}[1][1={}]{\anupdseq[_{\sf T}#1]}
 \newcommandx{\ublock}[2][1=\ttransactionbuffer,2=\cid]{\textcolor{Gray}{[#1]}}
 
 
@@ -243,7 +243,7 @@
 
 %Labels
 
-\newcommandx{\udec}[2][1=u,2=\vertice,usedefault=@]{\textcolor{OliveGreen}{#1\!^{\scalebox{.8}{$#2$}}}}
+\newcommandx{\udec}[2][1=\anupd,2=\vertice,usedefault=@]{\textcolor{OliveGreen}{#1\!^{\scalebox{.8}{$#2$}}}}
 \newcommandx{\vertice}[2][1=v, 2={},usedefault=@]{\textcolor{OliveGreen}{\mathbbmss{#1}{#2}}}
 \newcommand{\readtran}[1]{\textcolor{OliveGreen}{\textit{rd}(#1)}}
 \newcommand{\readtranaux}[1]{\textcolor{OliveGreen}{\textit{rd}(#1)}}
@@ -369,10 +369,11 @@
 \newcommandx{\clientr}[3][3=\cid]{\client{#1}{#2}_{#3}}
 \newcommand{\client}[2]{\langle#1 , #2\rangle}
 
+\newcommand{\irounds}{\textcolor{Brown}{n}}
 
 \newcommandx{\iclientsyntax}[9]
 	[1=P,2=\astate,3={\pendingtype},4=\pushbuffertype,5=\transactionbuffertype,
-			6=\receivebuffertype,7=n,8=\aseqseg,9=\outclient,usedefault=@]
+			6=\receivebuffertype,7=\irounds,8=\aseqseg,9=\outclient,usedefault=@]
 	{
    	\langle #1,#2,#5,#4,#7,#3,#8\rangle
 	%al cambiar esta, hay que cambiar la de abajo.
@@ -380,7 +381,7 @@
 
 \newcommandx{\iclientinst}[9]
 	[1=P,2=\astate,3={\pending},4=\pushbuffer,5=\transactionbuffer,
-			6=\receivebuffer,7=n,8=\inclient,9=\outclient,usedefault=@]
+			6=\receivebuffer,7=\irounds,8=\inclient,9=\outclient,usedefault=@]
 	{
    	\langle #1,#2,#5,#4,#7,#3,#8\rangle
 %   	\langle #1,#2,#3,#4,#5,#6,#7,#8,#9\rangle
@@ -392,7 +393,7 @@
 %   	\langle #1,#2,#3,#4,#5,#6,#7,#8,#9\rangle
 %	}
 \newcommandx{\iclientinstJ}{
-	\iclientinst[P_l][\astate_l][{\pending}_l][{\pushbuffer}_l][{\transactionbuffer}_l][\receivebuffer_l][n_l][\inclient_l][\outclient_l]}
+	\iclientinst[P_l][\astate_l][{\pending}_l][{\pushbuffer}_l][{\transactionbuffer}_l][\receivebuffer_l][\irounds_l][\inclient_l][\outclient_l]}
 
 \newcommandx{\iserverins}[4][1=\astate,2=\amxrf,3=\inserver, 4= \outserver,usedefault=@] {\langle #1,#2,#3,#4\rangle}
 
@@ -632,6 +633,9 @@
 \newcommand{\flatten}[1]{\textcolor{Orange}{\textit{flatten}(#1)}}
 \newcommand{\length}[1]{|#1|}
 
+\newcommandx{\iupdatetran}[2][2=\vertice]{\textcolor{OliveGreen}{\textit{wr}(\udec[{#1}])}}
+
+
 %%%%%
 % Section 3
 %%%%
@@ -662,6 +666,7 @@
 
 \newcommand{\implements}[2]{{#1}\ \mathit{ implements}	\ {#2}}
 %volver
+
 
 %SECTION 4
 \newcommand{\rest}[1]{\!\!\downarrow_{#1}}
@@ -702,7 +707,7 @@
 
 \newcommand{\refprop}[1]{\defref{def:implementation}, Prop. \ref{#1}}
 
-\newcommand{\irounds}{\textcolor{Brown}{n}}
+
 
 
 

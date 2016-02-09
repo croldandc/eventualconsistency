@@ -109,13 +109,15 @@ by inference rules in \figref{fig:comp-abst-executions}
 \mathrule{a-arb}
 	{ 
 	\begin{array}{l}
-		\queuemessage \bigpar \Absclient \arroi{\lambda} \queuemessage\cdot \udec \bigpar \Absclient' 
+		\queuemessage \bigpar \Absclient \arroi{\lambda} \queuemessage\cdot \ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}] \bigpar \Absclient' 
 		%\hspace{2cm} \queuemessage\neq\queuemessage'
 		\hspace{2cm} \lambda \neq  \updatetran{u},\readtran{r}
 		 \\[2pt]
 %		 \arb' = \arb \cup \{ (\vertice, \vertice[w])\ | \ \ell = |\queuemessage'|-1 \land \udec \in \queuemessage'[0..\ell-1] \land \udec[@][{\vertice[w]}]= \queuemessage'[\ell]\}
-		\arb' = \arb \cup \{ (\vertice, \vertice[w])\ \ |\ \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
-		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage\cdot \udec\}
+		\arb' = \arb \cup 
+		\{\vertice[@][_0],\ldots,\vertice[@][_n]\}\times 
+		\{ \vertice[w]\ \ |\ \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
+		     \forall\anupd. \anupd^{\vertice[w]}\not\in\queuemessage\cdot\ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]\}
 	\end{array}
 	 }
 	 {\environment{\queuemessage \bigpar \Absclient}{\op}{\so}{\vis}{\arb} 
