@@ -114,7 +114,7 @@ case analysis on the inference rule applied for the last transition:
 		\item rules \ruleName{receive}, \ruleName{confirm}, \ruleName{while-true}, \ruleName{while-false}, \henote{reglas para if}
 		The proof follows from inductive hypothesis because $\tknown_{\cid}=\tknown_{\cid}$, $\tpending_{\cid}=\tpending_{\cid}$ 
 		and $\ttransactionbuffer_{\cid}=\ttransactionbuffer_{\cid}$ for all $\cid$ and $\op'=\op$.
-
+\chnote{aca no es k'=k, u'=u, etc?}
 
 	\end{itemize}
 	
@@ -133,7 +133,87 @@ $\op(\vertice[w])\in\updatesets$ and  $\anupd_0^{\vertice[w]}\in\queuemessage[0.
 then there exists $\anupd_1$ s.t. $\anupd_1^{\vertice}\in\queuemessage[0..k-1]$
 \end{lemma}
 
-\begin{proof} \henote{ToDO}\qed
+
+
+\begin{proof} The proof follows by induction on the length of the derivation $\tr{} ^n$.
+	
+\begin{itemize}
+   \item{\bf n=0}. Then $\so$ is $\emptyset$, and hence the thesis trivially holds. 
+      \item{\bf n=k+1}. Then 
+      \[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] 
+         \tr{} ^n\ 
+         \environment{\systemterm['']}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+         \arro{\lambda}[\cidj]
+ 	\environment{\systemterm[']}{\op}{\so}{\vis}{\arb}
+	 \]
+	 
+	By inductive hypothesis, if $(\vertice,\vertice[w])\in\so'$ s.t. $\op'(\vertice) \in\updatesets$ and $\op'(\vertice[w])\in\updatesets$ then
+	\[\systemterm'' = \anabstcliprime \ \bigpar\ \queuemessage'\ \bigpar\ \Absclient'\]
+	and $\anupd_0^{\vertice[w]}\in\queuemessage'[0..k_{\cid}^{'}]$
+	then there exists $\anupd_1$ s.t. $\anupd_1^{\vertice}\in\queuemessage'[0..k_{\cid}^{'}-1]$. We proceed by 
+case analysis on the inference rule applied for the last transition:
+	
+	\begin{itemize}
+        
+        \item rule \ruleName{a-read}. Then,  $\systemterm''{\arro{\readtranaux{r^{\vertice[v']}}}[\cidj]}\systemterm'$ and     
+        $\op = \op'\upd{\vertice[v']}r$ with $r\in\readset$.  
+        If $(\vertice,\vertice[w])\in\so$ s.t. $\op(\vertice) \in\updatesets$ and $\op(\vertice[w])\in\updatesets$ , then
+        $(\vertice,\vertice[w])\in\so'$ s.t. $\op'(\vertice) \in\updatesets$ and $\op'(\vertice[w])\in\updatesets$ because the new event $\vertice[v']$ is associated with the read operation $r$. 
+        Moreover,  $\systemterm''{\arro{\readtran{\udec[r]}}[\cidj]}\systemterm'$ implies 
+        $\queuemessage = \queuemessage'$ and for all ${\cid}$,  ${\tknown'}_{\cid} = \tknown_{\cid}$. Therefore, 
+        $\queuemessage[0..\tknown_{\cid}-1] = \queuemessage'[0..\tknown_{\cid}-1]$ for all $\cid$.
+                Hence, the case follows by inductive hypothesis.
+       
+       \item rule \ruleName{a-update}. Then, $\systemterm''{\arro{\updatetranaux{\anupd^{\vertice[v']}}}[\cidj]}\systemterm'$
+	and     
+        $\op = \op'\upd{\vertice[v']}\anupd$ with $\anupd\in\updatesets$. Since $\vertice[v']$ is the last event then $\vertice[v] \neq \vertice[v']$. There are two possibilities:
+		\begin{itemize}
+			\item {\bf $\vertice[w] \neq \vertice[v'] $}. Then, the case follows  analogously to the previous case by using inductive hypothesis. 
+						%Then we can use inductive hypothesis, so that it is easy to see that if $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$ then $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i] \cdot u_{t}^v$ too.
+			
+			\item  {\bf $\vertice[w] = \vertice[v'] $}. Note that $\systemterm''{\arro{\updatetranaux{\anupd^{\vertice[v']}}}[\cidj]}\systemterm'$ 
+			implies  $\ttransactionbuffer_{\cidj} = \ttransactionbuffer'_{\cidj}\cdot \anupd^{\vertice[v']}$. Then, for all client $\cid$
+			$\anupd^{\vertice[v']}\notin\  \queuemessage[0..\tknown_{\cidj}-1]$, hence, the thesis trivially holds. 
+		\end{itemize}
+       
+        \item rule \ruleName{a-arb}. Then, $\queuemessage \neq \queuemessage'$. By rule inspection, the only possibility is 
+        $\systemterm''\arro{\tau}[\cidj]\systemterm'$ by using rule \ruleName{send}. The proof follows from inductive hypothesis because $\tknown_{\cid}'=\tknown_{\cid}$	and $\so'=\so$ and $\op'=\op$.
+
+       
+        \item rule \ruleName{a-int}. We note that $\so' = \so$, $\op' = \op$ and $\queuemessage = \queuemessage'$. Then, we proceed by case analysis on 
+        the reduction $\systemterm''\arro{\tau}[{\cidj}]\systemterm'$
+            \begin{itemize}
+		 \item  rule \ruleName {pull}. Then,  $\tknown_{\cidj} = \tknown_{\cidj}'+\treceivebuffer_{\cidj}'$, while  $\tknown_{\cid} = \tknown_{\cid}'$
+		for all $\cid \neq \cidj$.
+		By inductive hypothesis, there exists $\cid$ s.t.
+		if $\anupd_0^{\vertice[w]}\in\queuemessage'[0..k_{\cid}^{'}]$
+	then there exists $\anupd_1$ s.t. $\anupd_1^{\vertice}\in\queuemessage'[0..k_{\cid}^{'}-1]$.
+	
+	
+		 When $\cid = \cidj$, we show that 
+		 $\anupd_0^{\vertice[w]} \in\  \queuemessage[0..\tknown'_{\cidj}]$ then there exists $\anupd_1$ s.t. $\anupd_1^{\vertice}\in\queuemessage'[0..k_{\cid}^{'}-1]$ implies
+		 if $\anupd_0^{\vertice[w]} \in\  \queuemessage[0..\tknown_{\cidj}]$ =
+		 $\queuemessage[0..\tknown'_{\cidj}+ \treceivebuffer'_{\cidj}]$ then, there exists $\anupd_1$ s.t. $\anupd_1^{\vertice}\in\queuemessage[0..k_{\cidj}-1]$ = $\queuemessage'[0..k_{\cidj}^{'}+\treceivebuffer'_{\cidj}-1]$ 
+		%\begin{itemize}
+		%	\item If $\udec \in\ \tpending_{\cidj}'\  \land\ \udec \notin\ \queuemessage[\tknown'_{\cidj}..\tknown'_{\cidj}+ \treceivebuffer'_{\cidj}-1]$, 
+		%	then $\udec \in \ \tpending_{\cidj}$.
+		%	\item If $\udec \in\ \tpending'_{\cidj}\  \land\ \udec \in\ \queuemessage[\tknown'_{\cidj}..\tknown'_{\cidj}+ \treceivebuffer'_{\cidj}-1]$, 
+		%		then $\udec \notin \ \tpending_{\cidj}$ but 
+		%		$\udec \in\ \queuemessage[0 .. \tknown'_{\cidj}+ \treceivebuffer'_{\cidj}-1]=\queuemessage[0 .. \tknown_{\cidj} -1] $. 
+		%\end{itemize}
+		The remaining cases ($\udec \in \queuemessage[0..\tknown'_{\cidj}-1]$ or $\udec\in\ttransactionbuffer'_{\cidj}$) are straightforward.
+		
+		\item rules \ruleName{push},\ruleName{receive}, \ruleName{confirm}, \ruleName{while-true}, \ruleName{while-false}, 
+		The proof follows from inductive hypothesis because $\tknown_{\cid}'=\tknown_{\cid}$, $\so'=\so$ and $\op'=\op$.
+
+	\end{itemize}
+	
+         
+	\end{itemize}
+
+	\end{itemize}
+\qed
+
 \end{proof}
 
 \begin{lemma}
