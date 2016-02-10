@@ -124,11 +124,21 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
       \item ${\inclient}_l = \agssegpairi[1] \cdots \agssegpairi[h']$, 
       
       	      $\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, 
+	      
+	      
+
      
-      $\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]}$ and 
+      $\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]}$, 
       
-      $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft 
-       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$
+      $\ireduce{\adelta_h'+1\cdots\adelta_h}\triangleleft 
+       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
+       
+       
+      $\pending_l = \aroundtuple[\cid_l][n_1][\adelta'_1]\ldots\aroundtuple[\cid_l][n_k][\adelta'_k]$ and for all $j\in\{1,\ldots,k\}$
+      $\irounds_j \leq \amxrf_{h'}(\cid_l)$ implies $\adelta'_{j}\ \triangleleft\ \queuemessage[a..b]$ with $\tknown_l \leq a < b < \tknown_l+\treceivebuffer_l-1$.
+       
+       
+       
      
      \item ${\inclient}_l = \agssegpair[{\astate[']}][{\amxrf[_0]}]\cdot\agssegpairi[1] \cdots \agssegpairi[h']$, 
      

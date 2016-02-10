@@ -130,7 +130,7 @@ $\Leftarrow)$ Follows analogously.
 %				$\tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}$
 %				. As $(\systemterm,\isystemterm)$ belongs $\mathcal{R}^{-1}$ then $\isystemterm$ must be $\clientr{\readins{x}{r}}{\stateclient} \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$, and the read transition is the only one that $\isystemterm$ can perform.
 %				Then by rule (\textsc{read}), $\isystemterm' = \clientr{\update{P}{x}{v}}{\stateclient}\ \bigpar\ \tilde{C} \ \bigpar\ \ \queuemessage_C$. We will prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}^{-1}$ if the ten properties introduced are keeping.
-\item {\bf rule \ruleName{update}}. Then, $\isystemterm  \arroi{\updatetranaux{\anupd^{\vertice[@][']}}} \isystemterm '$ with 
+\item {\bf rule \ruleName{i-update}}. Then, $\isystemterm  \arroi{\updatetranaux{\anupd^{\vertice[@][']}}} \isystemterm '$ with 
 				\[\begin{array}{r@{=}l}
 					\isystemterm & \addid{\iclientinst[\tupdateins]} \ \bigpar \ \isystemterm['']
 					\\
@@ -141,13 +141,13 @@ $\Leftarrow)$ Follows analogously.
 				Since $(\isystemterm,\systemterm)\in \mathcal{R}$,
 				\[\systemterm = \tsystem{\tclienti{\tupdateins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] \]
 				with $\implements{\isystemterm['']}{\systemterm['']}$. 
-				By inspection of rules in \figref{fig:OS-tgsp}, 
+				By  using rule \ruleName{update}, 
 				$\systemterm \arroi{\updatetran{u}} \systemterm[']$ with
 				\[\begin{array}{r@{=}l}
 						\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer \cdot \tupdate}{\tsent}{\treceivebuffer}}[{\systemterm['']}]	
 				  \end{array}		
 				\]
-				
+				.
 				
 				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$.
 				Note that the only terms that have changed are the transaction buffers 
@@ -183,7 +183,8 @@ $\Leftarrow)$ Follows analogously.
 					\end{enumerate}
 
 
-\item {\bf rule \ruleName{push}}. Then, $\isystemterm  \arroi{\pushtran} \isystemterm '$ with 
+\item {\bf rule \ruleName{i-push}}. Then, $\isystemterm  \arroi{\pushtran} \isystemterm '$ with 
+
 				\[\begin{array}{r@{=}l}
 					\isystemterm & \addid{\iclientinst[\tpushins]} \ \bigpar \ \isystemterm[''] 
 					\\
@@ -195,21 +196,25 @@ $\Leftarrow)$ Follows analogously.
 				$ \tsystem{\tclienti{\tpushins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] $
 				with $\implements{\isystemterm['']}{\systemterm['']}$. 
 				
-				By inspection of rules in \figref{fig:OS-tgsp}, 
+				By using rule \ruleName{push}, 
 				$\systemterm \arroi{\pushtran} \systemterm[']$ with
+				
 				\[\begin{array}{r@{=}l}
 					\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending \cdot \ublock[\ttransactionbuffer]}{\emptydelta}{\tsent \cdot \ublock[\ttransactionbuffer]}{\treceivebuffer}[@][\trounds+1]}[{\systemterm['']}]\\
 				  \end{array}		
 				\]
 								
-				We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
-				by checking the properties in \defref{def:implementation}.			
+				We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$.
+				Since the computations involve only client $\cid$, we only need to check that  properties in \defref{def:implementation} still hold for $\cid$.		
+					
 					\begin{enumerate}
+					
 						\item[\ref{prop_transactions}.] It  holds since $\medskip\emptydelta \triangleleft \epsilon$, by rule \ruleName{\triangemptydelta}.
 						 
 						\item[\ref{prop_sent}.] There are two cases:
-						\begin{itemize}
 						
+						\begin{itemize}
+			
 						\item $\cid\in\dom\inserver$:  
 						 Since $\implements{\isystemterm}{\systemterm}$, 
 						 $\ireduce{\igetdeltas{\inserver(\cid)}\cdot {\pushbuffer}} \triangleleft \ \flatten{\tsent}$ (\refprop{prop_sent}) 
@@ -295,12 +300,12 @@ $\Leftarrow)$ Follows analogously.
 					
 						
 						\item[\ref{prop_size_buffersent}.] It trivially holds since in both cases the counters are incremented by one. \chnote{Esta hipotesis sospechamos que sobra.}
-						\item[{--}] The remaining properties straightforwardly hold.
 								
 					\end{enumerate}
+ The remaining properties straightforwardly hold.
+						
 
-
-\item {\bf rule \ruleName{send}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
+\item {\bf rule \ruleName{i-send}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
 				\[\begin{array}{r@{=}l}
 					\isystemterm & \addid{\iclientinst} \ \bigpar \ \iserverins[\astate[']] \ \bigpar\ \iclient['']\ \\
 					\isystemterm['] & \addid{\iclientinst[@][@][\pending \cdot \around][\emptydelta]}
@@ -310,9 +315,10 @@ $\Leftarrow)$ Follows analogously.
 					\end{array}
 				\]
 				
-											
-				We  prove that $(\isystemterm',\systemterm) \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm}$ 
-				by checking the properties in \defref{def:implementation}.			
+				Then, we take $\systemterm'=\systemterm$ and 							
+				  prove that $(\isystemterm',\systemterm) \ \in \ \mathcal{R}$. Since the changes only affect 
+				  client $\cid$ and the input buffer for $\cid$  on the server, we need to check that properties in \defref{def:implementation}
+				  still hold for $\cid$.			
 
 						\begin{itemize}
 						
@@ -360,7 +366,7 @@ $\Leftarrow)$ Follows analogously.
 
 \item {\bf rule \ruleName{receive}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
 				\[\begin{array}{r@{\  =\  }l}
-					{\isystemterm} & \addid{\iclientinst[@][@][@][@][@][@][@][\inclient]} \ \bigpar \ \iserverins[\astate['']] \ \bigpar\ \iclient['']
+					{\isystemterm} & \addid{\iclientinst[@][@][@][@][@][@][@][\inclient]} \ \bigpar \ \iserverins[\astate[']] \ \bigpar\ \iclient['']
 					\\
 					{\isystemterm[']} & \addid{\iclientinst[@][@][@][@][@][@][@][\inclient\cdot \aseg]} \ \bigpar \ \iserverins[{\astate[']}][@][@][\outserver\upd{\cid}\aseqseg] \ \bigpar\ \iclient['']
 					\\
@@ -370,86 +376,115 @@ $\Leftarrow)$ Follows analogously.
 				\]
 
 				Moreover, 
-\henote{corregir				\[\systemterm = \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] \]
-			}
-				with $\implements{\isystemterm['']}{\systemterm['']}$. 
+				\[\systemterm = \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\queuemessage\ \bigpar\ \Absclient'' }]. \]
+			
 			
 				Since $\implements{\isystemterm}{\systemterm}$, \refprop{prop_inclient} holds. We have three cases:
 				\begin{itemize}
 				
 					\item  ${\inclient} = \agssegpairi[1] \cdots \agssegpairi[h']$, 
+					
 					$\outserver(\cid) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, 
-					then $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]}$. 
-					By \lemref{lemma:reducefirst},  
-					$\adelta_{h'+1}\triangleleft \blockseq$, $\ireduce{\adelta_{h'+2}\cdots\adelta_h}\triangleleft \blockseq[']$
-					and $ \flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]}= \blockseq\cdot\blockseq[']$.
-					Therefore, there exists $m$ s.t. %$\tknown+\treceivebuffer \leq m\leq|\queuemessage|  - 1$ and
-					 $\blockseq = \flatten{\queuemessage[\tknown+\treceivebuffer .. \tknown+\treceivebuffer +m - 1]}$ and
-					with $m \leq |\queuemessage| - \tknown- \treceivebuffer$. Hence, 
-       
-     				\[\systemterm = \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] \]
-			
-				with $\implements{\isystemterm['']}{\systemterm['']}$. 
-				
+
+					\begin{equation}
+					\label{eq:sim-receive-c1-c}
+     					 \ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer-1]}  
+					 \end{equation}
+					 %
+    					 \begin{equation}
+					\label{eq:sim-receive-c1-d}
+					\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft  \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}
+					\end{equation}
+	
+	
+	
+					By $\lemref{lemma:reducefirst}$ on \equref{eq:sim-receive-c1-d}, 
+					$\flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]} = \anupdseq[_1]\cdot\anupdseq[_2]$, 
+					$\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \anupdseq[_1]\cdot\anupdseq[_2]$, 
+					$\adelta_{h'+1} \triangleleft \anupdseq[_1]$ and 
+					$\ireduce{\adelta_{h'+2}\cdots\adelta_h}\triangleleft \anupdseq[_1u] $.
+					%					 
+					Therefore, there exists $m \geq 0$ s.t. 
+					 $\tknown+\treceivebuffer+m \leq  |\queuemessage| -1$ and 
+					$\anupdseq[_1] = \flatten{ \queuemessage[\tknown+\treceivebuffer..\tknown+\treceivebuffer+m-1]}$,
+					$\anupdseq[_2] = \flatten{ \queuemessage[\tknown+\treceivebuffer+m .. |\queuemessage| -1]}$. Hence,
+					%
+					\begin{equation}
+					\label{eq:sim-receive-c1-a}
+					\adelta_{h'+1} \triangleleft \flatten{ \queuemessage[\tknown+\treceivebuffer..\tknown+\treceivebuffer+m-1]}
+					\end{equation}
+					%
+					\begin{equation}
+					\label{eq:sim-receive-c1-b}
+					 \ireduce{\adelta_{h'+2}\cdots\adelta_h}\triangleleft \flatten{ \queuemessage[\tknown+\treceivebuffer+m .. |\queuemessage| -1]}
+					\end{equation}
+					%	
 				If $m=0$, then take $\systemterm['] = \systemterm$. Otherwise, note that $\tknown+ \treceivebuffer + m < |\queuemessage|$  allows
 				for  $m$ applications of rule \ruleName{send}. Hence,  
 				$\systemterm \arroi{\tau}\cdots\arroi{\tau} \systemterm[']$ 
 				with
 				\[\begin{array}{r@{=}l}
-						\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+m}}[{\systemterm['']}]	
+						\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+m}}[{\queuemessage\ \bigpar\ \Absclient'' }]	
 				  \end{array}		
 				\]
 				
-				We check now that  $\implements{\isystemterm[']}{\systemterm[']}$.	
+				We check now that  $\implements{\isystemterm[']}{\systemterm[']}$. Since the unique elements that are modified by the reductions 
+				are $\inclient$, $\outserver(\cid)$ and $\treceivebuffer$, we  only need to check that \refprop{prop_inclient} still holds for client $\cid$.
+				
 				\begin{itemize}
 				
-					\item[\ref{prop_inclient}.] ${\inclient} = \agssegpairi[1] \cdots \agssegpairi[h']\cdot\agssegpairi[{h'+1}]$ and $\outserver(\cid) = \agssegpairi[h'+2] \cdots \agssegpairi[h]$. We prove that
+					\item[\ref{prop_inclient}.] Take ${\inclient'} = \agssegpairi[1] \cdots \agssegpairi[h']\cdot\agssegpairi[{h'+1}]$ and
+					
+					 $\outserver(\cid)' = \agssegpairi[h'+2] \cdots \agssegpairi[h]$. We prove that
 					\[\ireduce{\adelta_1\cdots\adelta_{h'+1}}\triangleleft \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer+m-1]}\]
-					
-					Since $\implements{\isystemterm}{\systemterm}$,  \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer-1]}
-					By $\lemref{lemma:reduce}$, $\flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer+m-1]} = \anupdseq[_1]\cdot\anupdseq[_2]$, 
-						$\ireduce{\igetdeltas{\inserver(\cid)}} \triangleleft \ \anupdseq[_1]$ and $ {\pushbuffer}  \triangleleft \ \anupdseq[_2]$ with
-						$\anupdseq[_1] = \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer-1]}$,
-						$\anupdseq[_2] = \flatten{ \queuemessage[\tknown+\treceivebuffer..\tknown+\treceivebuffer+m-1]}$,
-						 Then, we can build the following proof 
-						 
+					by using \lemref{lemma:reduce} with the hypothesis \equref{eq:sim-receive-c1-c} and \equref{eq:sim-receive-c1-a}, \ie,
+										
+%					Since $\implements{\isystemterm}{\systemterm}$,  \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer-1]}
+%					By $\lemref{lemma:reduce}$, $\flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer+m-1]} = \anupdseq[_1]\cdot\anupdseq[_2]$, 
+%						$\ireduce{\igetdeltas{\inserver(\cid)}} \triangleleft \ \anupdseq[_1]$ and $ {\pushbuffer}  \triangleleft \ \anupdseq[_2]$ with
+%						$\anupdseq[_1] = \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer-1]}$,
+%						$\anupdseq[_2] = \flatten{ \queuemessage[\tknown+\treceivebuffer..\tknown+\treceivebuffer+m-1]}$,
+%						 Then, we can build the following proof 
+						{\small 
 						\[
-						  \mathrulean{\lemref{lemma:reduce}}
-						       {\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \anupdseq[_1]
+						  \deduce%{\lemref{lemma:reduce}}
+						       {%\label{eq:sim-receive-c1-c}
+     					 \ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer-1]} 
 							\quad
-							\adelta_{h'+1} \triangleleft \anupdseq[_2]}
-  						       {\ireduce{\adelta_1\cdots\adelta_{h'+1}}\triangleleft \anupdseq[_1]\cdot\anupdseq[_2]}  
+							\adelta_{h'+1} \triangleleft \flatten{ \queuemessage[\tknown+\treceivebuffer..\tknown+\treceivebuffer+m-1]}}
+  						       {\ireduce{\adelta_1\cdots\adelta_{h'+1}}\triangleleft \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer+m-1]}}  
 						\]
-					It remains to prove that
-					\[\ireduce{\adelta_{h'+2}\cdots\adelta_h}\triangleleft \flatten{\queuemessage[\tknown+\treceivebuffer+m..|\queuemessage| - 1]}\]
+						}
+					Note that
+					$\ireduce{\adelta_{h'+2}\cdots\adelta_h}\triangleleft \flatten{\queuemessage[\tknown+\treceivebuffer+m..|\queuemessage| - 1]}$
+					also holds because of \equref{eq:sim-receive-c1-b}
+%					
+%					
+%					By $\lemref{lemma:reducefirst}$, $\flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]} = \anupdseq[_1]\cdot\anupdseq[_2]$, 
+%					$\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \anupdseq[_1]\cdot\anupdseq[_2]$ and 
+%					$\adelta_{h'+1} \triangleleft \anupdseq[_1]$, with 
+%					$\anupdseq[_1] = \flatten{ \queuemessage[\tknown+\treceivebuffer..\tknown+\treceivebuffer+m-1]}$,
+%					$\anupdseq[_2] = \flatten{ \queuemessage[\tknown+\treceivebuffer+m .. |\queuemessage| -1]}$,
+%					Then, we can build the following proof 
+%						 
+%					\[
+%						  \mathrulean{\lemref{lemma:reducefirst}}
+%						       {\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \anupdseq[_1]\cdot\anupdseq[_2]
+%							\quad
+%							\adelta_{h'+1} \triangleleft \anupdseq[_1]}
+%  						       {\ireduce{\adelta_{h'+2}\cdots\adelta_h}\triangleleft \anupdseq[_2]}  
+%					\]
+%					
+%			%		\flatten{ \queuemessage[\tknown+\treceivebuffer..m-1]}$. Then,
+%
 					
-					
-					
-					By $\lemref{lemma:reducefirst}$, $\flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]} = \anupdseq[_1]\cdot\anupdseq[_2]$, 
-					$\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \anupdseq[_1]\cdot\anupdseq[_2]$ and 
-					$\adelta_{h'+1} \triangleleft \anupdseq[_1]$, with 
-					$\anupdseq[_1] = \flatten{ \queuemessage[\tknown+\treceivebuffer..\tknown+\treceivebuffer+m-1]}$,
-					$\anupdseq[_2] = \flatten{ \queuemessage[\tknown+\treceivebuffer+m .. |\queuemessage| -1]}$,
-					Then, we can build the following proof 
-						 
-					\[
-						  \mathrulean{\lemref{lemma:reducefirst}}
-						       {\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \anupdseq[_1]\cdot\anupdseq[_2]
-							\quad
-							\adelta_{h'+1} \triangleleft \anupdseq[_1]}
-  						       {\ireduce{\adelta_{h'+2}\cdots\adelta_h}\triangleleft \anupdseq[_2]}  
-					\]
-					
-			%		\flatten{ \queuemessage[\tknown+\treceivebuffer..m-1]}$. Then,
-
-					
-						\item[{--}] The remaining properties straightforwardly hold.
 							
 					\end{itemize}	
 					
 					
 				\item ${\inclient} = \agssegpair[{\astate[']}]\cdot\agssegpairi[{z+1}] \cdots \agssegpairi[h']$, 
               				  $\outserver(\cid) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, the case follows analogously to the previous case.
+				  \henote{Seguro? las hipotesis son bastante distintas. Por otro lado, dudo de la caracterisaci\'on en la def}
      		%$\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$,
                %$\astate['] \triangleleft \queuemessage[0 .. t - 1]$ and $t \leq \tknown_l+\treceivebuffer_l$; 
 
@@ -520,55 +555,109 @@ $\Leftarrow)$ Follows analogously.
 %						\end{itemize}
 					
 	
-	\item {\bf rule \ruleName{pull-1}}. Then, $\isystemterm  \arroi{\pulltran} \isystemterm '$ with 
+	\item {\bf rule \ruleName{i-pull${_1}$}}. Then, $\isystemterm  \arroi{\pulltran} \isystemterm '$ with 
 	
 				\[\begin{array}{r@{=}l}
 					\isystemterm & \addid{\iclientinst[\tpullins][@]
 						[@]%[\aseqround\cdot{\aroundtuple}\cdot{\aseqround[']}]
-						[@][@][@][n][{\agssegpair[{\adelta[']}]}\cdot\inclient]}
-								\ \bigpar \ \isystemterm['']
+						[@][@][@][n]}
+								\ \bigpar  \ {\iserverins[\astate[']]} \ \bigpar\ \iclient[']				\\
+					\inclient & \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_{h'}]}][{\amxrf[_{h'}]}]
+					\\
+					\outserver(\cid) & \agssegpair[{\adelta[_{h'+1}]}][{\amxrf[_{h'+1}]}]\ldots \agssegpair[{\adelta[_{h'}]}][{\amxrf[_{h'}]}]
 					\\
 					\isystemterm['] & \addid{\iclientinst[P]
 						 [\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_n]}}]
 						 [\aseqround']
 						 [@][@]
-						 [{\receivebuffer}][n][\epsilon]}\ \bigpar \ \isystemterm['']	\\
-					   \aseqround['] & \filter{\amxrf[_k](\cid)}{\aseqround} \\
-						\inclient & \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_n]}][{\amxrf[_n]}]
+						 [{\receivebuffer}][n][\epsilon]}\  \bigpar  \ {\iserverins[\astate[']]} \ \bigpar\ \iclient[']
+					\\
+					\aseqround['] & \filter{\amxrf[_k](\cid)}{\aseqround} 
+					\\
 				  \end{array}
 				\]
 		
 				Since $(\isystemterm,\systemterm)\in \mathcal{R}$,
-				\[\tsystem{\tclient{\tpullins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] \]
-				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
+				\[\tsystem{\tclient{\tpullins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\queuemessage}\ \bigpar\ \Absclient[']] \]
+				
+				
+				By rule  \ruleName{pull}, 
 				$\systemterm\arroi{\pulltran} \systemterm[']$ with
 				\[\begin{array}{r@{=}l}
-					\systemterm['] &  \tsystem{\tclienti{\tprogram}{\tknown+\treceivebuffer}{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer  {\ -1}]}{\ttransactionbuffer}{\tsent}{0}}[{\systemterm[''']}]	
+					\systemterm['] &  
+					\tsystem{\tclienti{\tprogram}{\tknown+\treceivebuffer}{\tpending \setminus \queuemessage[\tknown .. \tknown +
+						 \treceivebuffer  {\ -1}]}{\ttransactionbuffer}{\tsent}{0}}[{\queuemessage\ \bigpar\ \Absclient[']}]	
 				  \end{array}		
 				\]
 				
-				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
-				by checking the properties in \defref{def:implementation}.	
-				
+				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$. 
+				Since the reduction only affects the client $\cid$, we only need to check
+				that  properties in \defref{def:implementation} still hold for $\cid$.	
+									\henote{Agregar en el texto principal que $\ireduce{\epsilon} = \emptydelta$}
+
 					\begin{enumerate}
-					
-					\item[\ref{prop_inclient}.] $\inclient$ = $\epsilon$ and $\treceivebuffer$ = 0, hence, $\ireduce{\epsilon} = \emptydelta$ and $\flatten{\queuemessage[\tknown .. \tknown - 1]} = \epsilon$ then It holds since $\medskip\emptydelta \triangleleft \epsilon$, by rule \ruleName{\triangemptydelta}.
-							\item[\ref{prop_state_known}.] We know that $\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}$ by \refprop{prop_state_known} and $\ireduce{\adelta[_1]\cdots\adelta[_n]}\triangleleft \queuemessage[\tknown ..  \tknown + \treceivebuffer - 1]$ by \refprop{prop_inclient} . Then, we produce the following proof for 
-						$\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_n]}}\triangleleft \flatten{\queuemessage[0 .. \tknown+\treceivebuffer - 1]} \ $					\[
-						  \mathrulean{\triangapply}
+					\item[\ref{prop_inclient}.] If follows because $\ireduce{\epsilon} = \emptydelta$,
+					$\flatten{\queuemessage[\tknown+\treceivebuffer .. \tknown+\treceivebuffer + 0 - 1]} = \epsilon$ and 
+					 $\emptydelta \triangleleft \epsilon$, by rule \ruleName{\triangemptydelta}.
+					 
+					\item[\ref{prop_state_known}.]  By \refprop{prop_state_known}, we know that $\known\ \triangleleft\ \flatten {\queuemessage[0..\tknown-1]}$. 
+					By \refprop{prop_inclient},  $\ireduce{\adelta[_1]\cdots\adelta[_{h'}]}\triangleleft \queuemessage[\tknown ..  \tknown + \treceivebuffer - 1]$. 
+					Then, we can derive 
+		%				$\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_n]}}\triangleleft \flatten{\queuemessage[0 .. \tknown+\treceivebuffer - 1]} \ $					\[
+					\[	  \mathrulean{\triangapply}
 						  {
 							\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}
 							\quad 
-							\ireduce{\adelta[_1]\cdots\adelta[_n]}\triangleleft \queuemessage[\tknown ..  \tknown + \treceivebuffer - 1]
+							\ireduce{\adelta[_1]\cdots\adelta[_{h'}]}\triangleleft \queuemessage[\tknown ..  \tknown + \treceivebuffer - 1]
 							}
-						{\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_n]}}\triangleleft \flatten{\queuemessage[0 .. \tknown +\treceivebuffer - 1]}}  
+						{\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_{h'}]}}\triangleleft \flatten{\queuemessage[0 .. \tknown +\treceivebuffer - 1]}}  
 					\]
 					
 						\item[\ref{prop_pending}.] We have to prove that $\filter{\amxrf[_k](\cid)}{\aseqround} \triangleleft \flatten{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer -1]}$  
-						\henote{(PENDIENTE)}
-		
-				
-
+					
+								$\cid\in\dom\inserver$ because $\inclient \neq \epsilon$
+			
+				\[\begin{array}{r@{=}l}
+					\isystemterm & \addid{\iclientinst[\tpullins][@]
+						[@]%[\aseqround\cdot{\aroundtuple}\cdot{\aseqround[']}]
+						[@][@][@][n]}
+								\ \bigpar  \ {\iserverins[\astate[']]} \ \bigpar\ \iclient[']				\\
+					\inclient & \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_{h'}]}][{\amxrf[_{h'}]}]
+					\\
+					\outserver(\cid) & \agssegpair[{\adelta[_{h'+1}]}][{\amxrf[_{h'+1}]}]\ldots \agssegpair[{\adelta[_{h}]}][{\amxrf[_{h}]}]
+					\\
+					\isystemterm['] & \addid{\iclientinst[P]
+						 [\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_n]}}]
+						 [\aseqround']
+						 [@][@]
+						 [{\receivebuffer}][n][\epsilon]}\  \bigpar  \ {\iserverins[\astate[']]} \ \bigpar\ \iclient[']
+					\\
+					\aseqround['] & \filter{\amxrf[_k](\cid)}{\aseqround} 
+					\\
+				  \end{array}
+				\]
+	
+					
+					${\transactionbuffer}_l\triangleleft{\ttransactionbuffer}_l$
+					
+					$\pending_l = \aroundtuple[\cid][n'_1][\adelta'_1]\ldots \aroundtuple[\cid][n'_k][\adelta'_k]$  
+					
+					$\ireduce{\adelta_1'\cdots\adelta_h'\cdot {\pushbuffer}} \triangleleft \flatten{\tpending}$
+					
+					${\inclient}= \agssegpairi[1] \cdots \agssegpairi[h']$, 
+					
+					$\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, 
+					
+					$\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]}$ and 
+					
+					
+					$\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft  \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$
+					
+					$\astate_l \triangleleft \flatten {\queuemessage[0 .. \tknown_l - 1]}$
+					
+					
+					$\astate \triangleleft \flatten{\queuemessage}$
+					
 					\end{enumerate}
 
 
