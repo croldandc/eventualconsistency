@@ -132,14 +132,7 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
       
       $\ireduce{\adelta_h'+1\cdots\adelta_h}\triangleleft 
        \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
-       
-       
-      $\pending_l = \aroundtuple[\cid_l][n_1][\adelta'_1]\ldots\aroundtuple[\cid_l][n_k][\adelta'_k]$ and for all $j\in\{1,\ldots,k\}$
-      $\irounds_j \leq \amxrf_{h'}(\cid_l)$ implies $\adelta'_{j}\ \triangleleft\ \queuemessage[a..b]$ with $\tknown_l \leq a < b < \tknown_l+\treceivebuffer_l-1$.
-       
-       
-       
-     
+           
      \item ${\inclient}_l = \agssegpair[{\astate[']}][{\amxrf[_0]}]\cdot\agssegpairi[1] \cdots \agssegpairi[h']$, 
      
       there exists $t \leq \tknown_l+\treceivebuffer_l$ s.t. $\astate['] \triangleleft \ \queuemessage[0 .. t - 1]$, 
@@ -164,6 +157,10 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
      
 	
 	\end{itemize}	
+	
+        \item \label{prop_deltas} for all $\agssegpair\in\inclient_l\cdot\outserver(\cid_l)$, for all $\aroundtuple[@][@][\adelta']$
+        if $\irounds\leq\amxrf(\cid_l)$ then $\adelta\triangleleft \queuemessage[x..x']$ and  $\adelta'\triangleleft \queuemessage[y..y']$
+        with $y'\leq x'$
 
 	\item \label{prop_state_known} $\astate_l \triangleleft \flatten {\queuemessage[0 .. \tknown_l - 1]}$;
 	

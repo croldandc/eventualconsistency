@@ -455,9 +455,15 @@ $\Leftarrow)$ Follows analogously.
   						       {\ireduce{\adelta_1\cdots\adelta_{h'+1}}\triangleleft \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer+m-1]}}  
 						\]
 						}
+						
+						
 					Note that
 					$\ireduce{\adelta_{h'+2}\cdots\adelta_h}\triangleleft \flatten{\queuemessage[\tknown+\treceivebuffer+m..|\queuemessage| - 1]}$
 					also holds because of \equref{eq:sim-receive-c1-b}
+
+					
+
+
 %					
 %					
 %					By $\lemref{lemma:reducefirst}$, $\flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]} = \anupdseq[_1]\cdot\anupdseq[_2]$, 
@@ -638,22 +644,26 @@ $\Leftarrow)$ Follows analogously.
 				\]
 	
 					
-					${\transactionbuffer}_l\triangleleft{\ttransactionbuffer}_l$
+					${\transactionbuffer}\triangleleft{\ttransactionbuffer}$
 					
-					$\pending_l = \aroundtuple[\cid][n'_1][\adelta'_1]\ldots \aroundtuple[\cid][n'_k][\adelta'_k]$  
+%					$\pending= \aroundtuple[\cid][n'_1][\adelta'_1]\ldots \aroundtuple[\cid][n'_k][\adelta'_k]$  
 					
 					$\ireduce{\adelta_1'\cdots\adelta_h'\cdot {\pushbuffer}} \triangleleft \flatten{\tpending}$
 					
 					${\inclient}= \agssegpairi[1] \cdots \agssegpairi[h']$, 
 					
-					$\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, 
+					$\outserver(\cid) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, 
 					
-					$\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]}$ and 
+					$\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer-1]}$ and 
 					
 					
-					$\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft  \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$
+					$\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft  \flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]}$
 					
-					$\astate_l \triangleleft \flatten {\queuemessage[0 .. \tknown_l - 1]}$
+					$\pending = \aroundtuple[\cid][n_1][\adelta'_1]\ldots\aroundtuple[\cid][n_k][\adelta'_k]$ and for all $j\in\{1,\ldots,k\}$
+      $\irounds_j \leq \amxrf_{h'}(\cid)$ implies $\adelta'_{j}\ \triangleleft\ \queuemessage[a..b]$ with $\tknown\leq a < b < \tknown+\treceivebuffer-1$.
+       
+
+					$\astate \triangleleft \flatten {\queuemessage[0 .. \tknown - 1]}$
 					
 					
 					$\astate \triangleleft \flatten{\queuemessage}$
