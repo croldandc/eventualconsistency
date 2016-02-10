@@ -161,7 +161,7 @@ case analysis on the inference rule applied for the last transition:
         $(\vertice,\vertice[w])\in\so'$ s.t. $\op'(\vertice) \in\updatesets$ and $\op'(\vertice[w])\in\updatesets$ because the new event $\vertice[v']$ is associated with the read operation $r$. 
         Moreover,  $\systemterm''{\arro{\readtran{\udec[r]}}[\cidj]}\systemterm'$ implies 
         $\queuemessage = \queuemessage'$ and for all ${\cid}$,  ${\tknown'}_{\cid} = \tknown_{\cid}$. Therefore, 
-        $\queuemessage[0..\tknown_{\cid}-1] = \queuemessage'[0..\tknown_{\cid}-1]$ for all $\cid$.
+        $\queuemessage[0..\tknown_{\cid}-1] = \queuemessage'[0..\tknown_{\cid}-1]$.
                 Hence, the case follows by inductive hypothesis.
        
        \item rule \ruleName{a-update}. Then, $\systemterm''{\arro{\updatetranaux{\anupd^{\vertice[v']}}}[\cidj]}\systemterm'$
@@ -172,7 +172,7 @@ case analysis on the inference rule applied for the last transition:
 						%Then we can use inductive hypothesis, so that it is easy to see that if $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i]$ then $u^x \in\  \queuemessage[0..\tknown_i-1] \cdot \tpending_i \cdot [\ttransactionbuffer_i] \cdot u_{t}^v$ too.
 			
 			\item  {\bf $\vertice[w] = \vertice[v'] $}. Note that $\systemterm''{\arro{\updatetranaux{\anupd^{\vertice[v']}}}[\cidj]}\systemterm'$ 
-			implies  $\ttransactionbuffer_{\cidj} = \ttransactionbuffer'_{\cidj}\cdot \anupd^{\vertice[v']}$. Then, for all client $\cid$
+			implies  $\ttransactionbuffer_{\cidj} = \ttransactionbuffer'_{\cidj}\cdot \anupd^{\vertice[v']}$. Then, for all client $\cid$,
 			$\anupd^{\vertice[v']}\notin\  \queuemessage[0..\tknown_{\cidj}-1]$, hence, the thesis trivially holds. 
 		\end{itemize}
        
@@ -191,9 +191,9 @@ case analysis on the inference rule applied for the last transition:
 	
 	
 		 When $\cid = \cidj$, we show that 
-		 $\anupd_0^{\vertice[w]} \in\  \queuemessage[0..\tknown'_{\cidj}]$ then there exists $\anupd_1$ s.t. $\anupd_1^{\vertice}\in\queuemessage'[0..k_{\cid}^{'}-1]$ implies
-		 if $\anupd_0^{\vertice[w]} \in\  \queuemessage[0..\tknown_{\cidj}]$ =
-		 $\queuemessage[0..\tknown'_{\cidj}+ \treceivebuffer'_{\cidj}]$ then, there exists $\anupd_1$ s.t. $\anupd_1^{\vertice}\in\queuemessage[0..k_{\cidj}-1]$ = $\queuemessage'[0..k_{\cidj}^{'}+\treceivebuffer'_{\cidj}-1]$ 
+		 $\anupd_0^{\vertice[w]} \in\  \queuemessage[0..\tknown'_{\cidj}]$ then there exists $\anupd_1$ s.t. $\anupd_1^{\vertice}\in\queuemessage'[0..k_{\cid}^{'}-1]$ %implies
+		 %if $\anupd_0^{\vertice[w]} \in\  \queuemessage[0..\tknown_{\cidj}]$ =
+		 %$\queuemessage[0..\tknown'_{\cidj}+ \treceivebuffer'_{\cidj}]$ then, there exists $\anupd_1$ s.t. $\anupd_1^{\vertice}\in\queuemessage[0..k_{\cidj}-1]$ = $\queuemessage'[0..k_{\cidj}^{'}+\treceivebuffer'_{\cidj}-1]$ 
 		%\begin{itemize}
 		%	\item If $\udec \in\ \tpending_{\cidj}'\  \land\ \udec \notin\ \queuemessage[\tknown'_{\cidj}..\tknown'_{\cidj}+ \treceivebuffer'_{\cidj}-1]$, 
 		%	then $\udec \in \ \tpending_{\cidj}$.
@@ -201,7 +201,7 @@ case analysis on the inference rule applied for the last transition:
 		%		then $\udec \notin \ \tpending_{\cidj}$ but 
 		%		$\udec \in\ \queuemessage[0 .. \tknown'_{\cidj}+ \treceivebuffer'_{\cidj}-1]=\queuemessage[0 .. \tknown_{\cidj} -1] $. 
 		%\end{itemize}
-		The remaining cases ($\udec \in \queuemessage[0..\tknown'_{\cidj}-1]$ or $\udec\in\ttransactionbuffer'_{\cidj}$) are straightforward.
+		%The remaining cases ($\udec \in \queuemessage[0..\tknown'_{\cidj}-1]$ or $\udec\in\ttransactionbuffer'_{\cidj}$) are straightforward.
 		
 		\item rules \ruleName{push},\ruleName{receive}, \ruleName{confirm}, \ruleName{while-true}, \ruleName{while-false}, 
 		The proof follows from inductive hypothesis because $\tknown_{\cid}'=\tknown_{\cid}$, $\so'=\so$ and $\op'=\op$.
