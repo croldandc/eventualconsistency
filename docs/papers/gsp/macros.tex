@@ -320,8 +320,8 @@
 		\textcolor{Brown}{{\langle#1,#2,{#3}\rangle}}}
 
 \newcommandx{\aroundtuplei}[1][1=i]{\aroundtuple[\cid_{#1}][n_{#1}][\adelta_{#1}]}
-
-\newcommand{\igetdeltas}[1]{\textcolor{orange}{\textit{getdeltas}(#1)}}
+%$\newcommand{\igetdeltas}[1]{\textcolor{orange}{\textit{getdeltas}(#1)}}
+\newcommand{\igetdeltas}[1]{\textcolor{orange}{\Delta(#1)}}
 
 
 %\newcommand{\pendingtype}{\rho}
@@ -630,7 +630,9 @@
 \newcommand{\henote}[1]{\textcolor{red}{[H: #1]}}
 \newcommand{\chnote}[1]{\textcolor{green}{[C: #1]}}
 
-\newcommand{\flatten}[1]{\textcolor{Orange}{\textit{flatten}(#1)}}
+%\newcommand{\flatten}[1]{\textcolor{Orange}{\textit{flatten}(#1)}}
+\newcommand{\flatten}[1]{\textcolor{Orange}{\underline{#1}}}
+
 \newcommand{\length}[1]{|#1|}
 
 \newcommandx{\iupdatetran}[2][2=\vertice]{\textcolor{OliveGreen}{\textit{wr}(\udec[{#1}])}}
@@ -641,12 +643,16 @@
 %%%%
 \newcommand{\paralelo}[4]{\parallel_{#1\in #2} {#3} \parallel \ #4}
 
-\newcommandx{\abstsyst}[4][1=l,2=L,3=\Absclient_j, 4=\queuemessage,usedefault=@]{\paralelo{#1}{#2}{#3}{#4}}
+%\newcommandx{\abstsyst}[4][1=l,2=L,3=\Absclient_j, 4=\queuemessage,usedefault=@]{\paralelo{#1}{#2}{#3}{#4}}
+
+\newcommandx{\abstsyst}[4][1=l,2=L,3=\Absclient_j, 4=\queuemessage,usedefault=@]{\Absclient_0\ \bigpar \ldots\bigpar\  \Absclient_m\ \bigpar\ \queuemessage}
+
 
 \newcommandx{\abstcliJ}[2][1=l,2=n,usedefault=@]{\tclienti{\tprogram_{#1}}{\tknown_{#1}}{\tpending_{#1}}{\ttransactionbuffer_{#1}}{\tsent_{#1}}{\treceivebuffer_{#1}}[{\cid_{#1}}][{#2}_{#1}]}
 
 
-\newcommandx{\concsyst}[4][1=l,2=L,3={\iclient_l},4=\iserver,usedefault=@]{\paralelo{#1}{#2}{#3}{#4}}
+%\newcommandx{\concsyst}[4][1=l,2=L,3={\iclient_l},4=\iserver,usedefault=@]{\paralelo{#1}{#2}{#3}{#4}}
+\newcommandx{\concsyst}[4][1=l,2=L,3=\Absclient_j, 4=\queuemessage,usedefault=@]{\iclient_0\ \bigpar \ldots\bigpar\  \iclient_m\ \bigpar\ \iserver}
 
 
 
