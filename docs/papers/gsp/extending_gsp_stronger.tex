@@ -152,7 +152,7 @@ over any other action.
 % 
 
 
-\subsection{Operational Semantic}
+%\subsection{Operational Semantic}
 
 %\subsubsection{Notation}
 
@@ -172,54 +172,54 @@ over any other action.
 %
 %These labels allow system to perform an update synchronous. Label $\startsynctran$ stands for the begining of a transaction, and $\finishsynctran$ the end of it.
 
-Since update operations are not instantaneous, now we introduce to the model the relations that take into account the 
-beginning and finalisation of each write operation. In particular,
+%Since update operations are not instantaneous, now we introduce to the model the relations that take into account the 
+%beginning and finalisation of each write operation. In particular,
 
-\begin{itemize}
-   \item{\em Return Before} (\rb), which indicates the ordering of non-overlapping update operations. 
-\end{itemize}
+%\begin{itemize}
+%  \item{\em Return Before} (\rb), which indicates the ordering of non-overlapping update operations. 
+%\end{itemize}
 
-The extended environment will also contain two additional terms that are instrumental to the 
-computation of $\rb$. 
+%The extended environment will also contain two additional terms that are instrumental to the 
+%computation of $\rb$. 
 
-\begin{itemize}
-	\item $\tx$ that relates a vertex to set of vertices which have just not finished. Formally,  
-	$\tx :\verticesets\ \mapsto 2^{\verticesets}$, i.e., it is a function from vertices to set of vertices.
-	\item $\tc$ that denotes the set of closed transactions, i.e., $\tc\subseteq \verticesets$.
-\end{itemize}
+%\begin{itemize}
+%	\item $\tx$ that relates a vertex to set of vertices which have just not finished. Formally,  
+%	$\tx :\verticesets\ \mapsto 2^{\verticesets}$, i.e., it is a function from vertices to set of vertices.
+%	\item $\tc$ that denotes the set of closed transactions, i.e., $\tc\subseteq \verticesets$.
+%\end{itemize}
 
-\[
-    \begin{array}{l@{\quad}r@{\;::=\;}l}
-			 (\textsc{environment}) & \environmentterm &  \environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx}{\tc} \\
-			 (\textsc{transactions with overlapping}) & \tx &  \emptyset  \ | \ \verticesets\ \mapsto 2^{\vertice},\tx   \\
-			 (\textsc{transactions closed}) & \tc &  \epsilon  \ | \ \vertice\ \cdot \tc 
-	   \end{array}
-\]
+%\[
+ %   \begin{array}{l@{\quad}r@{\;::=\;}l}
+%			 (\textsc{environment}) & \environmentterm &  \environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx}{\tc} \\
+%			 (\textsc{transactions with overlapping}) & \tx &  \emptyset  \ | \ \verticesets\ \mapsto 2^{\vertice},\tx   \\
+%			 (\textsc{transactions closed}) & \tc &  \epsilon  \ | \ \vertice\ \cdot \tc 
+%	   \end{array}
+%\]
 
 
-\paragraph{Notation} $\updopentx{\epsilon} = \epsilon$, and 
-   $\updopentx{\vertice_0 \mapsto \{\instanceset\};tail} = \vertice_0 \mapsto \{\instanceset \cup \{\vertice\}\};\updopentx{tail}$.
+%\paragraph{Notation} $\updopentx{\epsilon} = \epsilon$, and 
+ %  $\updopentx{\vertice_0 \mapsto \{\instanceset\};tail} = \vertice_0 \mapsto \{\instanceset \cup \{\vertice\}\};\updopentx{tail}$.
 		
 
 
 		
- \[
- \begin{array}{l}  
-\mathrule
-	{e-start-sync}
-	{\systemterm \arroi{\syncupdtran{\tupdate}} \systemterm' 
-		\qquad [\vertice] \notin 
-dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx}{\tc} \arroi{\startsynctran{\vertice}} \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb}{\updopentx{\tx};\vertice \mapsto dom(\tc)}{\tc}}
+ %\[
+ %\begin{array}{l}  
+%\mathrule
+%	{e-start-sync}
+%	{\systemterm \arroi{\syncupdtran{\tupdate}} \systemterm' 
+%		\qquad [\vertice] \notin 
+%dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx}{\tc} \arroi{\startsynctran{\vertice}} \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb}{\updopentx{\tx};\vertice \mapsto dom(\tc)}{\tc}}
 
- \\[35pt]
-{
-\mathrule{e-end-sync}{\systemterm \arroi{\finishsynctran{\tupdate}} \systemterm' \qquad [\vertice] \in 
-dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\vertice \mapsto \instanceset,\tx}{\tc} \arroi{\finishsynctran{\vertice}} \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb'}{\tx}{\tc \cdot\ \vertice}}}
-\\
- \\[10pt]where \ 
-\rb' = \rb \cup\ \{ (x,v) \ | \ \forall 0 \leq m,n < |\queuemessage|, \op(x) = \queuemessage[m] \ \land \ \op(v) = \queuemessage[n] \ \land \ m \leq\ n \ \land \ x\notin\tx(v) \}
- \end{array}
- \]
+% \\[35pt]
+%{
+%\mathrule{e-end-sync}{\systemterm \arroi{\finishsynctran{\tupdate}} \systemterm' \qquad [\vertice] \in 
+%dom(\tx)}{\environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\vertice \mapsto \instanceset,\tx}{\tc} \arroi{\finishsynctran{\vertice}} \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb'}{\tx}{\tc \cdot\ \vertice}}}
+%\\
+ %\\[10pt]where \ 
+%\rb' = \rb \cup\ \{ (x,v) \ | \ \forall 0 \leq m,n < |\queuemessage|, \op(x) = \queuemessage[m] \ \land \ \op(v) = \queuemessage[n] \ \land \ m \leq\ n \ \land \ x\notin\tx(v) \}
+ %\end{array}
+ %\]
 
 
 
@@ -280,7 +280,7 @@ $\Leftarrow)$ We divided the proof in two implications
 
 \begin{theorem}[\textsc{Single Order}]
 
-Let $\textsc{\small{AR}}$ an arbitration relation and $\textsc{\small{VIS}}$ a visibility relation, if $\environmenttran{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}{\emptyset}{\undefined}{\emptyset} \arro{} ^*\ \environmenttran{\systemterm'}{\op}{\so}{\vis}{\arb}{\rb}{\tx}{\tc}$ then $\textsc{\small{AR}};\textsc{\small{VIS}} \subseteq \textsc{\small{VIS}}$ and  $\textsc{\small{AR}}^{-1};\neg\textsc{\small{VIS}} \subseteq \neg\textsc{\small{VIS}}$.
+Let $\textsc{\small{AR}}$ an arbitration relation and $\textsc{\small{VIS}}$ a visibility relation, if $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \arro{} ^*\ \environment{\systemterm}{\op}{\so}{\vis}{\arb} $ then $\textsc{\small{AR}};\textsc{\small{VIS}} \subseteq \textsc{\small{VIS}}$ and  $\textsc{\small{AR}}^{-1};\neg\textsc{\small{VIS}} \subseteq \neg\textsc{\small{VIS}}$.
 
 
 \end{theorem}
