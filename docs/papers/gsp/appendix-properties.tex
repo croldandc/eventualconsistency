@@ -406,10 +406,12 @@ case analysis on the rule applied for the last transition:
        Therefore,
        $(\vertice[x],\vertice) \in \arb_{\mbox{\sf new}}$ and, therefore, $(\vertice[x],\vertice) \in \arb\ \subseteq\ \arb \cup \restUU{\so}$.
        
-       \item rule \ruleName{a-arb}. Then, $\queuemessage' = \queuemessage''\cdot\udec$, $\so = \so'$, 
+       \item rule \ruleName{a-arb}. Then, $\queuemessage' = \queuemessage''\cdot\ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]$, $\so = \so'$, 
         $\arb = \arb' \cup \arb_{\mbox{\sf new}}$ with 
          $\arb_{\mbox{\sf new}}= \{ (\vertice, \vertice[w])\ \ |\  \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
-		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage''\cdot\udec\}$
+		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage''\cdot\ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]\} 
+		     \cup\  \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\}
+		     $
         
         Then,         
         \[\arb;\restUU{\so} = \arb';\restUU{\so'}\  \cup\ \arb_{\mbox{\sf new}};\restUU{\so'} 
@@ -796,10 +798,10 @@ case analysis on the inference rule applied for the last transition:
         \[\arb;(\vis\setminus\sse) =  (\arb' \cup \arb_{\mbox{\sf new}});(\vis'\setminus\sse) =  \arb' ;(\vis'\setminus\sse)\cup \arb_{\mbox{\sf new}};(\vis'\setminus\sse) \]
 
     
-       \item rule \ruleName{a-arb}. Then, $\queuemessage'= \queuemessage''\cdot\udec$, $\vis = \vis'$, $\sse = \sse'$  and
+       \item rule \ruleName{a-arb}. Then, $\queuemessage'= \queuemessage''\cdot\ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]$, $\vis = \vis'$, $\sse = \sse'$  and
         $\arb = \arb' \cup \arb_{\mbox{\sf new}}$ with 
          $\arb_{\mbox{\sf new}}= \{ (\vertice, \vertice[w])\ \ |\ \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
-		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage\cdot \udec\}$.
+		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage\cdot \ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]\} \cup\  \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\}$.
 		     
     	Hence, 
         \[\arb;(\vis\setminus\sse) =  (\arb' \cup \arb_{\mbox{\sf new}});(\vis'\setminus\sse) =  \arb' ;(\vis'\setminus\sse)\cup \arb_{\mbox{\sf new}};(\vis'\setminus\sse) \]
@@ -812,7 +814,7 @@ case analysis on the inference rule applied for the last transition:
         If $(\vertice[x],\vertice[y])\in\arb_{\mbox{\sf new}}$ then $\vertice[x]=\vertice$ and
         \begin{equation}
         \label{eq:cst-pref-arb-a}
-        \forall\anupd_0. \anupd_0^{\vertice[y]}\not\in\queuemessage''\cdot \udec
+        \forall\anupd_0. \anupd_0^{\vertice[y]}\not\in\queuemessage''\cdot \ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]
         \end{equation}
         On the other hand, $(\vertice[y],\vertice[z])\in (\vis'\setminus\sse)$ implies
          $\vertice[y]\in\sse(\cid_0)$
@@ -820,7 +822,7 @@ case analysis on the inference rule applied for the last transition:
         $\cid_0\neq\cid_1$. By \lemref{lemma:update-ever-belong-different-client},
         \begin{equation}
         \label{eq:cst-pref-arb-b}
-        \exists\anupd_0. \anupd_0^{\vertice[y]}\in \queuemessage''\cdot\udec
+        \exists\anupd_0. \anupd_0^{\vertice[y]}\in \queuemessage''\cdot\ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]
         \end{equation}
         From \equref{eq:cst-pref-arb-a} and  \equref{eq:cst-pref-arb-b}, we conclude that 
         $\arb_{\mbox{\sf new}};(\vis'\setminus\sse) = \emptyset \subseteq \vis$.
