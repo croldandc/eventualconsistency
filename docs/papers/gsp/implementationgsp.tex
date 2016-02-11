@@ -205,27 +205,36 @@ for  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions ho
   \item $\cid_l \neq \cid_k$ for all $j\neq k$;
   \item $\dom\inserver = \dom\outserver \subseteq  \{0,\ldots,m\}$;
   \item $\cid_l\not\in\dom\outserver$ implies $\inclient_l = \epsilon$
-  \item $\cid_l\in\dom\outserver$ and if $\inclient_l\cdot\outserver \neq\epsilon$ then either
+  \item if $\cid_l\in\dom\outserver$ and $\inclient_l\cdot\outserver \neq\epsilon$ then either
 	\begin{itemize}
 		\item ${\inclient}_l\cdot\outserver= \agssegpairi[1] \cdots \agssegpairi[h]$; or
 		\item  ${\inclient}_l\cdot\outserver= \agssegpair[{\astate}][{\amxrf[_0]}]\cdot\agssegpairi[1]\cdots \agssegpairi[h]$.
 	\end{itemize}
-	and $\amxrf[_j](\cid_l) \leq \ \amxrf[_h](\cid_l)$ for all  ${\sf j}\leq{\sf j}$.
+	 $\amxrf_j(\cid_l) \leq \ \amxrf_k(\cid_l)$ for all  ${ j}\leq{k}$ and $\amxrf_h = \amxrf$
+	
+\item $\pending_l = \aroundtuplei[0]\cdots\aroundtuplei[r]$, $\irounds_r \leq \irounds_l$, and $\irounds_j < \irounds_k$ for all  ${ j}\leq{k}$.
 
+\item  $\cid_l\in\dom\outserver$ then either
+  \begin{itemize}
+    \item $\pending_l = \epsilon$ and $\amxrf(\cid_l) \leq \trounds_l$;
+    \item $\pending_l = \inserver(\cid_l)\cdot\pending_l'$; 
+    $\inserver(\cid_l) = {\aroundtuple[\cid_l][{\irounds_{\it fst}}][\adelta_{\it fst}]} \cdot\pending_l''$ and  $ \irounds_{\it fst}> {\amxrf} (\cid_l)$.
+    \item $\pending_l =\pending_l''\cdot{\aroundtuple[\cid_l][{\irounds_{lst}}][\adelta_{lst}]} \cdot \inserver(\cid_l)\cdot\pending_l'$  
+    		and $\inclient_l\cdot\outserver (\cid_l) = \aseqseg\cdot\agssegpair[\delta'_{lst}][{\amxrf_{lst}}]$  with
+		 ${\amxrf_{lst}} (\cid_l) = \irounds_{lst}$. 
+\end{itemize}
 \end{enumerate}
 \end{definition}
 
 The well-formedness condition requires all clients to have different identifiers (1). 
 Despite we have model the communication buffers as independent, in the proposed 
 implementation  clients and the global store communicates through bidirectional channels. 
-If a client $\cid$ is connected then $\cid\in\dom\inserver$ and  $\cid\in\dom\outserver$ 
-(2). Besides, when a client is disconnected (\ie, $\cid_\in\dom\outserver$)  its input buffer is
+If a client $\cid_l$ is connected then $\cid_l\in\dom\inserver$ and  $\cid_l\in\dom\outserver$ 
+(2). Besides, when a client is disconnected (\ie, $\cid_l\in\dom\outserver$)  its input buffer is
 empty (3). Last condition imposes that a segment of the form $\agssegpair$ can be sent only  as the first message in the flow
-and that round confirmations $\amxrf[_j]$ appear in increasing order. 
+and that round confirmations  appear in increasing order. 
 
-In order to keep our  definition simple, we do not impose any 
-condition about the coherence about the state of each replica and the 
-global store.
+
 
 
 \subsection{Operational Semantics}
@@ -340,13 +349,13 @@ Rule \ruleName{i-update}, analogous to rule \ruleName{update}, adds the operatio
 	\begin{array}{p{\linewidth}}	
 	  $\agssegpair[@][{\amxrf[{'}]}] =\receiveroundsname{\inserver} \ \ \adelta\neq\emptydelta\ \ %=\append{\emptygssegment}{rs} \qquad 
 	  \astate[']=\iapply{\astate}{\adelta} \hfill
- 	 \forall\cid.(\outserver['] (\cid)= \outserver(\cid)\cdot\agssegpair[@][{\amxrf[{'}]}] \, \land\,
+ 	 \forall\cid.(\outserver['] (\cid)= \outserver(\cid)\cdot\agssegpair[@][{\amxrf}{[{\amxrf[{'}]}]}] \, \land\,
  	 \inserver['](\cid) = \epsilon)$
 \end{array}
   }
   {\iserverins\ \bigpar \ \iclient
   \tr{\tau} 
-  {\iserverins[{\astate[']}][{\amxrf[{'}]}][{\inserver[']}][{\outserver[']}]}\ \bigpar \ \iclient}
+  {\iserverins[{\astate[']}][{\amxrf}{[{\amxrf[{'}]}]}][{\inserver[']}][{\outserver[']}]}\ \bigpar \ \iclient}
 \\[25pt]
 \mathrule{i-drop-cxn}
 	{\cid \in \inserver \qquad  \cid \in \outserver}
@@ -462,8 +471,8 @@ $\receiveroundsname{\_}$ is defined such as
      % \item 
      \\
      &
-     \dom{\amxrf[']} = \dom{\inserver} \ \mbox{and}\  
-       \forall\cid_l\in\dom\inserver.\amxrf['](\cid_l) = \irounds^{k_l}_l
+     \dom{\amxrf[']} = \{\cid \ |\ \cid\in\dom{\inserver} \ \mbox{and}\ \inserver(\cid)\neq\epsilon\}\ \mbox{and}\  
+      \\&\hfill \forall\cid_l\in\dom\inserver.\amxrf['](\cid_l) = \irounds^{k_l}_l
     \end{array}
  \] 
 %\end{itemize}

@@ -643,30 +643,30 @@ $\Leftarrow)$ Follows analogously.
 				  \end{array}
 				\]
 	
-					
-					${\transactionbuffer}\triangleleft{\ttransactionbuffer}$
-					
-%					$\pending= \aroundtuple[\cid][n'_1][\adelta'_1]\ldots \aroundtuple[\cid][n'_k][\adelta'_k]$  
-					
-					$\ireduce{\adelta_1'\cdots\adelta_h'\cdot {\pushbuffer}} \triangleleft \flatten{\tpending}$
-					
-					${\inclient}= \agssegpairi[1] \cdots \agssegpairi[h']$, 
-					
-					$\outserver(\cid) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, 
-					
-					$\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer-1]}$ and 
-					
-					
-					$\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft  \flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]}$
-					
-					$\pending = \aroundtuple[\cid][n_1][\adelta'_1]\ldots\aroundtuple[\cid][n_k][\adelta'_k]$ and for all $j\in\{1,\ldots,k\}$
-      $\irounds_j \leq \amxrf_{h'}(\cid)$ implies $\adelta'_{j}\ \triangleleft\ \queuemessage[a..b]$ with $\tknown\leq a < b < \tknown+\treceivebuffer-1$.
-       
-
-					$\astate \triangleleft \flatten {\queuemessage[0 .. \tknown - 1]}$
-					
-					
-					$\astate \triangleleft \flatten{\queuemessage}$
+%					
+%					${\transactionbuffer}\triangleleft{\ttransactionbuffer}$
+%					
+%%					$\pending= \aroundtuple[\cid][n'_1][\adelta'_1]\ldots \aroundtuple[\cid][n'_k][\adelta'_k]$  
+%					
+%					$\ireduce{\adelta_1'\cdots\adelta_h'\cdot {\pushbuffer}} \triangleleft \flatten{\tpending}$
+%					
+%					${\inclient}= \agssegpairi[1] \cdots \agssegpairi[h']$, 
+%					
+%					$\outserver(\cid) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, 
+%					
+%					$\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer-1]}$ and 
+%					
+%					
+%					$\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft  \flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]}$
+%					
+%					$\pending = \aroundtuple[\cid][n_1][\adelta'_1]\ldots\aroundtuple[\cid][n_k][\adelta'_k]$ and for all $j\in\{1,\ldots,k\}$
+%      $\irounds_j \leq \amxrf_{h'}(\cid)$ implies $\adelta'_{j}\ \triangleleft\ \queuemessage[a..b]$ with $\tknown\leq a < b < \tknown+\treceivebuffer-1$.
+%       
+%
+%					$\astate \triangleleft \flatten {\queuemessage[0 .. \tknown - 1]}$
+%					
+%					
+%					$\astate \triangleleft \flatten{\queuemessage}$
 					
 					\end{enumerate}
 
@@ -778,11 +778,11 @@ $\Leftarrow)$ Follows analogously.
 	
 	
 	
-	\item {\bf rule \ruleName{batch}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
+	\item {\bf rule \ruleName{i-batch}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
 				\[\begin{array}{r@{=}l}
-					\isystemterm & \iserverins\ \bigpar \ \iclient
+					\isystemterm & \iserverins\ \bigpar \ \iclient_0 \bigpar \ldots \bigpar \iclient_m
 					\\
-					\isystemterm['] & {\iserverins[{\astate[']}][{\amxrf[{'}]}][{\inserver[']}][{\outserver[']}]}\ \bigpar \ \iclient \\
+					\isystemterm['] & {\iserverins[{\astate[']}][{\amxrf[{'}]}][{\inserver[']}][{\outserver[']}]}\ \bigpar \iclient_0\bigpar \ldots \bigpar \iclient_m\\
 					\agssegpair[@][{\amxrf[{'}]}] &\receiveroundsname{\inserver} \\ %=\append{\emptygssegment}{rs} \qquad 
 					\astate[']&\iapply{\astate}{\adelta} \\
 					\forall\cid.(\outserver['] (\cid)& \outserver(\cid)\cdot\agssegpair[@][{\amxrf[{'}]}]) \\
@@ -792,27 +792,79 @@ $\Leftarrow)$ Follows analogously.
 				
 				
 
-				Since $\implements{\isystemterm}{\systemterm}$, for all $\cid \in\dom{\inserver}$
-				$\ireduce{\igetdeltas{\inserver(\cid)}\cdot {\pushbuffer}} \triangleleft \ \flatten{\tsent}$ (\refprop{prop_sent}) 
-				and  $\transactionbuffer \triangleleft{\ttransactionbuffer}$ (\refprop{prop_transactions}). 
-				By $\lemref{lemma:reduce}$, $\flatten{\tsent} = \anupdseq[_1]\cdot\anupdseq[_2]$, 
-				$\ireduce{\igetdeltas{\inserver(\cid)}} \triangleleft \ \anupdseq[_1]$ and $ {\pushbuffer}  \triangleleft \ \anupdseq[_2]$. 
+				Since $\implements{\isystemterm}{\systemterm}$, we have $\systemterm = \abstsyst[@][@][\Absclient_m]$
+				satisfying all conditions in Def...
+				
+				
+				
+				
+				Then, 
+				$\ireduce{\igetdeltas{\inserver(\cid_l)}\cdot {\pushbuffer}} \triangleleft \ \flatten{\tsent_l}$ holds for any  
+				$\cid_l \in\dom{\inserver}$ (\refprop{prop_sent}) 
+				and  $\transactionbuffer_l \triangleleft{\ttransactionbuffer_l}$ (\refprop{prop_transactions}). 
+				By $\lemref{lemma:reduce}$, $\flatten{\tsent_l} = \flatten{\anupdseq[_1]_l}\cdot\flatten{\anupdseq[_2]_l}$, 
+				%
+				\begin{equation}
+				\label{eq:sim-batch-deltainserver}		
+				\ireduce{\igetdeltas{\inserver(\cid_l)}} \triangleleft \ \flatten{\anupdseq[_1]_l}
+				\end{equation}
+				and 
+				$ {\pushbuffer_l}  \triangleleft \ \flatten{\anupdseq[_2]_l}$. 
+				Hence, 
+				
+				\[
+				  \mathrulean{\textcolor{red}{aa}}
+				  {\igetdeltas{\inserver(\cid_0)} \triangleleft \ \flatten{\anupdseq[_0]_1}
+				  	\quad \ldots \quad
+					\igetdeltas{\inserver(\cid_m)} \triangleleft \ \flatten{\anupdseq[_1]_m}
+				   }
+					{\ireduce{\igetdeltas{\inserver(\cid_0)}\cdots\igetdeltas{\inserver(\cid_m)}}\triangleleft 
+						\flatten{\anupdseq[_0]_1\cdots\anupdseq[_0]_m}}
+				\]
+				
+				By definition, $\adelta = \ireduce{\igetdeltas{\inserver(\cid_0)}\cdots\igetdeltas{\inserver(\cid_m)}}$. Hence,
+				
+				\begin{equation}
+				\label{eq:sim-batch-delta}
+				\adelta \triangleleft \flatten{\anupdseq[_1]_0\cdots\anupdseq[_1]_m}
+				\end{equation}
+				
+				For $\cid_l \not\in\dom{\inserver}$, define $\anupdseq[_1]_l = \epsilon$ and $\anupdseq[_2]_l = \tsent_l$.
+				Therefore, 
+				\[ \Absclient_l = \tclient{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\anupdseq[_1]_l \cdot \anupdseq[_2]_l}{\treceivebuffer_l}[\cid_l][\trounds_l] \]
 			
 
-				Then, $\sum_{\cid=1}^{m} |\anupdseq[_1]_{\cid}| = h$. Furthermore, $(\isystemterm,\systemterm)\in \mathcal{R}$,
-				\[\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_1]] \cdot [\anupdseq[_2]]}{\treceivebuffer}[1]}[]\cdots\ \bigpar \ 
-		              \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_1]] \cdot [\anupdseq[_2]]}{\treceivebuffer}[m]}[\queuemessage] \]
+				Define $h = \sum_{\cid=0}^{m} |\anupdseq[_1]_{\cid}|$ and note we can use rule \ruleName{send} $h$ times ($|{\anupdseq[_1]}_{\cid}|$ times
+				for each client) to derive the following computation:
+ 				
 				
-				 $h$ is the amount of internal transitions performed by the system. The first one, corresponds to the first block of update from $\anupdseq[_1]$ of client 1. It is called $\tsenthead[_1]$. The following transitions correspond to the remaining blocks of update of $\anupdseq[_1]$ from client 1 and  $\anupdseq[_1]$ from the rest of clients.  Then, 
-				 
-				$\systemterm \tr{\tau}_1 \ldots\ \tr{\tau}_m \systemterm[']$ with
-				\[\begin{array}{r@{=}l}
-					\systemterm['] &  \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_2]]}{\treceivebuffer}[1]}[]\cdots\ \bigpar \ 
-		              \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_2]]}{\treceivebuffer}[n]}[] \queuemessage \cdot\tsenthead[_1]\cdots\tsenthead[_m]\ 
-		              
-				  \end{array}		
-				\]
-
+				
+%				times for each client to obtained $\systemterm$ can Furthermore, $(\isystemterm,\systemterm)\in \mathcal{R}$,
+%				
+%				
+%				\[\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_1]] \cdot [\anupdseq[_2]]}{\treceivebuffer}[1]}[]
+%				\cdots\ \bigpar \ 
+%		              \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_1]] \cdot [\anupdseq[_2]]}{\treceivebuffer}[m]}[\queuemessage] \]
+%				
+%				 $h$ is the amount of internal transitions performed by the system. The first one, corresponds to the first block of 
+%				update from $\anupdseq[_1]$ of client 1. It is called $\tsenthead[_1]$. The following transitions correspond to 
+%				the remaining blocks of update of $\anupdseq[_1]$ from client 1 and  $\anupdseq[_1]$ from the rest of clients.  Then, 
+%				 
+				$\systemterm \tr{\tau}_0 \ldots\ \tr{\tau}_m \systemterm[']$ with
+				
+				\[  \systemterm['] = \Absclient'_0 \ \bigpar\ \cdots\ \bigpar\ \Absclient'_m \ \bigpar\ \queuemessage'\]
+				
+				where 
+				\[ \Absclient'_l = \tclient{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\anupdseq[_2]_l}{\treceivebuffer_l}[\cid_l][\trounds_l] \]
+				and
+				\[\queuemessage' =\queuemessage \cdot\anupdseq[_1]_0\cdots\anupdseq[_1]_m\]
+%				\[\begin{array}{r@{=}l}
+%					\systemterm['] &  \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_2]]}{\treceivebuffer}[1]}[]\cdots\ \bigpar \ 
+%		              \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{[\anupdseq[_2]]}{\treceivebuffer}[n]}[] \queuemessage \cdot\tsenthead[_1]\cdots\tsenthead[_m]\ 
+%		              
+%				  \end{array}		
+%				\]
+%
 				 
 			%	 In particular,  $h$ = $|\inserver|$, hence the implementation send a only delta ($\delta$), it is a reduction of segments in $\inserver$, the abstract model can send tantos bloques de updates como cantidad de segmentos usados para construir el delta.\chnote{cambiar explicacion en castellano}
 				
@@ -821,39 +873,169 @@ $\Leftarrow)$ Follows analogously.
 				by checking the properties in \defref{def:implementation}.	
 			
 					\begin{enumerate}
-						\item[\ref{prop_sent}.] For all client $\cid$, $\ireduce{\igetdeltas{\inserver(\cid)}\cdot {\pushbuffer}} \triangleleft \ \flatten{{\tsent}}$ holds. Then, $\igetdeltas{\inserver(\cid)}$ is $\emptydelta$ since $\inserver(\cid)$ = $\epsilon$ and $\anupdseq[_1]$ = $\epsilon$. It holds since $\medskip\emptydelta \triangleleft \epsilon$, by rule \ruleName{\triangemptydelta}. Furthermore, we know that $\pushbuffer\triangleleft\anupdseq[_2]$.  We can build the following proof
+						\item[\ref{prop_sent}.] 
+%						For all client $\cid_l$, 
+%						$\ireduce{\igetdeltas{\inserver(\cid_l)}\cdot {\pushbuffer_l}} \triangleleft \ \flatten{{\tsent}}$ holds by 
+%						hypothesis. 
+						Note that $\igetdeltas{\inserver'(\cid_l)} = \emptydelta$ because $\inserver'(\cid_l)$ = $\epsilon$. By 
+						 rule \ruleName{\triangemptydelta}, 
+						$\emptydelta \triangleleft \epsilon$. Moreover, 
+						 %It holds since $\emptydelta \triangleleft \epsilon$, by rule \ruleName{\triangemptydelta}. Furthermore, we know that
+						  $\pushbuffer_l\triangleleft\anupdseq[_2]_l$.  Then, we can build the following proof
 						\[ \mathrulean{\lemref{lemma:reduce}}
 						  {
-							\ireduce{\igetdeltas{\inserver(\cid)}} \triangleleft \anupdseq[_1]
+							\ireduce{\igetdeltas{\inserver'(\cid_l)}} \triangleleft \epsilon
 							\quad 
-							\pushbuffer\triangleleft\anupdseq[_2]
+							\pushbuffer_l\triangleleft\anupdseq[_2]_l
 							}
-						{\ireduce{\igetdeltas{\inserver(\cid)}\cdot {\pushbuffer}} \triangleleft \ \anupdseq[_1]\cdot\anupdseq[_2]}  
+						{\ireduce{\igetdeltas{\inserver'(\cid_l)}\cdot {\pushbuffer_l}} \triangleleft \ \anupdseq[_2]_l}  
 						\]
 						
-					      	\item[\ref{prop_inclient}.] For all $\cid$, $\outserver(\cid)$ has a new segment $ \agssegpair[@][{\amxrf[{'}]}]$ where $\adelta\triangleleft \tsenthead[_1]\cdots\tsenthead[_m]$. 
-						Using $\lemref{lemma:reduce}$ and \refprop{prop_inclient} we build the following proof for 
-						$\ireduce{\adelta_1\cdots\adelta_h\cdot\adelta} \triangleleft \ {\queuemessage}\cdot \tsenthead[_1]\cdots\tsenthead[_m]$
+					      	\item[\ref{prop_inclient}.] Since $\implements{\isystemterm}{\systemterm}$,  \refprop{prop_inclient} 
+						ensures that for all $\cid_l \in \dom\outserver$,
+						
+						${\inclient}_l = \agssegpairi[1] \cdots \agssegpairi[h']$, 
+						
+						$\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, 
+						
+						$\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]}$, 
+						
+						$\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
+     
+						 Note that ${\inclient}_l ' ={\inclient}_l$. Moreover, 
+						 $\ireduce{\adelta_1\cdots\adelta_{h'}}\ \triangleleft\ \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]}$ 
+						 implies 
+						 \[\ireduce{\adelta_1\cdots\adelta_{h'}}\ \triangleleft\ 
+						 	\flatten{ \queuemessage'[\tknown_l..\tknown_l+\treceivebuffer_l-1]}
+						\]
+
+						Additionally, $\outserver'(\cid_l) = \outserver(\cid_l) \cdot \agssegpair[@][{\amxrf[{'}]}]$.
+						By \equref{eq:sim-batch-delta},
+						 
+						\[ \adelta \triangleleft \flatten{\anupdseq[_1]_0\cdots\anupdseq[_1]_m}\] 
+						By using $\lemref{lemma:reduce}$, % and \refprop{prop_inclient} we build the following proof for 
+						%$\ireduce{\adelta_1\cdots\adelta_h\cdot\adelta} \triangleleft \ {\queuemessage}\cdot \tsenthead[_1]\cdots\tsenthead[_m]$
 						\[
 						  \mathrulean{\lemref{lemma:reduce}}
-						  {
-								\ireduce{\adelta_1\cdots\adelta_h}\triangleleft    \flatten{\queuemessage[\tknown+\treceivebuffer ..  |\queuemessage|- 1]}									\quad 
-								\adelta \triangleleft  \tsenthead[_1]\cdots\tsenthead[_m]			
-							}
-  						{\ireduce{\adelta_1\cdots\adelta_h\cdot\adelta} \triangleleft \ \flatten{\queuemessage}\cdot \tsenthead[_1]\cdots\tsenthead[_m]}  
-					\]
+						  {	  
+						  \ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}												\quad 
+								\adelta \triangleleft \flatten{ \anupdseq[_1]_0\cdots\anupdseq[_1]_m}			
+						}
+  						{\ireduce{\adelta_1\cdots\adelta_h\cdot\adelta} \triangleleft \ 
+						\flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1] \cdot\anupdseq[_1]_0\cdots\anupdseq[_1]_m}}
+						\]
+						Note that $|\queuemessage'| =  |\queuemessage| + |\anupdseq[_1]_0\cdots\anupdseq[_1]_m|$.
+						Then, the proof is completed by noting that 
+						\[
+						\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1] \cdot\anupdseq[_1]_0\cdots\anupdseq[_1]_m
+						= \queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage'| - 1]
+						\]
+						
+					
+					
+					       \item[\ref{prop_deltas}.] Since $\implements{\isystemterm[']}{\systemterm[']}$, \refprop{prop_deltas} ensures that 
+					       \begin{equation}
+						%\begin{itemize}
+%						\item $\amxrf_0(\cid_l)\leq\irounds_l$,
+						%\item  
+						\begin{array}{l}
+						\label{eq:bisim-batch-deltas-hip}
+						\forall\agssegpairi[0]\in\inclient_l\cdot\outserver(\cid_l), 
+						\forall \aroundtuple[@][@][\adelta'] \in\pending,
+						\\
+						\qquad\mbox{if }\ \irounds\leq\amxrf_0(\cid_l)\ \mbox{then }\ \adelta_0\triangleleft \queuemessage[x..x'],
+						 \adelta'\triangleleft \queuemessage[y..y'],
+						\mbox{ and}\  y'\leq x'
+						\end{array}
+						\end{equation}
+						%\end{itemize}
+						
+						
+						Since $\inclient'_l = \inclient_l$ and
+						 $\outserver['] (\cid) = \outserver(\cid)\cdot\agssegpair[@][{\amxrf}{[{\amxrf[{'}]}]}]$, it remains to prove that 
+						 %$\amxrf_0(\cid_l)<\irounds_l$, and
+						  for all $\aroundtuple[@][@][\adelta'] \in\pending_l$,
+						 if $\irounds\leq{\amxrf}{[{\amxrf[{'}]}]}(\cid_l)$ then $\adelta\triangleleft \queuemessage'[x..x']$ and  
+						 $\adelta'\triangleleft \queuemessage'[y..y']$
+						with $y'\leq x'$.
+						
+						By well-formednes condition, either
+						\begin{itemize}
+						 
+						   \item $\pending_l = \inserver(\cid_l)\cdot\pending_l'$. There are two cases,
+						       \begin{itemize}
+						       		\item $\inserver(\cid_l)\neq \epsilon$. Then, 
+								$\inserver(\cid_l) = \aseqround\cdot\aroundtuple[\cid_l][\irounds_a][\adelta_a]$.
+								By definition,  $\agssegpair[@][{\amxrf[{'}]}] = \receiveroundsname{\inserver}$ and
+								$\amxrf[{'}](\cid_l)=\irounds_a$. Hence, ${\amxrf}{[{\amxrf[{'}]}]} (\cid_l) = \amxrf[{'}](\cid_l)=\irounds_a$.
+								By well-formedness condition,  
+								$\aroundtuple[@][@][\adelta'] \in\pending_l'$ implies $\irounds > \irounds_a = \amxrf[{'}](\cid_l)$ and
+								$\aroundtuple[@][@][\adelta']\in \inserver(\cid_l)$ implies $\irounds \leq\irounds_a = \amxrf[{'}](\cid_l)$.
+								Hence, we only need to consider $\aroundtuple[@][@][\adelta']\in \inserver(\cid_l)$.
+								Since, 				
+								$\queuemessage' =\queuemessage \cdot\anupdseq[_1]_0\cdots\anupdseq[_1]_m$,
+								$\adelta \triangleleft \flatten{\anupdseq[_1]_0\cdots\anupdseq[_1]_m}$ and
+								$\ireduce{\igetdeltas{\inserver(\cid_l)}} \triangleleft \ \flatten{\anupdseq[_1]_l}$.
+								It is straightforward to notice that 
+								 $\adelta\triangleleft \queuemessage[(|\queuemessage'|-h-1) ..|\queuemessage'|-1]$ 
+								 and   $\adelta'\triangleleft \queuemessage'[y..y']$ with $y'\leq |\queuemessage'|-1$.
+								
+								 \item $\inserver(\cid_l) = \epsilon$. Therefore ${\amxrf}{[{\amxrf[{'}]}]} (\cid_l) = \amxrf(\cid_l)=\irounds_a$.
+								 By well-formedness, 
+								 either (i) $\inclient_l\cdot\outserver (\cid_l) = \aseqseg\cdot\agssegpair[\_][{\amxrf}]$ (and hence the case 
+								  holds by \equref{eq:bisim-batch-deltas-hip}), or (ii) for all $\aroundtuple[@][@][\adelta'] \in\pending_l$, 
+								 it holds $\irounds > {\amxrf} (\cid_l)$ (and hence the case trivially holds).
+							\end{itemize}
+							
+							
+						  
+						  
+						  \item $\pending_l =\pending_l''
+						  \cdot{\aroundtuple[\cid_l][{\irounds_{lst}}][\adelta_{lst}]}
+						  \cdot \inserver(\cid_l)\cdot\pending_l'$  and 
+						  $\inclient_l\cdot\outserver (\cid_l) = \aseqseg\cdot\agssegpair[\delta'_{lst}][{\amxrf_{lst}}]$  with
+						  ${\amxrf_{lst}} (\cid_l) = \irounds_{lst}$.
+						  
+						  By reasoning analogously to the previous case we show that  
+						  for all $\aroundtuple[@][@][\adelta'] \in\inserver(\cid_l)\cdot\pending_l'$,
+						  if $\irounds\leq{\amxrf}{[{\amxrf[{'}]}]}(\cid_l)$ then $\adelta\triangleleft \queuemessage'[x..x']$, 
+						  $\adelta'\triangleleft \queuemessage'[y..y']$
+						  and $y'\leq x'$.
+						
+						  For $\aroundtuple[@][@][\adelta'] \in\pending_l''
+						  \cdot{\aroundtuple[\cid_l][{\irounds_{lst}}][\adelta_{lst}]}$ we proceed as follows. 
+						  By \equref{eq:bisim-batch-deltas-hip},
+						  $\adelta'_{lst}\triangleleft \queuemessage[x..x'],
+						 \adelta'\triangleleft \queuemessage[y..y'],
+						\mbox{ and}\  y'\leq x'$.
+						Since, $\queuemessage' =\queuemessage \cdot\anupdseq[_1]_0\cdots\anupdseq[_1]_m$ and
+						$\adelta \triangleleft \flatten{\anupdseq[_1]_0\cdots\anupdseq[_1]_m}$, 
+						it is immediate to notice that
+						$y'\leq|\queuemessage'|-1$.
+						  
+						  
+						  
+						  
+						\end{itemize}
+						
+						 
+
+					
 						\item[\ref{prop_stateserver}.] 
 						
-						Since $\implements{\isystemterm}{\systemterm}$, $\astate \triangleleft \flatten{\queuemessage}$ holds by \refprop{prop_stateserver}. Furthermore, $\adelta \triangleleft  \tsenthead_1\cdots\tsenthead_m$. Then, by \lemref{lemma:storechanged} we build the following proof for:
+						
+						Since $\implements{\isystemterm}{\systemterm}$, $\astate \triangleleft \flatten{\queuemessage}$  by \refprop{prop_stateserver}.
+						 Furthermore, $\adelta \triangleleft \flatten{ \anupdseq[_1]_0\cdots\anupdseq[_1]_m}$ by \equref{eq:sim-batch-delta}. 
+						 Then, by \lemref{lemma:storechanged} we build the following proof:
 						
 						\[
 						  \mathrulean{\lemref{lemma:storechanged}}
 						  {
 							\astate \triangleleft \flatten{\queuemessage}
 							\quad 
-							\adelta \triangleleft  \tsenthead[_1]\cdots\tsenthead[_m]
+							\adelta \triangleleft   \flatten{ \anupdseq[_1]_0\cdots\anupdseq[_1]_m}			
 							}
-  						{\iapply{\astate}{\ireduce{\adelta}} \triangleleft \ \flatten{\queuemessage} \cdot \tsenthead[_1]\cdots\tsenthead[_m]}  
+  						{\iapply{\astate}{\ireduce{\adelta}} \triangleleft \ \flatten{\queuemessage \cdot   \anupdseq[_1]_0\cdots\anupdseq[_1]_m}			}  
 					\]
 						
 						\item[{--}] The remaining properties straightforwardly hold.
