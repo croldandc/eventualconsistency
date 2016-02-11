@@ -204,7 +204,7 @@ for  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions ho
 
   \item $\cid_l \neq \cid_k$ for all $j\neq k$;
   \item $\dom\inserver = \dom\outserver \subseteq  \{0,\ldots,m\}$;
-  \item $\cid_l\not\in\dom\outserver$ implies $\inclient_l = \epsilon$
+  \item $\cid_l\not\in\dom\outserver$ implies $\inclient_l = \epsilon$;
   \item if $\cid_l\in\dom\outserver$ and $\inclient_l\cdot\outserver \neq\epsilon$ then either
 	\begin{itemize}
 		\item ${\inclient}_l\cdot\outserver= \agssegpairi[1] \cdots \agssegpairi[h]$; or
@@ -212,7 +212,11 @@ for  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions ho
 	\end{itemize}
 	 $\amxrf_j(\cid_l) \leq \ \amxrf_k(\cid_l)$ for all  ${ j}\leq{k}$ and $\amxrf_h = \amxrf$
 	
-\item $\pending_l = \aroundtuplei[0]\cdots\aroundtuplei[r]$, $\irounds_r \leq \irounds_l$, and $\irounds_j < \irounds_k$ for all  ${ j}\leq{k}$.
+\item $\pending_l = \aroundtuplei[0]\cdots\aroundtuplei[r]$,  $\irounds_j < \irounds_k$ for all  ${ j}\leq{k}$ and either.
+	\begin{itemize}
+		\item $\pushbuffer_l =\emptydelta$ and $\irounds_r \leq \irounds_l$; or
+		\item $\pushbuffer_l \neq \emptydelta$ and $\irounds_r < \irounds_l$;
+	\end{itemize}
 
 \item  $\cid_l\in\dom\outserver$ then either
   \begin{itemize}

@@ -153,13 +153,16 @@ $\Leftarrow)$ Follows analogously.
 				Note that the only terms that have changed are the transaction buffers 
 				$\ttransactionbuffer$ and $\ttransactionbuffer$	corresponding to the client $\cid$. 	
 				Therefore, we only check that condition \refprop{prop_transactions}
-				hold for client $\cid$.
-					\begin{enumerate}
-						\item[\ref{prop_transactions}.] Since 
+				still holds for client $\cid$.
+				%	\begin{enumerate}
+				%		\item[\ref{prop_transactions}.] 
+				Since 
 						$\implements{\isystemterm}{\systemterm}$, it holds that 
 						$\transactionbuffer \triangleleft{\ttransactionbuffer}$ by \refprop{prop_transactions}. 						
 						Then, $\iappend{\transactionbuffer}{u} \triangleleft \ttransactionbuffer \cdot \tupdate$ holds by
 						rule \ruleName{\triangappend}.
+
+%					\end{enumerate}
 
 %						We can build the following proof for 
 %						$\iappend{\transactionbuffer}{u}
@@ -179,8 +182,6 @@ $\Leftarrow)$ Follows analogously.
 
 						%\item[{--}] The remaining properties straightforwardly hold.
 						
-
-					\end{enumerate}
 
 
 \item {\bf rule \ruleName{i-push}}. Then, $\isystemterm  \arroi{\pushtran} \isystemterm '$ with 
@@ -299,7 +300,13 @@ $\Leftarrow)$ Follows analogously.
 					\]
 					
 						
-						\item[\ref{prop_size_buffersent}.] It trivially holds since in both cases the counters are incremented by one. \chnote{Esta hipotesis sospechamos que sobra.}
+%						\item[\ref{prop_size_buffersent}.] It trivially holds since in both cases the counters are incremented by one. \chnote{Esta hipotesis sospechamos que sobra.}
+
+					\item[\ref{prop_deltas}.] Since  $\implements{\isystemterm}{\systemterm}$,  \refprop{prop_transactions} ensures 
+					that 
+					for all $\agssegpair\in\inclient\cdot\outserver(\cid)$, $\amxrf(\cid)<\irounds$. Consequently
+					$\amxrf(\cid)<\irounds_l+1$. Second item holds straightforwardly because 
+					$\inclient$, $\outserver(\cid)$ and $\pending$ have not been changed. 
 								
 					\end{enumerate}
  The remaining properties straightforwardly hold.
@@ -311,7 +318,8 @@ $\Leftarrow)$ Follows analogously.
 					\isystemterm['] & \addid{\iclientinst[@][@][\pending \cdot \around][\emptydelta]}
 		\ \bigpar \ \iserverins[{\astate[']}][@][\inserver\upd{\cid}{\inserver(\cid)\cdot\around}]
 		\ \bigpar\ \iclient[''] \\
-					\around & \aroundtuple[\cid][\nround][\pushbuffer]
+					\around & \aroundtuple[\cid][\nround][\pushbuffer]\\
+				\multicolumn 2 l{\pushbuffer\neq\emptydelta}
 					\end{array}
 				\]
 				
@@ -359,9 +367,25 @@ $\Leftarrow)$ Follows analogously.
 							we need to prove that  $\ireduce{\adelta_0\cdots\adelta_h\cdot\adelta_p\cdot\emptydelta} \triangleleft \flatten{\tpending}$. 
 							It holds by using \lemref{lemma:reduce}, and the fact that $\emptydelta \triangleleft \epsilon$.
 							%It is easy to see that it is the same relation that our hypothesis, since $\adelta_p$ was moved to the pending sequence. Therefore this property also holds.
-						\item[{--}] The remaining properties straightforwardly hold.
+							\item[\ref{prop_deltas}.] Since $\implements{\isystemterm}{\systemterm}$,  for all 
+							$\agssegpairi[0]\in\inclient\cdot\outserver(\cid)$
+						  {\propref{prop_sent}} ensures that 
+  							 \begin{itemize}
+          							\item $\amxrf_0(\cid)\leq\irounds$,
+								\item  for all $\aroundtuple[@][\irounds'][\adelta'] \in\pending$
+								 if $\irounds'\leq\amxrf_0(\cid)$ then $\adelta_0\triangleleft \queuemessage[x..x']$ and  
+								 $\adelta'\triangleleft \queuemessage[y..y']$ with $y'\leq x'$.
+							  \end{itemize}
+						  It remains to prove that for 
+						  $\around = \aroundtuple[\cid][\nround][\pushbuffer]$  if $\irounds\leq\amxrf_0(\cid)$ then 
+						  $\adelta_0\triangleleft \queuemessage[x..x']$ and  
+								 $\adelta'\triangleleft \queuemessage[y..y']$ with $y'\leq x'$. 
+						 By well-formed condition, $\pushbuffer\neq\emptydelta$ implies $\irounds>\amxrf_0(\cid)$.
+						 Hence, the condition trivially holds.
+
 							
 						\end{itemize}
+ The remaining properties straightforwardly hold.
 
 
 \item {\bf rule \ruleName{receive}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
@@ -459,7 +483,10 @@ $\Leftarrow)$ Follows analogously.
 						
 					Note that
 					$\ireduce{\adelta_{h'+2}\cdots\adelta_h}\triangleleft \flatten{\queuemessage[\tknown+\treceivebuffer+m..|\queuemessage| - 1]}$
-					also holds because of \equref{eq:sim-receive-c1-b}
+					also holds because of \equref{eq:sim-receive-c1-b}.
+					
+					\item[\ref{prop_deltas}.] It straightforwardly follows because $\pending$ and $\agssegpair\in\inclient\cdot\outserver(\cid)$
+					have not changed. 
 
 					
 
@@ -604,8 +631,19 @@ $\Leftarrow)$ Follows analogously.
 					\begin{enumerate}
 					\item[\ref{prop_inclient}.] If follows because $\ireduce{\epsilon} = \emptydelta$,
 					$\flatten{\queuemessage[\tknown+\treceivebuffer .. \tknown+\treceivebuffer + 0 - 1]} = \epsilon$ and 
-					 $\emptydelta \triangleleft \epsilon$, by rule \ruleName{\triangemptydelta}.
-					 
+					 $\emptydelta \triangleleft \epsilon$, by rule \ruleName{\triangemptydelta}. 
+					 Morevoer, \refprop{prop_inclient} ensures
+					 $\ireduce{\igetdeltas{\outserver(\cid)}}\triangleleft   
+					 \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
+					 If $\outserver(\cid) =\epsilon$, then
+					 $\ireduce{\epsilon}\triangleleft   
+					 \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$ implies
+					 $\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1] =\epsilon$, and hence, 
+					 $\tknown_l+\treceivebuffer_l = |\queuemessage|$.
+				
+				
+				    
+				
 					\item[\ref{prop_state_known}.]  By \refprop{prop_state_known}, we know that $\known\ \triangleleft\ \flatten {\queuemessage[0..\tknown-1]}$. 
 					By \refprop{prop_inclient},  $\ireduce{\adelta[_1]\cdots\adelta[_{h'}]}\triangleleft \queuemessage[\tknown ..  \tknown + \treceivebuffer - 1]$. 
 					Then, we can derive 
@@ -619,30 +657,25 @@ $\Leftarrow)$ Follows analogously.
 						{\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_{h'}]}}\triangleleft \flatten{\queuemessage[0 .. \tknown +\treceivebuffer - 1]}}  
 					\]
 					
-						\item[\ref{prop_pending}.] We have to prove that $\filter{\amxrf[_k](\cid)}{\aseqround} \triangleleft \flatten{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer -1]}$  
+					
+					\item[\ref{prop_deltas}.] It follows immediately because of \refprop{prop_deltas} and the fact that 
+				              	$\agssegpair\in\epsilon\cdot\outserver(\cid)$ implies $\agssegpair\in\inclient_l\cdot\outserver(\cid)$.
+					
+					
+						\item[\ref{prop_pending}.] We have to prove that 
+						$\ireduce{\igetdeltas{\filter{\amxrf[_k](\cid)}{\pending}}} 
+							\triangleleft 
+							\flatten{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer -1]}$.
+					         By \refprop{prop_pending}, 
+					         $\ireduce{\igetdeltas{\pending}\cdot\pushbuffer} \triangleleft \flatten{\tpending_l}$.
+					         By \refprop{prop_deltas} for all $\agssegpair\in\inclient_l\cdot\outserver(\cid_l)$, 
+           for all $\aroundtuple[@][@][\adelta'] \in\pending_l$
+        if $\irounds\leq\amxrf(\cid_l)$ then $\adelta\triangleleft \queuemessage[x..x']$ and  $\adelta'\triangleleft \queuemessage[y..y']$
+        with $y'\leq x'$
+
 					
 								$\cid\in\dom\inserver$ because $\inclient \neq \epsilon$
-			
-				\[\begin{array}{r@{=}l}
-					\isystemterm & \addid{\iclientinst[\tpullins][@]
-						[@]%[\aseqround\cdot{\aroundtuple}\cdot{\aseqround[']}]
-						[@][@][@][n]}
-								\ \bigpar  \ {\iserverins[\astate[']]} \ \bigpar\ \iclient[']				\\
-					\inclient & \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_{h'}]}][{\amxrf[_{h'}]}]
-					\\
-					\outserver(\cid) & \agssegpair[{\adelta[_{h'+1}]}][{\amxrf[_{h'+1}]}]\ldots \agssegpair[{\adelta[_{h}]}][{\amxrf[_{h}]}]
-					\\
-					\isystemterm['] & \addid{\iclientinst[P]
-						 [\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_n]}}]
-						 [\aseqround']
-						 [@][@]
-						 [{\receivebuffer}][n][\epsilon]}\  \bigpar  \ {\iserverins[\astate[']]} \ \bigpar\ \iclient[']
-					\\
-					\aseqround['] & \filter{\amxrf[_k](\cid)}{\aseqround} 
-					\\
-				  \end{array}
-				\]
-	
+				
 %					
 %					${\transactionbuffer}\triangleleft{\ttransactionbuffer}$
 %					
@@ -793,7 +826,7 @@ $\Leftarrow)$ Follows analogously.
 				
 
 				Since $\implements{\isystemterm}{\systemterm}$, we have $\systemterm = \abstsyst[@][@][\Absclient_m]$
-				satisfying all conditions in Def...
+				satisfying all conditions in \defref{def:implementation}.
 				
 				
 				

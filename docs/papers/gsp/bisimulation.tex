@@ -114,25 +114,20 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
 
 	\item \label{prop_pending} $\pending_l = \aroundtuplei[1]\ldots\aroundtuplei[h]$ and 
 		$\ireduce{\adelta_1\cdots\adelta_h\cdot {\pushbuffer}_l} \triangleleft \flatten{\tpending_l}$.
-%	\item  \label{prop_size_buffersent} $m_l = n_l$ 
+	\item  \label{prop_size_buffersent} $m_l = n_l$ 
 	
 \item \label{prop_inclient} if $\cid_l \in \dom{\outserver}$ then either
     \begin{itemize}
-   
-        \item 
-      ${\inclient}_l\cdot\outserver(\cid_l) = \epsilon$ and $j=0$;
-      
-      \item
-      ${\inclient}_l\cdot\outserver(\cid_l) = \agssegpairi[1] \cdot \aseqround$, 
-      $\ireduce{\igetdeltas{\inclient_l}} \ \triangleleft\ \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]}$
-       and        
-      $ \ireduce{\igetdeltas{\outserver(\cid_l)}}\ \triangleleft\ \flatten{ \queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$;
+   % \item  ${\inclient}_l \cdot \outserver(\cid_l)  = \agssegpair[{\astate[']}]\cdot\agssegpairi[1] \cdots \agssegpairi[h]$
+    % and  
+    % $\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_{h}]}}\triangleleft \flatten{\queuemessage} )$; or 
+     \item ${\inclient}_l \cdot \outserver(\cid_l)  = \epsilon$, $\tknown_l = |\queuemessage|$ and $\treceivebuffer_l =0$;
 
-%
-   
-   
-   
-    
+     \item ${\inclient}_l \cdot \outserver(\cid_l)  = \agsprefpair[{\adelta[']}]\cdot\aseqseg$,
+      $\ireduce{\igetdeltas{{\inclient}_l}}\triangleleft \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]}$,  and
+      $\ireduce{\igetdeltas{\outserver(\cid_l)}}\triangleleft 
+       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
+  
 %      \item ${\inclient}_l = \agssegpairi[1] \cdots \agssegpairi[h']$, 
 %      
 %      	      $\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, 
@@ -142,7 +137,7 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
 %     
 %      $\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]}$, 
 %      
-%      $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft 
+%      $\ireduce{\adelta_h'+1\cdots\adelta_h}\triangleleft 
 %       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
 %           
      \item ${\inclient}_l = \agssegpair[{\astate[']}][{\amxrf[_0]}]\cdot\agssegpairi[1] \cdots \agssegpairi[h']$, 
@@ -170,15 +165,13 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
 	
 	\end{itemize}	
 	
-        \item \label{prop_deltas} for all $\agssegpair[\adelta'][\amxrf']\in\inclient_l\cdot\outserver(\cid_l)$, 
+        \item \label{prop_deltas} for all $\agssegpair\in\inclient_l\cdot\outserver(\cid_l)$, 
           \begin{itemize}
-          	\item $\amxrf'(\cid_l)<\irounds_l$,
-		\item  for all $\aroundtuple[@][@][\adelta''] \in\pending$,
-        if $\irounds\leq\amxrf'(\cid_l)$ then $\adelta'\triangleleft \flatten{\queuemessage[x..x']}$ and  $\adelta''\triangleleft \flatten{\queuemessage[y..y']}$
+          	\item $\amxrf(\cid_l)\leq\irounds_l$,
+		\item  for all $\aroundtuple[@][@][\adelta'] \in\pending_l$
+        if $\irounds\leq\amxrf(\cid_l)$ then $\adelta\triangleleft \queuemessage[x..x']$ and  $\adelta'\triangleleft \queuemessage[y..y']$
         with $y'\leq x'$
 	\end{itemize}
-	
-	Then, it rest to prove that 
 	\item \label{prop_state_known} $\astate_l \triangleleft \flatten {\queuemessage[0 .. \tknown_l - 1]}$;
 	
 	\item \label{prop_stateserver} $\astate \triangleleft \flatten{\queuemessage}$.
