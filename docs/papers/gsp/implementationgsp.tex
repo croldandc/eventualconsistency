@@ -192,9 +192,10 @@ all local updates until the client perform $\pushcmd$. Differently, $\pushbuffer
 %We will refer to clients, as tuple of program $P$ and set of states and sequences $E$. A program client stores a state ($E.\known$), a pending queue ($E.\pending$),i.e., updates sent to the server without confirmation of their reception, a push buffer ($E.\pushbuffer$) which holds updates that were pushed by the client but have not been sent to the server, a transaction buffer ($E.\transactionbuffer$) which holds updates for sending with another ones, a receive buffer ($E.\receivebuffertype$) for updates which were sent by the server, the number of round sent ($E.\irounds$), a input message queue ($E.\inclient$) and a output message queue ($E.\outclient$).
 %}
 
-We also impose the following well-formed condition on systems. 
+We also impose the following well-formedness condition on systems. 
 
-\begin{definition}[{\igsp} well-formedness] A \igsp\ system
+\begin{definition}[{\igsp} well-formedness]
+\label{def:wf-igsp} A \igsp\ system
  $\isystemterm =  \iclient_0\bigpar \ldots\bigpar \iclient_m\bigpar\iserver$  with
  $\iserver=\server{\astate}{\inserver}{\outserver}$ and 
 $\iclient_l = \addid{\iclientinst[P_l][\astate_l][{\pending}_l][\pushbuffer_l][\transactionbuffer_l][\receivebuffer_l][\irounds_l][\inclient_l][\outclient_l]}[{\cid_l}]$ 
@@ -212,7 +213,7 @@ for  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions ho
 	\end{itemize}
 	 $\amxrf_j(\cid_l) \leq \ \amxrf_k(\cid_l)$ for all  ${ j}\leq{k}$ and $\amxrf_h = \amxrf$
 	
-\item $\pending_l = \aroundtuplei[0]\cdots\aroundtuplei[r]$,  $\irounds_j < \irounds_k$ for all  ${ j}\leq{k}$ and either.
+\item \label{wf-igsp-pending} $\pending_l = \aroundtuplei[0]\cdots\aroundtuplei[r]$,  $\irounds_j < \irounds_k$ for all  ${ j}\leq{k}$ and either.
 	\begin{itemize}
 		\item $\pushbuffer_l =\emptydelta$ and $\irounds_r \leq \irounds_l$; or
 		\item $\pushbuffer_l \neq \emptydelta$ and $\irounds_r < \irounds_l$;
@@ -230,13 +231,16 @@ for  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions ho
 \end{enumerate}
 \end{definition}
 
-The well-formedness condition requires all clients to have different identifiers (1). 
-Despite we have model the communication buffers as independent, in the proposed 
-implementation  clients and the global store communicates through bidirectional channels. 
-If a client $\cid_l$ is connected then $\cid_l\in\dom\inserver$ and  $\cid_l\in\dom\outserver$ 
-(2). Besides, when a client is disconnected (\ie, $\cid_l\in\dom\outserver$)  its input buffer is
-empty (3). Last condition imposes that a segment of the form $\agssegpair$ can be sent only  as the first message in the flow
-and that round confirmations  appear in increasing order. 
+We require all clients to have different identifiers (1). Communication channels in the 
+implementation are bidirectional, hence  $\cid_l\in\dom\inserver$ iff  $\cid_l\in\dom\outserver$ 
+(2). Moreover, the input buffer of a  disconnected is empty, \ie, $\cid_l\in\dom\outserver$ (3). 
+Condition (4) states that $\agssegpair$ can appear only as a first message in the flow from 
+the store and that store confirms processed rounds in an increasing order. Similarly, (5)
+states that each client sends rounds with increasing number and that the last sent round
+cannot be greater than the round counter of the client. The last condition states a 
+ coherence requirement between  
+the pending rounds on the client and the confirmations sent by the store.
+
 
 
 
@@ -280,7 +284,9 @@ Rule \ruleName{i-update}, analogous to rule \ruleName{update}, adds the operatio
 		$\end{array}}
 \\[20pt]
 	 \mathrule{i-send}
-	         {\pushbuffer \neq \emptydelta \qquad \cid\in\dom\inserver \qquad \around = \aroundtuple[\cid][\irounds][\pushbuffer]}
+	         {\pushbuffer \neq \emptydelta \qquad \cid\in\dom\inserver \qquad \around = \aroundtuple[\cid][\irounds][\pushbuffer]
+	         \qquad
+		\inclient \cdot\outserver(\cid) \neq \agssegpair[{\astate[']}][{\amxrf}]\cdot\aseqseg}
  		{\begin{array}{p{\linewidth}}
 		$\addid{\iclientinst} \ \bigpar \ \iserverins[\astate[']] \ \bigpar\ \iclient
 		\arro{\tau} $
@@ -304,7 +310,7 @@ Rule \ruleName{i-update}, analogous to rule \ruleName{update}, adds the operatio
 		}	
 \\[20pt]
 	\mathrule{i-pull$_1$}
-	{\aseqround['] = \filter{\amxrf[_k](\cid)} {\aseqround} \qquad \inclient = \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]}
+	{\aseqround['] = \filter{\amxrf_k(\cid)} {\aseqround} \qquad \inclient = \agssegpair[{\adelta_1}][{\amxrf_1}]\ldots \agssegpair[{\adelta_k}][{\amxrf_k}]}
 		 {\begin{array}{p{\linewidth}}
 		 	$\addid{\iclientinst[\tpullins][@]
 			[@]%[\aseqround\cdot{\aroundtuple}\cdot{\aseqround[']}]
@@ -315,7 +321,7 @@ Rule \ruleName{i-update}, analogous to rule \ruleName{update}, adds the operatio
 %			\\
 			$
 			\addid{\iclientinst[P]
-						 [\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}]
+						 [\iapply{\known}{\ireduce{\adelta_1\cdots\adelta_k}}]
 						 [\aseqround']
 						 [@][@]
 						 [{\receivebuffer}][@][\epsilon]}\ \bigpar \ \isystemterm
@@ -383,10 +389,10 @@ Rule \ruleName{i-update}, analogous to rule \ruleName{update}, adds the operatio
 \mathrule{i-pull$_2$}
 	{
 	\begin{array}{c}
-	\inclient = \agssegpair[{\astate[''']}][{\amxrf[_0]}]\cdot\agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_k]}][{\amxrf[_k]}]
+	\inclient = \agssegpair[{\astate[''']}][{\amxrf_0}]\cdot\agssegpair[{\adelta_1}][{\amxrf_1}]\ldots \agssegpair[{\adelta_k}][{\amxrf_k}]
 	\qquad \qquad\qquad
-	\astate['']  = \iapply{\astate[''']}	{\ireduce{\emptydelta\cdot\adelta[_1]\cdots\adelta[_k]}} \\	
-	\aseqround['] = \filter{\amxrf[_k](\cid)} \aseqround
+	\astate['']  = \iapply{\astate[''']}	{\ireduce{\emptydelta\cdot\adelta_1\cdots\adelta_k}} \\	
+	\aseqround['] = \filter{\amxrf_k(\cid)} \aseqround
 	\end{array}
 	 }
 		 {\begin{array}{p{\linewidth}}
@@ -419,8 +425,12 @@ A client terminates a block by executing $\pushcmd$ (rule \ruleName{i-push}). At
  is appended to the already terminated blocks in $\pushbuffer$, which will be sent on next round. 
  Additionally, the block counter $\irounds$ is incremented by $1$.
  By rule \ruleName{i-send}, a client sends changes to the global store. 
- This transition may take place whenever  the client is connected to the global store
- (\ie, $\cid\in\dom\inserver$) and there are finished blocks in $\pushbuffer$ (\ie, $\pushbuffer \neq \emptydelta$). 
+ This transition may take place whenever  the client is connected  (\ie, $\cid\in\dom\inserver$) to and 
+ synchronised with (\ie, $\inclient \cdot\outserver(\cid) \neq \agssegpair[{\astate[']}][{\amxrf}]\cdot\aseqseg$)\footnote{For simplicity we check re-synchronisation by inspecting  communication buffers  instead of 
+  explicitly adding  to the state the condition {\em channel established} used 
+ by the implementation.}
+  the global store
+ there are finished blocks in $\pushbuffer$ (\ie, $\pushbuffer \neq \emptydelta$). 
  At this time, all 
  available blocks are sent in the same round $\around = \aroundtuple[@][@][\pushbuffer]$, which is labelled with 
   $\irounds$, i.e. the number corresponding to the last finished block. 
@@ -437,10 +447,10 @@ A client terminates a block by executing $\pushcmd$ (rule \ruleName{i-push}). At
    all received segments are of the form $\agssegpair$. Therefore, all received 
    changes $\adelta[_1]\cdots\adelta[_k]$ are applied to the local state $\astate$. Moreover, 
    the  pending rounds in $\pending$ are updated by removing the  local changes 
-    that are confirmed in the received segments. Since well-formedness ensures that 
-    $\amxrf[_h](\cid) \leq \amxrf[_j](\cid)$ for all ${\sf h}\leq {\sf j}$, it suffices to consider 
-    the confirmation $ \amxrf[_k]$. Hence, all rounds up-to  
-    $\adelta[_k](\cid)$ are removed from $\pending$. This is done by the auxiliary function 
+    that are confirmed by the received segments. By well-formedness (\defref{def:wf-igsp},\ref{wf-igsp-pending}),  
+    $\amxrf_h(\cid) \leq \amxrf_j(\cid)$ for all ${h}\leq {j}$, it suffices to consider  
+    the confirmation $ \amxrf_k$. Hence, all rounds up-to  
+    $\adelta_k(\cid)$ are removed from $\pending$. This is done by the auxiliary function 
     $\filter {\_} {\_}$, defined such that           
       \[
       \begin{array}{ll}
@@ -455,15 +465,16 @@ A client terminates a block by executing $\pushcmd$ (rule \ruleName{i-push}). At
       \end{array}
       \]
    
-Rules \ruleName{i-read} and \ruleName{i-confirm} are analogous the ones on the \gsp\ calculus.   
-
+Rules \ruleName{i-read} and \ruleName{i-confirm} are analogous the ones on the \gsp\ calculus.   We use
+$\igetdeltas{\_}$ as the function that projects a sequence of rounds into a sequence containing the 
+corresponding $\adelta$s.
 The global store changes its state as prescribed by rule  \ruleName{i-batch}. It collects 
 all received rounds in $\inserver$ by using the auxiliary function $\receiveroundsname{\_}$, 
 which builds a unique object $\adelta$ by appending all  $\adelta$'s contained in the received rounds and 
 a function $\amxrf$ which associates each client with the number of the last received round. 
 Formally, 
 let $\inserver$ be defined such that $\dom\inserver = \{\cid_0,\ldots,\cid_m\}$ and
-       $\forall\cid_l\in\dom\inserver.\inserver(\cid_l) =  \aroundtuple[\cid_l][\irounds^0_l][{\adelta^0_l}]\cdots
+       $\forall\cid_l\in\dom\inserver.\inserver(\cid_l) = \pending_l\cdot
       \aroundtuple[\cid_l][\irounds^{k_l}_l][{\adelta^{k_l}_l}]$. 
       Then, 
 $\receiveroundsname{\_}$ is defined such as 
@@ -471,7 +482,7 @@ $\receiveroundsname{\_}$ is defined such as
    \receiveroundsname{\inserver} = \agssegpair[@][{\amxrf[']}] \quad \mbox{with}\quad\ &
  %  \begin{itemize}
       %\item
-        \adelta = \ireduce{\adelta^0_0\cdots\adelta^{k_0}_0\cdots\adelta^0_m\cdots\adelta^{k_m}_m},
+        \adelta = \ireduce{\igetdeltas{\inserver(\cid_0)} \cdots\igetdeltas{\inserver(\cid_m)}},
      % \item 
      \\
      &
@@ -479,15 +490,32 @@ $\receiveroundsname{\_}$ is defined such as
       \\&\hfill \forall\cid_l\in\dom\inserver.\amxrf['](\cid_l) = \irounds^{k_l}_l
     \end{array}
  \] 
+
+%       $\forall\cid_l\in\dom\inserver.\inserver(\cid_l) =  \aroundtuple[\cid_l][\irounds^0_l][{\adelta^0_l}]\cdots
+%      \aroundtuple[\cid_l][\irounds^{k_l}_l][{\adelta^{k_l}_l}]$. 
+%      Then, 
+%$\receiveroundsname{\_}$ is defined such as 
+%\[\begin{array}{ll}
+%   \receiveroundsname{\inserver} = \agssegpair[@][{\amxrf[']}] \quad \mbox{with}\quad\ &
+% %  \begin{itemize}
+%      %\item
+%        \adelta = \ireduce{\adelta^0_0\cdots\adelta^{k_0}_0\cdots\adelta^0_m\cdots\adelta^{k_m}_m},
+%     % \item 
+%     \\
+%     &
+%     \dom{\amxrf[']} = \{\cid \ |\ \cid\in\dom{\inserver} \ \mbox{and}\ \inserver(\cid)\neq\epsilon\}\ \mbox{and}\  
+%      \\&\hfill \forall\cid_l\in\dom\inserver.\amxrf['](\cid_l) = \irounds^{k_l}_l
+%    \end{array}
+% \] 
 %\end{itemize}
    The obtained  $\adelta$ is applied to the current state  $\astate$ to obtain the new one $\astate[']$ and 
-   $\amxrf[']$ substitutes the previous $\amxrf$. In addition, the new segment $\agssegpair[@][{\amxrf[']}]$ is sent
-   to  every connected client (i.e., $\agssegpair[@][{\amxrf[']}]$ is added at the end of
-    every buffer $\outserver(\cid))$. Since all received rounds  are consumed the input buffers  $\inserver(\cid)$
-    are emptied. 
+   $\amxrf$ is updated with $\amxrf[']$. In addition, the new segment $\agssegpair[@][{\amxrf{[\amxrf[']]}}]$ is sent
+   to  every connected client (i.e., $\agssegpair[@][{\amxrf{[\amxrf[']]}}]$ is added at the end of
+    every buffer $\outserver(\cid))$. Every input buffer  $\inserver(\cid)$ is
+     emptied because  all received rounds have been processed.
 
 The remaining rules  deal with connectivity issues: rule \ruleName{i-drop-cxn} models the disconnection of the client 
-$\cid$: the buffers $\outserver(\cid)$ and $\inserver(\cid)$ are eliminated from the global store, while the 
+$\cid$: the buffers $\outserver(\cid)$ and $\inserver(\cid)$ are eliminated from the global store and the 
 input buffer of the client is set to $\epsilon$. When client $\cid$ (re-)establishes the connection, the store
 creates the buffers for $\cid$ and sends the segment containing the current 
 state of the store. Rule \ruleName{i-pull$_2$} is analogous to \ruleName{i-pull$_1$}, but handles the first
@@ -496,8 +524,8 @@ $\agssegpair[{\astate[''']}][{\amxrf[_0]}]$ contains a state instead of a delta 
 The client uses this new state $\astate[''']$ instead of its local state to  resynchronise. The application of 
 successive segments is analogous to rule \ruleName{i-pull$_1$}.
 
-The proposed implementation allows for a server to crash, i.e., to close all communication buffers. For simplicity, 
-we avoid adding an explicit rule, since its effects can be obtained by applying several times rule 
+The proposed implementation allows for a server to crash, i.e., to close all communication buffers. We
+do not model this explicitly because  its effects can be obtained by applying several times rule 
 \ruleName{i-drop-cxn}.
 %
 %\\[25pt]

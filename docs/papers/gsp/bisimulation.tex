@@ -10,8 +10,10 @@ operations provided by the  types
 These requirements are formalised by the relation $\_\triangleleft \_$, which associates 
  delta and state objects with sequences of updates: $\adelta\triangleleft\anupdseq$
  (similarly, $\astate\triangleleft\anupdseq$)  means  that $\delta$ (correspondingly, $\astate$) 
- is a compact representation of $\anupdseq$. Then, it is also assume that 
+ is a compact representation of $\anupdseq$. Then, it is also assumed that 
 $\astate\triangleleft\anupdseq$ implies  $\iread \aread \astate  = \rvalue \aread  \anupdseq$ for any $\aread$.
+Building on the above relation, the next definition states when a
+\igsp\ system its an implementation of a \gsp\ system.
 
 \begin{figure}[t]
 {\small
@@ -85,20 +87,32 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
 \newpage
 
 \begin{enumerate}
+	\item \label{prop_stateserver} $\astate \triangleleft \flatten{\queuemessage}$.
+
+	\item \label{prop_state_known} $\astate_l \triangleleft \flatten {\queuemessage[0 .. \tknown_l - 1]}$;
+	
 	\item \label{prop_transactions} ${\transactionbuffer}_l\triangleleft{\ttransactionbuffer}_l$.
+	
+	\item \label{prop_pending}  
+		$\ireduce{\igetdeltas{\pending_l}\cdot {\pushbuffer}_l} \triangleleft \flatten{\tpending_l}$.
+
+%		\item \label{prop_pending} $\pending_l = \aroundtuplei[1]\ldots\aroundtuplei[h]$ and 
+%		$\ireduce{\adelta_1\cdots\adelta_h\cdot {\pushbuffer}_l} \triangleleft \flatten{\tpending_l}$.
+
 %	\item \label{prop_sent} If $\cid_l \in \dom\inserver$ and $\cid_l \in \dom\outserver$ then ${\pushbuffer}_l \ \triangleleft \ {\tsent}_t$  $\tsent_l$ = ${\tsent}_h \cdot {\tsent}_t$ and and $ \ireduce{\igetdeltas{\inserver(l)}} \triangleleft \ {\tsent}_h$
 	\item \label{prop_sent}  
 %	\begin{itemize}
 %	   \item   
 	   
-	   if $\cid_l \in \dom\inserver$%, $\cid_l \in \dom\outserver$ 
+	   if $\cid_l \in \dom\inserver$ and $\inclient \cdot\outserver(\cid_l) \neq \agssegpair[{\astate[']}][{\amxrf}]\cdot\aseqseg$ %, $\cid_l \in \dom\outserver$ 
 	   then 
-	 $ \ireduce{\igetdeltas{\inserver(\cid_l)}\cdot {\pushbuffer}_l} \triangleleft \ \flatten{{\tsent}_l}$. 
+	   
+	   $ \ireduce{\igetdeltas{\inserver(\cid_l)}\cdot {\pushbuffer}_l} \triangleleft \ \flatten{{\tsent}_l}$. 
 	 
-	 Otherwise,
-	     %($\cid_l \not\in\dom\inserver$), 
-	      ${\pushbuffer}_l \triangleleft \ \flatten{{\tsent}_l}$.
-			\henote{esto no vale: si partis con un sistema en donde vale la anterior y hay un drop, no vale ni la anterior ni esta}
+%	 Otherwise,
+%	     %($\cid_l \not\in\dom\inserver$), 
+%	      ${\pushbuffer}_l \triangleleft \ \flatten{{\tsent}_l}$.
+%			\henote{esto no vale: si partis con un sistema en donde vale la anterior y hay un drop, no vale ni la anterior ni esta}
 
 %	\end{itemize}
 %	\item \label{prop_sent}  
@@ -112,9 +126,8 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
 %	\end{itemize}
 %	
 
-	\item \label{prop_pending} $\pending_l = \aroundtuplei[1]\ldots\aroundtuplei[h]$ and 
-		$\ireduce{\adelta_1\cdots\adelta_h\cdot {\pushbuffer}_l} \triangleleft \flatten{\tpending_l}$.
-	\item  \label{prop_size_buffersent} $m_l = n_l$ 
+
+%	\item  \label{prop_size_buffersent} $m_l = n_l$ 
 	
 \item \label{prop_inclient} if $\cid_l \in \dom{\outserver}$ then either
     \begin{itemize}
@@ -123,8 +136,10 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
     % $\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_{h}]}}\triangleleft \flatten{\queuemessage} )$; or 
      \item ${\inclient}_l \cdot \outserver(\cid_l)  = \epsilon$, $\tknown_l = |\queuemessage|$ and $\treceivebuffer_l =0$;
 
-     \item ${\inclient}_l \cdot \outserver(\cid_l)  = \agsprefpair[{\adelta[']}]\cdot\aseqseg$,
+     \item ${\inclient}_l = \agsprefpair[{\adelta[']}]\cdot\aseqseg$,
       $\ireduce{\igetdeltas{{\inclient}_l}}\triangleleft \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]}$,  and
+      
+      
       $\ireduce{\igetdeltas{\outserver(\cid_l)}}\triangleleft 
        \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
   
@@ -140,27 +155,34 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
 %      $\ireduce{\adelta_h'+1\cdots\adelta_h}\triangleleft 
 %       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
 %           
-     \item ${\inclient}_l = \agssegpair[{\astate[']}][{\amxrf[_0]}]\cdot\agssegpairi[1] \cdots \agssegpairi[h']$, 
-     
-      there exists $t \leq \tknown_l+\treceivebuffer_l$ s.t. $\astate['] \triangleleft \ \queuemessage[0 .. t - 1]$, 
-      
-              $\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$,
-              
-     		$\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$,
-                and 
+     \item ${\inclient}_l = \agssegpair[{\astate[']}][{\amxrf[_0]}]\cdot\aseqseg$,      
+  		 there exists $t \leq \tknown_l+\treceivebuffer_l$ s.t. $\astate['] \triangleleft \ \queuemessage[0 .. t - 1]$, 
+
 
      
-     $\ireduce{\adelta_{z+1}\cdots\adelta_{h'}}\triangleleft \ \flatten{ \queuemessage[t..\tknown_l+\treceivebuffer_l-1]}$ and 
-     $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \
+     $\ireduce{\igetdeltas{\aseqseg}}\triangleleft \ \flatten{ \queuemessage[t..\tknown_l+\treceivebuffer_l-1]}$ and 
+     
+     $\ireduce{\igetdeltas{\outserver(\cid_l) }}\triangleleft \
        \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$; or
+      
+ %             $\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$,
+%              
+%     		$\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$,
+                 
+
+%     
+%     $\ireduce{\adelta_{z+1}\cdots\adelta_{h'}}\triangleleft \ \flatten{ \queuemessage[t..\tknown_l+\treceivebuffer_l-1]}$ and 
+%     $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \
+%       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$; or
      
        
-     \item ${\inclient}_l = \epsilon$, 
-     $\outserver(\cid_l) = \agssegpair[{\astate[']}]\cdot\agssegpairi[z+1] \cdots \agssegpairi[h]$, 
-     $\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$
-      $\astate['] \triangleleft \ \queuemessage[0 .. t - 1]$ and $\tknown_l+\treceivebuffer_l \leq t$; 
+     \item ${\inclient}_l = \epsilon$,  $\outserver(\cid_l) = \agssegpair[{\astate[']}]\cdot \aseqseg$ there exists $t \geq \tknown_l+\treceivebuffer_l $ s.t.
+%     $\outserver(\cid_l) = \agssegpair[{\astate[']}]\cdot\agssegpairi[z+1] \cdots \agssegpairi[h]$, 
+ %    $\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$
+      $\astate['] \triangleleft \ \queuemessage[0 .. t - 1]$ %and $\tknown_l+\treceivebuffer_l \leq t$; 
      
-     $\ireduce{\adelta_{z+1}\cdots\adelta_{h}}\triangleleft \flatten{ \queuemessage[t..\tknown_l+\treceivebuffer_l-1]}$ 
+       $\ireduce{\igetdeltas{\aseqseg}}\triangleleft \ \flatten{ \queuemessage[t..|\queuemessage| - 1]}$  
+%   $\ireduce{\adelta_{z+1}\cdots\adelta_{h}}\triangleleft \flatten{ \queuemessage[t..\tknown_l+\treceivebuffer_l-1]}$ 
      
 	
 	\end{itemize}	
@@ -172,17 +194,13 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
         if $\irounds\leq\amxrf(\cid_l)$ then $\adelta\triangleleft \flatten{\queuemessage[x..x']}$ and  $\flatten{\adelta'\triangleleft \queuemessage[y..y']}$
         with $y'\leq x'$
 	\end{itemize}
-	\item \label{prop_state_known} $\astate_l \triangleleft \flatten {\queuemessage[0 .. \tknown_l - 1]}$;
-	
-	\item \label{prop_stateserver} $\astate \triangleleft \flatten{\queuemessage}$.
 
 \end{enumerate}
-
-
-
-	
 	
 \end{definition}
+
+
+The  first three conditions are self-explanatory. Condition (\ref{prop_pending})
 
 Next theorem states one of most important result of the paper, saying that abstract GSP protocol and the implementation of GSP are weak bisimulation equivalent (or weakly bisimilar).
 

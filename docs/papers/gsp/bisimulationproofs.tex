@@ -864,7 +864,7 @@ $\Leftarrow)$ Follows analogously.
 				Hence, 
 				
 				\[
-				  \mathrulean{\textcolor{red}{aa}}
+				  \mathrulean{\textcolor{red}{JUSTIFICAR}}
 				  {\igetdeltas{\inserver(\cid_0)} \triangleleft \ \flatten{\anupdseq[_0]_1}
 				  	\quad \ldots \quad
 					\igetdeltas{\inserver(\cid_m)} \triangleleft \ \flatten{\anupdseq[_1]_m}
@@ -1092,7 +1092,7 @@ $\Leftarrow)$ Follows analogously.
 						\item[{--}] The remaining properties straightforwardly hold.
 				\end{enumerate}
 
-	\item {\bf rule \ruleName{pull-2}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
+	\item {\bf rule \ruleName{i-pull$_2$}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
 				\[\begin{array}{r@{=}l}
 					\isystemterm & \addid{\iclientinst[\tpullins][@][\aseqround][@][@][@][@][\inclient]}
 			     \ \bigpar \ \iserverins[{\astate[']}][{\amxrf}] \ \bigpar\ \iclient
@@ -1117,7 +1117,7 @@ $\Leftarrow)$ Follows analogously.
 			
 			Since $(\isystemterm,\systemterm)\in \mathcal{R}$,
 				\[\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] \]
-				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{fig:semantics-igsp}, 
+				with $\implements{\isystemterm['']}{\systemterm['']}$. By rule \ruleName{pull}, 
 				$\systemterm \arroi{\pulltran} \systemterm[']$ with
 				\[\begin{array}{r@{=}l}
 					\systemterm[']&  \tsystem{\tclienti{\tprogram}{\tknown+\treceivebuffer}{\tpending}{\ttransactionbuffer}{\tsent}{0}}[{\systemterm['']}] \\
@@ -1131,31 +1131,36 @@ $\Leftarrow)$ Follows analogously.
 					\refprop{prop_state_known}.
 		
 					\item[\ref{prop_state_known}.] By \propref{prop_inclient} we know that 
-					$\astate['''] = \iapply{\initialstate}{\ireduce{\adelta[']_1\cdots\adelta[']_{z}}}$  and
+%					$\astate['''] = \iapply{\initialstate}{\ireduce{\adelta[']_1\cdots\adelta[']_{z}}}$  
+%					and
 				       $\astate['] \triangleleft \ \queuemessage[0 .. t - 1]$ and $t \leq \tknown+\treceivebuffer$ and  
 					$\ireduce{\adelta_{1}\cdots\adelta_{k}}\triangleleft \ \flatten{ \queuemessage[t..\tknown+\treceivebuffer-1]}$.
-					 Then we should build the following proof for 
-						\[\iapply{\iapply{\initialstate}{\ireduce{\adelta[']_1\cdots\adelta[']_z}}}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}\triangleleft \flatten{\queuemessage[0 .. \tknown +\treceivebuffer- 1]} \]
+					 Then,
+%					  we should build the following proof for 
+%						\[\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}\triangleleft \flatten{\queuemessage[0 .. \tknown +\treceivebuffer- 1]} \]
 					\[
 						  \mathrulean{\triangapply}
 						  {
-							\iapply{\initialstate}{\ireduce{\adelta[']_1\cdots\adelta[']_z}} \triangleleft \flatten {\queuemessage[0..t-1]}
+							\astate['] \triangleleft \flatten {\queuemessage[0..t-1]}
 							\quad 
-							\ireduce{\adelta[_1]\cdots\adelta[_k]} \triangleleft \queuemessage[t .. \tknown+\treceivebuffer  - 1]
+							\ireduce{\adelta[_1]\cdots\adelta[_k]} \triangleleft \flatten{\queuemessage[t .. \tknown+\treceivebuffer  - 1]}
 															}
-  						{\iapply{\astate[''']}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}\triangleleft \flatten{\queuemessage[0 .. \tknown +\treceivebuffer - 1]} }  
+  						{\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_k]}}\triangleleft \flatten{\queuemessage[0 .. \tknown +\treceivebuffer - 1]} }  
 					\]
 						
-						\item[\ref{prop_pending}.] We have to prove that $\ireduce{\adelta[_1]\cdots\adelta[_z]} \triangleleft \flatten{\tpending \setminus \queuemessage[\tknown .. \tknown_i + \treceivebuffer_i + h + r -1]}$ (PENDIENTE)
-		\chnote{por que ocurre lo del inserver en pull 2?}
-		\henote{que se esto}
-											
-						\item[{--}] The remaining properties straightforwardly hold.
-
+						\item[\ref{prop_pending}.] Follows 
+						analogously to rule \ruleName{i-pull$_1$}.
+						
+						\item[\ref{prop_deltas}.] 
+						It follows immediately because of \refprop{prop_deltas} and the fact that 
+				              	$\agssegpair\in\epsilon\cdot\outserver(\cid)$ implies $\agssegpair\in\inclient_l\cdot\outserver(\cid)$.											
+						
 					\end{enumerate}
+					 The remaining properties straightforwardly hold.
+
 	
 	
-			\item {\bf rule \ruleName{accept-conn}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
+			\item {\bf rule \ruleName{i-accept-cxn}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
 				\[\begin{array}{r@{=}l}
 					\isystemterm & \server{\astate}{\inserver}{\outserver} \ \bigpar\  \iclient 	\\
 					\isystemterm['] & \server{\astate}{\inserver\upd\cid\epsilon}{\update{\outserver}{\cid}{\agsprefpair}}\ \bigpar\  \iclient 
