@@ -595,9 +595,9 @@ $\Leftarrow)$ Follows analogously.
 						[@]%[\aseqround\cdot{\aroundtuple}\cdot{\aseqround[']}]
 						[@][@][@][n]}
 								\ \bigpar  \ {\iserverins[\astate[']]} \ \bigpar\ \iclient[']				\\
-					\inclient & \agssegpair[{\adelta[_1]}][{\amxrf[_1]}]\ldots \agssegpair[{\adelta[_{h'}]}][{\amxrf[_{h'}]}]
+					\inclient & \agssegpair[{\adelta_1}][{\amxrf_1}]\ldots \agssegpair[{\adelta_{h'}}][{\amxrf_{h'}}]
 					\\
-					\outserver(\cid) & \agssegpair[{\adelta[_{h'+1}]}][{\amxrf[_{h'+1}]}]\ldots \agssegpair[{\adelta[_{h'}]}][{\amxrf[_{h'}]}]
+					\outserver(\cid) & \agssegpair[{\adelta_{1}'}][{\amxrf_1'}]\ldots \agssegpair[{\adelta_{h}'}][{\amxrf_{h}'}]
 					\\
 					\isystemterm['] & \addid{\iclientinst[P]
 						 [\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_n]}}]
@@ -605,7 +605,7 @@ $\Leftarrow)$ Follows analogously.
 						 [@][@]
 						 [{\receivebuffer}][n][\epsilon]}\  \bigpar  \ {\iserverins[\astate[']]} \ \bigpar\ \iclient[']
 					\\
-					\aseqround['] & \filter{\amxrf[_k](\cid)}{\aseqround} 
+					\aseqround['] & \filter{\amxrf_{h'}(\cid)}{\aseqround} 
 					\\
 				  \end{array}
 				\]
@@ -652,9 +652,9 @@ $\Leftarrow)$ Follows analogously.
 						  {
 							\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}
 							\quad 
-							\ireduce{\adelta[_1]\cdots\adelta[_{h'}]}\triangleleft \queuemessage[\tknown ..  \tknown + \treceivebuffer - 1]
+							\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \queuemessage[\tknown ..  \tknown + \treceivebuffer - 1]
 							}
-						{\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_{h'}]}}\triangleleft \flatten{\queuemessage[0 .. \tknown +\treceivebuffer - 1]}}  
+						{\iapply{\known}{\ireduce{\adelta_1\cdots\adelta_{h'}}}\triangleleft \flatten{\queuemessage[0 .. \tknown +\treceivebuffer - 1]}}  
 					\]
 					
 					
@@ -663,18 +663,43 @@ $\Leftarrow)$ Follows analogously.
 					
 					
 						\item[\ref{prop_pending}.] We have to prove that 
-						$\ireduce{\igetdeltas{\filter{\amxrf[_k](\cid)}{\pending}}} 
+						$\ireduce{\igetdeltas{\filter{\amxrf_{h'}(\cid)}{\pending}}} 
 							\triangleleft 
 							\flatten{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer -1]}$.
 					         By \refprop{prop_pending}, 
-					         $\ireduce{\igetdeltas{\pending}\cdot\pushbuffer} \triangleleft \flatten{\tpending_l}$.
-					         By \refprop{prop_deltas} for all $\agssegpair\in\inclient_l\cdot\outserver(\cid_l)$, 
-           for all $\aroundtuple[@][@][\adelta'] \in\pending_l$
-        if $\irounds\leq\amxrf(\cid_l)$ then $\adelta\triangleleft \queuemessage[x..x']$ and  $\adelta'\triangleleft \queuemessage[y..y']$
-        with $y'\leq x'$
+					         $\ireduce{\igetdeltas{\pending}\cdot\pushbuffer} \triangleleft \flatten{\tpending}$
+					         and
+					         $\ireduce{\igetdeltas{\outserver(\cid)}}\triangleleft 
+       							\flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]}$.
+
+					         By \refprop{prop_deltas} for all $\agssegpair\in\inclient\cdot\outserver(\cid)$, 
+					         for all $\aroundtuple[@][@][\adelta'] \in\pending_l$
+					         if $\irounds\leq\amxrf(\cid_l)$ then $\adelta\triangleleft \queuemessage[x..x']$ and  
+					         $\adelta'\triangleleft \queuemessage[y..y']$        with $y'\leq x'$.
+					         
+					          In particular, for $\amxrf_{h'}$,  holds that for all
+					          $\aroundtuple[@][@][\adelta'] \in\pending_l$
+					         if $\irounds\leq\amxrf_{h'}(\cid)$ then  
+					         $\adelta'\triangleleft \queuemessage[y..y']$ with $y'\leq \tknown + \treceivebuffer -1$.
+					         By well-formedness condition, 
+					         $\tknown\leq x' < y'$.
+					         
+					         Therefore, each $\aroundtuple[@][@][\adelta'] \in\pending_l$
+					         and $\irounds\leq\amxrf_{h'}(\cid)$ corresponds to a segment within 
+					         $\queuemessage[\tknown+\treceivebuffer.. \tknown + \treceivebuffer -1]$. 
+					         \henote{Creo que hay que agregar una condición para lo que sigue} 
+					         Similarly, 
+					         it can be concluded that $\aroundtuple[@][@][\adelta'] \in\pending_l$
+					         and $\irounds>\amxrf_{h'}(\cid)$ corresponds to  segments beyond 
+					         $\queuemessage[0.. \tknown + \treceivebuffer -1]$.
+					         Therefore, 
+					         $\ireduce{\igetdeltas{\filter{\amxrf_{h'}(\cid)}{\pending}}} 
+							\triangleleft 
+							\flatten{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer -1]}$.
+
 
 					
-								$\cid\in\dom\inserver$ because $\inclient \neq \epsilon$
+								
 				
 %					
 %					${\transactionbuffer}\triangleleft{\ttransactionbuffer}$
@@ -717,7 +742,7 @@ $\Leftarrow)$ Follows analogously.
 		
 				Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
 				\[ \tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]\]
-				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
+				with $\implements{\isystemterm['']}{\systemterm['']}$. By rule ~\ruleName{read}, 
 				$\systemterm \arroi{\readtran{r}} \systemterm[']$ with
 				\[\begin{array}{r@{=}l}
 					\systemterm['] & \tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]\\
@@ -725,24 +750,22 @@ $\Leftarrow)$ Follows analogously.
 				  \end{array}		
 				\]
 				
-				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
-				by checking the properties in \defref{def:implementation}.			
-					\begin{enumerate}
-						\item The only terms that have changed are the programs in client $\cid$.  We show that $v=v'$ holds. Since 
+				We  show that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$. by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				%by checking the properties in \defref{def:implementation}.			
+				 The only terms that have changed are the programs in client $\cid$.  We show that $v=v'$ holds. Since 
 						$\implements{\isystemterm}{\systemterm}$, the following holds
 						\begin{itemize}
-							\item $\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}$ by property \ref{prop_state_known};
-							\item $\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}}\triangleleft \flatten{\tpending} \ $ by property \ref{prop_pending};
-							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by property \ref{prop_transactions};
+							\item $\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}$ by  \refprop{prop_state_known};
+							\item $\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}}\triangleleft \flatten{\tpending} \ $ by  \refprop{prop_pending};
+							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by  \refprop{prop_transactions};
 						\end{itemize}
 						
 						Then, we can build the following proof for 
 						$\rvalue{r}{\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}
-						= 
-						\iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}$
+						= 					\iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}$
+						
+						{\small
 						\[
-						  \mathrulean{\triangread}
-						    {
 								  \mathrulean{\lemref{lemma:apply}}
 									{
 										\mathrulean{\triangapply}
@@ -763,16 +786,14 @@ $\Leftarrow)$ Follows analogously.
 									}
 									{\iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}  
 									\triangleleft {\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}}
-								}
-  						  {v'  = v}  
-					\]
-											
-						\item[{--}] The remaining properties straightforwardly hold.
+					\]}
+					Then, we conclude $v=v'$ by \triangread.
+						 														
+					The remaining properties straightforwardly hold.
 						
 
-					\end{enumerate}
 
-\item {\bf rule \ruleName{confirm}}. Then, $\isystemterm  \arroi{\confirmedtran} \isystemterm '$ with 
+\item {\bf rule \ruleName{i-confirm}}. Then, $\isystemterm  \arroi{\confirmedtran} \isystemterm '$ with 
 				\[\begin{array}{r@{=}l}
 					\isystemterm & \addid{\iclientinst[\tconfirmedins{x}]} \bigpar \ \isystemterm['']
 					\\
@@ -785,7 +806,7 @@ $\Leftarrow)$ Follows analogously.
 		
 				Since $(\isystemterm,\systemterm)\in \mathcal{R}$,
 				\[\tsystem{\tclienti{\tconfirmedins{x}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]\]
-				with $\implements{\isystemterm['']}{\systemterm['']}$. By inspection of rules in \figref{}, 
+				with $\implements{\isystemterm['']}{\systemterm['']}$. By rule \ruleName{confirm}, 
 				$\systemterm \arroi{\confirmedtran} \isystemterm[']$ with
 				\[\begin{array}{r@{=}l}
 					\systemterm['] & \tsystem{\tclienti{{\tprogram}\subst{x}{v}}
@@ -795,18 +816,15 @@ $\Leftarrow)$ Follows analogously.
 				\]
 				
 				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
-				by checking the properties in \defref{def:implementation}.			
-					\begin{enumerate}
-						\item The only terms that have changed are the programs in client $\cid$.  We show that $v=v'$ holds. Since 
+				by checking the properties in \defref{def:implementation}.
+				The only terms that have changed are the programs in client $\cid$.  We show that $v=v'$ holds. Since 
 						$\implements{\isystemterm}{\systemterm}$, the following holds
 						\begin{itemize}
-							\item $\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}}\triangleleft \flatten{\tpending} \ $ by property \ref{prop_pending};
-							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by property \ref{prop_transactions};
+							\item $\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}}\triangleleft \flatten{\tpending} \ $ by  \refprop{prop_pending};
+							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by  \refprop{prop_transactions};
 						\end{itemize}
 						Then, we know that the value of $\pending \cdot \pushbuffer$ is related to $\tpending$, thereby, when $\pending$ or $\pushbuffer$ have any elements then $\tpending$ also has it. Finally, $\transactionbuffer$ has elements iff $\ttransactionbuffer_i$ also has any elements.
-			
-					\end{enumerate}
-	
+				
 	
 	
 	

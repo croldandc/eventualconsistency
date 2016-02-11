@@ -192,12 +192,12 @@ for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following condition
   \item $k_l+j_l\leq \length \queuemessage$ for all $l$;
   \item $\tpending_l = \ublock[{\anupdseq[_1]}]\cdots\ublock[{\anupdseq[_p]}]\cdot\tsent_l$ and 
   for all ${\sf 1} \leq x < y \leq{\sf p}$ there exists $x',y'$ s.t. $\queuemessage[x'] = \ublock[{\anupdseq}_x]$, $\queuemessage[y'] =\ublock[{\anupdseq}_y]$ and 
-  $\tknown\leq x' < y'$; and
+  $\tknown_l\leq x' < y'$; and
 %  \item if $\ublock \in {\tpending_l}\cdot {\tsent_l}$ then $\cid = \cid_l$, \ie,  blocks in the local queues of 
 %  a client $l$ are  all decorated with the identifier $\cid_l$.
 %  \item $\cid \in {\cid_0,\ldots, \cid_n} $ for all $\ublock \in S$, \henote{Pensar bien, tal vez no es necesaria}
   \item $\anupdseq = \flatten{\queuemessage\cdot\tsent_0\cdots\tsent_m\cdot\ttransactionbuffer_0\cdots\ttransactionbuffer_m}$,
-  if $\anupdseq{[x]}=\udec$, $\anupdseq{[y]}=\udec[@][{\vertice[@][']}]$ and $x < y$ then $\vertice \neq \vertice[@][']$.
+  if $\anupdseq{[x]}=\udec$, $\anupdseq{[y]}=\udec[@][{\vertice[@][']}]$ and $x \neq y$ then $\vertice \neq \vertice[@][']$.
 \end{enumerate}
 \end{definition}
 Condition (1) ensures that all   clients have different identifiers. Condition (1) states that each client can see at most every messages in the store, while 
