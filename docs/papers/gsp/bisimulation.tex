@@ -87,14 +87,14 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
 \newpage
 
 \begin{enumerate}
-	\item \label{prop_stateserver} $\astate \triangleleft \flatten{\queuemessage}$.
+	\item \label{prop_stateserver} $\astate \triangleleft \flatten{\queuemessage}$;
 
 	\item \label{prop_state_known} $\astate_l \triangleleft \flatten {\queuemessage[0 .. \tknown_l - 1]}$;
 	
-	\item \label{prop_transactions} ${\transactionbuffer}_l\triangleleft{\ttransactionbuffer}_l$.
+	\item \label{prop_transactions} ${\transactionbuffer}_l\triangleleft{\ttransactionbuffer}_l$;
 	
 	\item \label{prop_pending}  
-		$\ireduce{\igetdeltas{\pending_l}\cdot {\pushbuffer}_l} \triangleleft \flatten{\tpending_l}$.
+		$\ireduce{\igetdeltas{\pending_l}\cdot {\pushbuffer}_l} \triangleleft \flatten{\tpending_l}$;
 
 %		\item \label{prop_pending} $\pending_l = \aroundtuplei[1]\ldots\aroundtuplei[h]$ and 
 %		$\ireduce{\adelta_1\cdots\adelta_h\cdot {\pushbuffer}_l} \triangleleft \flatten{\tpending_l}$.
@@ -156,7 +156,7 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
 %       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
 %           
      \item ${\inclient}_l = \agssegpair[{\astate[']}][{\amxrf[_0]}]\cdot\aseqseg$,      
-  		 there exists $t \leq \tknown_l+\treceivebuffer_l$ s.t. $\astate['] \triangleleft \ \queuemessage[0 .. t - 1]$, 
+  		 there exists $t \leq \tknown_l+\treceivebuffer_l$ s.t. $\astate['] \triangleleft \ \flatten{\queuemessage[0 .. t - 1]}$, 
 
 
      
@@ -179,7 +179,7 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
      \item ${\inclient}_l = \epsilon$,  $\outserver(\cid_l) = \agssegpair[{\astate[']}]\cdot \aseqseg$ there exists $t \geq \tknown_l+\treceivebuffer_l $ s.t.
 %     $\outserver(\cid_l) = \agssegpair[{\astate[']}]\cdot\agssegpairi[z+1] \cdots \agssegpairi[h]$, 
  %    $\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$
-      $\astate['] \triangleleft \ \queuemessage[0 .. t - 1]$ %and $\tknown_l+\treceivebuffer_l \leq t$; 
+      $\astate['] \triangleleft \ \flatten{\queuemessage[0 .. t - 1]}$ %and $\tknown_l+\treceivebuffer_l \leq t$; 
      
        $\ireduce{\igetdeltas{\aseqseg}}\triangleleft \ \flatten{ \queuemessage[t..|\queuemessage| - 1]}$  
 %   $\ireduce{\adelta_{z+1}\cdots\adelta_{h}}\triangleleft \flatten{ \queuemessage[t..\tknown_l+\treceivebuffer_l-1]}$ 
@@ -200,8 +200,20 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
 \end{definition}
 
 
-The  first three conditions are self-explanatory. Condition (\ref{prop_pending})
+The  first three conditions are self-explanatory. Condition (\ref{prop_pending})  ..\henote{Terminar cuando est\'e confirmado}
 
+We  now show that \igsp\ is a correct implementation of \gsp\ by proving that all behaviours of $\isystemterm$  are allowed by $\systemterm$ 
+whenever $\isystemterm$  implements $\systemterm$. Technically,  we prove that $\systemterm$ weakly simulates $\isystemterm$. 
+ We rely on a standard notion of simulation but technically we take into account the fact that
+the \gsp\ associates a fresh event identifier to each update while \igsp\ does not. Take  $\rightarrow = \tr{\tau} \bigcup_{\cid\in\idset} \arroi{\tau}$ 
+and $\Rightarrow$ as the transitive closure of $\rightarrow$, \ie,
+$\Rightarrow = \rightarrow^*$.
+
+\begin{definition}
+
+
+\end{definition}
+ 
 Next theorem states one of most important result of the paper, saying that abstract GSP protocol and the implementation of GSP are weak bisimulation equivalent (or weakly bisimilar).
 
 We use $\approx$ for standard weak bisimulation.

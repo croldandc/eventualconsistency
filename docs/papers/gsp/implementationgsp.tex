@@ -203,13 +203,13 @@ for  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions ho
 
 \begin{enumerate}
 
-  \item $\cid_l \neq \cid_k$ for all $j\neq k$;
+  \item $\cid_l \neq \cid_{l'}$ for all $l\neq l'$;
   \item $\dom\inserver = \dom\outserver \subseteq  \{0,\ldots,m\}$;
   \item $\cid_l\not\in\dom\outserver$ implies $\inclient_l = \epsilon$;
-  \item if $\cid_l\in\dom\outserver$ and $\inclient_l\cdot\outserver \neq\epsilon$ then either
+  \item if $\cid_l\in\dom\outserver$ and $\inclient_l\cdot\outserver(\cid_l) \neq\epsilon$ then either
 	\begin{itemize}
-		\item ${\inclient}_l\cdot\outserver= \agssegpairi[1] \cdots \agssegpairi[h]$; or
-		\item  ${\inclient}_l\cdot\outserver= \agssegpair[{\astate}][{\amxrf[_0]}]\cdot\agssegpairi[1]\cdots \agssegpairi[h]$.
+		\item ${\inclient}_l\cdot\outserver(\cid_l)= \agssegpairi[1] \cdots \agssegpairi[h]$; or
+		\item  ${\inclient}_l\cdot\outserver(\cid_l)= \agssegpair[{\astate}][{\amxrf[_0]}]\cdot\agssegpairi[1]\cdots \agssegpairi[h]$.
 	\end{itemize}
 	 $\amxrf_j(\cid_l) \leq \ \amxrf_k(\cid_l)$ for all  ${ j}\leq{k}$ and $\amxrf_h = \amxrf$
 	
@@ -221,7 +221,7 @@ for  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions ho
 
 \item  $\cid_l\in\dom\outserver$ then either
   \begin{itemize}
-    \item $\pending_l = \epsilon$ and $\amxrf(\cid_l) \leq \trounds_l$;
+    \item $\pending_l = \epsilon$ and $\amxrf(\cid_l) \leq \irounds_l$;
     \item $\pending_l = \inserver(\cid_l)\cdot\pending_l'$; 
     $\inserver(\cid_l) = {\aroundtuple[\cid_l][{\irounds_{\it fst}}][\adelta_{\it fst}]} \cdot\pending_l''$ and  $ \irounds_{\it fst}> {\amxrf} (\cid_l)$.
     \item $\pending_l =\pending_l''\cdot{\aroundtuple[\cid_l][{\irounds_{lst}}][\adelta_{lst}]} \cdot \inserver(\cid_l)\cdot\pending_l'$  
