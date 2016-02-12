@@ -249,13 +249,13 @@ the pending rounds on the client and the confirmations sent by the store.
 
 For the operational semantics of \igsp\ we consider the set of labels extended as follows
 \[\mu := \ldots\ | \ \tau \]
-The label $\tau$ without any client annotation is associated to changes in the global store 
+The label $\tau$ without any client annotation is associated with changes in the global store 
 and communication failures.
 
 As for the idealised model, the operational semantics  is given by a labelled transition system 
-over well-formed terms, up-to the structural equivalence stating that  $\bigpar$ is associative, 
+over well-formed terms, up-to  structural equivalence, which states that  $\bigpar$ is associative, 
 commutative and has $0$ as neutral element. The inference rules are in \figref{fig:semantics-igsp}.
-Rule \ruleName{i-update}, analogous to rule \ruleName{update}, adds the operation $\anupd$ 
+Rule \ruleName{i-update}, which is analogous to rule \ruleName{update}, adds the operation $\anupd$ 
  to the temporary block $\transactionbuffer$. 
  The decoration $\vertice$ is irrelevant in this model, 
  hence we do not impose any freshness requirement.
@@ -470,14 +470,14 @@ $\igetdeltas{\_}$ as the function that projects a sequence of rounds into a sequ
 corresponding $\adelta$s.
 The global store changes its state as prescribed by rule  \ruleName{i-batch}. It collects 
 all received rounds in $\inserver$ by using the auxiliary function $\receiveroundsname{\_}$, 
-which builds a unique object $\adelta$ by appending all  $\adelta$'s contained in the received rounds and 
-a function $\amxrf$ which associates each client with the number of the last received round. 
-Formally, 
-let $\inserver$ be defined such that $\dom\inserver = \{\cid_0,\ldots,\cid_m\}$ and
+which builds a unique object $\adelta$ by appending all  $\adelta$'s contained in the rounds in
+input buffers, and 
+a function $\amxrf$ that associates each client with the number of the last received round.  
+Let $\inserver$ be such that $\dom\inserver = \{\cid_0,\ldots,\cid_m\}$ and
        $\forall\cid_l\in\dom\inserver.\inserver(\cid_l) = \pending_l\cdot
       \aroundtuple[\cid_l][\irounds^{k_l}_l][{\adelta^{k_l}_l}]$. 
       Then, 
-$\receiveroundsname{\_}$ is defined such as 
+$\receiveroundsname{\_}$ is defined as follows  
 \[\begin{array}{ll}
    \receiveroundsname{\inserver} = \agssegpair[@][{\amxrf[']}] \quad \mbox{with}\quad\ &
  %  \begin{itemize}
@@ -510,22 +510,22 @@ $\receiveroundsname{\_}$ is defined such as
 %\end{itemize}
    The obtained  $\adelta$ is applied to the current state  $\astate$ to obtain the new one $\astate[']$ and 
    $\amxrf$ is updated with $\amxrf[']$. In addition, the new segment $\agssegpair[@][{\amxrf{[\amxrf[']]}}]$ is sent
-   to  every connected client (i.e., $\agssegpair[@][{\amxrf{[\amxrf[']]}}]$ is added at the end of
-    every buffer $\outserver(\cid))$. Every input buffer  $\inserver(\cid)$ is
+   to  every connected client, i.e., it is added at the end of
+    every buffer $\outserver(\cid)$. The input buffers  $\inserver(\cid_l)$ are
      emptied because  all received rounds have been processed.
 
 The remaining rules  deal with connectivity issues: rule \ruleName{i-drop-cxn} models the disconnection of the client 
-$\cid$: the buffers $\outserver(\cid)$ and $\inserver(\cid)$ are eliminated from the global store and the 
-input buffer of the client is set to $\epsilon$. When client $\cid$ (re-)establishes the connection, the store
-creates the buffers for $\cid$ and sends the segment containing the current 
+$\cid$: the buffers $\outserver(\cid)$ and $\inserver(\cid)$ are removed from the global store and also 
+the input buffer of $\cid$ is set to $\epsilon$. When the client $\cid$ (re-)establishes its connection, the store
+creates the buffers for $\cid$ and sends a segment containing the current 
 state of the store. Rule \ruleName{i-pull$_2$} is analogous to \ruleName{i-pull$_1$}, but handles the first
 $\pullcmd$ after a reconnection. For this reason, the first received segment  
 $\agssegpair[{\astate[''']}][{\amxrf[_0]}]$ contains a state instead of a delta object. 
 The client uses this new state $\astate[''']$ instead of its local state to  resynchronise. The application of 
 successive segments is analogous to rule \ruleName{i-pull$_1$}.
 
-The proposed implementation allows for a server to crash, i.e., to close all communication buffers. We
-do not model this explicitly because  its effects can be obtained by applying several times rule 
+The proposed implementation allows for a server to crash, i.e., to close all communication buffers but we
+do not model this behaviour explicitly because  it can be obtained by applying several times rule 
 \ruleName{i-drop-cxn}.
 %
 %\\[25pt]

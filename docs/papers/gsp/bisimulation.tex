@@ -16,10 +16,10 @@ Building on the above relation, the next definition states when a
 \igsp\ system its an implementation of a \gsp\ system.
 
 \begin{figure}[t]
-{\footnotesize
+{\small
 \[
 \begin{array}{l@{\quad\qquad}l@{\quad\qquad}l}
-  \mathax{\triangemptydelta\medskip\medskip}{\medskip\medskip\emptydelta \triangleleft \epsilon}{} 
+  \mathax{\triangemptydelta\ \ }{\ \ \emptydelta \triangleleft \epsilon}{} 
   &
   \mathrule{\triangappend}
   		{\adelta \triangleleft \anupdseq}
@@ -32,7 +32,7 @@ Building on the above relation, the next definition states when a
   		{\astate \triangleleft \anupdseq}
 		{\iread r \astate  = \rvalue r  \anupdseq}  
 \\
-  \mathax{\trianginitialstate\medskip\medskip}{\medskip\medskip\initialstate \triangleleft \epsilon}{} 
+  \mathax{\trianginitialstate\ \ }{\ \ \initialstate \triangleleft \epsilon}{} 
   &
   \mathrule{\triangapply}
   		{\astate \triangleleft \anupdseq \quad \adelta[_1] \triangleleft \anupdseq[_1] \ldots \adelta[_n] \triangleleft \anupdseq[_n]}
@@ -44,10 +44,10 @@ Building on the above relation, the next definition states when a
 		{\ireduce {\adelta[_1] \cdots \adelta[_n]} \triangleleft \anupdseq[_1] \cdots \anupdseq[_n]}
 %\\
 %&
-%\mathax{\triangapplyemp\medskip\medskip}{\medskip\medskip\iapply \astate {\emptydelta}  \triangleleft \astate}{} 
+%\mathax{\triangapplyemp\ \ }{\ \ \iapply \astate {\emptydelta}  \triangleleft \astate}{} 
   
 %&
-%\mathax{\triangreduceemp\medskip\medskip}{\medskip\medskip \ireduce{\epsilon} \triangleleft \emptydelta}{} 
+%\mathax{\triangreduceemp\ \ }{\ \  \ireduce{\epsilon} \triangleleft \emptydelta}{} 
   
 %  \mathrule{\triangread}
  % 		{\astate \triangleleft \anupdseq}
@@ -236,8 +236,8 @@ It follows by showing that $\mathcal{R} = \{ (\isystemterm, \systemterm) \ |\ \i
 implementation simulation.
 \end{proof}
 
-We remark that  $\mathcal{R}^{-1}$ is not a simulation essentially  because the implementation cannot mimic  the 
-behaviour of a client that have performed two 
+We remark that  $\mathcal{R}^{-1}$ is not a simulation. Essentially,  the implementation cannot mimic  the 
+behaviour of the idealised model when a client  have performed two 
 consecutive \pushcmd\ commands without sending the first block: in \gsp\, the global store is still able to interleave the two 
-blocks with updates arriving from other clients. Differently the two blocks will be treated as atomic in \igsp\  
+blocks with blocks arriving from other clients. Differently, the two blocks are treated as atomic in \igsp\  
 because the client will send them as part of the same $\delta$ object. 

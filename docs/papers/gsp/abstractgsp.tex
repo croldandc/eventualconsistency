@@ -162,8 +162,8 @@ the client knows the new updates contained in the segment $\queuemessage[\tknown
 Value $\trounds$ counts the number of update operations executed by the client. 
 
 
-A programs $P$ run by a client is  sequence of  primitives that handle the  
-interacting with 
+A program $P$ is built as a sequence of  operations that handle the  
+interaction with 
 the store: $\readcmd,  \updcmd, \pullcmd,  \pushcmd, \confcmd$
  (we postpone their description until \secref{sec:gsp-sos}). 
  %Conditional and loop statements contain expressions 
@@ -176,15 +176,15 @@ free variables of a program is  standard. We say that a process $P$ is {\em clos
 
 We keep the language for programs simple. We remark that this 
 choice do not affect the results presented in this paper. Actually, we could have just characterised 
- the behaviour of programs in terms of labelled transition systems, 
-but we prefer to have a syntax for presentation. 
+ the behaviour of programs in terms of a labelled transition system, 
+but we prefer to have a syntax through the presentation. 
 
 %\henote{agregar algun comentario sobre otras estructuras de control}
 
 
 
 \begin{definition}[Well-formedness]
-A \gsp\ system $\systemterm =  \Absclient_0\bigpar \ldots\bigpar \Absclient_m\bigpar\queuemessage$  with 
+A \gsp\ system $\systemterm =  \Absclient_0\bigpar \ldots\bigpar \Absclient_m\bigpar\queuemessage$  where 
 $\Absclient_l = \tclienti{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\tsent_l}{\treceivebuffer_l}[\cid_l][\trounds_l]$ 
 for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions hold 
 \begin{enumerate}
@@ -200,8 +200,8 @@ for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following condition
   if $\anupdseq{[x]}=\udec$, $\anupdseq{[y]}=\udec[@][{\vertice[@][']}]$ and $x \neq y$ then $\vertice \neq \vertice[@][']$.
 \end{enumerate}
 \end{definition}
-Condition (1) ensures that all   clients have different identifiers. Condition (1) states that each client can see at most every messages in the store, while 
-(3) ensures that all unconfirmed blocks in $\tpending_l$ are  either in the store  ($\ublock[{\anupdseq[_1]}]\cdots\ublock[{\anupdseq[_p]}]$) or in  the 
+Condition (1) ensures that all   clients have different identifiers. Condition (2) states that each client can see at most every messages in the store, while 
+(3) ensures that all unconfirmed blocks in $\tpending_l$ are  either in the unseen part of the store  ($\ublock[{\anupdseq[_1]}]\cdots\ublock[{\anupdseq[_p]}]$) or in  the 
    communication buffer $\tsent_l$. Morevoer,  messages are kept in the relative order in which they have been generated. Finally, (4) ensures
    that an event  is associated with a unique update operation. 
     
