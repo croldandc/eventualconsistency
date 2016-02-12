@@ -16,7 +16,7 @@ Building on the above relation, the next definition states when a
 \igsp\ system its an implementation of a \gsp\ system.
 
 \begin{figure}[t]
-{\small
+{\footnotesize
 \[
 \begin{array}{l@{\quad\qquad}l@{\quad\qquad}l}
   \mathax{\triangemptydelta\medskip\medskip}{\medskip\medskip\emptydelta \triangleleft \epsilon}{} 
@@ -31,7 +31,6 @@ Building on the above relation, the next definition states when a
   \mathrule{\triangread}
   		{\astate \triangleleft \anupdseq}
 		{\iread r \astate  = \rvalue r  \anupdseq}  
-\\  
 \\
   \mathax{\trianginitialstate\medskip\medskip}{\medskip\medskip\initialstate \triangleleft \epsilon}{} 
   &
@@ -43,7 +42,6 @@ Building on the above relation, the next definition states when a
    \mathrule{\triangreduce}
    		{\adelta[_1] \triangleleft \anupdseq[_1] \ldots \adelta[_n] \triangleleft \anupdseq[_n]}
 		{\ireduce {\adelta[_1] \cdots \adelta[_n]} \triangleleft \anupdseq[_1] \cdots \anupdseq[_n]}
-\\
 %\\
 %&
 %\mathax{\triangapplyemp\medskip\medskip}{\medskip\medskip\iapply \astate {\emptydelta}  \triangleleft \astate}{} 
@@ -205,22 +203,41 @@ The  first three conditions are self-explanatory. Condition (\ref{prop_pending})
 We  now show that \igsp\ is a correct implementation of \gsp\ by proving that all behaviours of $\isystemterm$  are allowed by $\systemterm$ 
 whenever $\isystemterm$  implements $\systemterm$. Technically,  we prove that $\systemterm$ weakly simulates $\isystemterm$. 
  We rely on a standard notion of simulation but technically we take into account the fact that
-the \gsp\ associates a fresh event identifier to each update while \igsp\ does not. Take  $\rightarrow = \tr{\tau} \bigcup_{\cid\in\idset} \arroi{\tau}$ 
-and $\Rightarrow$ as the transitive closure of $\rightarrow$, \ie,
-$\Rightarrow = \rightarrow^*$.
-
-\begin{definition}
-
-
-\end{definition}
+the \gsp\ associates a fresh event identifier to each update while \igsp\ does not. Take  $\rightarrow = \tr{\tau} \bigcup_{\cid\in\idset} \arroi{\tau}$,
+ $\Arro$ as the transitive closure of $\rightarrow$, \ie, $\Arro = \rightarrow^*$ and 
+ $\Arroi{\lambda} \ = \ \Arro;\arroi{\lambda};\Arro$.
  
-Next theorem states one of most important result of the paper, saying that abstract GSP protocol and the implementation of GSP are weak bisimulation equivalent (or weakly bisimilar).
+ 
 
-We use $\approx$ for standard weak bisimulation.
+\begin{definition}[simulation] $\mathcal{R}$ is an {\em implementation simulation} if for all 
+$(\isystemterm,\systemterm)\in\mathcal{R}$ we have:
+\begin{enumerate}
+   \item If $\isystemterm\arro{\updatetran{\anupd}}\isystemterm[']$ then  $\exists\systemterm['],\vertice[w]$ s.t.  $\systemterm\Arroi{\updatetranaux{\anupd^{\vertice[w][]}}}\systemterm[']$ and $(\isystemterm['],\systemterm['])\in\mathcal{R}$;
+   \item If $\isystemterm\arro{\lambda}\isystemterm[']$ and $\lambda\neq \updatetran{\anupd},\tau$ then  $\exists\systemterm[']$  s.t.  $\systemterm\Arroi{\lambda}\systemterm[']$ and $(\isystemterm['],\systemterm['])\in\mathcal{R}$;
+   \item If $\isystemterm\tr{}\isystemterm[']$  then  $\exists\systemterm[']$  s.t.  $\systemterm\Arro\systemterm[']$ and $(\isystemterm['],\systemterm['])\in\mathcal{R}$;
+\end{enumerate} 
+\end{definition}
+
+As usual, we write $\isystemterm\precsim\systemterm$ if there exists an {implementation simulation} $\mathcal{R}$ s.t.  
+$(\isystemterm,\systemterm)\in\mathcal{R}$.
+
+%
+%Next theorem states one of most important result of the paper, saying that abstract GSP protocol and the implementation of GSP are weak bisimulation equivalent (or weakly bisimilar).
+%
+%We use $\approx$ for standard weak bisimulation.
 
 \begin{theorem}
 \label{thm:simulation}
- If  $\isystemterm$ implements $\systemterm$, then $\isystemterm\approx\systemterm$. 
+ If  $\isystemterm$ implements $\systemterm$, then $\isystemterm\precsim\systemterm$. 
 \end{theorem}
 
+\begin{proof}
+It follows by showing that $\mathcal{R} = \{ (\isystemterm, \systemterm) \ |\ \implements{\isystemterm{}}{\systemterm} \}$ is an 
+implementation simulation.
+\end{proof}
 
+We remark that  $\mathcal{R}^{-1}$ is not a simulation essentially  because the implementation cannot mimic  the 
+behaviour of a client that have performed two 
+consecutive \pushcmd\ commands without sending the first block: in \gsp\, the global store is still able to interleave the two 
+blocks with updates arriving from other clients. Differently the two blocks will be treated as atomic in \igsp\  
+because the client will send them as part of the same $\delta$ object. 
