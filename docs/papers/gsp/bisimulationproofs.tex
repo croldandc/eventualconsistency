@@ -47,9 +47,6 @@ $\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_{n-1}] \triangleleft \a
 		{\ireduce {\adelta[_0] \cdots \adelta[_{n-1}]} \triangleleft \anupdseq[_0] \cdots \anupdseq[_{n-1}]}
 \]
  
-%and $\anupdseq =\anupdseq['] \cdot \anupdseq[_1] \cdots \anupdseq[_n]$. By  rule \ruleName{\triangapply} on the premises of the 
-%above proof, we conclude that  $\iapply{\astate}{\adelta[_0]\cdots\adelta[_n]}\triangleleft \anupdseq$.
-
 $\Leftarrow)$ Follows analogously. 
 \end{proof}
 
@@ -60,17 +57,6 @@ $\Leftarrow)$ Follows analogously.
 \begin{lemma}\label{lemma:reduceinreduce} $\ireduce{\adelta[_0]\cdots\ireduce{\adelta['_{0}]\cdots\adelta['_{m-1}]}\cdots\adelta[_{n-1}]}\triangleleft \anupdseq$ iff $\ireduce{\adelta[_0]\cdots\adelta['_0]\cdots\adelta['_{m-1}]\cdots\adelta[_{n-1}]}\triangleleft \anupdseq$
 
 \end{lemma}
-
-%\begin{itemize}
-%	\item On $\mathit{Delta} \times \mathit{Update}^*$, let $\triangleleft$ be the smallest relation such that (1) $\emptydelta \triangleleft []$, and
-%(2) $d \triangleleft a$ implies $append(d,u) \triangleleft a \cdot u$ for all updates $u$, and (3) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $reduce(d_1 \ldots d_n) \triangleleft a_1 \cdots a_n$ and (4) $d_1 \triangleleft a_1 \ldots d_n \triangleleft a_n$ implies $\remove{d_1 \ldots d_{n}}{d_n} \triangleleft a_1 \cdots a_{n-1}$. \marginpar{El (4) lo agregamos nosotros. ¿Se aclara? ¿C\'omo?}
-%  
-%\item On $State \times Update^*$, let $\triangleleft$ be the smallest relation such that (1) $\initialstate \triangleleft []$, and
-%(2) $s \triangleleft a \land \ d_1 \triangleleft a_1 \land \ \ldots \ \land \ d_n \triangleleft a_n$ implies $apply(s,d_1 \ldots d_n) \triangleleft a \cdot a_1 \cdots a_n$.
-%\end{itemize}
-%
-% 
-
 
 \begin{lemma}\label{lemma:storechanged} Let $\adelta[_0]\cdots\adelta[_{n-1}]$ a delta sequence, such that, $\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_0] \triangleleft \anupdseq[_n]$ and the following relation $\astate \triangleleft \anupdseq$ then $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_n]$
 \end{lemma}
@@ -108,20 +94,6 @@ $\Leftarrow)$ Follows analogously.
 \]
 
 
-%Let $A$ be a system from abstract GSP Protocol, defined as  then both system are weakly bisimilar, written $A \approx C$, if $(A,C)  \in \ \mathcal{R}$, where $\mathcal{R}$ be a binary relation defined as $\{ (\parallel_{i \ \in\ I_{\{0 \ldots n\}}} A_i \parallel \ \queuemessage_A),(\parallel_{i \ \in\ I_{\{0 \ldots n\}}} C_i \parallel \ \queuemessage_C) \ | \ \forall i \ \in\ \nat, \forall r: \readtype, A_i = \ \tclient{\tprogram_i}{\tknown_i}{\tpending_i}{\ttransactionbuffer_i}{\tsent_i}{\treceivebuffer_i} \land C_i = \client{P_i}{\stateclient_i}$ and the conjunction of the following properties: %\land \ \rvalue{r}{\flatten(\queuemessage_{A}[0..\tknown-1] \cdot \tpending) \cdot \ttransactionbuffer} = \readp{r}{\curstate{E_{i}.\known}{E_{i}.\pending}{E_{i}.\pushbuffer}{E_{i}.\transactionbuffer}} \land \ \queuemessage_C.\state \triangleleft \queuemessage_A \land \ E_{i}.\transactionbuffer = [\ttransactionbuffer_i] \land \ E_{i}.\receivebuffer[0].delta \triangleleft \queuemessage_A[\tknown_i] \ldots\ E_{i}.\receivebuffer[j - 1].delta \triangleleft \queuemessage_A[\tknown_i + \treceivebuffer_i] - 1 \ \land \ E_{i}.known \triangleleft \queuemessage_A[0 \ldots \tknown_i - 1] \ \land \  E_{i}.\pending \cdot E_{i}.\pushbuffer \triangleleft \tpending_i \ \land \ \forall l, 1 \leq l < |\inclient|, E_{i}.\inclient[l] \triangleleft \queuemessage_A[\tknown + \treceivebuffer - 1 +l] \ \land \ \tknown + \treceivebuffer + 1 \leq |\queuemessage_A| \Leftrightarrow |E_{i}.\inclient| + |\queuemessage_C.\outserver| > 0 \ \land \ \forall \beta \ \in \ \tsent_i, \beta \ \in \ E_{i}.\outclient \ \cup \ \queuemessage_C.\inserver
-%\marginpar{Ac\'á deber\'ia decir que R cumple las propiedades de weak bisimulation. C\'omo lo escribo mejor?}
-
-
-%The proof follows by induction on the length of the derivation $\arro{} ^*$.
- %We use $\tilde{A}$ and $\tilde{C}$ to denote clients, except client $i^{th}$, interacting concurrently, i.e., $\parallel_{j \ \in\ I_{\{0 \ldots n\} - i}}$ $A_j$ or $C_j$ respectively.
-
-\begin{itemize}
-   
-	
-   \item%{\bf n=k+1}. $\forall (\isystemterm ,\systemterm ) \ \in \ \mathcal{R}$
-   
-  % \henote{Para no escribir $\mathcal{R}^{-1}$ podemos cambiar la definici\'on $\mathcal{R}$}
-		
 			
 			\begin{itemize}
 %				\item {\bf rule (\textsc{t-read})}. If $\systemterm  \arroi{\readtran{r}} \systemterm '$, then by rule (\textsc{\footnotesize{t-read}}), $\systemterm $ must be the following term: 
@@ -162,28 +134,6 @@ $\Leftarrow)$ Follows analogously.
 						Then, $\iappend{\transactionbuffer}{u} \triangleleft \ttransactionbuffer \cdot \tupdate$ holds by
 						rule \ruleName{\triangappend}.
 
-%					\end{enumerate}
-
-%						We can build the following proof for 
-%						$\iappend{\transactionbuffer}{u}
-%						\triangleleft 
-%						\ttransactionbuffer \cdot \tupdate$
-%						\[
-%						  \mathrulean{\triangappend}
-%						      {
-%						      \transactionbuffer \triangleleft{\ttransactionbuffer}
-%						      }
-%  						{\iappend{\transactionbuffer}{u}]
-%						\triangleleft 
-%						\ttransactionbuffer \cdot \tupdate}  
-%					\]
-
-%						 \chnote{Esta prueba es m\'as inmediata, creo que aca no haria falta mostrar el detalle ya que es solo un paso. Con mencionar la regla del append tiene que alcanzar, lo dejo por si preferis que quede asi.}.
-
-						%\item[{--}] The remaining properties straightforwardly hold.
-						
-
-
 \item {\bf rule \ruleName{i-push}}. Then, $\isystemterm  \arroi{\pushtran} \isystemterm '$ with 
 
 				\[\begin{array}{r@{=}l}
@@ -211,13 +161,33 @@ $\Leftarrow)$ Follows analogously.
 					\begin{enumerate}
 					
 						\item[\ref{prop_transactions}.] It  holds since $\medskip\emptydelta \triangleleft \epsilon$, by rule \ruleName{\triangemptydelta}.
-						 
-						\item[\ref{prop_sent}.] There are two cases:
 						
+						\item[\ref{prop_pending}.] 	Since 
+						$\implements{\isystemterm}{\systemterm}$, the following holds
 						\begin{itemize}
-			
-						\item $\cid\in\dom\inserver$:  
-						 Since $\implements{\isystemterm}{\systemterm}$, 
+							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by \refprop{prop_transactions};  
+							\item $\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}}\triangleleft \flatten{\tpending}$ by  \refprop{prop_pending}.
+						\end{itemize}
+						We know that $\flatten{\tpending\cdot [\ttransactionbuffer]}$ = $\flatten{\tpending} \cdot \ttransactionbuffer$.
+						 Then, we  build the following proof 
+						$\ireduce{\igetdeltas{\pending}\cdot\ireduce{{\pushbuffer}\cdot \transactionbuffer}}\triangleleft \flatten{\tpending\cdot [\ttransactionbuffer]}$
+						 
+
+						\[
+					  	 \mathrulean{\lemref{lemma:reduceinreduce}}
+					   	{
+						  	\mathrulean{\lemref{lemma:reduce}}
+						  	{\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}} \triangleleft \flatten{\tpending}
+						    	\quad
+						    	\transactionbuffer \triangleleft \ttransactionbuffer}
+  							{\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}\cdot \transactionbuffer}\triangleleft \flatten{\tpending\cdot [\ttransactionbuffer]}}  
+					   	}
+					   	{\ireduce{\igetdeltas{\pending}\cdot\ireduce{{\pushbuffer}\cdot \transactionbuffer}}\triangleleft \flatten{\tpending\cdot [\ttransactionbuffer]}}  
+						\]
+					
+						 
+						\item[\ref{prop_sent}.] 		
+						 Since $\implements{\isystemterm}{\systemterm}$, if $\cid_l \in \dom\inserver$ and $\inclient \cdot\outserver(\cid_l) \neq \agssegpair[{\astate[']}][{\amxrf}]\cdot\aseqseg$ then
 						 $\ireduce{\igetdeltas{\inserver(\cid)}\cdot {\pushbuffer}} \triangleleft \ \flatten{\tsent}$ (\refprop{prop_sent}) 
 						 and  $\transactionbuffer \triangleleft{\ttransactionbuffer}$ (\refprop{prop_transactions}). 
 						 By $\lemref{lemma:reduce}$, $\flatten{\tsent} = \anupdseq[_1]\cdot\anupdseq[_2]$, 
@@ -241,70 +211,29 @@ $\Leftarrow)$ Follows analogously.
 
 						 The proof is completed by noting that $\anupdseq[_1]\cdot(\anupdseq[_2]\cdot \ttransactionbuffer) = \flatten{{\tsent}\cdot[\ttransactionbuffer]}$.
 						 \medskip
-						 
-%						  Then $\implements{\isystemterm}{\systemterm}$ by hypothesis. is that $\tsent$ = ${\tsent}_h \cdot {\tsent}_t $ and $ {\pushbuffer}_l\ \triangleleft \ {\tsent}_t$ 
-%						 and $\ireduce{\igetdeltas{\inserver(l)}} \triangleleft \ {\tsent}_h$. Now, $\tsent$ and $\pushbuffer$ 
-%						 have changed, in particular ${\tsent}_t $ has a new block. $\inserver$ has not changed. 
-%						 We should build the following proof for $\ireduce{{\pushbuffer}\cdot \transactionbuffer}\triangleleft {\tsent}_t\cdot\ttransactionbuffer \ $.
-%						\[
-%						  \mathrulean{\lemref{lemma:reduce}}
-%						  {\pushbuffer \triangleleft {\tsent}_t
-%								\quad
-%								\transactionbuffer \triangleleft \ttransactionbuffer}
-%  						{\ireduce{{\pushbuffer}\cdot \transactionbuffer}\triangleleft {\tsent}_t\cdot\ttransactionbuffer}  
-%					\]
-%						Then, this property holds.
 
-						\item  \textcolor{red}{$\cid\notin\dom\inserver$: 
-						 Since $\implements{\isystemterm}{\systemterm}$, 
-						 $\pushbuffer \triangleleft \ \flatten{\tsent}$ (\refprop{prop_sent}) 
-						 and  $\transactionbuffer \triangleleft{\ttransactionbuffer}$ (\refprop{prop_transactions}). 
-						 Then, we build the following proof 
-%						\[\ireduce{\pushbuffer\cdot \transactionbuffer} \triangleleft \ \flatten{{\tsent}\cdot[\ttransactionbuffer]}\]
-						\[
-						  \mathrulean{\lemref{lemma:reduce}}
-						  {
-						  \igetdeltas{\inserver(\cid)} \triangleleft \ \anupdseq[_1] 
-						  \quad
-						 \transactionbuffer \triangleleft \ttransactionbuffer}
-  						 {\ireduce{\pushbuffer\cdot \transactionbuffer} \triangleleft \ \anupdseq[_1]\cdot\ttransactionbuffer}
-						\]
-						The proof is completed by noting that $\anupdseq[_1] = \flatten{{\tsent}}$.
-						}
-						\end{itemize}
-						
-						
-						
-						
-						\item[\ref{prop_pending}.] 	Since 
-						$\implements{\isystemterm}{\systemterm}$, the following holds
-						\begin{itemize}
-							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by \refprop{prop_transactions};  
-							\item $\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}}\triangleleft \flatten{\tpending}$ by  \refprop{prop_pending}.
-						\end{itemize}
-						We know that $\flatten{\tpending\cdot [\ttransactionbuffer]}$ = $\flatten{\tpending} \cdot \ttransactionbuffer$.
-						 Then, we  build the following proof 
-						$\ireduce{\igetdeltas{\pending}\cdot\ireduce{{\pushbuffer}\cdot \transactionbuffer}}\triangleleft \flatten{\tpending\cdot [\ttransactionbuffer]}$
-						 
 
-					\[
-					   \mathrulean{\lemref{lemma:reduceinreduce}}
-					   {
-						  \mathrulean{\lemref{lemma:reduce}}
-						  {\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}} \triangleleft \flatten{\tpending}
-						    \quad
-						    \transactionbuffer \triangleleft \ttransactionbuffer}
-  						{\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}\cdot \transactionbuffer}\triangleleft \flatten{\tpending\cdot [\ttransactionbuffer]}}  
-					   }
-					   {\ireduce{\igetdeltas{\pending}\cdot\ireduce{{\pushbuffer}\cdot \transactionbuffer}}\triangleleft \flatten{\tpending\cdot [\ttransactionbuffer]}}  
-					\]
-					
+					%	\item  \textcolor{red}{$\cid\notin\dom\inserver$: 
+					%	 Since $\implements{\isystemterm}{\systemterm}$, 
+					%	 $\pushbuffer \triangleleft \ \flatten{\tsent}$ (\refprop{prop_sent}) 
+					%	 and  $\transactionbuffer \triangleleft{\ttransactionbuffer}$ (\refprop{prop_transactions}). 
+					%	 Then, we build the following proof 
+					%	\[
+					%	  \mathrulean{\lemref{lemma:reduce}}
+					%	  {
+					%	  \igetdeltas{\inserver(\cid)} \triangleleft \ \anupdseq[_1] 
+					%	  \quad
+					%	 \transactionbuffer \triangleleft \ttransactionbuffer}
+  					%	 {\ireduce{\pushbuffer\cdot \transactionbuffer} \triangleleft \ \anupdseq[_1]\cdot\ttransactionbuffer}
+					%	\]
+					%	The proof is completed by noting that $\anupdseq[_1] = \flatten{{\tsent}}$.
+					%	}
+					%	\end{itemize}
 						
-%						\item[\ref{prop_size_buffersent}.] It trivially holds since in both cases the counters are incremented by one. \chnote{Esta hipotesis sospechamos que sobra.}
-
-					\item[\ref{prop_deltas}.] Since  $\implements{\isystemterm}{\systemterm}$,  \refprop{prop_transactions} ensures 
+						
+					\item[\ref{prop_deltas}.] Since  $\implements{\isystemterm}{\systemterm}$,  \refprop{prop_deltas} ensures 
 					that 
-					for all $\agssegpair\in\inclient\cdot\outserver(\cid)$, $\amxrf(\cid)<\irounds$. Consequently
+					for all $\agssegpair\in\inclient\cdot\outserver(\cid)$, $\amxrf(\cid)\leq\irounds$. Consequently
 					$\amxrf(\cid)<\irounds_l+1$. Second item holds straightforwardly because 
 					$\inclient$, $\outserver(\cid)$ and $\pending$ have not been changed. 
 								
@@ -318,8 +247,12 @@ $\Leftarrow)$ Follows analogously.
 					\isystemterm['] & \addid{\iclientinst[@][@][\pending \cdot \around][\emptydelta]}
 		\ \bigpar \ \iserverins[{\astate[']}][@][\inserver\upd{\cid}{\inserver(\cid)\cdot\around}]
 		\ \bigpar\ \iclient[''] \\
-					\around & \aroundtuple[\cid][\nround][\pushbuffer]\\
-				\multicolumn 2 l{\pushbuffer\neq\emptydelta}
+		
+				\multicolumn 2 l{\pushbuffer\neq\emptydelta}\\
+				\multicolumn 2 l	{\cid\in\dom\inserver}\\
+				\around & \aroundtuple[\cid][\nround][\pushbuffer]\\
+				\multicolumn 2 l	{\inclient \cdot\outserver(\cid) \neq \agssegpair[{\astate[']}][{\amxrf}]\cdot\aseqseg}
+
 					\end{array}
 				\]
 				
@@ -330,10 +263,17 @@ $\Leftarrow)$ Follows analogously.
 
 						\begin{itemize}
 						
-							\item[\ref{prop_sent}.] $\around = \aroundtuple[\cid][\nround][\pushbuffer]$. 
-							%and $\igetdeltas{\inserver(\cid)} = \adelta[_0] \cdots \adelta[_{n-1}]\cdot\pushbuffer$ where the $n$ first deltas belonged to $\inserver(\cid)$ before the send transition.  
-							Since $\implements{\isystemterm}{\systemterm}$,  $\ireduce{\igetdeltas{\inserver(\cid)}\cdot {\pushbuffer}} \triangleleft \ \flatten{{\tsent}}$ 
-							holds by \textcolor{red}{\propref{prop_sent}}. 
+								\item[\ref{prop_pending}.] By hypothesis, $\pending = \aroundtuplei[0]\ldots\aroundtuplei[h]$ and  
+							$\ireduce{\adelta_0\cdots\adelta_h\cdot\pushbuffer} \triangleleft \flatten{\tpending}$.
+							 Since $\pending \cdot \around = \aroundtuplei[0]\ldots\aroundtuplei[h]\cdot{\aroundtuple[@][@][\pushbuffer]}$,
+							we need to prove that  $\ireduce{\adelta_0\cdots\adelta_h\cdot\adelta_p\cdot\emptydelta} \triangleleft \flatten{\tpending}$. 
+							It holds by using \lemref{lemma:reduce}, and the fact that $\emptydelta \triangleleft \epsilon$.
+							%It is easy to see that it is the same relation that our hypothesis, since $\adelta_p$ was moved to the pending sequence. Therefore this property also holds.
+							
+
+							\item[\ref{prop_sent}.] 
+							Since $\implements{\isystemterm}{\systemterm}$ and $\cid\in\dom\inserver$ and $\inclient \cdot\outserver(\cid) \neq \agssegpair[{\astate[']}][{\amxrf}]\cdot\aseqseg$ then $\ireduce{\igetdeltas{\inserver(\cid)}\cdot {\pushbuffer}} \triangleleft \ \flatten{{\tsent}}$ 
+							holds by \refprop{prop_sent}. On the other hand, $\around = \aroundtuple[\cid][\nround][\pushbuffer]$. 
 														%Since the hypothesis of the rule states that $\cid\in\dom\inserver$,
 							 We need to prove that
 							\[\ireduce{\igetdeltas{\inserver(\cid)\cdot \around}\cdot \emptydelta} \triangleleft \ \flatten{\tsent} \]
@@ -347,6 +287,22 @@ $\Leftarrow)$ Follows analogously.
   							{\ireduce{\igetdeltas{\inserver(\cid)}\cdot\around\cdot\emptydelta} \triangleleft \ \flatten{\tsent}}  
 							\]
 							
+							\item[\ref{prop_deltas}.] Since $\implements{\isystemterm}{\systemterm}$,  for all 
+							$\agssegpairi[0]\in\inclient\cdot\outserver(\cid)$
+						  {\refprop{prop_deltas}} ensures that 
+  							 \begin{itemize}
+          							\item $\amxrf_0(\cid)\leq\irounds$,
+								\item  for all $\aroundtuple[@][\irounds'][\adelta'] \in\pending$
+								 if $\irounds'\leq\amxrf_0(\cid)$ then $\adelta_0\triangleleft \queuemessage[x..x']$ and  
+								 $\adelta'\triangleleft \queuemessage[y..y']$ with $y'\leq x'$.
+							  \end{itemize}
+						  It remains to prove that for 
+						  $\around = \aroundtuple[\cid][\nround][\pushbuffer]$  if $\irounds\leq\amxrf_0(\cid)$ then 
+						  $\adelta_0\triangleleft \queuemessage[x..x']$ and  
+								 $\adelta'\triangleleft \queuemessage[y..y']$ with $y'\leq x'$. 
+						 By well-formed condition \refiwellformprop{wf-igsp-pending}, $\pushbuffer\neq\emptydelta$ implies $\irounds>\amxrf_0(\cid)$.
+						 Hence, the condition trivially holds.
+
 							
 							%We have moved the ${\pushbuffer}$ to $\inserver(\cid)$, leaving in the push buffer, $\emptydelta$. Furthermore, ${\tsent}_t$ is $\epsilon$. By \triangemptydelta this part of the property holds. 	
 						%	We build the following proof for 
@@ -361,28 +317,7 @@ $\Leftarrow)$ Follows analogously.
 					%\]
 					%\henote{estas usando $\delta_p$ en lugar de $\pushbuffer$, gran lio si cambiamos las macros}.
 			
-							\item[\ref{prop_pending}.] By hypothesis, $\pending = \aroundtuplei[0]\ldots\aroundtuplei[h]$ and  
-							$\ireduce{\adelta_0\cdots\adelta_h\cdot\pushbuffer} \triangleleft \flatten{\tpending}$.
-							 Since $\pending \cdot \around = \aroundtuplei[0]\ldots\aroundtuplei[h]\cdot{\aroundtuple[@][@][\pushbuffer]}$,
-							we need to prove that  $\ireduce{\adelta_0\cdots\adelta_h\cdot\adelta_p\cdot\emptydelta} \triangleleft \flatten{\tpending}$. 
-							It holds by using \lemref{lemma:reduce}, and the fact that $\emptydelta \triangleleft \epsilon$.
-							%It is easy to see that it is the same relation that our hypothesis, since $\adelta_p$ was moved to the pending sequence. Therefore this property also holds.
-							\item[\ref{prop_deltas}.] Since $\implements{\isystemterm}{\systemterm}$,  for all 
-							$\agssegpairi[0]\in\inclient\cdot\outserver(\cid)$
-						  {\propref{prop_sent}} ensures that 
-  							 \begin{itemize}
-          							\item $\amxrf_0(\cid)\leq\irounds$,
-								\item  for all $\aroundtuple[@][\irounds'][\adelta'] \in\pending$
-								 if $\irounds'\leq\amxrf_0(\cid)$ then $\adelta_0\triangleleft \queuemessage[x..x']$ and  
-								 $\adelta'\triangleleft \queuemessage[y..y']$ with $y'\leq x'$.
-							  \end{itemize}
-						  It remains to prove that for 
-						  $\around = \aroundtuple[\cid][\nround][\pushbuffer]$  if $\irounds\leq\amxrf_0(\cid)$ then 
-						  $\adelta_0\triangleleft \queuemessage[x..x']$ and  
-								 $\adelta'\triangleleft \queuemessage[y..y']$ with $y'\leq x'$. 
-						 By well-formed condition, $\pushbuffer\neq\emptydelta$ implies $\irounds>\amxrf_0(\cid)$.
-						 Hence, the condition trivially holds.
-
+					
 							
 						\end{itemize}
  The remaining properties straightforwardly hold.
@@ -403,9 +338,9 @@ $\Leftarrow)$ Follows analogously.
 				\[\systemterm = \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\queuemessage\ \bigpar\ \Absclient'' }]. \]
 			
 			
-				Since $\implements{\isystemterm}{\systemterm}$, \refprop{prop_inclient} holds. We have three cases:
+				Since $\implements{\isystemterm}{\systemterm}$, \refprop{prop_inclient} holds. We have three interesting cases:
 				\begin{itemize}
-				
+
 					\item  ${\inclient} = \agssegpairi[1] \cdots \agssegpairi[h']$, 
 					
 					$\outserver(\cid) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, 
@@ -561,9 +496,11 @@ $\Leftarrow)$ Follows analogously.
 							
 				\end{itemize}	
 	
-					
+	
 							
 				\end{itemize}
+							The remainging case is straightforward since the hyphotesis is false, hence the property holds.
+
 % \item ${\inclient}_l = \agssegpairi[1] \cdots \agssegpairi[h']$, $\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$; 
  %    \linebreak
   %    $\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft  \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1])$; and $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft 
@@ -1483,7 +1420,6 @@ $\Leftarrow)$ Follows analogously.
 					
 \end{itemize}
 
-\end{itemize}
 %
 %We have prove that if $A$ perform an action, $C$ also can perform an action, the terms after both transitions are in $\mathcal{R}$. Now, we will prove the opposite side. When $C$ perform an action, then A can perform an action and the news terms are in $\mathcal{R}$.
 %
