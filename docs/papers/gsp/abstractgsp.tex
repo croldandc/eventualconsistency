@@ -184,13 +184,13 @@ but we prefer to have a syntax through the presentation.
 
 
 \begin{definition}[Well-formedness]
-A \gsp\ system $\systemterm =  \Absclient_0\bigpar \ldots\bigpar \Absclient_m\bigpar\queuemessage$  where 
+\label{def:wf-gsp}  A \gsp\ system $\systemterm =  \Absclient_0\bigpar \ldots\bigpar \Absclient_m\bigpar\queuemessage$  where 
 $\Absclient_l = \tclienti{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\tsent_l}{\treceivebuffer_l}[\cid_l][\trounds_l]$ 
 for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions hold 
 \begin{enumerate}
   \item $\cid_{l} \neq \cid_{l'}$ for all $l\neq l'$;
   \item $k_l+j_l\leq \length \queuemessage$ for all $l$;
-  \item $\tpending_l = \ublock[{\anupdseq[_1]}]\cdots\ublock[{\anupdseq[_p]}]\cdot\tsent_l$ and 
+  \item \label{wf-gsp-pending}  $\tpending_l = \ublock[{\anupdseq[_1]}]\cdots\ublock[{\anupdseq[_p]}]\cdot\tsent_l$ and 
   for all ${\sf 1} \leq x < y \leq{\sf p}$ there exists $x',y'$ s.t. $\queuemessage[x'] = \ublock[{\anupdseq}_x]$, $\queuemessage[y'] =\ublock[{\anupdseq}_y]$ and 
   $\tknown_l\leq x' < y'$; and
 %  \item if $\ublock \in {\tpending_l}\cdot {\tsent_l}$ then $\cid = \cid_l$, \ie,  blocks in the local queues of 

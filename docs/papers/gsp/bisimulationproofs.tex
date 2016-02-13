@@ -450,8 +450,27 @@ $\Leftarrow)$ Follows analogously.
 					\end{itemize}	
 					
 					
-				\item ${\inclient} = \agssegpair[{\astate[']}]\cdot\agssegpairi[{z+1}] \cdots \agssegpairi[h']$, 
-              				  $\outserver(\cid) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, the case follows analogously to the previous case.
+				\item ${\inclient} = \agssegpair[{\astate[']}]\cdot\agssegpairi[{z+1}] \cdots \agssegpairi[h']$, 	
+								
+				$\outserver(\cid) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, 
+				%\setcounter{equation}{0}
+					
+					\begin{equation}
+					\label{eq:sim-receive-c2-c}
+     					 \ireduce{\igetdeltas{\agssegpairi[{z+1}] \cdots \agssegpairi[h']}}\triangleleft \ \flatten{ \queuemessage[t..\tknown+\treceivebuffer-1]}
+					 \end{equation}
+					%\begin{equation}
+					%\astate['] \triangleleft \ \flatten{\queuemessage[0 .. t - 1]}
+					%\end{equation}
+    					 \begin{equation}
+					\label{eq:sim-receive-c2-d}
+					\ireduce{\igetdeltas{\outserver(\cid)}} \triangleleft \ \flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]}
+				\end{equation}
+				
+				Where $t \leq \tknown+\treceivebuffer$ s.t. $\astate['] \triangleleft \ \flatten{\queuemessage[0 .. t - 1]}$.
+
+				The case follows analogously to the previous case, since, \equref{eq:sim-receive-c1-d} and \equref{eq:sim-receive-c2-d} are equals and the only difference between \equref{eq:sim-receive-c1-c} and \equref{eq:sim-receive-c2-c}  is the init of the subsequence above $\queuemessage$. The proof for \refprop{prop_inclient} holds 					by using \lemref{lemma:reduce} with the hypothesis \equref{eq:sim-receive-c2-c} and \equref{eq:sim-receive-c1-a}.
+
 				  \henote{Seguro? las hipotesis son bastante distintas. Por otro lado, dudo de la caracterisaci\'on en la def}
      		%$\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$,
                %$\astate['] \triangleleft \queuemessage[0 .. t - 1]$ and $t \leq \tknown_l+\treceivebuffer_l$; 
@@ -532,10 +551,8 @@ $\Leftarrow)$ Follows analogously.
 						[@]%[\aseqround\cdot{\aroundtuple}\cdot{\aseqround[']}]
 						[@][@][@][n]}
 								\ \bigpar  \ {\iserverins[\astate[']]} \ \bigpar\ \iclient[']				\\
-					\inclient & \agssegpair[{\adelta_1}][{\amxrf_1}]\ldots \agssegpair[{\adelta_{h'}}][{\amxrf_{h'}}]
-					\\
-					\outserver(\cid) & \agssegpair[{\adelta_{1}'}][{\amxrf_1'}]\ldots \agssegpair[{\adelta_{h}'}][{\amxrf_{h}'}]
-					\\
+					%\outserver(\cid) & \agssegpair[{\adelta_{1}'}][{\amxrf_1'}]\ldots \agssegpair[{\adelta_{h}'}][{\amxrf_{h}'}]
+					%\\
 					\isystemterm['] & \addid{\iclientinst[P]
 						 [\iapply{\known}{\ireduce{\adelta[_1]\cdots\adelta[_n]}}]
 						 [\aseqround']
@@ -544,6 +561,8 @@ $\Leftarrow)$ Follows analogously.
 					\\
 					\aseqround['] & \filter{\amxrf_{h'}(\cid)}{\aseqround} 
 					\\
+					\inclient & \agssegpair[{\adelta_1}][{\amxrf_1}]\ldots \agssegpair[{\adelta_{h'}}][{\amxrf_{h'}}]
+					
 				  \end{array}
 				\]
 		
@@ -563,24 +582,9 @@ $\Leftarrow)$ Follows analogously.
 				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$. 
 				Since the reduction only affects the client $\cid$, we only need to check
 				that  properties in \defref{def:implementation} still hold for $\cid$.	
-									\henote{Agregar en el texto principal que $\ireduce{\epsilon} = \emptydelta$}
+									\henote{Agregar en el texto principal que $\ireduce{\epsilon} = \emptydelta$}\chnote{que seria el texto principal?}
 
 					\begin{enumerate}
-					\item[\ref{prop_inclient}.] If follows because $\ireduce{\epsilon} = \emptydelta$,
-					$\flatten{\queuemessage[\tknown+\treceivebuffer .. \tknown+\treceivebuffer + 0 - 1]} = \epsilon$ and 
-					 $\emptydelta \triangleleft \epsilon$, by rule \ruleName{\triangemptydelta}. 
-					 Morevoer, \refprop{prop_inclient} ensures
-					 $\ireduce{\igetdeltas{\outserver(\cid)}}\triangleleft   
-					 \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
-					 If $\outserver(\cid) =\epsilon$, then
-					 $\ireduce{\epsilon}\triangleleft   
-					 \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$ implies
-					 $\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1] =\epsilon$, and hence, 
-					 $\tknown_l+\treceivebuffer_l = |\queuemessage|$.
-				
-				
-				    
-				
 					\item[\ref{prop_state_known}.]  By \refprop{prop_state_known}, we know that $\known\ \triangleleft\ \flatten {\queuemessage[0..\tknown-1]}$. 
 					By \refprop{prop_inclient},  $\ireduce{\adelta[_1]\cdots\adelta[_{h'}]}\triangleleft \queuemessage[\tknown ..  \tknown + \treceivebuffer - 1]$. 
 					Then, we can derive 
@@ -594,18 +598,13 @@ $\Leftarrow)$ Follows analogously.
 						{\iapply{\known}{\ireduce{\adelta_1\cdots\adelta_{h'}}}\triangleleft \flatten{\queuemessage[0 .. \tknown +\treceivebuffer - 1]}}  
 					\]
 					
-					
-					\item[\ref{prop_deltas}.] It follows immediately because of \refprop{prop_deltas} and the fact that 
-				              	$\agssegpair\in\epsilon\cdot\outserver(\cid)$ implies $\agssegpair\in\inclient_l\cdot\outserver(\cid)$.
-					
-					
 						\item[\ref{prop_pending}.] We have to prove that 
 						$\ireduce{\igetdeltas{\filter{\amxrf_{h'}(\cid)}{\pending}}} 
 							\triangleleft 
 							\flatten{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer -1]}$.
 					         By \refprop{prop_pending}, 
 					         $\ireduce{\igetdeltas{\pending}\cdot\pushbuffer} \triangleleft \flatten{\tpending}$
-					         and
+					         and  by \refprop{prop_inclient},
 					         $\ireduce{\igetdeltas{\outserver(\cid)}}\triangleleft 
        							\flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]}$.
 
@@ -618,7 +617,7 @@ $\Leftarrow)$ Follows analogously.
 					          $\aroundtuple[@][@][\adelta'] \in\pending_l$
 					         if $\irounds\leq\amxrf_{h'}(\cid)$ then  
 					         $\adelta'\triangleleft \queuemessage[y..y']$ with $y'\leq \tknown + \treceivebuffer -1$.
-					         By well-formedness condition, 
+					         By well-formedness condition \refwellformprop{wf-gsp-pending}, 
 					         $\tknown\leq x' < y'$.
 					         
 					         Therefore, each $\aroundtuple[@][@][\adelta'] \in\pending_l$
@@ -635,6 +634,29 @@ $\Leftarrow)$ Follows analogously.
 							\flatten{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer -1]}$.
 
 
+					
+					\item[\ref{prop_inclient}.] If follows because $\ireduce{\epsilon} = \emptydelta$,
+					$\flatten{\queuemessage[\tknown+\treceivebuffer .. \tknown+\treceivebuffer + 0 - 1]} = \epsilon$ and 
+					 $\emptydelta \triangleleft \epsilon$, by rule \ruleName{\triangemptydelta}. 
+					 Morevoer, \refprop{prop_inclient} ensures
+					 $\ireduce{\igetdeltas{\outserver(\cid)}}\triangleleft   
+					 \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
+					 If $\outserver(\cid) =\epsilon$, then
+					 $\ireduce{\epsilon}\triangleleft   
+					 \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$ implies
+					 $\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1] =\epsilon$, and hence, 
+					 $\tknown_l+\treceivebuffer_l = |\queuemessage|$.
+				
+				
+				    
+				
+					
+					
+					\item[\ref{prop_deltas}.] It follows immediately because of \refprop{prop_deltas} and the fact that 
+				              	$\agssegpair\in\epsilon\cdot\outserver(\cid)$ implies $\agssegpair\in\inclient_l\cdot\outserver(\cid)$.
+					
+					
+					
 					
 								
 				
