@@ -10,58 +10,100 @@ relations between read and update events. In particular,  the following relation
 %We shall introduce a series of store-level consistency guarantees and then we shall show which 
 %are captured by application written in GSP. We start identifying three kinds of relations between actions of update and read:º
 
-\begin{itemize}
- \item {\em Session Order} (\so) describes the sequential order in which operations executed within a session (i.e., a single thread of 
- execution) are performed. This relation is a total order over the events associated with operations belonging to the same session.
- Hereafter, we will 
- associate a session with a \gsp\ client.  
 
- \item{\em Visibility} (\vis) indicates whether the effects of an update event are visible to a read event.
 
- \item{\em Arbitration} (\arb) describes the resolution strategy for concurrent update conflicts. This is a total order over update events.
-
- \item{\em Same Session} (\sse) ...
-
-\end{itemize}
-
-We now introduce an operational way for associating concrete executions with abstract histories. 
 
 %We extend the GSP language with a new term which capture the relations amount operation in our system. 
 
-\begin{definition} Let $\systemterm$ be a \gsp\ system in \secref{sec:gsp}, an abstract history is a tuple 
-$ \environmentterm =  \environment{\systemterm}{\op}{\so}{\vis}{\arb} $
+\begin{definition} Let $\systemterm$ be a well-formed \gsp\ system, an abstract history 
+for $\systemterm$ is a tuple 
+$ \environmentterm =  \environment{\systemterm}{\op}{\so}{\vis}{\arb}$
 %\[
 %    \begin{array}{l@{\quad}r@{\;::=\;}l}
 %			 (\textsc{Abstract Exec.}) & \environmentterm &  \environment{\systemterm}{\op}{\so}{\vis}{\arb} \\
 %	    \end{array}
 %  \]
-where
+where:
  \begin{itemize}
-     \item $\op: \verticesets\rightarrow\opset$ mapping each event to its corresponding operation;
-     \item $\sse: \idset\rightarrow\verticesets$ associating each client with its executed events;
-     \item $\so\subseteq \verticesets\times\verticesets$, s.t. 
-     \item $\vis\subseteq\verticesets\times\verticesets$;
-     \item $\arb\subseteq\verticesets\times\verticesets$;
+     \item $\op: \verticesets\rightarrow\readset\cup\updatesets$ maps events to operations;
+     \item $\sse: \idset\rightarrow\verticesets$ associates events with a session (\ie, a client);
+     \item $\so\subseteq \verticesets\times\verticesets$ describes the  order of operations  within a session;
+     \item $\vis\subseteq\verticesets\times\verticesets$ indicates whether the effects of an update  are visible to a read; 
+     \item $\arb\subseteq\verticesets\times\verticesets$ resolves concurrent update conflicts.
  \end{itemize}
+ \end{definition}
  
- Satisfying the following restrictions:
- \begin{itemize}
+We write $\_\rest{\_}$ for  function/relation restriction. For a given abstract history 
+$ \environmentterm$, we write $\mathbb{U}$ (similarly, $\mathbb{R}$) for the codomain 
+restriction of $\op$ to $\updatesets$ (correspondingly, $\readset$), \ie, 
+$\mathbb{U} = \{ \vertice\ |\ \vertice{}\in\op, \op(\vertice) \in \updatesets\}$ 
+($\mathbb{R} = \{ \vertice\ |\ \vertice{}\in\op, \op(\vertice) \in \readset\}$). 
+ 
+ 
+ 
+ \begin{definition}[Well-formed history]
+A history 
+$ \environmentterm =  \environment{\systemterm}{\op}{\so}{\vis}{\arb}$
+is well-formed if the following conditions hold:
+
+ \begin{enumerate}
      \item for all $\cid\in\dom\sse$, $\sse(\cid) \subseteq \dom\op$;
-     \item for all $\cid$, $\so\relrestriccion{\sse(\cid)}$ is a total order; \chnote{que significa esto?}
-     \item if  $(\vertice[@][_1],\vertice[@][_2])\in\vis$, then $\op(\vertice[@][_1])\in\updatesets$ and $\op(\vertice[@][_2])\in\readset$;
-     \item if  $(\vertice[@][_1],\vertice[@][_2])\in\arb$, then $\{\op(\vertice[@][_1]),\op(\vertice[@][_2])\}\subseteq\updatesets$;
- \end{itemize}
+     \item $(\vertice,\vertice[w])\in\so$ then exist $\cid\in\dom\sse$ s.t. $\{\vertice,\vertice[w]\}\in\sse(\cid)$.
+     \item for all $\cid\in\dom\sse$, $\so\relrestriccion{\sse(\cid)}$ is a total order; \chnote{que significa esto?}
+     \item $\vis\subseteq\mathbb{U}\times\mathbb{R}$;
+     \item $\arb\subseteq\mathbb{U}\times\mathbb{U}$.%, then $\{\op(\vertice[@][_1]),\op(\vertice[@][_2])\}\subseteq\updatesets$;
+     \item $\arb$ is an order?
+ \end{enumerate}
 \end{definition}
 
-%	 
-%Let $\environmentterm$, a new term, where $\systemterm$ represents our system introduced in Definition 1.1, $\op$ is a mapping of vertices to actions, $\so$ is a session order relation defined from vertices to relations of vertices $\verticesets$ $\times$ ($\verticesets$ $\times$ $\verticesets$) and $\vis$,$\arb$ are visibility and arbitration relation.
+The above conditions ensure that events in $\sse$ are associated with an operation by $\op$ (1). Besides, $\so$ 
+only relates 
+ events 
+belonging to the same session (2), which are totally ordered within each session (3). Differently from 
+the definition in~\cite{}, we restrict visibility to keep track of dependencies between updates and read events(4), while 
+arbitration orders update events (5).  
+
+%\begin{itemize}
+% \item {\em Session Order} (\so) describes the sequential order in which operations executed within a session (i.e., a single thread of 
+% execution) are performed. This relation is a total order over the events associated with operations belonging to the same session.
+% Hereafter, we will 
+% associate a session with a \gsp\ client.  
+%
+% \item{\em Visibility} (\vis) .
+%
+% \item{\em Arbitration} (\arb) describes the resolution strategy for concurrent update conflicts. This is a total order over update events.
+%
+% \item{\em Same Session} (\sse) ...
+%
+%\end{itemize}
 %
 %
+%%	 
+%%Let $\environmentterm$, a new term, where $\systemterm$ represents our system introduced in Definition 1.1, $\op$ is a mapping of vertices to actions, $\so$ is a session order relation defined from vertices to relations of vertices $\verticesets$ $\times$ ($\verticesets$ $\times$ $\verticesets$) and $\vis$,$\arb$ are visibility and arbitration relation.
+%%
+%%
+%
 
-\chnote{Regla a-update, aca no se si queda claro que S es el store del modelo. Por otra parte, no es flatten S, o [u] }
-
-We  provide an operational approach to associate abstract executions to \gsp\ systems. They are provided 
-by inference rules in \figref{fig:comp-abst-executions}
+Rules in  \figref{fig:comp-abst-executions} provides an operational way to associate abstract executions 
+with \gsp\ computations. Rules  \ruleName{a-update} and  \ruleName{a-read} add new events to the history
+and corresponds to the execution of a read or update operation by a client. In
+both cases $\op$ is extended with a new event $\vertice$ (\ie, $\vertice \notin dom(\op)$), which is associated 
+with the corresponding operation (either $\aread$ or $\anupd$). The new event $\vertice$ is added to the 
+corresponding  session $\cid$, and $\so$ is updated to make $\vertice$  the maximal event for the session $\cid$.
+Rule  \ruleName{a-update}  amends $\arb$ by capturing the fact that all updates that are already in the 
+global state have take place before the new event. Rule \ruleName{a-read} instead augments $\vis$ with the pairs
+associating the new event with all events that are seen by the read action, namely, the local  view of 
+the global state $\queuemessage[0..\tknown_{\,\cid}-1]$ and the local temporary buffers 
+$\tpending_{\cid}$ and $\ttransactionbuffer_{\,\cid}$. Rule \ruleName{a-arb} handles the changes in the 
+state of the global store (due to a send transition in one client) and just amends $\arb$ by (i) arbitrating the 
+events exactly in the way in which they are added to the store (\ie, $\{(\vertice[@][_i],\vertice[@][_j]) \ |\ i,j\in \{0,\ldots,n\}, i<j\}$)
+and registering that they are arbitrated before any other concurrent update in the remaining 
+clients (\ie, $
+		\ (\{\vertice[@][_0],\ldots,\vertice[@][_n]\}\times 
+		\{ \vertice[w]\ \ |\ \  \vertice[w]\in\mathbb{U} \
+		     \forall\anupd. \anupd^{\vertice[w]}\not\in\queuemessage\cdot\anupdseq\}$).
+The remaining transitions of the system are considered as internal changes that do not 
+affect the history and are handled by rule \ruleName{a-int}.
 
 
 
@@ -71,37 +113,66 @@ by inference rules in \figref{fig:comp-abst-executions}
  \begin{array}{l}
 \mathrule{a-update}
 	{
-	\begin{array}{l}
-		\systemterm \arroi{\updatetran{u}} \systemterm' 
-		\qquad \vertice \notin dom(\op)
-		\qquad \op' = \op\upd \vertice u
-		\qquad \sse' = \sse\upd \cid {\sse(\cid)\cup\{\vertice\}}
-		 \\[2pt]
+	\begin{array}{p{\linewidth}}
+		$\systemterm \arroi{\updatetran{u}} \systemterm' 
+		\qquad\ \  \vertice \notin dom(\op)
+		\qquad\ \ \op' = \op\upd \vertice u
+		\hfill \sse' = \sse\upd \cid {\sse(\cid)\cup\{\vertice\}}
+		 $\\[2pt]
+		 $
+		 \hspace{1cm}
 		 \so' = \so\cup (\sse(\cid)\times\{\vertice\})
-		 \qquad
+		 \hfill
 		 \arb' = \arb \cup (\{ \vertice[w] \ |\ \udec[@][{\vertice[w]}]\in \queuemessage \}\times\{\vertice\})
-	\end{array}
+		 \hspace{1cm}
+	$\end{array}
 	}
 	{\environment{\systemterm}{\op}{\so}{\vis}{\arb} 
 		  \arroi{\updatetran{u}}  
 		  \environment{\systemterm'}{\op'}{\so'}{\vis}{\arb'}
 	}
-\\[32pt]	
+\\[18pt]	
 \mathrule{a-read}
 	{ 
-	\begin{array}{l}
-		\systemterm \arroi{\readtran{r}} \systemterm' 
-		 \qquad \vertice \notin  dom(\op) 
-		 \qquad \op' = \op\upd \vertice r
-		 \qquad \sse' = \sse\upd \cid {\sse(\cid)\cup\{\vertice\}}
-		 \\[2pt]
+	\begin{array}{p{\linewidth}}
+		 $\systemterm \arroi{\readtran{r}} \systemterm' 
+		 \qquad\ \  \vertice \notin  dom(\op) 
+		 \qquad\ \  \op' = \op\upd \vertice r
+		 \hfill  \sse' = \sse\upd \cid {\sse(\cid)\cup\{\vertice\}}
+		 $\\[2pt]
+		 $
 		 \so' = \so\cup (\sse(\cid)\times\{\vertice\})
-		 \qquad \ \vis' = \vis \cup (\{\vertice[w] \ |\  \udec[@][{\vertice[w]}] \in \queuemessage[0..\tknown_{\,\cid}-1] \cdot \tpending_{\cid} \cdot \ttransactionbuffer_{\,\cid} \}\times\{\vertice\})
+		 \hfill  \vis' = \vis \cup (\{\vertice[w] \ |\  \udec[@][{\vertice[w]}] \in \queuemessage[0..\tknown_{\,\cid}-1] \cdot \tpending_{\cid} \cdot \ttransactionbuffer_{\,\cid} \}\times\{\vertice\})
+		 $
 	\end{array}
 	 }
 	 {\environment{\systemterm}{\op}{\so}{\vis}{\arb} 
 	   \arroi{\readtran{\udec[r]}} \environment{\systemterm'}{\op'}{\so'}{\vis'}{\arb}[\sse']}
-\\[27pt]	
+\\[25pt]	
+\mathrule{a-arb}
+	{ 
+	\begin{array}{p{\linewidth}}
+		$\queuemessage \ \bigpar\ \Absclient \arroi{\lambda} \queuemessage\cdot \anupdseq \ \bigpar\ \Absclient' 
+		%\hspace{2cm} \queuemessage\neq\queuemessage'
+		\hspace{2.2cm} \lambda \neq  \updatetran{u},\readtran{r}
+		\hfill \anupdseq=\ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]
+		 $\\[2pt]
+%		 \arb' = \arb \cup \{ (\vertice, \vertice[w])\ | \ \ell = |\queuemessage'|-1 \land \udec \in \queuemessage'[0..\ell-1] \land \udec[@][{\vertice[w]}]= \queuemessage'[\ell]\}
+		$\arb' = \arb \cup
+		\{(\vertice[@][_i],\vertice[@][_j]) \ |\ i,j\in \{0,\ldots,n\}, i<j\}
+		$
+		\\
+		$\hfill\cup 
+		\ (\{\vertice[@][_0],\ldots,\vertice[@][_n]\}\times 
+		\{ \vertice[w]\ \ |\ \  \vertice[w]\in\mathbb{U}, \
+		     \forall\anupd. \anupd^{\vertice[w]}\not\in\queuemessage\cdot\anupdseq\})
+		  $   
+	\end{array}
+	 }
+	 {\environment{\queuemessage\ \bigpar\ \Absclient}{\op}{\so}{\vis}{\arb} 
+	 \arroi{\lambda}	   
+	 \environment{\queuemessage\cdot \anupdseq\ \bigpar\ \Absclient'}{\op}{\so}{\vis}{\arb'}}
+\\[18pt]
 \mathrule{a-int}
 	{ 
 	\begin{array}{l}
@@ -112,25 +183,6 @@ by inference rules in \figref{fig:comp-abst-executions}
 	 {\environment{\queuemessage \bigpar \Absclient}{\op}{\so}{\vis}{\arb} 
 	   \arroi{\lambda} 
 	   \environment{\queuemessage\bigpar \Absclient'}{\op}{\so}{\vis}{\arb}}
-\\[27pt]	
-\mathrule{a-arb}
-	{ 
-	\begin{array}{l}
-		\queuemessage \bigpar \Absclient \arroi{\lambda} \queuemessage\cdot \ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}] \bigpar \Absclient' 
-		%\hspace{2cm} \queuemessage\neq\queuemessage'
-		\hspace{2cm} \lambda \neq  \updatetran{u},\readtran{r}
-		 \\[2pt]
-%		 \arb' = \arb \cup \{ (\vertice, \vertice[w])\ | \ \ell = |\queuemessage'|-1 \land \udec \in \queuemessage'[0..\ell-1] \land \udec[@][{\vertice[w]}]= \queuemessage'[\ell]\}
-		\arb' = \arb \cup 
-		\{\vertice[@][_0],\ldots,\vertice[@][_n]\}\times 
-		\{ \vertice[w]\ \ |\ \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
-		     \forall\anupd. \anupd^{\vertice[w]}\not\in\queuemessage\cdot\ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]\}
-		     \\ \hfill \cup\  \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\}
-	\end{array}
-	 }
-	 {\environment{\queuemessage \bigpar \Absclient}{\op}{\so}{\vis}{\arb} 
-	 \arroi{\lambda}	   
-	 \environment{\queuemessage\cdot \udec  \bigpar \Absclient'}{\op}{\so}{\vis}{\arb'}}
 \end{array}
  \]
  \caption{Computation of abstract executions} 
