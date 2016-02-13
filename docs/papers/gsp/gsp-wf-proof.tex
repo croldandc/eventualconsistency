@@ -1,0 +1,41 @@
+% !TEX root = main.tex
+
+\section{Proof of results in \secref{sec:gsp}}
+
+\begin{proof} [of ~\lemref{lemma:gsp-wf}]
+ We will prove that if $\systemterm$ is well-formed and $\systemterm\arroi{\action}\systemterm[']$, then $\systemterm[']$ is well-formed.
+
+
+
+			
+	\begin{itemize}
+
+		\item {\bf rule \ruleName{update}}. Then, $\systemterm  \arroi{\updatetranaux{\anupd^{\vertice[@][']}}} \systemterm '$ with 
+				\[\begin{array}{r@{=}l}
+					\systemterm & \tsystem{\tclienti{\tupdateins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]
+					\\
+					\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer \cdot \tupdate}{\tsent}{\treceivebuffer}}[{\systemterm['']}]	
+				  \end{array}
+				\]
+				
+				We will prove that $\systemterm[']$ is well-formed, checking that the properties in \defref{def:wf-gsp} hold. The four properties straightforwardly hold.
+		
+		\item {\bf rule \ruleName{push}}. Then, $\systemterm  \arroi{\pushtran} \systemterm '$ with 
+				\[\begin{array}{r@{=}l}
+					\systemterm & \tsystem{\tclienti{\tpushins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]
+					\\
+					\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending \cdot \ublock}{\emptysequence}{\tsent \cdot \ublock}{\treceivebuffer}[@][{\trounds+1}]}	
+				  \end{array}
+				\]
+				We will prove that $\systemterm[']$ is well-formed, checking that the properties in \defref{def:wf-gsp} hold.
+
+				\begin{enumerate}
+					\item[\ref{wf-gsp-pending}.] Since $\systemterm$ is well-formed, \refwellformprop{wf-gsp-pending} ensures
+					$\tpending_l = \ublock[{\anupdseq[_1]}]\cdots\ublock[{\anupdseq[_p]}]\cdot\tsent_l$ and 
+  for all ${\sf 1} \leq x < y \leq{\sf p}$ there exists $x',y'$ s.t. $\queuemessage[x'] = \ublock[{\anupdseq}_x]$, $\queuemessage[y'] =\ublock[{\anupdseq}_y]$ and 
+  $\tknown_l\leq x' < y'$.
+					
+				\end{enumerate}	
+		\end{itemize}		
+	
+\end{proof}

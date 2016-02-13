@@ -188,15 +188,15 @@ but we prefer to have a syntax through the presentation.
 $\Absclient_l = \tclienti{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\tsent_l}{\treceivebuffer_l}[\cid_l][\trounds_l]$ 
 for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions hold 
 \begin{enumerate}
-  \item $\cid_{l} \neq \cid_{l'}$ for all $l\neq l'$;
-  \item $k_l+j_l\leq \length \queuemessage$ for all $l$;
+  \item \label{wf-gsp-id} $\cid_{l} \neq \cid_{l'}$ for all $l\neq l'$;
+  \item \label{wf-gsp-server} $k_l+j_l\leq \length \queuemessage$ for all $l$;
   \item \label{wf-gsp-pending}  $\tpending_l = \ublock[{\anupdseq[_1]}]\cdots\ublock[{\anupdseq[_p]}]\cdot\tsent_l$ and 
   for all ${\sf 1} \leq x < y \leq{\sf p}$ there exists $x',y'$ s.t. $\queuemessage[x'] = \ublock[{\anupdseq}_x]$, $\queuemessage[y'] =\ublock[{\anupdseq}_y]$ and 
   $\tknown_l\leq x' < y'$; and
 %  \item if $\ublock \in {\tpending_l}\cdot {\tsent_l}$ then $\cid = \cid_l$, \ie,  blocks in the local queues of 
 %  a client $l$ are  all decorated with the identifier $\cid_l$.
 %  \item $\cid \in {\cid_0,\ldots, \cid_n} $ for all $\ublock \in S$, \henote{Pensar bien, tal vez no es necesaria}
-  \item $\anupdseq = \flatten{\queuemessage\cdot\tsent_0\cdots\tsent_m\cdot\ttransactionbuffer_0\cdots\ttransactionbuffer_m}$,
+  \item \label{wf-gsp-send} $\anupdseq = \flatten{\queuemessage\cdot\tsent_0\cdots\tsent_m\cdot\ttransactionbuffer_0\cdots\ttransactionbuffer_m}$,
   if $\anupdseq{[x]}=\udec$, $\anupdseq{[y]}=\udec[@][{\vertice[@][']}]$ and $x \neq y$ then $\vertice \neq \vertice[@][']$.
 \end{enumerate}
 \end{definition}
@@ -390,5 +390,5 @@ the known prefix of the global store $\queuemessage[0..\tknown-1]$ and the local
 
 We remark that the operational semantics preserves well-formedness.
 
-\begin{lemma} If $\systemterm$ is well-formed and $\systemterm\arroi{\action}\systemterm[']$, then $\systemterm[']$ is well-formed.
+\begin{lemma}\label{lemma:gsp-wf} If $\systemterm$ is well-formed and $\systemterm\arroi{\action}\systemterm[']$, then $\systemterm[']$ is well-formed.
 \end{lemma}
