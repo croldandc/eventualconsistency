@@ -31,64 +31,66 @@ We rely  on the following additional labels
 We define the operator $[\_]$ over actions  $\lambda$ s.t. $[\updatetran{\anupd}] =\tupdlbl$ and it is the identity
 over any other action.
 
+\begin{figure}[t]
 \[
  \begin{array}{l}
 
 \mathax{start-upd}
 	{
-	\begin{array}{l}
-	\tsystem{\tclienti{\tsyncupdins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+	\begin{array}{p{\linewidth}}
+	$\tsystem{\tclienti{\tsyncupdins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
 %	\arroi{\syncupdtran{\tupdate}}
-	\arroi{\tau}
-	\hspace{6cm}\\\hfill
+	\quad \arroi{\tau}
+	$\\
+	$\hfill
 	\tsystem{\tclienti{\ttrans[\tupdins;\pushcmd;\waitcmd]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
-	\end{array}
+	$\end{array}
 	 }
  
- \\[15pt]
+ \\[5pt]
 
 \mathrule{trans}
 	{\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
-	\arroi{\mu} 
+	\quad\arroi{\mu} \quad
 	\tsystem{\tclienti{\tprogram'}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}}}
 	{\tsystem{\tclienti{[\tprogram];Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
-	 \arroi{[\mu]} 
+	 \quad\arroi{[\mu]} \quad
 	 \tsystem{\tclienti{[\tprogram'];Q}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}}}
 
  \\[25pt]
 
 \mathax{end-upd}
 	{\tsystem{\tclienti{[0];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
-	\arroi{\finishsynctran{}} 
+	\quad\arroi{\finishsynctran{}}\quad
 	\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}}
 
-\\[25pt]
+\\[15pt]
 \mathax{wait}
 	{
-	\begin{array}{l}
-	\tsystem{\tclienti{\waitcmd}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
-	\arro{\tau} 
+	\begin{array}{p{\linewidth}}
+	$\tsystem{\tclienti{\waitcmd}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	\quad\arro{\tau}$
 	\\
-	\hspace{2.2cm}
+	$\hfill
 	\tsystem{\tclienti{\tconfirmedins{x}[{\tguarded[x][\pullcmd;\waitcmd][0]}]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
-	\end{array}
+	$\end{array}
 	}
 
-\\[25pt]
+\\[5pt]
 \mathrule{guard-true}
-	{\eval \cond {true}}
+	{\eval \cond {\it true}}
 	{
 	\tsystem{\tclienti{\tguarded[e][P][Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
-	\arro{\tau} 
+	\quad\arro{\tau}\quad 
 	\tsystem{\tclienti{Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
 	}
 
-\\[25pt]
+\\[15pt]
 \mathrule{guard-false}
-	{\eval \cond {false}}
+	{\eval \cond {\it false}}
 	{
 	\tsystem{\tclienti{\tguarded[e][P][Q]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
-	\arro{\tau} 
+	\quad\arro{\tau}\quad 
 	\tsystem{\tclienti{P}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
 	}
 %	\\
@@ -102,11 +104,11 @@ over any other action.
 %\chnote{\mbox{En realidad el programa es: $\pushtran;let x = \confirmedtran();\pwhile{!x}{\pulltran};let x = \confirmedtran();$}}
 %
 % \\[15pt]
-
- 
-
  \end{array}
  \]
+\caption{Semantics of \gsp\ with atomic updates}
+\end{figure}
+
  
 %The nature of such cases is caused by having no transactions as the usual databases.
 
