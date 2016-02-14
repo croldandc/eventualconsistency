@@ -63,17 +63,16 @@ Firstly, we will prove by induction on on the length of the derivation that $\te
 
 \begin{itemize}
    \item{\bf n=0}. It is easy to see because of both relations are empty, hence is trivial $\emptyset \subseteq \emptyset$.
-   \item{\bf n=k+1}. Then $\environmenttran{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset}{\emptyset}{\undefined}{\emptyset} \arro{} ^n\ \environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx}{\tc} \arroi{\alpha} \environmenttran{\systemterm'}{\op'}{\so'}{\vis'}{\arb'}{\rb'}{\tx'}{\tc'}$. We proceed by case analysis on the last transition:
+   \item{\bf n=k+1}. Then $\environment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \arro{} ^n\ \environment{\systemterm}{\op}{\so}{\vis}{\arb}\arroi{\alpha} \environment{\systemterm'}{\op'}{\so'}{\vis'}{\arb'}[\sse']$. We proceed by case analysis on the last transition:
 	
 	\begin{itemize}
-        \item {\bf rule (\textsc{E-READ})}. $\textsc{\small{AR}}$ does not change, therefore, $\textsc{\small{AR}}'$ = $\textsc{\small{AR}}$.  Then, there exists two cases: \chnote{\mbox{la regla es S-READ, pero es igual a E-READ sin los ultimos terminos, charlar como escribir esto}}
-				
+        \item {\bf rule (\ruleName{a-read})}. $\arb'$ = $\arb$.  Then, there exists two cases: 				
 				\begin{itemize}
-					\item $\vertice_c \neq \vertice$, as $\vertice$ is an vertex associated to last computation step then ($\vertice_b$,$\vertice_c$) $\in$ $\textsc{\small{VIS}}$, therefore, these belong to $\textsc{\small{VIS}}'$. Then, by inductive hypothesis, ($\vertice_a$,$\vertice_c$) $\in$ $\textsc{\small{VIS}}$ so that as $\vertice_c \neq \vertice$ then ($\vertice_a$,$\vertice_c$) $\in$  $\textsc{\small{VIS}'}$.
-					\item $\vertice_c$ = $\vertice$, as $\vertice_a$ and $\vertice_b$ are in $\textsc{\small{AR}}$ then there exist two updates into the Store associated to them. Let $\udec[u][\vertice_a]$, $\udec[u][\vertice_b]$ be these updates, then we know that $\udec[u][\vertice_a]$ = $\queuemessage$[m] and $\udec[u][\vertice_b]$ = $\queuemessage$[n] such that $m < n$. If ($\vertice_b$,$\vertice_c$) $\in$ $\textsc{\small{VIS}}$ then $\udec[u][\vertice_b]$ $\in \queuemessage[0..\tknown-1] \cdot \tpending \cdot [\ttransactionbuffer]$ by definition. Then, analyzing cases:
+					\item $\vertice_c \neq \vertice$, as $\vertice$ is an vertex associated to the last computation, then ($\vertice_b$,$\vertice_c$) $\in$ $\vis$, therefore, ($\vertice_b$,$\vertice_c$) $\in$ $\vis'$. By inductive hypothesis, ($\vertice_a$,$\vertice_c$) $\in$ $\vis$. Hence, $\vertice_c \neq \vertice$ then ($\vertice_a$,$\vertice_c$) $\in$  $\vis'$.
+					\item $\vertice_c$ = $\vertice$. Since $\vertice_a$, $\vertice_b \in \arb$ then there exist two updates into the Store associated to them. Let $\udec[u][\vertice_a]$, $\udec[u][\vertice_b]$ be these updates, then we know that $\udec[u][\vertice_a]$ = $\queuemessage$[m] and $\udec[u][\vertice_b]$ = $\queuemessage$[n] such that $m < n$. If ($\vertice_b$,$\vertice_c$) $\in$ $\vis$ then $\udec[u][\vertice_b]$ $\in \queuemessage[0..\tknown-1] \cdot \tpending \cdot [\ttransactionbuffer]$ by definition. Then, analyzing cases:
 					\begin{itemize}
 						\item $\udec[u][\vertice_b]$ $\in \queuemessage[0..\tknown-1]$. Then $\udec[u][\vertice_a]$ also is in $\queuemessage[0..\tknown-1]$ because of $\udec[u][\vertice_a]$ = $\queuemessage$[m] and $\udec[u][\vertice_b]$ = $\queuemessage$[n] and $m < n$.
-						\item $\udec[u][\vertice_b]$ $\in \tpending$ or $\udec[u][\vertice_b]$ $\in [\ttransactionbuffer]$, however these do not be by $\lemref{lemma:empty_queue}$.
+						\item $\udec[u][\vertice_b]$ $\notin \tpending$ and $\udec[u][\vertice_b]$ $\notin [\ttransactionbuffer]$ by $\lemref{lemma:empty_queue}$.
 					\end{itemize}
 					
 				\end{itemize}
