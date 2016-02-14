@@ -111,7 +111,7 @@ case analysis on the inference rule applied for the last transition:
 		\end{itemize}
 		The remaining cases ($\udec \in \queuemessage[0..\tknown'_{\cidj}-1]$ or $\udec\in\ttransactionbuffer'_{\cidj}$) are straightforward.
 		
-		\item rules \ruleName{receive}, \ruleName{confirm}, \ruleName{while-true}, \ruleName{while-false}, \henote{reglas para if}
+		\item rules \ruleName{receive}, \ruleName{confirm}:%, \ruleName{while-true}, \ruleName{while-false}, \henote{reglas para if}
 		The proof follows from inductive hypothesis because $\tknown_{\cid}=\tknown_{\cid}$, $\tpending_{\cid}=\tpending_{\cid}$ 
 		and $\ttransactionbuffer_{\cid}=\ttransactionbuffer_{\cid}$ for all $\cid$ and $\op'=\op$.
 \chnote{aca no es k'=k, u'=u, etc?}

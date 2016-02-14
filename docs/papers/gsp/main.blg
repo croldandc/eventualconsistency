@@ -5,45 +5,45 @@ The style file: abbrv.bst
 Database file #1: biblio.bib
 Warning--I didn't find a database entry for ""
 Warning--I didn't find a database entry for "libro"
-You've used 2 entries,
+You've used 3 entries,
             2118 wiz_defined-function locations,
-            519 strings with 4345 characters,
-and the built_in function-call counts, 868 in all, are:
-= -- 87
-> -- 34
-< -- 2
-+ -- 13
-- -- 11
-* -- 66
-:= -- 140
-add.period$ -- 7
-call.type$ -- 2
-change.case$ -- 11
+            532 strings with 4864 characters,
+and the built_in function-call counts, 1399 in all, are:
+= -- 139
+> -- 61
+< -- 4
++ -- 23
+- -- 20
+* -- 108
+:= -- 221
+add.period$ -- 11
+call.type$ -- 3
+change.case$ -- 18
 chr.to.int$ -- 0
-cite$ -- 2
-duplicate$ -- 35
-empty$ -- 69
-format.name$ -- 11
-if$ -- 185
+cite$ -- 3
+duplicate$ -- 57
+empty$ -- 109
+format.name$ -- 20
+if$ -- 302
 int.to.chr$ -- 0
-int.to.str$ -- 2
-missing$ -- 2
-newline$ -- 13
-num.names$ -- 6
-pop$ -- 10
+int.to.str$ -- 3
+missing$ -- 3
+newline$ -- 18
+num.names$ -- 10
+pop$ -- 18
 preamble$ -- 1
-purify$ -- 9
+purify$ -- 15
 quote$ -- 0
-skip$ -- 26
+skip$ -- 42
 stack$ -- 0
-substring$ -- 61
-swap$ -- 14
-text.length$ -- 2
+substring$ -- 90
+swap$ -- 25
+text.length$ -- 4
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 8
+type$ -- 12
 warning$ -- 0
-while$ -- 10
-width$ -- 3
-write$ -- 26
+while$ -- 16
+width$ -- 4
+write$ -- 39
 (There were 2 warnings)
