@@ -7,21 +7,20 @@ First, we prove a useful lemma:
 
 \begin{lemma}\label{lemma:empty_queue} 
 
-$\forall C$ such that 
+Let $\systemterm$ a \gsp\ system. If $\systemterm\Arro^*\systemterm[']$ then $\systemterm[']\Arro^*\systemterm['']$, where
+\[\begin{array}{r@{=}l}
+					\systemterm &  \tclienti{\tprogram^0}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \ \bigpar \ \systemterm[^0]
+					\\
+					\systemterm['] & \tclienti{\tsyncupd{u};\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}  \ \bigpar \   \systemterm[^1]	\\
+										\systemterm[''] & \tclienti{\treadins{x}{r}}{\tknown}{\emptyset}{\epsilon}{\tsent}{\treceivebuffer} \ \bigpar \   \systemterm[^2]	
 
-\[
-\begin{array}{l}
-   \tclienti{Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \ 
-   \\ \Arro^* \ \tclienti{\tsyncupd{u};\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} 
-   \\
-	  \Arro^* \ \tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}
-\end{array}
-\] then  
-rvalue operation always reads above the store.
+				  \end{array}
+				\]				
+
 
 \end{lemma}
 
-\begin{proof} Confirmed is evaluated to true when $\tpending$ and $\ttransactionbuffer$ are empty so that, after the loop, the read operation only return values which belong to the Store.
+\begin{proof} Confirmed is evaluated to true when $\tpending$ and [$\ttransactionbuffer$] are empty so that, after the loop, the read operation only return values which belong to the $\queuemessage$.
 \end{proof}	
 
 \begin{lemma} $\ovis = \roarb$ iff 
