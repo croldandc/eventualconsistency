@@ -3,22 +3,21 @@
 \section{{\gsp} with atomic updates}
 \label{sec:transactions}
 
-In this section we study the extension of the \gsp\ model with atomic updates proposed in~\ref{}. 
-The language of programs is extended in the following way: 
+In this section we study an extension of the \gsp\ model with atomic updates proposed in~\cite{DBLP:conf/ecoop/BurckhardtLPF15}. 
+We extend the language of programs as follows: 
 \[
  \rName{program} 
 			 \qquad 
 			 \tprogram \ ::=\  \ldots\ |\ \tsyncupdins 
 \]
 
-The intended meaning of the program  $\tsyncupdins$ is that it remains blocked until the 
+The execution of a program  $\tsyncupdins$ remains blocked until the 
 update $\anupd$ is performed over the global store.  This is achieved by continuously pulling (i.e., 
-a busy-waiting) until the updates are confirmed by the server. 
-
-To formally define the semantics of atomic updates we consider the following 
-runtime syntax.
+a busy-waiting) until the updates are confirmed by global store. In order to provide 
+the formal semantics of the language, we consider the following 
+runtime syntax for programs.
 \[
- \rName{program} 
+ \rName{run-time-program} 
 			 \qquad 
 			 \tprogram \ ::=\  \ldots\ |\  \ttrans\ |\ \waitcmd \ |\ \tguarded{} 
 			 \]
@@ -224,94 +223,17 @@ over any other action.
 
 
 
-First, we prove a useful lemma: 
-
-\begin{lemma}\label{lemma:empty_queue} 
-
-$\forall C$ such that 
-$\tclienti{Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \ 
-    \Arro^* \ \tclienti{\tsyncupd{u};\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} 
-	  \Arro^* \ \tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}$, then  
-rvalue operation always reads above the store.
-
-\end{lemma}
-
-\begin{proof} Confirmed is evaluated to true when $\tpending$ and $\ttransactionbuffer$ are empty so that, after the loop, the read operation only return values which belong to the Store.
-\end{proof}	
-
 
 Single Order is a consistency guarantee that express a single order of operations observed by arbitration and visibility relation. The definition introduced by \cite{} requires 
 $\ovis = \roarb$, where $F$ stands for the set of finished operations, i.e., when consider visibility restricted to the operations that belong to $\tc$. 
 Since we defined $\arb$ and $\vis$ over restricted domains, the original formulation is not useful. Hence we will use an alternative characterisation, given by the 
 following result.
 
-\begin{lemma} $\ovis = \roarb$ iff 
-\begin{enumerate}
-   \item $\roarb;\ovis \subseteq \ovis$; and
-   \item $\neg\ovis;\neg\roarb \subseteq \neg\ovis$.
-\end{enumerate}
-\end{lemma}
-
-\begin{proof} $\Rightarrow$) 
-\begin{enumerate}
-\item
-	\[ \begin{array}{l@{\ =\ }l@{\qquad}l}
-		\roarb;\ovis &  \roarb;\roarb & \roarb =\ovis\\
-		& \roarb & \roarb \mbox{is a partial order (i.e., transitive)}\\
-		&  \ovis & \roarb =\ovis
-   	\end{array}
-	\]
-\item Note that  $\roarb;\ovis =\ovis$ implies $\neg(\roarb;\ovis) =\neg\ovis$. By property of complement and composition, $\neg(\roarb;\ovis) =\neg\ovis;\neg\roarb =\neg\ovis$. 
-\end{enumerate}
-
-$\Leftarrow)$ We divided the proof in two implications
- \begin{enumerate}
-    \item  $\roarb;\ovis \subseteq \ovis$ implies $\ovis\subseteq \roarb$. We proceed by contradiction. Assume $(a,b)\in\ovis$ but $(a,b)\not\in\roarb$.
-    Since $\roarb$ is a total order, $(b,a)\in\roarb$. By assumption, $(b,a)\in\roarb$ and $(a,b)\in\ovis$ implies $(b,b)\in\ovis$, but this is in contradiction 
-    with the fact that $\ovis$ is acyclic. 
-        
-    \item $\neg\ovis;\neg\roarb \subseteq \neg\ovis$ implies $\roarb\subseteq\ovis$. We proceed by contradiction. 
-    Assume $(a,b)\in\roarb$ and $(a,b)\not\in\ovis$, and hence,  $(a,b)\in\neg\ovis$. Since,
-    $\roarb$ is a strict total order $(b,a)\not\in\roarb$. Hence, $(b,a)\in\neg\roarb$. By assumption, $(a,b)\in\neg\ovis$ and $(b,a)\in\neg\roarb$ implies $(a,a)\in\neg\ovis$.
-    Again, by assumption, 
- \end{enumerate}
-
-\end{proof}
-
 \begin{theorem}[\textsc{Single Order}]
-
+\label{thm:single-order}
 Let $\textsc{\small{AR}}$ an arbitration relation and $\textsc{\small{VIS}}$ a visibility relation, if $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \arro{} ^*\ \environment{\systemterm}{\op}{\so}{\vis}{\arb} $ then $\textsc{\small{AR}};\textsc{\small{VIS}} \subseteq \textsc{\small{VIS}}$ and  $\textsc{\small{AR}}^{-1};\neg\textsc{\small{VIS}} \subseteq \neg\textsc{\small{VIS}}$.
 
 
 \end{theorem}
  
 
-\begin{proof} 
-Firstly, we will prove by induction on on the length of the derivation that $\textsc{\small{AR}};\textsc{\small{VIS}} \subseteq \textsc{\small{VIS}}$, i.e., for all $\vertice_a$,$\vertice_b$,$\vertice_c$ such that ($\vertice_a$,$\vertice_b$) $\in$ $\textsc{\small{AR}}$ and ($\vertice_b$,$\vertice_c$) $\in$ $\textsc{\small{VIS}}$ then ($\vertice_a$,$\vertice_c$) $\in$ $\textsc{\small{VIS}}$.
-
-\begin{itemize}
-   \item{\bf n=0}. It is easy to see because of both relations are empty, hence is trivial $\emptyset \subseteq \emptyset$.
-   \item{\bf n=k+1}. Then $\environmenttran{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset}{\emptyset}{\undefined}{\emptyset} \arro{} ^n\ \environmenttran{\systemterm}{\op}{\so}{\vis}{\arb}{\rb}{\tx}{\tc} \arroi{\alpha} \environmenttran{\systemterm'}{\op'}{\so'}{\vis'}{\arb'}{\rb'}{\tx'}{\tc'}$. We proceed by case analysis on the last transition:
-	
-	\begin{itemize}
-        \item {\bf rule (\textsc{E-READ})}. $\textsc{\small{AR}}$ does not change, therefore, $\textsc{\small{AR}}'$ = $\textsc{\small{AR}}$.  Then, there exists two cases: \chnote{\mbox{la regla es S-READ, pero es igual a E-READ sin los ultimos terminos, charlar como escribir esto}}
-				
-				\begin{itemize}
-					\item $\vertice_c \neq \vertice$, as $\vertice$ is an vertex associated to last computation step then ($\vertice_b$,$\vertice_c$) $\in$ $\textsc{\small{VIS}}$, therefore, these belong to $\textsc{\small{VIS}}'$. Then, by inductive hypothesis, ($\vertice_a$,$\vertice_c$) $\in$ $\textsc{\small{VIS}}$ so that as $\vertice_c \neq \vertice$ then ($\vertice_a$,$\vertice_c$) $\in$  $\textsc{\small{VIS}'}$.
-					\item $\vertice_c$ = $\vertice$, as $\vertice_a$ and $\vertice_b$ are in $\textsc{\small{AR}}$ then there exist two updates into the Store associated to them. Let $\udec[u][\vertice_a]$, $\udec[u][\vertice_b]$ be these updates, then we know that $\udec[u][\vertice_a]$ = $\queuemessage$[m] and $\udec[u][\vertice_b]$ = $\queuemessage$[n] such that m < n. If ($\vertice_b$,$\vertice_c$) $\in$ $\textsc{\small{VIS}}$ then $\udec[u][\vertice_b]$ $\in \queuemessage[0..\tknown-1] \cdot \tpending \cdot [\ttransactionbuffer]$ by definition. Then, analyzing cases:
-					\begin{itemize}
-						\item $\udec[u][\vertice_b]$ $\in \queuemessage[0..\tknown-1]$. Then $\udec[u][\vertice_a]$ also is in $\queuemessage[0..\tknown-1]$ because of $\udec[u][\vertice_a]$ = $\queuemessage$[m] and $\udec[u][\vertice_b]$ = $\queuemessage$[n] and m < n.
-						\item $\udec[u][\vertice_b]$ $\in \tpending$ or $\udec[u][\vertice_b]$ $\in [\ttransactionbuffer]$, however these do not be by $\lemref{lemma:empty_queue}$.
-					\end{itemize}
-					
-				\end{itemize}
-				
-			\item The rest of the rules do not change $\textsc{\small{VIS}}$.
-
-\end{itemize}
-
-\end{itemize}
-
-Now, we will prove by induction on on the length of the derivation that $\textsc{\small{AR}}^{-1};\neg\textsc{\small{VIS}} \subseteq \neg\textsc{\small{VIS}}$, i.e., for all $\vertice_a$,$\vertice_b$,$\vertice_c$ such that ($\vertice_b$,$\vertice_a$) $\in$ $\textsc{\small{AR}}$ and ($\vertice_a$,$\vertice_c$) $\notin$ $\textsc{\small{VIS}}$ then ($\vertice_b$,$\vertice_c$) $\notin$ $\textsc{\small{VIS}}$. This prove is analogue when $\vertice_c \neq \vertice$. Furthermore, if $\udec[u][\vertice_a]$ $\notin \queuemessage[0..\tknown-1]$ then $\udec[u][\vertice_b]$ $\notin \queuemessage[0..\tknown-1]$ because of $\udec[u][\vertice_b]$ is before to $\udec[u][\vertice_a]$ at Store, then 
-\end{proof}
-	

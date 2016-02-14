@@ -1,0 +1,18 @@
+\begin{thebibliography}{1}
+
+\bibitem{DBLP:journals/ftpl/Burckhardt14}
+S.~Burckhardt.
+\newblock Principles of eventual consistency.
+\newblock {\em Foundations and Trends in Programming Languages}, 1(1-2):1--150,
+  2014.
+
+\bibitem{DBLP:conf/ecoop/BurckhardtLPF15}
+S.~Burckhardt, D.~Leijen, J.~Protzenko, and M.~F{\"{a}}hndrich.
+\newblock Global sequence protocol: {A} robust abstraction for replicated
+  shared state.
+\newblock In J.~T. Boyland, editor, {\em 29th European Conference on
+  Object-Oriented Programming, {ECOOP} 2015, July 5-10, 2015, Prague, Czech
+  Republic}, volume~37 of {\em LIPIcs}, pages 568--590. Schloss Dagstuhl -
+  Leibniz-Zentrum fuer Informatik, 2015.
+
+\end{thebibliography}

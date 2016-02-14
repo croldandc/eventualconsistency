@@ -194,9 +194,10 @@ affect the history and are handled by rule \ruleName{a-int}.
 %  \paragraph{Notation.} Given a session order relation $\so$ from client $i$ and a vertex $v$, we shall write $\soby{\so}{v}$  meaning that $\soby{(\mathcal{V}, \mathcal{R})}{v} = (\mathcal{V} \ \cup \ \{v\}, \mathcal{R}\ \cup \ \{(x,v) / x \in \verticesets\})$. We shall refer to an update action on the queue message as $\updateinqueuemessage{n}{i}$.The arbitration relation $\arb$ is defined as $\{ (v,w) / \{v \mapsto \updateinqueuemessage{m}{h}\} \in \op \land \ \{w \mapsto \updateinqueuemessage{n}{i} \} \in \op \land \ m < n \}$. A transition $\arroi{\alpha}$ denotes the fact that action $\alpha$ is perfomed by client $i$.
  
 
-\subsection{Ordering Guarantees}
+%\subsection{Ordering Guarantees}
 
-We now study the properties enjoyed by the \gsp\ model. We focused on the hierarchy in~\cite{}. That are listed in ~\figref{}.
+We use abstract histories to analyse the ordering guarantees 
+offered by the \gsp\ model. We focused on the hierarchy in~\cite{DBLP:journals/ftpl/Burckhardt14}. That are listed in ~\figref{}.
 % now prove what ordering guarantees are assured by GSP language and what do not. 
 
 
