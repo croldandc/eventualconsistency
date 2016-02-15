@@ -235,16 +235,22 @@ $\pullcmd;\waitcmd$, as described by rules \ruleName{guard-true} and \ruleName{g
 
 
 
-Single Order is a consistency guarantee that express a single order of operations observed by arbitration and visibility relation. The definition introduced by \cite{} requires 
-$\ovis = \roarb$, where $F$ stands for the set of finished operations, i.e., when consider visibility restricted to the operations that belong to $\tc$. 
-Since we defined $\arb$ and $\vis$ over restricted domains, the original formulation is not useful. Hence we will use an alternative characterisation, given by the 
-following result.
+Single order  is characterised, essentially,  by imposing arbitration and visibility to coincide~\cite{DBLP:journals/ftpl/Burckhardt14}.
+% The definition introduced by \cite{} requires 
+%$\ovis = \roarb$, where $F$ stands for the set of finished operations, i.e., when consider visibility restricted to the operations that belong to $\tc$. 
+Since our definition for $\arb$ and $\vis$ makes them disjoint, we use an alternative characterisation of single order guarantee, 
+which disregards the  arbitration order of updates that are not observed. Hence, we use the following characterisation for single order:
+\[ \arb;\vis\subseteq\vis \quad\mbox{and}\quad \arb^{-1};\neg\vis\subseteq\neg\vis\]
+
+The following results shows that any well-formed \gsp\ system, whose programs are 
+free from asynchronous updates (due to space limitation, we omit its formal definition) enjoy 
+the single order guarantee. 
 
 \begin{theorem}[\textsc{Single Order}]
 \label{thm:single-order}
-Let $\textsc{\small{AR}}$ an arbitration relation and $\textsc{\small{VIS}}$ a visibility relation, if $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \arro{} ^*\ \environment{\systemterm}{\op}{\so}{\vis}{\arb} $ then $\textsc{\small{AR}};\textsc{\small{VIS}} \subseteq \textsc{\small{VIS}}$ and  $\textsc{\small{AR}}^{-1};\neg\textsc{\small{VIS}} \subseteq \neg\textsc{\small{VIS}}$.
-
-
+Let $\systemterm$ be a well-formed system s.t. $\updcmd$ does not appear in $\systemterm$.  If
+ $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \arro{} ^*\ \environment{\systemterm}{\op}{\so}{\vis}{\arb} $ then 
+ $\arb;\vis\subseteq\vis$ and $\arb^{-1};\neg\vis\subseteq\neg\vis$.
 \end{theorem}
  
 

@@ -35,30 +35,35 @@ Let $\systemterm$  be a \gsp\ system free from asynchronous update. If $\systemt
 then $\systemterm[']$ if free from asynchronous update. 
 \end{lemma}
 
-\begin{proof} Confirmed is evaluated to true when $\tpending$ and [$\ttransactionbuffer$] are empty so that, after the loop, the read operation only return values which belong to the $\queuemessage$.
-\end{proof}	
+\begin{proof}The proof follows by case analysis on the applied rule.
+\end{proof}
+
+\begin{corollary} Let $\systemterm$  be a \gsp\ system free from asynchronous update. If $\systemterm\arroi{\readtran{\aread}}\systemterm[']$,
+the $\Absclient_{\cid}= \tclienti{\tprogram_{\cid}}{\tknown_{\cid}}{\tpending_{\cid}}{\ttransactionbuffer_{\cid}}{\tsent_{\cid}}{\treceivebuffer_{\cid}}[\cid][\trounds_{\cid}]$ and
+$\tpending_{\cid}\cdot{\ttransactionbuffer_{\cid}} = \epsilon$.
+\end{corollary}
 
 
 
-First, we prove a useful lemma: 
-
-\begin{lemma}\label{lemma:empty_queue} 
-
-Let $\systemterm$ a \gsp\ system. If $\systemterm\Arro^*\systemterm[']$ then $\systemterm[']\Arro^*\systemterm['']$, where
-\[\begin{array}{r@{=}l}
-					\systemterm &  \tclienti{\tprogram^0}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \ \bigpar \ \systemterm[^0]
-					\\
-					\systemterm['] & \tclienti{\tsyncupd{u};\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}  \ \bigpar \   \systemterm[^1]	\\
-										\systemterm[''] & \tclienti{\treadins{x}{r}}{\tknown}{\emptyset}{\epsilon}{\tsent}{\treceivebuffer} \ \bigpar \   \systemterm[^2]	
-
-				  \end{array}
-				\]				
-
-
-\end{lemma}
-
-\begin{proof} Confirmed is evaluated to true when $\tpending$ and [$\ttransactionbuffer$] are empty so that, after the loop, the read operation only return values which belong to the $\queuemessage$.
-\end{proof}	
+%First, we prove a useful lemma: 
+%
+%\begin{lemma}\label{lemma:empty_queue} 
+%
+%Let $\systemterm$ a \gsp\ system. If $\systemterm\Arro^*\systemterm[']$ then $\systemterm[']\Arro^*\systemterm['']$, where
+%\[\begin{array}{r@{=}l}
+%					\systemterm &  \tclienti{\tprogram^0}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} \ \bigpar \ \systemterm[^0]
+%					\\
+%					\systemterm['] & \tclienti{\tsyncupd{u};\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}  \ \bigpar \   \systemterm[^1]	\\
+%										\systemterm[''] & \tclienti{\treadins{x}{r}}{\tknown}{\emptyset}{\epsilon}{\tsent}{\treceivebuffer} \ \bigpar \   \systemterm[^2]	
+%
+%				  \end{array}
+%				\]				
+%
+%
+%\end{lemma}
+%
+%\begin{proof} Confirmed is evaluated to true when $\tpending$ and [$\ttransactionbuffer$] are empty so that, after the loop, the read operation only return values which belong to the $\queuemessage$.
+%\end{proof}	
 
 \begin{lemma} $\ovis = \roarb$ iff 
 
