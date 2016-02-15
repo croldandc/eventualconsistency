@@ -19,23 +19,13 @@ runtime syntax for programs.
 \[
  \rName{run-time-program} 
 			 \qquad 
-			 \tprogram \ ::=\  \ldots\  |\ \waitcmd;P \ |\ \tguarded{} 
+			 \tprogram \ ::=\  \ldots\ |\  \ttrans\ |\ \waitcmd \ |\ \tguarded{} 
 			 \]
 
-%We rely  on the following additional labels
+We rely  on the following additional labels
 			 
-%\[  \actbyc ::= \ldots \ |\ (\tupdlbl,\cid)\  |\ (\finishsynctran,\cid)
-%\]
-
-Processes \waitcmd\  continuously checks whether  local changes have been confirmed by 
-the global store. It is implemented as a busy-waiting by using a conditional jump $\tguarded{}$.
-The operational semantics for the new primitives is given by the rules in 
-\figref{fig:OS-tgsp}.  Rule \ruleName{sync-upd} rewrites each synchronous update as
-the sequence consisting of an asynchronous update followed by \pullcmd\ and  \waitcmd. 
-Process \waitcmd consists basically
-on checking the state of the local buffers, by performing $\confcmd$. 
-Note that 
-  
+\[  \actbyc ::= \ldots \ |\ (\tupdlbl,\cid)\  |\ (\finishsynctran,\cid)
+\]
 
 
 We define the operator $[\_]$ over actions  $\lambda$ s.t. $[\updatetran{\anupd}] =\tupdlbl$ and it is the identity
@@ -45,7 +35,7 @@ over any other action.
 \[
  \begin{array}{l}
 
-\mathax{sync-upd}
+\mathax{start-upd}
 	{
 	\begin{array}{p{\linewidth}}
 	$\tsystem{\tclienti{\tsyncupdins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
@@ -53,33 +43,36 @@ over any other action.
 	\quad \arroi{\tau}
 	$\\
 	$\hfill
-	\tsystem{\tclienti{\tupdins;\pushcmd;\waitcmd;P}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	\tsystem{\tclienti{\ttrans[\tupdins;\pushcmd;\waitcmd]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
 	$\end{array}
 	 }
- %\mathrule{trans}
-%	{\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
-%	\quad\arroi{\mu} \quad
-%	\tsystem{\tclienti{\tprogram'}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}}}
-%	{\tsystem{\tclienti{[\tprogram];Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
-%	 \quad\arroi{[\mu]} \quad
-%	 \tsystem{\tclienti{[\tprogram'];Q}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}}}
-%
-% \\[25pt]
-%
-%\mathax{end-upd}
-%	{\tsystem{\tclienti{[0];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
-%	\quad\arroi{\finishsynctran{}}\quad
-%	\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}}
+ 
+ \\[5pt]
+
+\mathrule{trans}
+	{\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+	\quad\arroi{\mu} \quad
+	\tsystem{\tclienti{\tprogram'}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}}}
+	{\tsystem{\tclienti{[\tprogram];Q}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	 \quad\arroi{[\mu]} \quad
+	 \tsystem{\tclienti{[\tprogram'];Q}{\tknown'}{\tpending'}{\ttransactionbuffer'}{\tsent'}{\treceivebuffer'}}}
+
+ \\[25pt]
+
+\mathax{end-upd}
+	{\tsystem{\tclienti{[0];\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
+	\quad\arroi{\finishsynctran{}}\quad
+	\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}}
 
 \\[15pt]
 \mathax{wait}
 	{
 	\begin{array}{p{\linewidth}}
-	$\tsystem{\tclienti{\waitcmd;P}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	$\tsystem{\tclienti{\waitcmd}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
 	\quad\arro{\tau}$
 	\\
 	$\hfill
-	\tsystem{\tclienti{\tconfirmedins{x}[{\tguarded[x][\pullcmd;\waitcmd][P]}]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	\tsystem{\tclienti{\tconfirmedins{x}[{\tguarded[x][\pullcmd;\waitcmd][0]}]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
 	$\end{array}
 	}
 
@@ -114,7 +107,6 @@ over any other action.
  \end{array}
  \]
 \caption{Semantics of \gsp\ with atomic updates}
-\label{fig:sos-atomic-upd}
 \end{figure}
 
  
