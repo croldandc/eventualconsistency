@@ -2,6 +2,43 @@
 
 \section{Proof of results in \secref{sec:transactions}}
 
+\begin{definition}
+A program $P$ is {\em free from asynchronous updates} if either
+\begin{enumerate}
+\item  no subterm of the form $\updcmd$ occurs in $P$; or 
+\item  $P=\updcmd;\pushcmd;\waitcmd;P'$ with $P'$ free from asynchronous updates.
+\end{enumerate}
+
+$P$ is {\em engaged in an update} if for some $P'$ free from asynchronous updates 
+one of the following conditions hold:
+\begin{enumerate}
+\item $P = \pushcmd;\waitcmd;P'$;
+\item $P = \waitcmd;P'$; 
+\item $P = {\tconfirmedins{x}[{\tguarded[x][\pullcmd;\waitcmd;P'][P']}]}$;
+\item $P = \tguarded[x][\pullcmd;\waitcmd;P'][P']$;
+\item $P = \pullcmd;\waitcmd;P' $  
+\end{enumerate}
+
+A system $\systemterm =  \Absclient_0\bigpar \ldots\bigpar \Absclient_m\bigpar\queuemessage$
+is free from asynchronous update if for all  $l\in \{0,\ldots,m\}$, 
+$\Absclient_l = \tclienti{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\tsent_l}{\treceivebuffer_l}[\cid_l][\trounds_l]$ 
+ the following conditions holds
+ \begin{enumerate}
+  \item $\tpending_l\cdot{\ttransactionbuffer_l} = \epsilon$ and $P_l$ is free from asynchronous updates.
+  \item $\tpending_l\cdot{\ttransactionbuffer_l} \neq \epsilon$ and $P_l$ is engaged in an update.
+\end{enumerate}
+\end{definition}
+ 
+
+\begin{lemma}\label{lemma:empty_queue} 
+Let $\systemterm$  be a \gsp\ system free from asynchronous update. If $\systemterm\arroi{\lambda}\systemterm[']$ 
+then $\systemterm[']$ if free from asynchronous update. 
+\end{lemma}
+
+\begin{proof} Confirmed is evaluated to true when $\tpending$ and [$\ttransactionbuffer$] are empty so that, after the loop, the read operation only return values which belong to the $\queuemessage$.
+\end{proof}	
+
+
 
 First, we prove a useful lemma: 
 

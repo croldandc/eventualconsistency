@@ -124,7 +124,7 @@ and $\idset$ of client identifiers $\cid,\cid',\ldots,\cid_1,\ldots$.
 			  \tupdateins \;|\; \treadins{x}{\aread} \;|\; \tpullins \;|\;
 			   \\
 			  & \tpushins \;|\;
-			 \tconfirmedins{x} 
+			 \tconfirmedins{x}  \ \ |\ \ 0
 			%\;|\; \pwhile{\cond}{\tprogram}  \;|\;
 			%\\
 			%&
@@ -291,7 +291,7 @@ In what follows we will write labelled transitions $\arro{\mu}$ instead of $\tr{
 \\[18pt]
 \mathrule{confirm}
  %	{\eval{(\tpending \cdot  \ttransactionbuffer == \emptysequence)}  v}
-	{v = {(\tpending \cdot  \ttransactionbuffer == \emptysequence)}}
+	{v = {(\tpending \cdot  \ttransactionbuffer = \emptysequence)}}
 	{
 	\tsystem{\tclienti{\tconfirmedins{x}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
 	\arro{\confirmedtran} 

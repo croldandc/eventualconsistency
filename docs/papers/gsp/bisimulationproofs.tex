@@ -119,7 +119,7 @@ $\Leftarrow)$ Follows analogously.
 						\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer \cdot \tupdate}{\tsent}{\treceivebuffer}}[{\systemterm['']}]	
 				  \end{array}		
 				\]
-				.
+			
 				
 				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$.
 				Note that the only terms that have changed are the transaction buffers 
@@ -145,7 +145,7 @@ $\Leftarrow)$ Follows analogously.
 		
 				Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
 				$ \tsystem{\tclienti{\tpushins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] $
-				with $\implements{\isystemterm['']}{\systemterm['']}$. 
+				with $\implements{\isystemterm['']}{\systemterm['']}.$
 				
 				By using rule \ruleName{push}, 
 				$\systemterm \arroi{\pushtran} \systemterm[']$ with

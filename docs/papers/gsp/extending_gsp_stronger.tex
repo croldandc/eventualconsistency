@@ -27,20 +27,21 @@ runtime syntax for programs.
 %\[  \actbyc ::= \ldots \ |\ (\tupdlbl,\cid)\  |\ (\finishsynctran,\cid)
 %\]
 
-Processes \waitcmd\  continuously checks whether  local changes have been confirmed by 
-the global store. It is implemented as a busy-waiting by using a conditional jump $\tguarded{}$.
 The operational semantics for the new primitives is given by the rules in 
 \figref{fig:OS-tgsp}.  Rule \ruleName{sync-upd} rewrites each synchronous update as
 the sequence consisting of an asynchronous update followed by \pullcmd\ and  \waitcmd. 
-Process \waitcmd consists basically
-on checking the state of the local buffers, by performing $\confcmd$. 
-Note that 
+Processes \waitcmd\  continuously checks whether  local changes have been confirmed by 
+the global store. As described by rule \ruleName{wait}, it is implemented as a busy-waiting
+loop that first checks the local buffers by executing \confcmd\ and then
+performs the conditional jump $\tguarded[x][\pullcmd;\waitcmd][P]$.  
+If the condition $x$ is true, then it follows as $P$ otherwise it continues as 
+$\pullcmd;\waitcmd$, as described by rules \ruleName{guard-true} and \ruleName{guard-false}.
   
-
-
-We define the operator $[\_]$ over actions  $\lambda$ s.t. $[\updatetran{\anupd}] =\tupdlbl$ and it is the identity
-over any other action.
-
+%
+%
+%We define the operator $[\_]$ over actions  $\lambda$ s.t. $[\updatetran{\anupd}] =\tupdlbl$ and it is the identity
+%over any other action.
+%
 \begin{figure}[t]
 \[
  \begin{array}{l}
@@ -79,7 +80,7 @@ over any other action.
 	\quad\arro{\tau}$
 	\\
 	$\hfill
-	\tsystem{\tclienti{\tconfirmedins{x}[{\tguarded[x][\pullcmd;\waitcmd][P]}]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
+	\tsystem{\tclienti{\tconfirmedins{x}[{\tguarded[x][\pullcmd;\waitcmd;P][P]}]}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}
 	$\end{array}
 	}
 
