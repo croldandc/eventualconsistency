@@ -52,7 +52,8 @@ $\adelta \in \deltatype$ describes the effects of a sequence of updates and
 is built  by either appending an update  to an existing delta ($\iappendname$) 
 or  combining together several deltas  ($\ireducename$).
 Operation $\ireadname$ is the 
-interpretation function for read operations (\ie, the implementation counterpart of  $\rvalue{\_}{\_}$  in the 
+interpretation function for read operations (\ie, the implementation counterpart of 
+function $\rvalue{\_}{\_}$  used by the 
 idealised model) and $\iapplyname$ corresponds to state transformations.
 %
 %We shall use  $\astate,\astate['],\ldots, \astate[{_1}],\ldots$ to denote values of  type $\statetype$ and 
@@ -135,15 +136,16 @@ The set of \igsp\ terms is given by the grammar in \figref{fig:syntax-igsp}.
 
 As for \gsp, a system is composed by a global store $\iserver$ and possibly many clients $\iclient$. 
 A global store is modelled by a tuple $\server{\astate}{\inserver}{\outserver}$ containing a state $\astate$, 
-a function $\amxrf$ to keep track of the received rounds from  clients and already applied to the state,
-$\inserver$ and $\outserver$ stand for the communication buffers. There are two dedicated buffers for 
+a function $\amxrf$ that keeps track of last rounds incorporated
+ to the state, and the communication buffers
+$\inserver$ and $\outserver$. There are two dedicated buffers for 
  each client $\cid$: $\inserver(\cid)$ contains the  rounds received from $\cid$,  and $\outserver(\cid)$ 
   the  segments that have been sent to $\cid$. 
   
 A client  is represented by a term of the form $\addid{\iclientinst[P][@][@][@][\transactionbuffer]}$. 
 As for \gsp, $\cid$ is its identity and $P$ is its program. We remark that the language for programs remains unaltered.
 The component $\transactionbuffer$ is analogous to $\ttransactionbuffer$ in the \gsp\ model, i.e., it keeps 
-all local updates until the client perform $\pushcmd$. Differently, $\pushbuffer$ keeps all finished blocks that 
+all local updates until the client performs $\pushcmd$. Differently, $\pushbuffer$ keeps all finished blocks that 
  have not been sent. The number $\irounds$ identifies the current round. Buffer $\pending$ keeps all
  sent rounds that have not been confirmed by the global store (similar to $\tpending$ in \gsp), while 
  $\inclient$ keeps all unprocessed received segments (analogous to $\treceivebuffer$).  
@@ -199,7 +201,7 @@ We also impose the following well-formedness condition on systems.
  $\isystemterm =  \iclient_0\bigpar \ldots\bigpar \iclient_m\bigpar\iserver$  with
  $\iserver=\server{\astate}{\inserver}{\outserver}$ and 
 $\iclient_l = \addid{\iclientinst[P_l][\astate_l][{\pending}_l][\pushbuffer_l][\transactionbuffer_l][\receivebuffer_l][\irounds_l][\inclient_l][\outclient_l]}[{\cid_l}]$ 
-for  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions hold 
+for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions hold 
 
 \begin{enumerate}
 
@@ -208,12 +210,12 @@ for  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions ho
   \item $\cid_l\not\in\dom\outserver$ implies $\inclient_l = \epsilon$;
   \item if $\cid_l\in\dom\outserver$ and $\inclient_l\cdot\outserver(\cid_l) \neq\epsilon$ then either
 	\begin{itemize}
-		\item ${\inclient}_l\cdot\outserver(\cid_l)= \agssegpairi[1] \cdots \agssegpairi[h]$; or
+		\item ${\inclient}_l\cdot\outserver(\cid_l)= \agssegpairi[0] \cdots \agssegpairi[h]$; or
 		\item  ${\inclient}_l\cdot\outserver(\cid_l)= \agssegpair[{\astate}][{\amxrf[_0]}]\cdot\agssegpairi[1]\cdots \agssegpairi[h]$.
 	\end{itemize}
-	 $\amxrf_j(\cid_l) \leq \ \amxrf_k(\cid_l)$ for all  ${ j}\leq{k}$ and $\amxrf_h = \amxrf$
+	 $\amxrf_j(\cid_l) \leq \ \amxrf_k(\cid_l)$ for all  ${ j}<{k}$ and $\amxrf_h = \amxrf$
 	
-\item \label{wf-igsp-pending} $\pending_l = \aroundtuplei[0]\cdots\aroundtuplei[r]$,  $\irounds_j < \irounds_k$ for all  ${ j}\leq{k}$ and either.
+\item \label{wf-igsp-pending} $\pending_l = \aroundtuplei[0]\cdots\aroundtuplei[r]$,  $\irounds_j < \irounds_k$ for all  ${ j}<{k}$ and either.
 	\begin{itemize}
 		\item $\pushbuffer_l =\emptydelta$ and $\irounds_r \leq \irounds_l$; or
 		\item $\pushbuffer_l \neq \emptydelta$ and $\irounds_r < \irounds_l$;
@@ -233,9 +235,9 @@ for  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions ho
 
 We require all clients to have different identifiers (1). Communication channels in the 
 implementation are bidirectional, hence  $\cid_l\in\dom\inserver$ iff  $\cid_l\in\dom\outserver$ 
-(2). Moreover, the input buffer of a  disconnected is empty, \ie, $\cid_l\in\dom\outserver$ (3). 
+(2). Moreover, the input buffer of a  disconnected client is empty, \ie, $\cid_l\in\dom\outserver$ (3). 
 Condition (4) states that $\agssegpair$ can appear only as a first message in the flow from 
-the store and that store confirms processed rounds in an increasing order. Similarly, (5)
+the store and that store confirms processed rounds in a non-decreasing order. Similarly, (5)
 states that each client sends rounds with increasing number and that the last sent round
 cannot be greater than the round counter of the client. The last condition states a 
  coherence requirement between  
@@ -421,16 +423,16 @@ Rule \ruleName{i-update}, which is analogous to rule \ruleName{update}, adds the
 
 
 
-A client terminates a block by executing $\pushcmd$ (rule \ruleName{i-push}). At this time, the block $\transactionbuffer$ 
+A client terminates a block by executing $\pushcmd$ (rule \textsc{i-push}). At this time, the block $\transactionbuffer$ 
  is appended to the already terminated blocks in $\pushbuffer$, which will be sent on next round. 
  Additionally, the block counter $\irounds$ is incremented by $1$.
  By rule \ruleName{i-send}, a client sends changes to the global store. 
- This transition may take place whenever  the client is connected  (\ie, $\cid\in\dom\inserver$) to and 
- synchronised with (\ie, $\inclient \cdot\outserver(\cid) \neq \agssegpair[{\astate[']}][{\amxrf}]\cdot\aseqseg$)\footnote{For simplicity we check re-synchronisation by inspecting  communication buffers  instead of 
+ This transition may take place whenever  the client is connected  (\ie, $\cid\in\dom\inserver$),
+  there are finished blocks in $\pushbuffer$ (\ie, $\pushbuffer \neq \emptydelta$)  and 
+ synchronised with the global store(\ie, $\inclient \cdot\outserver(\cid) \neq \agssegpair[{\astate[']}][{\amxrf}]\cdot\aseqseg$)\footnote{For simplicity we check re-synchronisation by inspecting  communication buffers  instead of 
   explicitly adding  to the state the condition {\em channel established} used 
- by the implementation.}
-  the global store
- there are finished blocks in $\pushbuffer$ (\ie, $\pushbuffer \neq \emptydelta$). 
+ by the implementation.}.
+  
  At this time, all 
  available blocks are sent in the same round $\around = \aroundtuple[@][@][\pushbuffer]$, which is labelled with 
   $\irounds$, i.e. the number corresponding to the last finished block. 

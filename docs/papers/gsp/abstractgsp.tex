@@ -18,7 +18,7 @@ None operation can simultaneously read and update a store, therefore we assume
  $\anupd, \anupd['], \anupd[''],\ldots$ for  updates in $\updatesets$  and 
 $\aread, \aread['], \aread[''],\ldots$ for reads in $\readset$. 
 
-The  state of a store is 
+The  states of a store are
 represented by sequences of update operations. 
 For technical 
 convenience (particularly in \secref{sec:properties-gsp}), we find useful to 
@@ -39,10 +39,10 @@ We write  $\blockseq$  for sequences of blocks and use  $\emptysequence$ for the
 % use $\emptysequence$ to denote the empty sequence, \ie, the sequence of length 0.
 We use usual operations on sequences such as $\blockseq{[i]}$ to denote  
  the $i$-th  element of $\blockseq$, $\blockseq{[i..j]}$
-for the sequence of elements from position $i$ to $j$, $|\blockseq|$ for the length and 
-$\blockseq\setminus\blockseq[']$ for the relative complement. We will use
- $\flatten{\blockseq}$ to obtain a plain sequence of updates by 
-forgetting  the structure of constituent blocks, if any.
+for the subsequence of elements from position $i$ to $j$, $|\blockseq|$ for the length of $\blockseq$ and 
+$\blockseq\setminus\blockseq[']$ for the relative complement between to sequences. We will use
+ $\flatten{\blockseq}$ to denote a plain sequence of updates $\blockseq$ without any 
+  the separation in  blocks.
 %is such that $\flatten{\emptysequence} = \emptysequence$, and 
 %    $\flatten{\ublock\cdot\blockseq} = \ttransactionbuffer\cdot\flatten\blockseq$.
 
@@ -52,7 +52,7 @@ and $\idset$ of client identifiers $\cid,\cid',\ldots,\cid_1,\ldots$.
 
 
  
- \begin{figure}
+ \begin{figure}[t]
  \[
 \begin{array}{l}
     \begin{array}{l@{\ }rcl}
@@ -143,7 +143,7 @@ The set of \tgspcalculus\ terms is given by the grammar in \figref{fig:syntax-gs
 A \gsp\ system $\systemterm$ consists of  a store and zero or more  clients.
 The state of a global store $\queuemessage$ is represented by a sequence of  blocks.
 The term $\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}[\cid][n]$ 
-stands for a client identified by $\cid$ and is engaged on the execution of the 
+stands for a client identified by $\cid$ and  engaged on the execution of the 
 program $P$. 
 The remaining elements 
 are used to describe the state of the local replica: $\ttransactionbuffer$ contains the  updates 
@@ -164,7 +164,7 @@ Value $\trounds$ counts the number of update operations executed by the client.
 
 A program $P$ is built as a sequence of  operations that handle the  
 interaction with 
-the store: $\readcmd,  \updcmd, \pullcmd,  \pushcmd, \confcmd$
+the store, namely, $\readcmd,  \updcmd, \pullcmd,  \pushcmd, \confcmd$
  (we postpone their description until \secref{sec:gsp-sos}). 
  %Conditional and loop statements contain expressions 
 %$\cond, \cond', \ldots$ written in some language that we left unspecified. We only assume   
@@ -220,7 +220,7 @@ Hereafter, we assume any system to be well-formed.
 The operational semantics of \tgspcalculus\ is given by a labeled transition system 
 over well-formed terms, quotiented by the structural equivalence $\equiv$ defined as the least equivalence 
 such that  $\bigpar$ is associative, commutative and has $0$ as neutral element.
-Transitions are be labelled by pairs $(\mu,\cid)$ where $\mu$ is the action performed 
+Transitions are  labelled by pairs $(\mu,\cid)$ where $\mu$ is the action performed 
 by the client $\cid$. The set of actions is given by the following grammar:
 \[ 
 \begin{array}{r@{\ ::= \ }l}
@@ -230,7 +230,7 @@ by the client $\cid$. The set of actions is given by the following grammar:
 \]
 As usual,  $\tau$ stands for an internal, unobservable action, while the remaining actions allow 
 a client to update, read from and synchronise with a global store. 
-In what follows we will write labelled transitions $\arro{\mu}$ instead of $\tr{(\mu,\cid)}$. 
+In what follows we  write  $\arro{\mu}$ for the labelled transition $\tr{(\mu,\cid)}$. 
 
 
 \begin{figure*}[t]
@@ -339,10 +339,11 @@ all local changes in $\ttransactionbuffer$ will be transmitted as a block $\ublo
  In fact, the new block  $\ublock$ is added to the communication buffer $\tsent$, which 
 contains all sent blocks that still have not reached the global store.  Also,  
  $\ublock$ is  added  to the  sequence of pending messages $\tpending$ to 
-  be used  until the block is finally added to the store to evaluate locally in the subsequent read. 
+  be used  when evaluation subsequent reads until the block is finally added to the global 
+  store. 
 
-Rule \textsc{send}  stands for  a  block  that finally reaches the global store. Conversely, 
-rule \textsc{receive} models the reception of
+Rule \ruleName{send}  stands for  a  block  that finally reaches the global store. Conversely, 
+rule \ruleName{receive} models the reception of
  a new update. The received update is not  incorporated immediately to the local replica. Actually, 
  each client  explicitly refreshes its local view  by executing  {\pullcmd} (rule \textsc{pull}).  
  At this time, all  previously received updates $\treceivebuffer$ are incorporated to the 

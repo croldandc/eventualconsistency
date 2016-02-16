@@ -9,19 +9,15 @@ S.~Burckhardt.
 \bibitem{DBLP:conf/esop/BurckhardtLFS12}
 S.~Burckhardt, D.~Leijen, M.~F{\"{a}}hndrich, and M.~Sagiv.
 \newblock Eventually consistent transactions.
-\newblock In H.~Seidl, editor, {\em Programming Languages and Systems - 21st
-  European Symposium on Programming, {ESOP} 2012, Held as Part of the European
-  Joint Conferences on Theory and Practice of Software, {ETAPS} 2012, Tallinn,
-  Estonia, March 24 - April 1, 2012. Proceedings}, volume 7211 of {\em Lecture
+\newblock In H.~Seidl, editor, {\em {ESOP} 2012}, volume 7211 of {\em Lecture
   Notes in Computer Science}, pages 67--86. Springer, 2012.
 
 \bibitem{DBLP:conf/ecoop/BurckhardtLPF15}
 S.~Burckhardt, D.~Leijen, J.~Protzenko, and M.~F{\"{a}}hndrich.
 \newblock Global sequence protocol: {A} robust abstraction for replicated
   shared state.
-\newblock In J.~T. Boyland, editor, {\em 29th European Conference on
-  Object-Oriented Programming, {ECOOP} 2015, July 5-10, 2015, Prague, Czech
-  Republic}, volume~37 of {\em LIPIcs}, pages 568--590. Schloss Dagstuhl -
-  Leibniz-Zentrum fuer Informatik, 2015.
+\newblock In J.~T. Boyland, editor, {\em {ECOOP} 2015}, volume~37 of {\em
+  LIPIcs}, pages 568--590. Schloss Dagstuhl - Leibniz-Zentrum fuer Informatik,
+  2015.
 
 \end{thebibliography}

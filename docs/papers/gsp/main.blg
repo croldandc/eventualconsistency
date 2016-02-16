@@ -4,10 +4,9 @@ The top-level auxiliary file: main.aux
 The style file: abbrv.bst
 Database file #1: biblio.bib
 Warning--I didn't find a database entry for ""
-Warning--I didn't find a database entry for "libro"
 You've used 3 entries,
             2118 wiz_defined-function locations,
-            532 strings with 4864 characters,
+            531 strings with 4531 characters,
 and the built_in function-call counts, 1399 in all, are:
 = -- 139
 > -- 61
@@ -46,4 +45,4 @@ warning$ -- 0
 while$ -- 16
 width$ -- 4
 write$ -- 39
-(There were 2 warnings)
+(There was 1 warning)
