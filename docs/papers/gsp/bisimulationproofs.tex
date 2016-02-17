@@ -2,10 +2,12 @@
 
 \section{Proof of results in \secref{sec:simulation}}
 
-\begin{lemma} The followings properties holds,
+\begin{lemma} \label{lemma:sim-aux}
+The followings properties holds,
 \begin{enumerate}
 \item \label{lemma:apply} $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq$ iff $\iapply{\astate}{\adelta[_0]\cdots\adelta[_n]}\triangleleft \anupdseq$.
 \item \label{lemma:reduce} $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]\cdot \adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]}\triangleleft \anupdseq[']$ $\adelta[_n] \triangleleft \anupdseq['']$.
+\item \label{lemma:reducefirst} $\ireduce{\adelta[_0]\cdot\adelta[_1]\cdots\adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\adelta[_0] \triangleleft \anupdseq['], \ireduce{\adelta[_1]\cdots\adelta[_{n}]}\triangleleft \anupdseq['']$.
 \end{enumerate}
 
 \end{lemma}
@@ -57,8 +59,8 @@ $\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_{n-1}] \triangleleft \a
 $\Leftarrow)$ Follows analogously. 
 \end{proof}
 
-\begin{lemma}\label{lemma:reducefirst} $\ireduce{\adelta[_0]\cdot\adelta[_1]\cdots\adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\adelta[_0] \triangleleft \anupdseq['], \ireduce{\adelta[_1]\cdots\adelta[_{n}]}\triangleleft \anupdseq['']$.
-\end{lemma}
+%\begin{lemma}\label{lemma:reducefirst} $\ireduce{\adelta[_0]\cdot\adelta[_1]\cdots\adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\adelta[_0] \triangleleft \anupdseq['], \ireduce{\adelta[_1]\cdots\adelta[_{n}]}\triangleleft \anupdseq['']$.
+%\end{lemma}
 
 
 \begin{lemma}\label{lemma:reduceinreduce} $\ireduce{\adelta[_0]\cdots\ireduce{\adelta['_{0}]\cdots\adelta['_{m-1}]}\cdots\adelta[_{n-1}]}\triangleleft \anupdseq$ iff $\ireduce{\adelta[_0]\cdots\adelta['_0]\cdots\adelta['_{m-1}]\cdots\adelta[_{n-1}]}\triangleleft \anupdseq$
@@ -76,7 +78,7 @@ $\Leftarrow)$ Follows analogously.
 							
 						$\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_{k+1}]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_{k+1}] \ $
 					\[
-						  \mathrulean{\lemrefen{lemma:apply}}
+						  \mathrulean{\lemrefprop{lemma:sim-aux}{lemma:apply}}
 						  {
 								\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_k]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_k]
 								\quad \quad 
@@ -183,7 +185,7 @@ $\Leftarrow)$ Follows analogously.
 						\[
 					  	 \mathrulean{\lemref{lemma:reduceinreduce}}
 					   	{
-						  	\mathrulean{\lemref{lemma:reduce}}
+						  	\mathrulean{\lemrefprop{lemma:sim-aux}{lemma:reduce}}
 						  	{\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}} \triangleleft \flatten{\tpending}
 						    	\quad
 						    	\transactionbuffer \triangleleft \ttransactionbuffer}
@@ -197,13 +199,13 @@ $\Leftarrow)$ Follows analogously.
 						 Since $\implements{\isystemterm}{\systemterm}$, if $\cid_l \in \dom\inserver$ and $\inclient \cdot\outserver(\cid_l) \neq \agssegpair[{\astate[']}][{\amxrf}]\cdot\aseqseg$ then
 						 $\ireduce{\igetdeltas{\inserver(\cid)}\cdot {\pushbuffer}} \triangleleft \ \flatten{\tsent}$ (\refprop{prop_sent}) 
 						 and  $\transactionbuffer \triangleleft{\ttransactionbuffer}$ (\refprop{prop_transactions}). 
-						 By $\lemref{lemma:reduce}$, $\flatten{\tsent} = \anupdseq[_1]\cdot\anupdseq[_2]$, 
+						 By $\lemrefprop{lemma:sim-aux}{lemma:reduce}$, $\flatten{\tsent} = \anupdseq[_1]\cdot\anupdseq[_2]$, 
 						 $\ireduce{\igetdeltas{\inserver(\cid)}} \triangleleft \ \anupdseq[_1]$ and $ {\pushbuffer}  \triangleleft \ \anupdseq[_2]$. 
 						 Then, we build the following proof 
 						% \[\ireduce{\igetdeltas{\inserver(\cid)}\cdot\ireduce{\pushbuffer\cdot \transactionbuffer}} \triangleleft \ \flatten{{\tsent}\cdot[\ttransactionbuffer]}\]
 						 {\scriptsize
 						\[
-						  \mathrulean{\lemref{lemma:reduce}}
+						  \mathrulean{\lemrefprop{lemma:sim-aux}{lemma:reduce}}
 						  {
 						  \ireduce{\igetdeltas{\inserver(\cid)}} \triangleleft \ \anupdseq[_1] 
 						  \quad
@@ -274,7 +276,7 @@ $\Leftarrow)$ Follows analogously.
 							$\ireduce{\adelta_0\cdots\adelta_h\cdot\pushbuffer} \triangleleft \flatten{\tpending}$.
 							 Since $\pending \cdot \around = \aroundtuplei[0]\ldots\aroundtuplei[h]\cdot{\aroundtuple[@][@][\pushbuffer]}$,
 							we need to prove that  $\ireduce{\adelta_0\cdots\adelta_h\cdot\adelta_p\cdot\emptydelta} \triangleleft \flatten{\tpending}$. 
-							It holds by using \lemref{lemma:reduce}, and the fact that $\emptydelta \triangleleft \epsilon$.
+							It holds by using \lemrefprop{lemma:sim-aux}{lemma:reduce}, and the fact that $\emptydelta \triangleleft \epsilon$.
 							%It is easy to see that it is the same relation that our hypothesis, since $\adelta_p$ was moved to the pending sequence. Therefore this property also holds.
 							
 
@@ -287,7 +289,7 @@ $\Leftarrow)$ Follows analogously.
 							
 							Note that $\igetdeltas{\inserver(\cid)\cdot \around} = \igetdeltas{\inserver(\cid)}\cdot\pushbuffer$. Then,
 							\[
-						  	\mathrulean{\lemref{lemma:reduce}}
+						  	\mathrulean{\lemrefprop{lemma:sim-aux}{lemma:reduce}}
 						  	{\ireduce{\igetdeltas{\inserver(\cid)}\cdot\pushbuffer} \triangleleft \ \flatten{\tsent}
 								\quad
 								\emptydelta \triangleleft \epsilon}
@@ -403,7 +405,7 @@ $\Leftarrow)$ Follows analogously.
 					
 					 $\outserver(\cid)' = \agssegpairi[h'+2] \cdots \agssegpairi[h]$. We prove that
 					\[\ireduce{\adelta_1\cdots\adelta_{h'+1}}\triangleleft \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer+m-1]}\]
-					by using \lemref{lemma:reduce} with the hypothesis \equref{eq:sim-receive-c1-c} and \equref{eq:sim-receive-c1-a}, \ie,
+					by using \lemrefprop{lemma:sim-aux}{lemma:reduce} with the hypothesis \equref{eq:sim-receive-c1-c} and \equref{eq:sim-receive-c1-a}, \ie,
 										
 %					Since $\implements{\isystemterm}{\systemterm}$,  \flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer-1]}
 %					By $\lemref{lemma:reduce}$, $\flatten{ \queuemessage[\tknown..\tknown+\treceivebuffer+m-1]} = \anupdseq[_1]\cdot\anupdseq[_2]$, 
@@ -476,7 +478,7 @@ $\Leftarrow)$ Follows analogously.
 				
 				Where $t \leq \tknown+\treceivebuffer$ s.t. $\astate['] \triangleleft \ \flatten{\queuemessage[0 .. t - 1]}$.
 
-				The case follows analogously to the previous case, since, \equref{eq:sim-receive-c1-d} and \equref{eq:sim-receive-c2-d} are equals and the only difference between \equref{eq:sim-receive-c1-c} and \equref{eq:sim-receive-c2-c}  is the init of the subsequence above $\queuemessage$. The proof for \refprop{prop_inclient} holds 					by using \lemref{lemma:reduce} with the hypothesis \equref{eq:sim-receive-c2-c} and \equref{eq:sim-receive-c1-a}.
+				The case follows analogously to the previous case, since, \equref{eq:sim-receive-c1-d} and \equref{eq:sim-receive-c2-d} are equals and the only difference between \equref{eq:sim-receive-c1-c} and \equref{eq:sim-receive-c2-c}  is the init of the subsequence above $\queuemessage$. The proof for \refprop{prop_inclient} holds 					by using \lemrefprop{lemma:sim-aux}{lemma:reduce} with the hypothesis \equref{eq:sim-receive-c2-c} and \equref{eq:sim-receive-c1-a}.
 
 				  \henote{Seguro? las hipotesis son bastante distintas. Por otro lado, dudo de la caracterisaci\'on en la def}
      		%$\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$,
@@ -732,13 +734,13 @@ $\Leftarrow)$ Follows analogously.
 						
 						{\small
 						\[
-								  \mathrulean{\lemref{lemma:apply}}
+								  \mathrulean{\lemrefprop{lemma:sim-aux}{lemma:apply}}
 									{
 										\mathrulean{\triangapply}
 										{
 										\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}
 										\quad 
-										\mathrulean{\lemref{lemma:reduce}}
+										\mathrulean{\lemrefprop{lemma:sim-aux}{lemma:reduce}}
 											{
 												\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}} \triangleleft \flatten{\tpending}
 												\quad
@@ -754,7 +756,7 @@ $\Leftarrow)$ Follows analogously.
 									\triangleleft {\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}}
 					\]}
 					Then, we conclude $v=v'$ by \triangread.
-						 														
+						 				\lemrefprop{lemma:sim-aux}{lemma:apply}										
 					The remaining properties straightforwardly hold.
 						
 
@@ -819,7 +821,7 @@ $\Leftarrow)$ Follows analogously.
 				$\ireduce{\igetdeltas{\inserver(\cid_l)}\cdot {\pushbuffer}} \triangleleft \ \flatten{\tsent_l}$ holds for any  
 				$\cid_l \in\dom{\inserver}$ (\refprop{prop_sent}) 
 				and  $\transactionbuffer_l \triangleleft{\ttransactionbuffer_l}$ (\refprop{prop_transactions}). 
-				By $\lemref{lemma:reduce}$, $\flatten{\tsent_l} = \flatten{\anupdseq[_1]_l}\cdot\flatten{\anupdseq[_2]_l}$, 
+				By $\lemrefprop{lemma:sim-aux}{lemma:reduce}$, $\flatten{\tsent_l} = \flatten{\anupdseq[_1]_l}\cdot\flatten{\anupdseq[_2]_l}$, 
 				%
 				\begin{equation}
 				\label{eq:sim-batch-deltainserver}		
@@ -899,7 +901,7 @@ $\Leftarrow)$ Follows analogously.
 						$\emptydelta \triangleleft \epsilon$. Moreover, 
 						 %It holds since $\emptydelta \triangleleft \epsilon$, by rule \ruleName{\triangemptydelta}. Furthermore, we know that
 						  $\pushbuffer_l\triangleleft\anupdseq[_2]_l$.  Then, we can build the following proof
-						\[ \mathrulean{\lemref{lemma:reduce}}
+						\[ \mathrulean{\lemrefprop{lemma:sim-aux}{lemma:reduce}}
 						  {
 							\ireduce{\igetdeltas{\inserver'(\cid_l)}} \triangleleft \epsilon
 							\quad 
@@ -930,10 +932,10 @@ $\Leftarrow)$ Follows analogously.
 						By \equref{eq:sim-batch-delta},
 						 
 						\[ \adelta \triangleleft \flatten{\anupdseq[_1]_0\cdots\anupdseq[_1]_m}\] 
-						By using $\lemref{lemma:reduce}$, % and \refprop{prop_inclient} we build the following proof for 
+						By using $\lemrefprop{lemma:sim-aux}{lemma:reduce}$, % and \refprop{prop_inclient} we build the following proof for 
 						%$\ireduce{\adelta_1\cdots\adelta_h\cdot\adelta} \triangleleft \ {\queuemessage}\cdot \tsenthead[_1]\cdots\tsenthead[_m]$
 						\[
-						  \mathrulean{\lemref{lemma:reduce}}
+						  \mathrulean{\lemrefprop{lemma:sim-aux}{lemma:reduce}}
 						  {	  
 						  \ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}												\quad 
 								\adelta \triangleleft \flatten{ \anupdseq[_1]_0\cdots\anupdseq[_1]_m}			
