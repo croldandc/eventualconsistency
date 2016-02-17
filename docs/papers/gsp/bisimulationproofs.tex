@@ -5,9 +5,11 @@
 \begin{lemma} \label{lemma:sim-aux}
 The followings properties holds,
 \begin{enumerate}
-\item \label{lemma:apply} $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq$ iff $\iapply{\astate}{\adelta[_0]\cdots\adelta[_n]}\triangleleft \anupdseq$.
-\item \label{lemma:reduce} $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]\cdot \adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]}\triangleleft \anupdseq[']$ $\adelta[_n] \triangleleft \anupdseq['']$.
-\item \label{lemma:reducefirst} $\ireduce{\adelta[_0]\cdot\adelta[_1]\cdots\adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\adelta[_0] \triangleleft \anupdseq['], \ireduce{\adelta[_1]\cdots\adelta[_{n}]}\triangleleft \anupdseq['']$.
+\item \label{lemma:apply} $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq$ iff $\iapply{\astate}{\adelta[_0]\cdots\adelta[_n]}\triangleleft \anupdseq$
+\item \label{lemma:reduce} $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]\cdot \adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]}\triangleleft \anupdseq[']$ $\adelta[_n] \triangleleft \anupdseq['']$
+\item \label{lemma:reducefirst} $\ireduce{\adelta[_0]\cdot\adelta[_1]\cdots\adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\adelta[_0] \triangleleft \anupdseq['], \ireduce{\adelta[_1]\cdots\adelta[_{n}]}\triangleleft \anupdseq['']$
+\item \label{lemma:reduceinreduce} $\ireduce{\adelta[_0]\cdots\ireduce{\adelta['_{0}]\cdots\adelta['_{m}]}\cdots\adelta[_{n}]}\triangleleft \ \anupdseq$ iff $\ireduce{\adelta[_0]\cdots\adelta['_0]\cdots\adelta['_{m}]\cdots\adelta[_{n}]}\triangleleft \anupdseq$
+\item \label{lemma:storechanged} Let $\adelta[_0]\cdots\adelta[_{n-1}]$ a delta sequence, such that, $\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_0] \triangleleft \anupdseq[_n]$ and the following relation $\astate \triangleleft \anupdseq$ then $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_n]$
 \end{enumerate}
 
 \end{lemma}
@@ -51,7 +53,7 @@ $\Leftarrow)$ Follows analogously.
 Hence, $\anupdseq['] = \anupdseq[_0]\cdots\anupdseq[_{n-1}]$ and $\anupdseq[''] = \anupdseq[_n]$. The proof is completed by using rule \ruleName{\triangreduce} on
 $\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_{n-1}] \triangleleft \anupdseq[_{n-1}]$.
 
- \[  \mathrule{\triangreduce}
+ \[  \mathrulean{\triangreduce}
    		{\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_{n-1}] \triangleleft \anupdseq[_{n-1}]}
 		{\ireduce {\adelta[_0] \cdots \adelta[_{n-1}]} \triangleleft \anupdseq[_0] \cdots \anupdseq[_{n-1}]}
 \]
@@ -63,12 +65,12 @@ $\Leftarrow)$ Follows analogously.
 %\end{lemma}
 
 
-\begin{lemma}\label{lemma:reduceinreduce} $\ireduce{\adelta[_0]\cdots\ireduce{\adelta['_{0}]\cdots\adelta['_{m-1}]}\cdots\adelta[_{n-1}]}\triangleleft \anupdseq$ iff $\ireduce{\adelta[_0]\cdots\adelta['_0]\cdots\adelta['_{m-1}]\cdots\adelta[_{n-1}]}\triangleleft \anupdseq$
+%\begin{lemma}\label{lemma:reduceinreduce} $\ireduce{\adelta[_0]\cdots\ireduce{\adelta['_{0}]\cdots\adelta['_{m-1}]}\cdots\adelta[_{n-1}]}\triangleleft \anupdseq$ iff $\ireduce{\adelta[_0]\cdots\adelta['_0]\cdots\adelta['_{m-1}]\cdots\adelta[_{n-1}]}\triangleleft \anupdseq$
 
-\end{lemma}
+%\end{lemma}
 
-\begin{lemma}\label{lemma:storechanged} Let $\adelta[_0]\cdots\adelta[_{n-1}]$ a delta sequence, such that, $\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_0] \triangleleft \anupdseq[_n]$ and the following relation $\astate \triangleleft \anupdseq$ then $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_n]$
-\end{lemma}
+%\begin{lemma}\label{lemma:storechanged} Let $\adelta[_0]\cdots\adelta[_{n-1}]$ a delta sequence, such that, $\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_0] \triangleleft \anupdseq[_n]$ and the following relation $\astate \triangleleft \anupdseq$ then $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_n]$
+%\end{lemma}
 
 \begin{proof} The proof follows by induction on the length of the sequence.
 
@@ -183,7 +185,7 @@ $\Leftarrow)$ Follows analogously.
 						 
 
 						\[
-					  	 \mathrulean{\lemref{lemma:reduceinreduce}}
+					  	 \mathrulean{\lemrefprop{lemma:sim-aux}{lemma:reduceinreduce}}
 					   	{
 						  	\mathrulean{\lemrefprop{lemma:sim-aux}{lemma:reduce}}
 						  	{\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}} \triangleleft \flatten{\tpending}
@@ -366,7 +368,7 @@ $\Leftarrow)$ Follows analogously.
 	
 	
 	
-					By $\lemref{lemma:reducefirst}$ on \equref{eq:sim-receive-c1-d}, 
+					By $\lemrefprop{lemma:sim-aux}{lemma:reducefirst}$ on \equref{eq:sim-receive-c1-d}, 
 					$\flatten{\queuemessage[\tknown+\treceivebuffer..|\queuemessage| - 1]} = \anupdseq[_1]\cdot\anupdseq[_2]$, 
 					$\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \anupdseq[_1]\cdot\anupdseq[_2]$, 
 					$\adelta_{h'+1} \triangleleft \anupdseq[_1]$ and 
@@ -1045,7 +1047,7 @@ $\Leftarrow)$ Follows analogously.
 						
 						Since $\implements{\isystemterm}{\systemterm}$, $\astate \triangleleft \flatten{\queuemessage}$  by \refprop{prop_stateserver}.
 						 Furthermore, $\adelta \triangleleft \flatten{ \anupdseq[_1]_0\cdots\anupdseq[_1]_m}$ by \equref{eq:sim-batch-delta}. 
-						 Then, by \lemref{lemma:storechanged} we build the following proof:
+						 Then, by \lemrefprop{lemma:sim-aux}{lemma:storechanged} we build the following proof:
 						
 						\[
 						  \mathrulean{\lemref{lemma:storechanged}}

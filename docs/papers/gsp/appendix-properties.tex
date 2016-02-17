@@ -22,7 +22,7 @@ and $\udec \in\  \queuemessage[0..\tknown_{\cid}-1] \cdot \tpending_{\cid} \cdot
    \item{\bf n=0}. Then $\op$ is $\emptyset$, and hence the thesis trivially holds. 
       \item{\bf n=k+1}. Then 
       \[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] 
-         \tr{} ^n\ 
+         \tr{} ^k\ 
          \environment{\systemterm['']}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
          \arro{\lambda}[\cidj]
  	\environment{\systemterm[']}{\op}{\so}{\vis}{\arb}
@@ -353,6 +353,48 @@ reduction step only add pairs $(\vertice,\vertice[w])$ with $\vertice[w]$. Then,
 \end{proof}
 
 
+\begin{lemma}
+\label{lemma:upd-in-buffers-updinSO} 
+Let $\systemterm$ a \gsp\ system. 
+If 
+$\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}$
+then for all $\anupd[_a],\anupd[_b]\in\updatesets$ if $\anupd[^{\vertice[x]}_a]=(\tpending_{\cid} \cdot [\ttransactionbuffer_{\cid}])[m]$ {and $\anupd[^{\vertice[y]}_b]=(\tpending_{\cid} \cdot [\ttransactionbuffer_{\cid}])[n]$} and $m < n$ then
+\[\systemterm' = \anabstcli \ \bigpar\ \queuemessage\ \bigpar\ \Absclient\]
+and $(\vertice[x],\vertice[y])\in\so$.
+\end{lemma}
+\begin{proof} It follows by induction on the length of
+the derivation  $\tr{} ^*$.
+% that for all $(\vertice,\vertice[x])\in\so$ if $(\vertice[x],\vertice[w])\in\vis$ then  $(\vertice,\vertice[w])\in\vis$.
+\begin{itemize}
+   \item{\bf n=0}. It holds, because $\tpending = \epsilon$ and $[\ttransactionbuffer] = \epsilon$ and $\op=\emptyset$.
+      \item{\bf n=k+1}. Then $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset]
+    \tr{} ^k\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+    \arroi{\lambda} \environment{\systemterm'}{\op}{\so}{\vis}{\arb}[\sse]$. 
+    By inductive hypothesis, for all $\anupd[_a],\anupd[_b]\in\updatesets$ if $\anupd[^{\vertice[x]}_a]=(\tpending_{\cid}' \cdot [\ttransactionbuffer_{\cid}'])[m]$ {and $\anupd[^{\vertice[y]}_b]=(\tpending_{\cid}' \cdot [\ttransactionbuffer_{\cid}'])[n]$} and $m < n$ then
+\[\systemterm'' = \anabstcli['] \ \bigpar\ \queuemessage' \ \bigpar\ \Absclient[']\]
+and $(\vertice[x],\vertice[y])\in\so'$.
+    We proceed by 
+    case analysis on the last applied rule:
+	
+    \begin{itemize}
+	\item rule \ruleName{a-update}. Then, $\vis=\vis'$ and $\so = \so'\cup (\sse(\cid)\times\{\vertice\})$ with $\op(\vertice)\in\updatesets$. There are two cases, 
+	    \begin{itemize}
+	    	\item $\vertice[y] = \vertice$. Since, $\systemterm'' \arroi{\updatetran{u}} \systemterm'$, by rule \textsc{update}, $\anupd[_{\vertice}] \in \tpending \cdot [\ttransactionbuffer]$, hence  $\ttransactionbuffer = \ttransactionbuffer' \cdot \anupd[_{\vertice}]$.
+		\item $\vertice[y] \neq \vertice$. Follow immediately by inductive hypothesis.
+	    \end{itemize}
+	 %
+	  \item rule \ruleName{a-read}. Then, $\so = \so'\cup  \so_{\mbox{\sf new}}$ with  
+	  $\so_{\mbox{\sf new}} = (\sse'(\cid)\times\{\vertice\})$, $\tpending = \tpending'$ and $\ttransactionbuffer = \ttransactionbuffer'$
+	  %
+	 By inductive hypothesis $\anupd[_a],\anupd[_b]\in\updatesets$ if $\anupd[^{\vertice[x]}_a]=(\tpending_{\cid}' \cdot [\ttransactionbuffer_{\cid}'])[m]$ {and $\anupd[^{\vertice[y]}_b]=(\tpending_{\cid}' \cdot [\ttransactionbuffer_{\cid}'])[n]$} and $m < n$ then
+\[\systemterm'' = \anabstcli['] \ \bigpar\ \queuemessage' \ \bigpar\ \Absclient[']\]
+and $(\vertice[x],\vertice[y])\in\so'$. Since, $\op' = \op\upd \vertice r$ and $\so = \so'\cup (\sse(\cid)\times\{\vertice\})$, then $(\vertice[x],\vertice[y])\in\so'$. 
+	\item rules \ruleName{a-arb} follow immediately by inductive hypothesis
+	after noticing that  $\so = \so'$.
+	\end{itemize}
+
+\end{itemize}\qed
+\end{proof}
 
 
 \begin{lemma}
