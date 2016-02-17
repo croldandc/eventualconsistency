@@ -2,10 +2,17 @@
 
 \section{Proof of results in \secref{sec:simulation}}
 
+\begin{lemma} The followings properties holds,
+\begin{enumerate}
+\item \label{lemma:apply} $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq$ iff $\iapply{\astate}{\adelta[_0]\cdots\adelta[_n]}\triangleleft \anupdseq$.
+\item \label{lemma:reduce} $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]\cdot \adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]}\triangleleft \anupdseq[']$ $\adelta[_n] \triangleleft \anupdseq['']$.
+\end{enumerate}
 
-
-\begin{lemma}\label{lemma:apply} $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq$ iff $\iapply{\astate}{\adelta[_0]\cdots\adelta[_n]}\triangleleft \anupdseq$.
 \end{lemma}
+
+
+%\begin{lemma}\label{lemma:apply} $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq$ iff $\iapply{\astate}{\adelta[_0]\cdots\adelta[_n]}\triangleleft \anupdseq$.
+%\end{lemma}
 
 \begin{proof} $\Rightarrow)$ The only possible derivation for $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq$ is
 
@@ -27,8 +34,8 @@ $\Leftarrow)$ Follows analogously.
 \end{proof}
 
 
-\begin{lemma}\label{lemma:reduce} $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]\cdot \adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]}\triangleleft \anupdseq[']$ $\adelta[_n] \triangleleft \anupdseq['']$.
-\end{lemma}
+%\begin{lemma}\label{lemma:reduce} $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]\cdot \adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]}\triangleleft \anupdseq[']$ $\adelta[_n] \triangleleft \anupdseq['']$.
+%\end{lemma}
 
 \begin{proof} $\Rightarrow)$ The only possible derivation for $\ireduce {\adelta[_1] \cdots \adelta[_{n-1}] \cdot \adelta[_{n}]} \triangleleft \anupdseq$ is
 
@@ -69,7 +76,7 @@ $\Leftarrow)$ Follows analogously.
 							
 						$\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_{k+1}]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_{k+1}] \ $
 					\[
-						  \mathrulean{\lemref{lemma:apply}}
+						  \mathrulean{\lemrefen{lemma:apply}}
 						  {
 								\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_k]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_k]
 								\quad \quad 
@@ -119,7 +126,7 @@ $\Leftarrow)$ Follows analogously.
 						\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer \cdot \tupdate}{\tsent}{\treceivebuffer}}[{\systemterm['']}]	
 				  \end{array}		
 				\]
-			
+				.
 				
 				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$.
 				Note that the only terms that have changed are the transaction buffers 
@@ -145,7 +152,7 @@ $\Leftarrow)$ Follows analogously.
 		
 				Since $(\systemterm,\isystemterm)\in \mathcal{R}$,
 				$ \tsystem{\tclienti{\tpushins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] $
-				with $\implements{\isystemterm['']}{\systemterm['']}.$
+				with $\implements{\isystemterm['']}{\systemterm['']}$. 
 				
 				By using rule \ruleName{push}, 
 				$\systemterm \arroi{\pushtran} \systemterm[']$ with

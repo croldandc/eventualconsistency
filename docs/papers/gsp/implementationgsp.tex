@@ -1,5 +1,6 @@
 % !TEX root = main.tex
 \section{Implementation of {\gsp}}
+\label{sec:igsp}
 
 The \tgspcalculus\ model describes an idealised system that abstracts  
 away from several  implementation details such as non-optimised 
@@ -63,7 +64,7 @@ Clients and the global store exchange $\adelta$ objects to communicate changes. 
 each single $\adelta$ may correspond to several update operations, clients
 send each $\adelta$  accompanied by its own identifier and a sequence number $\irounds$. 
 Precisely, clients send rounds, i.e.  triples $\around = \aroundtuple$. Differently,
-the global store sends segments $\aseg = \agssegpair$, in which a $\adelta$ is accompanied
+the global store sends segments $\aseg = \agssegpair$, in which $\adelta$ is accompanied
 by a function $\amxrf\in\idset\rightarrow \nat$ stating that $\adelta$ corresponds to 
 the changes sent by each client $\cid$ until the round $\amxrf(\cid)$. To 
 deal with crashes and recovery, the server may send segments of the form
@@ -213,9 +214,9 @@ for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following condition
 		\item ${\inclient}_l\cdot\outserver(\cid_l)= \agssegpairi[0] \cdots \agssegpairi[h]$; or
 		\item  ${\inclient}_l\cdot\outserver(\cid_l)= \agssegpair[{\astate}][{\amxrf[_0]}]\cdot\agssegpairi[1]\cdots \agssegpairi[h]$.
 	\end{itemize}
-	 $\amxrf_j(\cid_l) \leq \ \amxrf_k(\cid_l)$ for all  ${ j}<{k}$ and $\amxrf_h = \amxrf$
+	 $\amxrf_j(\cid_l) \leq \ \amxrf_k(\cid_l)$ for all  ${ j}<{k}  \in \{0 .. h\}$ and $\amxrf_h = \amxrf$
 	
-\item \label{wf-igsp-pending} $\pending_l = \aroundtuplei[0]\cdots\aroundtuplei[r]$,  $\irounds_j < \irounds_k$ for all  ${ j}<{k}$ and either.
+\item \label{wf-igsp-pending} $\pending_l = \aroundtuplei[0]\cdots\aroundtuplei[r]$,  $\irounds_j < \irounds_k$ for all  ${ j}<{k} \in \{0 .. r\}$ and either.
 	\begin{itemize}
 		\item $\pushbuffer_l =\emptydelta$ and $\irounds_r \leq \irounds_l$; or
 		\item $\pushbuffer_l \neq \emptydelta$ and $\irounds_r < \irounds_l$;
@@ -224,11 +225,22 @@ for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following condition
 \item  $\cid_l\in\dom\outserver$ then either
   \begin{itemize}
     \item $\pending_l = \epsilon$ and $\amxrf(\cid_l) \leq \irounds_l$;
-    \item $\pending_l = \inserver(\cid_l)\cdot\pending_l'$; 
-    $\inserver(\cid_l) = {\aroundtuple[\cid_l][{\irounds_{\it fst}}][\adelta_{\it fst}]} \cdot\pending_l''$ and  $ \irounds_{\it fst}> {\amxrf} (\cid_l)$.
-    \item $\pending_l =\pending_l''\cdot{\aroundtuple[\cid_l][{\irounds_{lst}}][\adelta_{lst}]} \cdot \inserver(\cid_l)\cdot\pending_l'$  
-    		and $\inclient_l\cdot\outserver (\cid_l) = \aseqseg\cdot\agssegpair[\delta'_{lst}][{\amxrf_{lst}}]$  with
+   % \item $\pending_l = \inserver(\cid_l)\cdot\pending_l'$; 
+    \item $\pending_l = \inserver(\cid_l)$; %NECESITABAMOS PARA QUE SEA SINCRO QUE HAYA UN OUT.
+    $= {\aroundtuple[\cid_l][{\irounds_{\it fst}}][\adelta_{\it fst}]} \cdot\pending_l'$ and  $ \irounds_{\it fst}> {\amxrf} (\cid_l)$.
+  %  \item $\pending_l =\pending_l''\cdot{\aroundtuple[\cid_l][{\irounds_{lst}}][\adelta_{lst}]} \cdot \inserver(\cid_l)\cdot\pending_l'$  
+   % 		and $\inclient_l\cdot\outserver (\cid_l) = \aseqseg\cdot\agssegpair[\delta'_{lst}][{\amxrf_{lst}}]$  with
+%		 ${\amxrf_{lst}} (\cid_l) = \irounds_{lst}$. 
+ \item $\pending_l =\pending_l''\cdot{\aroundtuple[\cid_l][{\irounds_{lst}}][\adelta_{lst}]} \cdot \inserver(\cid_l)$  
+    		and $\inclient_l\cdot\outserver (\cid_l) = \agssegpairi[0] \cdots\agssegpair[\delta'_{lst}][{\amxrf_{lst}}]$  with
 		 ${\amxrf_{lst}} (\cid_l) = \irounds_{lst}$. 
+		 
+\item $\inserver(\cid_l) = \epsilon$, $\pending_l =\pending_l''\cdot{\aroundtuple[\cid_l][{\irounds_{lst}}][\adelta_{lst}]}$  
+    		and $\inclient_l\cdot\outserver (\cid_l) = \agssegpair[{\astate}][{\amxrf}] \cdot\aseqseg$
+		%\agssegpair[\delta'_{lst}][{\amxrf_{lst}}]$  
+		with ${\amxrf} (\cid_l) \leq \irounds_{lst}$. 
+		 
+		 		 
 \end{itemize}
 \end{enumerate}
 \end{definition}
@@ -671,6 +683,6 @@ do not model this behaviour explicitly because  it can be obtained by applying s
 
 As for the \gsp, well-formedness is preserved by reductions.
 
-\begin{lemma} Let  $\isystemterm$ be a well-formed \igsp\ system. If 
+\begin{lemma}\label{lemma:igsp-wf} Let  $\isystemterm$ be a well-formed \igsp\ system. If 
  $\isystemterm\arroi{\action}\isystemterm[']$, then $\isystemterm[']$ is well-formed.
 \end{lemma}
