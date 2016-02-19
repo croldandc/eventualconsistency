@@ -38,7 +38,7 @@ then $\systemterm[']$ if free from asynchronous update.
 \begin{proof}The proof follows by case analysis on the applied rule.
 \end{proof}
 
-\begin{corollary} Let $\systemterm$  be a \gsp\ system free from asynchronous update. If $\systemterm\arroi{\readtran{\aread}}\systemterm[']$,
+\begin{corollary}\label{corollary:async-emptyqueue} Let $\systemterm$  be a \gsp\ system free from asynchronous update. If $\systemterm\arroi{\readtran{\aread}}\systemterm[']$,
 the $\Absclient_{\cid}= \tclienti{\tprogram_{\cid}}{\tknown_{\cid}}{\tpending_{\cid}}{\ttransactionbuffer_{\cid}}{\tsent_{\cid}}{\treceivebuffer_{\cid}}[\cid][\trounds_{\cid}]$ and
 $\tpending_{\cid}\cdot{\ttransactionbuffer_{\cid}} = \epsilon$.
 \end{corollary}
@@ -128,6 +128,114 @@ Now, we will prove by induction on on the length of the derivation that $\textsc
 \end{proof}
 	
 
+
+\begin{lemma}\label{lemma:empty_queue} 
+Let $\systemterm$  be a \gsp\ system free from asynchronous update. If $\systemterm\arroi{\lambda}\systemterm[']$ 
+then $\systemterm[']$ if free from asynchronous update. 
+\end{lemma}
+
+
+\begin{lemma}\label{lemma:vertice_arb_store} 
+If $(\vertice,\vertice[w])\in\arb$ and $\anupd[^{\vertice[w]}] \in \queuemessage[0 .. \tknown - 1]$ then $\exists \anupd['] s.t. \anupd[\vertice] \in \queuemessage[0 .. \tknown]$
+\end{lemma}
+
+
+\begin{lemma}\label{lemma:vertice_vis_store} 
+If $(\vertice,\vertice[w])\in\vis$ then $\anupd[^{\vertice}] \in \queuemessage$
+\end{lemma}
+
+\begin{proof} [Single Order (\ref{thm:single-order})]
+We proceed by induction on the length of the derivation 
+$\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^n\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}$.
+
+\begin{itemize}
+	    \item {\bf n=0}. Trivially, because $\arb=\vis=\emptyset$.
+    \item{\bf n=k+1}. Then 
+      \[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] 
+         \tr{} ^k\ 
+         \environment{\systemterm['']}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+         \arro{\lambda}[\cid]
+ 	\environment{\systemterm[']}{\op}{\so}{\vis}{\arb}
+	 \]
+	 
+	By inductive hypothesis, $\arb';\vis' \subseteq \vis'$ and $\arb'^{-1};\neg\vis'\subseteq\neg\vis'$. We proceed by 
+case analysis on the inference rule applied for the last transition:
+
+	\begin{itemize}
+      
+        \item rule \ruleName{a-read}. Then, $\arb=\arb'$, $\arb^{-1}=\arb'^{-1}$,
+        		 $\vis = \vis' \cup \vis_{\mbox{\sf new}}$ and $\neg\vis=\neg(\vis'\cup\vis_{\mbox{\sf new}}) = (\neg\vis'\cap\neg\vis_{\mbox{\sf new}})$.
+         
+        \begin{itemize}
+        \item $\arb;\vis \subseteq \vis$
+        
+        Hence, 
+        \[\arb;\vis = \arb';(\vis'\cup\vis_{\mbox{\sf new}}) =  \arb';\vis'\cup \arb';\vis_{\mbox{\sf new}} \]
+        	By inductive hypothesis,    $\arb';\vis' \subseteq \vis' \subseteq \vis$. It remains
+        to prove that $\arb';\vis_{\mbox{\sf new}} \subseteq \vis$. 
+        By \corref{corollary:async-emptyqueue} $\tpending\cdot{\ttransactionbuffer} = \epsilon$, hence, $(\vertice[w],\vertice) \in \vis_{\mbox{\sf new}}$
+        implies $\anupd{\vertice[w]} \in \queuemessage[0..\tknown-1]$. Then, if  $(\vertice[w],\vertice[w']) \in \arb, by \lemref{lemma:vertice_arb_store}, \vertice[w'] \in \queuemessage[0..\tknown-1]$.
+        Therefore, $(\vertice[w'],\vertice) \in \vis_{\mbox{\sf new}} \subseteq \vis$ .
+	
+	\item $\arb^{-1};\neg\vis\subseteq\neg\vis$
+	
+        Hence, 
+        \[\arb^{-1};\neg\vis= (\arb^{-1};\neg\vis')\cap(\arb^{-1};\vis_{\mbox{\sf new}})\subseteq \vis_{\mbox{\sf new}} \subseteq \vis \]
+
+	\end{itemize}
+        
+       
+        \item rule \ruleName{a-update}. $\vis = \vis'$ and 
+        $\arb = \arb' \cup \arb_{\mbox{\sf new}}$ with  $\arb_{\mbox{\sf new}}= (\{ \vertice[w] \ |\ \udec[@][{\vertice[w]}]\in \queuemessage' \}\times\{\vertice\})$.  
+        \begin{itemize}
+        \item $\arb;\vis \subseteq \vis$
+	
+	Hence,
+	        \[\arb;\vis = \arb';\vis\cup\arb_{\mbox{\sf new}};\vis' \]
+
+	\end{itemize}
+        
+        Since $\vertice$ is fresh, $\vertice \notin \vis'$ then $\arb_{\mbox{\sf new}};\vis' = \emptyset$ and $\emptyset \subseteq \vis$. 
+        By inductive hypothesis,    $\arb';\vis' \subseteq \vis' \subseteq \vis$.
+
+	\item $\arb^{-1};\neg\vis\subseteq\neg\vis$
+	
+        Hence, 
+	\[\arb^{-1};\neg\vis = (\arb\cup\arb_{\mbox{\sf new}})^{-1};\neg\vis = (\arb^{-1} \cup\arb_{\mbox{\sf new}}^{-1});\vis' \]
+	By inductive hypothesis,    $\arb^{-1};\neg\vis'\subseteq\neg\vis'=\vis$. It remains
+        to prove that $\arb_{\mbox{\sf new}};\neg\vis \subseteq \vis$. Since $\vertice$ is fresh, $\forall\vertice[w'].(\vertice,\vertice[w'])\notin\vis$ then 
+        $(\vertice,\vertice[w'])\in\neg\vis$ and $\arb^{-1};\neg\vis'\subseteq\neg\vis'$.
+        
+       \item rule \ruleName{a-arb}. $\vis = \vis'$, and
+        $\arb = \arb' \cup \arb_{\mbox{\sf new}}$ with 
+         $\arb_{\mbox{\sf new}}= \{ (\vertice, \vertice[w])\ \ |\ \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
+		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage\cdot \ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]\} \cup\  \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\}$.
+	\begin{itemize}
+        \item $\arb;\vis \subseteq \vis$
+	
+	Hence, 
+        \[\arb;\vis =  (\arb' \cup \arb_{\mbox{\sf new}});\vis = \arb';\vis \cup \arb_{\mbox{\sf new}};\vis' \]
+	If $(\vertice[w],\vertice) \in \arb_{\mbox{\sf new}}$ implies that $\vertice\notin\queuemessage$ by \lemref{lemma:vertice_vis_store}. There is no $(\vertice,\vertice') \in \vis$ then $\arb_{\mbox{\sf new}};\vis = \emptyset$
+		
+	\item $\arb^{-1};\neg\vis\subseteq\neg\vis$
+	
+	The case follows analogously to the previous case, we have to prove that  $\arb_{\mbox{\sf new}};\neg\vis \subseteq \vis$. There are two cases:
+	\begin{itemize}
+		\item $(\vertice,\vertice[w]) \in \{ (\vertice, \vertice[w])\ \ |\ \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
+		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage\cdot \ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]\}$ then $(\vertice[w],\vertice) \in \arb^{-1}$ implies $\forall \vertice[w'].(\vertice[w],\vertice[w'])\notin\vis$ then $(\vertice,\vertice[w]) \in \vis$. 
+		     Hence $\arb_{\mbox{\sf new}}';\neg\vis\subseteq \neg\vis$ trivially holds.
+		
+		\item $(\vertice,\vertice[w]) \in \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\}$. Then $\vertice[w]\notin\queuemessage$. Hence $\forall \vertice[w'].(\vertice[w],\vertice[w]) \in \neg\vis$. Hence, $\arb_{\mbox{\sf new}}^{-1};\neg\vis \subseteq \neg\vis$
+	\end{itemize}
+	
+	\end{itemize}	     
+    	
+       \item rule \ruleName{a-int} follows straightforwardly.
+       \qed
+    \end{itemize}
+    \end{itemize}
+	
+\end{proof}
 
 
 
