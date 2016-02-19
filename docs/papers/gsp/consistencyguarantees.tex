@@ -45,8 +45,11 @@ $\mathbb{U} = \{ \vertice\ |\ \vertice{}\in\op, \op(\vertice) \in \updatesets\}$
  
  
  \begin{definition}[Well-formed history]
-A history 
-$ \environmentterm =  \environment{\systemterm}{\op}{\so}{\vis}{\arb}$
+Let $\systemterm = \Absclient_0\bigpar \ldots\bigpar \Absclient_m\bigpar\queuemessage$ be 
+a \gsp\ system where
+$\Absclient_l = \tclienti{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\tsent_l}{\treceivebuffer_l}[\cid_l][\trounds_l]$. 
+ An  history 
+$ \environmentterm =  \environment{\systemterm}{\op}{\so}{\vis}{\arb}$  
 is well-formed if the following conditions hold:
 
  \begin{enumerate}
@@ -55,6 +58,13 @@ is well-formed if the following conditions hold:
      \item for all $\cid\in\dom\sse$, $\so\relrestriccion{\sse(\cid)}$ is a total order; %\chnote{que significa esto?}
      \item $\vis\subseteq\mathbb{U}\times\mathbb{R}$;
      \item $\arb\subseteq\mathbb{U}\times\mathbb{U}$ is a prefix order.%, then $\{\op(\vertice[@][_1]),\op(\vertice[@][_2])\}\subseteq\updatesets$;
+     \item $(\vertice,\vertice[w])\in \arb$  iff 
+     	\begin{itemize} 
+	\item $\flatten{\queuemessage}[i] = \anupd^{\vertice}$ and $\flatten{\queuemessage}[j] = \anupd^{\vertice[w]}$ and $i< j$; or
+     	\item $\anupd^{\vertice}\in \flatten{\queuemessage}$ and $\anupd^{\vertice[w]}\in\flatten{\tsent_l\cdot\ttransactionbuffer_l}$;
+	\end{itemize}
+     \item if $\flatten{\tsent_l\cdot\ttransactionbuffer_l}[i] = \anupd^{\vertice}$ and $\flatten{\tsent_l\cdot\ttransactionbuffer_l}[j] = \anupd^{\vertice[w]}$ and $i< j$, then
+     $(\vertice,\vertice[w])\in \so$ and $\{\vertice,\vertice[w]\}\in\sse({\cid_l})$.
  \end{enumerate}
 \end{definition}
 
@@ -65,6 +75,7 @@ belonging to the same session (2), which are totally ordered within each session
 the definition in~\cite{DBLP:journals/ftpl/Burckhardt14}, we restrict visibility to keep track of dependencies between updates and read events(4).
  We do not require $\arb$ to be a total order but instead to be 
 a prefix order (5). In this way we allow  updates in different replicas not to be arbitrated until they do not reach the global store yet. 
+The remaining two conditions require the abstract history to be consistent with the state of the system.
 
 %\begin{itemize}
 % \item {\em Session Order} (\so) describes the sequential order in which operations executed within a session (i.e., a single thread of 
