@@ -4,17 +4,16 @@
 \label{sec:simulation}
 
 We now prove that  \igsp\ is a correct implementation 
-of \gsp. We now recall the requirements
-imposed  for the
-operations provided by the data  types 
-\statetype\ and \deltatype. in~\cite{DBLP:conf/ecoop/BurckhardtLPF15}
-These requirements are formalised by the relation $\_\triangleleft \_$, which associates 
+of \gsp. We recall in \figref{fig:coherence-operation} the requirements stated in~\cite{DBLP:conf/ecoop/BurckhardtLPF15}
+for the operations provided by the data types 
+\statetype\ and \deltatype. 
+Formally,  the relation $\_\triangleleft \_$ associates 
  delta and state objects with sequences of updates: $\adelta\triangleleft\anupdseq$
  (similarly, $\astate\triangleleft\anupdseq$)  means  that $\delta$ (correspondingly, $\astate$) 
  is a compact representation of $\anupdseq$. Then, it is also assumed that 
 $\astate\triangleleft\anupdseq$ implies  $\iread \aread \astate  = \rvalue \aread  \anupdseq$ for any $\aread$.
 Building on the above relation, the next definition states when a
-\igsp\ system its an implementation of a \gsp\ system.
+\igsp\ system is an implementation of a \gsp\ system.
 
 \begin{figure}[t]
 {\small
@@ -82,9 +81,6 @@ Let  $\systemterm = \abstsyst[@][@][\Absclient_j]$ be a \tgspcalculus\ system
 $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such that  $\iserver = \iserverins$ and $\iclient_l = \addid{\iclientinstJ}[{\cid{_l}}]$.
  We say {\em $\isystemterm$ implements $\systemterm$} if the following conditions hold:
 
-
-\newpage
-
 \begin{enumerate}
 	\item \label{prop_stateserver} $\astate \triangleleft \flatten{\queuemessage}$;
 
@@ -129,11 +125,12 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
 %	\item  \label{prop_size_buffersent} $m_l = n_l$ 
 	
 \item \label{prop_inclient} if $\cid_l \in \dom{\outserver}$ then either
-    \begin{itemize}
+
+    \begin{enumerate}[i.]
    % \item  ${\inclient}_l \cdot \outserver(\cid_l)  = \agssegpair[{\astate[']}]\cdot\agssegpairi[1] \cdots \agssegpairi[h]$
     % and  
     % $\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_{h}]}}\triangleleft \flatten{\queuemessage} )$; or 
-     \item ${\inclient}_l \cdot \outserver(\cid_l)  = \epsilon$, $\tknown_l = |\queuemessage|$ and $\treceivebuffer_l =0$;
+     \item ${\inclient}_l \cdot \outserver(\cid_l)  = \epsilon$, $\tknown_l = |\queuemessage|$; % and $\treceivebuffer_l =0$;
 
      \item ${\inclient}_l = \agsprefpair[{\adelta[']}]\cdot\aseqseg$,
       $\ireduce{\igetdeltas{{\inclient}_l}}\triangleleft \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]}$,  and
@@ -155,7 +152,7 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
 %       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
 %           
      \item ${\inclient}_l = \agssegpair[{\astate[']}][{\amxrf[_0]}]\cdot\aseqseg$,      
-  		 there exists $t \leq \tknown_l+\treceivebuffer_l$ s.t. $\astate['] \triangleleft \ \flatten{\queuemessage[0 .. t - 1]}$, 
+  		 there exists $t$ s.t. $\tknown_l\leq t \leq \tknown_l+\treceivebuffer_l$ s.t. $\astate['] \triangleleft \ \flatten{\queuemessage[0 .. t - 1]}$, 
 
 
      
@@ -184,28 +181,56 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
 %   $\ireduce{\adelta_{z+1}\cdots\adelta_{h}}\triangleleft \flatten{ \queuemessage[t..\tknown_l+\treceivebuffer_l-1]}$ 
      
 	
-	\end{itemize}	
+	\end{enumerate}	
 	
         \item \label{prop_deltas} for all $\agssegpair\in\inclient_l\cdot\outserver(\cid_l)$, 
-          \begin{itemize}
-          	\item $\amxrf(\cid_l)\leq\irounds_l$,
-		\item  for all $\aroundtuple[@][@][\adelta'] \in\pending_l$
+%          \begin{enumerate}[i.]
+   %       	\item $\amxrf(\cid_l)\leq\irounds_l$,
+		%\item  
+		for all $\aroundtuple[@][@][\adelta'] \in\pending_l$
         if $\irounds\leq\amxrf(\cid_l)$ then $\adelta\triangleleft \flatten{\queuemessage[x..x']}$ and  $\flatten{\adelta'\triangleleft \queuemessage[y..y']}$
         with $y'\leq x'$
-	\end{itemize}
+	%\end{enumerate}
 
 \end{enumerate}
 	
 \end{definition}
 
 
-The  first three conditions are self-explanatory. Condition (\ref{prop_pending})  ..\henote{Terminar cuando est\'e confirmado}
+The  first three conditions are self-explanatory. Condition (\ref{prop_pending})  states that  pending blocks $\flatten{\tpending_l}$ in the abstract model 
+corresponds either to sent rounds that are still pending, \ie, within $\pending_l$, or to blocks ready to 
+be sent, \ie, in ${\pushbuffer}_l$.
+By condition (\ref{prop_sent}), if a client is synchronised with the store 
+(\ie, $\cid_l \in \dom\inserver$ and $\inclient \cdot\outserver(\cid_l) \neq \agssegpair[{\astate[']}][{\amxrf}]\cdot\aseqseg$) 
+then  all completed blocks  in  $\tsent_l$  corresponds to rounds 
+that are already in the input buffer $\inserver(\cid_l)$ of the store or ready to sent in  ${\pushbuffer}_l$.
+Condition (\ref{prop_inclient}) establishes the relations between the received messages in both models. Basically, 
+when there are no segments for the client (${\inclient}_l \cdot \outserver(\cid_l)  = \epsilon$), then the local replica 
+is complete ($i$). When the first received segment is a delta object ($ii$),
+ the client's input buffer $\inclient_l$ corresponds to the received messages in $\queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]$
+and the the store's output buffer $\outserver(\cid_l)$ contains the remaining updates in the store, 
+\ie $\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]$. The remaining items consider
+the cases in which the first segment contains a state. If the segment is already 
+in the input buffer of the client ($iii$), then
+the state $\astate[']$ represents a prefix of the sequence $\queuemessage$ 
+whose length lies in between of the updates already received by the client, i.e., 
+$\queuemessage[0 .. t - 1]$ with  $\tknown\leq t \leq \tknown_l+\treceivebuffer_l$, while the remaining
+conditions are analogous to the previous case.  Differently, when the 
+first segment is still on the output buffer of the store ($iv$), the state $\astate[']$  corresponds to a
+ prefix that contains all  updates in $\queuemessage$ already known by the client, 
+ \ie, $t \geq \tknown_l+\treceivebuffer_l $.    
+ 
+ The last condition (\ref{prop_deltas}) states that for any segment $\agssegpair$  sent by the 
+ store, $\adelta$ corresponds to a contiguous sequence of updates in $\queuemessage$. 
+ Moreover, all confirmed rounds  (\ie, $\irounds\leq\amxrf(\cid_l)$) are already in $\queuemessage$
+ within the prefix delimited by $\adelta$.
+
 
 We  now show that \igsp\ is a correct implementation of \gsp\ by proving that all behaviours of $\isystemterm$  are allowed by $\systemterm$ 
 whenever $\isystemterm$  implements $\systemterm$. Technically,  we prove that $\systemterm$ weakly simulates $\isystemterm$. 
  We rely on a standard notion of simulation but technically we take into account the fact that
 the \gsp\ associates a fresh event identifier to each update while \igsp\ does not. Take  $\rightarrow = \tr{\tau} \bigcup_{\cid\in\idset} \arroi{\tau}$,
- $\Arro$ as the transitive closure of $\rightarrow$, \ie, $\Arro = \rightarrow^*$ and 
+ $\Arro$ as the reflexive and transitive closure of $\rightarrow$, \ie $\Arro = \rightarrow^*$, and 
  $\Arroi{\lambda} \ = \ \Arro;\arroi{\lambda};\Arro$.
  
  
