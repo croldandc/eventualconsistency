@@ -3,10 +3,10 @@
 \label{sec:igsp}
 
 The \tgspcalculus\ model describes an idealised system that abstracts  
-away from several  implementation details such as non-optimised 
+away from several  implementation details, such as non-optimised 
 representation of the state and unreliable communication. 
 This section presents a formal model for the implementation   
-proposed in\henote{~\cite{}}. 
+proposed in~\cite{DBLP:conf/ecoop/BurckhardtLPF15}. 
 
 
 \subsection{Syntax}
@@ -19,7 +19,7 @@ but they are
 %In order to keep the description of the model as general as possible, they have been
 characterised  in terms of 
 two abstract types:  $\statetype$ and $\deltatype$, which provides
- the following  operations\henote{in~\cite{}}:
+ the following  operations in~\cite{DBLP:conf/ecoop/BurckhardtLPF15}:
 
 {\small
 \[
@@ -53,7 +53,7 @@ $\adelta \in \deltatype$ describes the effects of a sequence of updates and
 is built  by either appending an update  to an existing delta ($\iappendname$) 
 or  combining together several deltas  ($\ireducename$).
 Operation $\ireadname$ is the 
-interpretation function for read operations (\ie, the implementation counterpart of 
+interpretation function for  operations (\ie, the implementation counterpart of 
 function $\rvalue{\_}{\_}$  used by the 
 idealised model) and $\iapplyname$ corresponds to state transformations.
 %
@@ -62,13 +62,14 @@ idealised model) and $\iapplyname$ corresponds to state transformations.
 
 Clients and the global store exchange $\adelta$ objects to communicate changes. As 
 each single $\adelta$ may correspond to several update operations, clients
-send each $\adelta$  accompanied by its own identifier and a sequence number $\irounds$. 
+send each $\adelta$  accompanied by its own identifier and
+ a sequence number $\irounds$. 
 Precisely, clients send rounds, i.e.  triples $\around = \aroundtuple$. Differently,
 the global store sends segments $\aseg = \agssegpair$, in which $\adelta$ is accompanied
-by a function $\amxrf\in\idset\rightarrow \nat$ stating that $\adelta$ corresponds to 
-the changes sent by each client $\cid$ until the round $\amxrf(\cid)$. To 
+by a function $\amxrf\in\idset\rightarrow \nat$. In this way, the global store 
+confirms all changes from client $\cid$ until round $\amxrf(\cid)$. To 
 deal with crashes and recovery, the server may send segments of the form
-$\agsprefpair$, communicating a state instead of a delta object. 
+$\agsprefpair$, which communicates a complete state instead of a delta object. 
 
  \begin{definition}[GSP Language] 
 The set of \igsp\ terms is given by the grammar in \figref{fig:syntax-igsp}.
@@ -137,8 +138,7 @@ The set of \igsp\ terms is given by the grammar in \figref{fig:syntax-igsp}.
 
 As for \gsp, a system is composed by a global store $\iserver$ and possibly many clients $\iclient$. 
 A global store is modelled by a tuple $\server{\astate}{\inserver}{\outserver}$ containing a state $\astate$, 
-a function $\amxrf$ that keeps track of last rounds incorporated
- to the state, and the communication buffers
+a function $\amxrf$ to keep track of  processed rounds and the communication buffers
 $\inserver$ and $\outserver$. There are two dedicated buffers for 
  each client $\cid$: $\inserver(\cid)$ contains the  rounds received from $\cid$,  and $\outserver(\cid)$ 
   the  segments that have been sent to $\cid$. 
@@ -149,7 +149,7 @@ The component $\transactionbuffer$ is analogous to $\ttransactionbuffer$ in the 
 all local updates until the client performs $\pushcmd$. Differently, $\pushbuffer$ keeps all finished blocks that 
  have not been sent. The number $\irounds$ identifies the current round. Buffer $\pending$ keeps all
  sent rounds that have not been confirmed by the global store (similar to $\tpending$ in \gsp), while 
- $\inclient$ keeps all unprocessed received segments (analogous to $\treceivebuffer$).  
+ $\inclient$ keeps all  received segments (analogous to $\treceivebuffer$).  
 
 %In addition,  we will use partial functions  $\amxrf,\amxrf['],\ldots, \amxrf[{_1}],\ldots$ in  $\idset\rightarrow \nat$
 %assigning clients with a natural number denoting \henote{the number of the last round exchanged with ...}
@@ -226,7 +226,7 @@ for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following condition
   \begin{itemize}
     \item $\pending_l = \epsilon$ and $\amxrf(\cid_l) \leq \irounds_l$;
    % \item $\pending_l = \inserver(\cid_l)\cdot\pending_l'$; 
-    \item $\pending_l = \inserver(\cid_l)$; %NECESITABAMOS PARA QUE SEA SINCRO QUE HAYA UN OUT.
+    \item $\pending_l = \inserver(\cid_l)$ %NECESITABAMOS PARA QUE SEA SINCRO QUE HAYA UN OUT.
     $= {\aroundtuple[\cid_l][{\irounds_{\it fst}}][\adelta_{\it fst}]} \cdot\pending_l'$ and  $ \irounds_{\it fst}> {\amxrf} (\cid_l)$.
   %  \item $\pending_l =\pending_l''\cdot{\aroundtuple[\cid_l][{\irounds_{lst}}][\adelta_{lst}]} \cdot \inserver(\cid_l)\cdot\pending_l'$  
    % 		and $\inclient_l\cdot\outserver (\cid_l) = \aseqseg\cdot\agssegpair[\delta'_{lst}][{\amxrf_{lst}}]$  with
@@ -248,12 +248,12 @@ for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following condition
 We require all clients to have different identifiers (1). Communication channels in the 
 implementation are bidirectional, hence  $\cid_l\in\dom\inserver$ iff  $\cid_l\in\dom\outserver$ 
 (2). Moreover, the input buffer of a  disconnected client is empty, \ie, $\cid_l\in\dom\outserver$ (3). 
-Condition (4) states that $\agssegpair$ can appear only as a first message in the flow from 
-the store and that store confirms processed rounds in a non-decreasing order. Similarly, (5)
-states that each client sends rounds with increasing number and that the last sent round
-cannot be greater than the round counter of the client. The last condition states a 
+Condition (4) states that $\agsprefpair$ can appear only as the first message in the flow from 
+the store and that the store confirms processed rounds in a non-decreasing order. Similarly, 
+ clients send rounds with increasing round number (5). The last condition states a 
  coherence requirement between  
-the pending rounds on the client and the confirmations sent by the store.
+ pending rounds and the confirmations sent by the store: stores confirms rounds within the range of 
+ unconfirmed rounds. 
 
 
 
@@ -435,37 +435,39 @@ Rule \ruleName{i-update}, which is analogous to rule \ruleName{update}, adds the
 
 
 
-A client terminates a block by executing $\pushcmd$ (rule \textsc{i-push}). At this time, the block $\transactionbuffer$ 
- is appended to the already terminated blocks in $\pushbuffer$, which will be sent on next round. 
+A client terminates a block by executing $\pushcmd$ \ruleName{i-push}. At this time, the block $\transactionbuffer$ 
+ is appended to the already terminated blocks in $\pushbuffer$, which will be sent on the next round. 
  Additionally, the block counter $\irounds$ is incremented by $1$.
  By rule \ruleName{i-send}, a client sends changes to the global store. 
  This transition may take place whenever  the client is connected  (\ie, $\cid\in\dom\inserver$),
-  there are finished blocks in $\pushbuffer$ (\ie, $\pushbuffer \neq \emptydelta$)  and 
- synchronised with the global store(\ie, $\inclient \cdot\outserver(\cid) \neq \agssegpair[{\astate[']}][{\amxrf}]\cdot\aseqseg$)\footnote{For simplicity we check re-synchronisation by inspecting  communication buffers  instead of 
+  there are finished blocks in $\pushbuffer$ (\ie, $\pushbuffer \neq \emptydelta$)  and the 
+  client does not need to re-synchronise with the global store 
+  (\ie, $\inclient \cdot\outserver(\cid) \neq \agssegpair[{\astate[']}][{\amxrf}]\cdot\aseqseg$)\footnote{For simplicity we check re-synchronisation by inspecting  communication buffers  instead of 
   explicitly adding  to the state the condition {\em channel established} used 
  by the implementation.}.
-  
- At this time, all 
- available blocks are sent in the same round $\around = \aroundtuple[@][@][\pushbuffer]$, which is labelled with 
-  $\irounds$, i.e. the number corresponding to the last finished block. 
-  The new round $\around$ is added at the end of the input buffer of the store corresponding to $\cid$, \ie, $\inserver(\cid)$ 
-  is updated to $\inserver(\cid)\cdot\around$ (where $\_\upd{\_}{\_}$ is the operator for function update).
+  %
+ The 
+ available blocks are sent within the same round $\around = \aroundtuple[@][@][\pushbuffer]$, which is labelled with 
+ the number  $\irounds$ corresponding to the last finished block. 
+  The new round $\around$ is added to the corresponding input buffer in the store, \ie, $\inserver(\cid)$ 
+  is updated to $\inserver(\cid)\cdot\around$ (where $\_\upd{\_}{\_}$ is the  update operator for functions).
   Additionally, $\around$ is added to the sequence of pending rounds $\pending$ and the 
-  buffer of finished blocks is reset to $\emptydelta$.
+  buffer $\pushbuffer$ is reset to $\emptydelta$.
 
-  Symmetrically, with rule \ruleName{i-receive} the client $\cid$  receives a new segment from the 
-  global store:  $\aseg$ is removed from the top of the output channel $\outserver(\cid)$ and
-   it is added to the input buffer of the client. As for the idealised model, all received changes are applied to 
+  Symmetrically,  the client $\cid$  may receive an available segment 
+   at any time  \ruleName{i-receive}. The new segment  $\aseg$ is removed from the buffer $\outserver(\cid)$
+  on the global store and
+    added to the input buffer on the client. As for the idealised model, all received changes are applied to 
    the local replica when $\cid$ performs $\pullcmd$. Rule \ruleName{i-pull$_1$} handles the case in which 
    the connection with the global store has not been previously reset. In such case, 
    all received segments are of the form $\agssegpair$. Therefore, all received 
    changes $\adelta[_1]\cdots\adelta[_k]$ are applied to the local state $\astate$. Moreover, 
-   the  pending rounds in $\pending$ are updated by removing the  local changes 
-    that are confirmed by the received segments. By well-formedness (\defref{def:wf-igsp},\ref{wf-igsp-pending}),  
-    $\amxrf_h(\cid) \leq \amxrf_j(\cid)$ for all ${h}\leq {j}$, it suffices to consider  
-    the confirmation $ \amxrf_k$. Hence, all rounds up-to  
+   all rounds that are confirmed by the received segments are removed from  the  pending list $\pending$.
+   Actually, it suffices to consider  
+    the confirmation $ \amxrf_k$ since  well-formedness (\defref{def:wf-igsp},\ref{wf-igsp-pending}) ensures  
+    $\amxrf_h(\cid) \leq \amxrf_j(\cid)$ for all ${h}\leq {j}$. Hence, all rounds up-to  
     $\adelta_k(\cid)$ are removed from $\pending$. This is done by the auxiliary function 
-    $\filter {\_} {\_}$, defined such that           
+    $\filter {\_} {\_}$, defined as follows           
       \[
       \begin{array}{ll}
       \filter n \aseqround = \aroundtuple[\cid][\irounds_j][{\adelta_j}]\cdots
@@ -480,11 +482,11 @@ A client terminates a block by executing $\pushcmd$ (rule \textsc{i-push}). At t
       \]
    
 Rules \ruleName{i-read} and \ruleName{i-confirm} are analogous the ones on the \gsp\ calculus.   We use
-$\igetdeltas{\_}$ as the function that projects a sequence of rounds into a sequence containing the 
+$\igetdeltas{\_}$ as the function that projects a sequence of rounds into the sequence containing the 
 corresponding $\adelta$s.
 The global store changes its state as prescribed by rule  \ruleName{i-batch}. It collects 
 all received rounds in $\inserver$ by using the auxiliary function $\receiveroundsname{\_}$, 
-which builds a unique object $\adelta$ by appending all  $\adelta$'s contained in the rounds in
+which builds a unique object $\adelta$ by appending  all rounds in the
 input buffers, and 
 a function $\amxrf$ that associates each client with the number of the last received round.  
 Let $\inserver$ be such that $\dom\inserver = \{\cid_0,\ldots,\cid_m\}$ and
@@ -522,7 +524,7 @@ $\receiveroundsname{\_}$ is defined as follows
 %    \end{array}
 % \] 
 %\end{itemize}
-   The obtained  $\adelta$ is applied to the current state  $\astate$ to obtain the new one $\astate[']$ and 
+   The obtained $\adelta$ is applied the current state $\astate$ and 
    $\amxrf$ is updated with $\amxrf[']$. In addition, the new segment $\agssegpair[@][{\amxrf{[\amxrf[']]}}]$ is sent
    to  every connected client, i.e., it is added at the end of
     every buffer $\outserver(\cid)$. The input buffers  $\inserver(\cid_l)$ are
@@ -530,7 +532,7 @@ $\receiveroundsname{\_}$ is defined as follows
 
 The remaining rules  deal with connectivity issues: rule \ruleName{i-drop-cxn} models the disconnection of the client 
 $\cid$: the buffers $\outserver(\cid)$ and $\inserver(\cid)$ are removed from the global store and also 
-the input buffer of $\cid$ is set to $\epsilon$. When the client $\cid$ (re-)establishes its connection, the store
+the input buffer of $\cid$ is set to $\epsilon$. When the client $\cid$ \mbox{(re-)}establishes its connection \ruleName{i-accept-cxn}, the store
 creates the buffers for $\cid$ and sends a segment containing the current 
 state of the store. Rule \ruleName{i-pull$_2$} is analogous to \ruleName{i-pull$_1$}, but handles the first
 $\pullcmd$ after a reconnection. For this reason, the first received segment  

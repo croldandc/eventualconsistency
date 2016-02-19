@@ -3,10 +3,11 @@
 \section{Correctness of the Implementation}
 \label{sec:simulation}
 
-We now prove that  \igsp\ is a correctimplementation 
-of \gsp. We recall in \figref{fig:coherence-operation} the requirements for the
-operations provided by the  types 
-\statetype\ and \deltatype\ stated in~\cite{}. 
+We now prove that  \igsp\ is a correct implementation 
+of \gsp. We now recall the requirements
+imposed  for the
+operations provided by the data  types 
+\statetype\ and \deltatype. in~\cite{DBLP:conf/ecoop/BurckhardtLPF15}
 These requirements are formalised by the relation $\_\triangleleft \_$, which associates 
  delta and state objects with sequences of updates: $\adelta\triangleleft\anupdseq$
  (similarly, $\astate\triangleleft\anupdseq$)  means  that $\delta$ (correspondingly, $\astate$) 

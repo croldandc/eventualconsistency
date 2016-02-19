@@ -9,19 +9,19 @@
 
 \subsection{Syntax}
 
-Clients interact with a store by performing operations in $\updatesets\cup\readset$,
-where the elements in $\updatesets$ denote update operations and those in $\readset$ 
-stand for read operations. 
+Clients interact with a store by performing operations in $\updatesets\cup\readset$: 
+an element in $\updatesets$ denotes an update operation, while one in $\readset$ 
+stands for a read operation. 
 None operation can simultaneously read and update a store, therefore we assume
  $\updatesets \cap \readset= \emptyset$.
  We write 
- $\anupd, \anupd['], \anupd[''],\ldots$ for  updates in $\updatesets$  and 
-$\aread, \aread['], \aread[''],\ldots$ for reads in $\readset$. 
+ $\anupd, \anupd['], \anupd[''],\ldots$ for  updates  and 
+$\aread, \aread['], \aread[''],\ldots$ for reads. 
 
 The  state of a store is 
-represented by sequences of update operations. 
+represented by a sequence of updates. 
 For technical 
-convenience (particularly in \secref{sec:properties-gsp}), we find useful to 
+convenience (particularly in \secref{sec:properties-gsp}), we 
 distinguish  different executions of the same operation. Formally, stores 
  associate each update with a fresh event identifier.
 We assume a set $\verticesets$ of event identifiers  $\vertice$, $\vertice[@][_0]$, \ldots, $\vertice[@][']$,$\ldots$ 
@@ -32,27 +32,29 @@ We  use $\anupdseq$ to denote sequences of decorated updates and
 $\ublock[\anupdseq]$ for an atomic block of updates. 
 (We reserve the term 
 transaction for a different notion addressed in \secref{sec:transactions}). 
-We write  $\blockseq$  for sequences of blocks and use  $\emptysequence$ for the empty sequence.
+We write  $\blockseq$  for a sequence of blocks. We denote the empty sequence
+with  $\emptysequence$
 %  defined by the following grammar
 % \[\tpending,{\tpending[']} ::= \emptysequence \ |\  [\alpha] \cdot \tpending\]
 % \changed{}{A sequence $[\alpha] \cdot \tpending]$ stands for ....}, and we 
 % use $\emptysequence$ to denote the empty sequence, \ie, the sequence of length 0.
-We use usual operations on sequences such as $\blockseq{[i]}$ to denote  
+and use the usual operations on sequences such as $\blockseq{[i]}$ to denote  
  the $i$-th  element of $\blockseq$, $\blockseq{[i..j]}$
-for the sequence of elements from position $i$ to $j$, $|\blockseq|$ for the length and 
-$\blockseq\setminus\blockseq[']$ for the relative complement. We will use
- $\flatten{\blockseq}$ to obtain a plain sequence of updates by 
-forgetting  the structure of constituent blocks, if any.
+for the subsequence of $\blockseq$ from position $i$ to $j$, $|\blockseq|$ for the length and 
+$\blockseq\setminus\blockseq[']$ for the relative complement of $\blockseq$
+in $\blockseq[']$. Additionally, 
+ $\flatten{\blockseq}$ stands for the plain sequence a of  updates in $\blockseq$ (i.e., without 
+ any separation in blocks). 
 %is such that $\flatten{\emptysequence} = \emptysequence$, and 
 %    $\flatten{\ublock\cdot\blockseq} = \ttransactionbuffer\cdot\flatten\blockseq$.
 
-We rely on countable sets $\varset$ of program variables $x,x',\ldots$ 
+We rely on the countable sets $\varset$ of program variables $x,x',\ldots$ 
 and $\idset$ of client identifiers $\cid,\cid',\ldots,\cid_1,\ldots$.
 
 
 
  
- \begin{figure}
+ \begin{figure}[t]
  \[
 \begin{array}{l}
     \begin{array}{l@{\ }rcl}
@@ -141,29 +143,30 @@ The set of \tgspcalculus\ terms is given by the grammar in \figref{fig:syntax-gs
 \end{definition}
 
 A \gsp\ system $\systemterm$ consists of  a store and zero or more  clients.
-The state of a global store $\queuemessage$ is represented by a sequence of  blocks.
+The global store $\queuemessage$ is completely defined by its state, which 
+consists of  a sequence of  blocks.
 The term $\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}[\cid][n]$ 
-stands for a client identified by $\cid$ and is engaged on the execution of the 
+stands for a client identified by $\cid$ and  engaged on the execution of the 
 program $P$. 
 The remaining elements 
 are used to describe the state of the local replica: $\ttransactionbuffer$ contains the  updates 
 that have been made locally and are  part of an unfinished block; $\tsent$ models the 
 communication buffer, which keeps all blocks sent by the client but not received by the 
 global store; 
-$\tpending$ is the pending buffer, which contains all blocks completed locally but 
+$\tpending$ is the pending buffer, which contains all  completed blocks  that are 
 unconfirmed by the global store.
-For simplicity, we do not explicitly replicate the portion of the global store that 
-each client knows; we use instead a natural number $\tknown$ corresponding to 
- the length of the prefix of the global store known by the client. Specifically, the replicated 
- part of the global store known by $\cid$ is the 
-sequence $\queuemessage[0..\tknown-1]$. Similarly, the number $\treceivebuffer$ identifies 
-the new updates known by the client that needs to be added to the local replica, i.e., 
-the client knows the new updates contained in the segment $\queuemessage[\tknown..\tknown+\treceivebuffer-1]$.
-Value $\trounds$ counts the number of update operations executed by the client. 
+For simplicity, we do not  have an explicit replica of the global store in each client;
+ we use instead a natural number $\tknown$ to indicate the portion  of the global 
+state that is known to the client.
+Specifically, the client  $\cid$ knows the 
+sequence $\queuemessage[0..\tknown-1]$. 
+Similarly,  $\treceivebuffer$ indicates the number  updates received by the client
+that have not been  added to the local replica, i.e., 
+the client has received the updates contained in the segment $\queuemessage[\tknown..\tknown+\treceivebuffer-1]$.
+%Value $\trounds$ counts the number of update operations executed by the client. 
 
 
-A program $P$ is built as a sequence of  operations that handle the  
-interaction with 
+A program $P$ is built as a sequence of  operations that interacts with 
 the store: $\readcmd,  \updcmd, \pullcmd,  \pushcmd, \confcmd$
  (we postpone their description until \secref{sec:gsp-sos}). 
  %Conditional and loop statements contain expressions 
@@ -175,8 +178,8 @@ free variables of a program is  standard. We say that a process $P$ is {\em clos
  free variables. 
 
 We keep the language for programs simple. We remark that this 
-choice do not affect the results presented in this paper. Actually, we could have just characterised 
- the behaviour of programs in terms of a labelled transition system, 
+choice do not affect the results presented in this paper. Actually, we could just  have  characterised 
+ the behaviour of programs as a labelled transition system, 
 but we prefer to have a syntax through the presentation. 
 
 %\henote{agregar algun comentario sobre otras estructuras de control}
@@ -200,14 +203,14 @@ for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following condition
   if $\anupdseq{[x]}=\udec$, $\anupdseq{[y]}=\udec[@][{\vertice[@][']}]$ and $x \neq y$ then $\vertice \neq \vertice[@][']$.
 \end{enumerate}
 \end{definition}
-Condition (1) ensures that all   clients have different identifiers. Condition (2) states that each client can see at most every messages in the store, while 
-(3) ensures that all unconfirmed blocks in $\tpending_l$ are  either in the unseen part of the store  ($\ublock[{\anupdseq[_1]}]\cdots\ublock[{\anupdseq[_p]}]$) or in  the 
-   communication buffer $\tsent_l$. Morevoer,  messages are kept in the relative order in which they have been generated. Finally, (4) ensures
-   that an event  is associated with a unique update operation. 
+We require identifiers to univocally identify clients (1) and every local state  to be consistent with the global store, i.e., 
+ a client can see at most every messages in the store (2),  all unconfirmed blocks in $\tpending_l$ are  either in  the 
+   communication buffer $\tsent_l$ or  in the unseen part of the global store  $\ublock[{\anupdseq[_1]}]\cdots\ublock[{\anupdseq[_p]}]$ (3).
+ Moreover, an event identifier is associated with a unique update in the system (4). 
     
    
 
-Hereafter, we assume any system to be well-formed.
+Hereafter, we assume every \gsp\ system to be well-formed.
 
 %\changed{}{
 %\begin{example} Show an example, for instance a server with two clients with different information.
@@ -220,17 +223,18 @@ Hereafter, we assume any system to be well-formed.
 The operational semantics of \tgspcalculus\ is given by a labelled transition system 
 over well-formed terms, quotiented by the structural equivalence $\equiv$ defined as the least equivalence 
 such that  $\bigpar$ is associative, commutative and has $0$ as neutral element.
-Transitions are be labelled by pairs $(\mu,\cid)$ where $\mu$ is the action performed 
-by the client $\cid$. The set of actions is given by the following grammar:
+The set of actions is given by the following grammar:
 \[ 
 \begin{array}{r@{\ ::= \ }l}
   \action & \tau \ |\  \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran \\
   \actbyc &  (\lambda,\cid)
 \end{array}
 \]
-As usual,  $\tau$ stands for an internal, unobservable action, while the remaining ones allow 
-a client to update, read from and synchronise with a global store. 
-In what follows we will write labelled transitions $\arro{\mu}$ instead of $\tr{(\mu,\cid)}$. 
+A  label  $(\lambda,\cid)$ indicates that  
+ the client $\cid$ performs the action $\lambda$. As usual,  $\tau$ stands for an internal, 
+ unobservable action, while the remaining ones allow 
+a client to update, read from and synchronise with the global store. 
+In what follows we will write  $\arro{\mu}$ instead of $\tr{(\mu,\cid)}$. 
 
 
 \begin{figure*}[t]
@@ -325,25 +329,23 @@ In what follows we will write labelled transitions $\arro{\mu}$ instead of $\tr{
 \end{figure*}
 
 
-We now comment on the inference rules in \figref{fig:OS-tgsp}, which define the operational semantics of \tgspcalculus.
-When a client performs an update (rule \textsc{update}),  the changes have only local effects:
+We now comment on the inference rules in \figref{fig:OS-tgsp}.%, which define the operational semantics of \tgspcalculus.
+When a client performs an update (rule \textsc{update}),  the change has only local effects:
 the sequence of  local updates $\ttransactionbuffer$ is extended with the 
-update $\anupd$ decorated with a globally fresh identifier $\vertice$. We remark that 
+operation $\anupd$ decorated with a globally fresh identifier $\vertice$. We remark that 
 decorations are used for technical reasons but they are 
  operationally irrelevant (see \secref{sec:properties-gsp}).
 
 A client propagates its local changes to the global store by executing $\pushcmd$ (rule \textsc{push}):
 all local changes in $\ttransactionbuffer$ will be transmitted as a block $\ublock$, \ie, as an atomic unit.
- Nevertheless, these changes are not  made immediately available 
+ Nevertheless, these changes are not  made  available immediately
  at the global store because of the asynchronous communication model. 
  In fact, the new block  $\ublock$ is added to the communication buffer $\tsent$, which 
-contains all sent blocks that still have not reached the global store.  Also,  
- $\ublock$ is  added  to the  sequence of pending messages $\tpending$ to 
-  be used  until the block is finally added to the store to evaluate locally in the subsequent read. 
-
+contains all  blocks that  have not reached the global store.  Also,  
+ $\ublock$ is  added  to the  pending messages $\tpending$.
 Rule \textsc{send}  stands for  a  block  that finally reaches the global store. Conversely, 
 rule \textsc{receive} models the reception of
- a new update. The received update is not  incorporated immediately to the local replica. Actually, 
+ a new update. The received update is not   immediately added to the local replica. Actually, 
  each client  explicitly refreshes its local view  by executing  {\pullcmd} (rule \textsc{pull}).  
  At this time, all  previously received updates $\treceivebuffer$ are incorporated to the 
  local copy (\ie, $\tknown$ is changed to $\tknown+\treceivebuffer$). Additionally, 
@@ -366,10 +368,12 @@ the known prefix of the global store $\queuemessage[0..\tknown-1]$ and the local
  $\tpending$ and $\ttransactionbuffer$. The  value $v$ is bound to the 
  variable $x$, and hence all free occurrences of $x$ in the 
  continuation $P$  are substituted by $v$.
- %
+ 
+
  A client may perform $\confcmd$  to check whether its executed updates have been already 
  applied to the global store: this operation  
-  returns true only when the local buffers  $\tpending$ and $\ttransactionbuffer$ are both empty.
+  returns true only when the local buffers  $\tpending$ and $\ttransactionbuffer$ are both empty
+  (rule \textsc{confirm}).
  %
 %Remaining rules are standard.
 %$\textsc{(t-while-trye)}$ and $\textsc{(t-while-false)}$ are standard. Rule $\textsc{(t-receive)}$ states that a counter $\treceivebuffer$ is incremented (by 1). Finally, the last one rule, $\textsc{(t-process)}$, moves updates from sent queue to the message queue.  
