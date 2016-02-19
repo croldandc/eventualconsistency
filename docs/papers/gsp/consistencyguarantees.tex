@@ -4,9 +4,10 @@
 
 In this section we study the consistency properties 
 offered by \gsp. We rely on the characterisation of properties in 
-terms of abstract executions~\cite{DBLP:conf/esop/BurckhardtLFS12}. 
-given as a set of 
-relations between read and update events. In particular,  the following relations are used
+terms of abstract executions~\cite{DBLP:conf/esop/BurckhardtLFS12},
+execution histories enriched with information about visibility and 
+arbitration of actions. 
+
 %\chnote{Aca de repente se hablan de eventos en lugar de acciones o transitions. Tal vez deberíamos hablar de eventos desde el principio o bien decir algo que los eventos estan asociados con las transiciones que puede realizar gsp} 
 %
 %We shall introduce a series of store-level consistency guarantees and then we shall show which 
@@ -107,7 +108,9 @@ clients (\ie, $
 The remaining transitions of the system are considered as internal changes that do not 
 affect the history and are handled by rule \ruleName{a-int}.
 
-
+\begin{lemma} \label{lemma:prop-wf} Let  $\environmentterm$ be a well-formed history. If 
+ $\environmentterm\arroi{\action}\environmentterm'$, then $\environmentterm'$ is well-formed.
+\end{lemma}
 
 %%reglas
  \begin{figure}[t]
@@ -198,8 +201,10 @@ affect the history and are handled by rule \ruleName{a-int}.
 
 %\subsection{Ordering Guarantees}
 
-We use abstract histories to analyse the ordering guarantees 
-offered by the \gsp\ model. We focus on the hierarchy in~\cite{DBLP:journals/ftpl/Burckhardt14}. That are listed in ~\figref{}.
+We use  histories to analyse the ordering guarantees 
+offered by the \gsp\ model. We focus on the characterisation
+provided in~\cite{DBLP:journals/ftpl/Burckhardt14} (Due to space limitation, 
+we refer the intersted reader to oC.
 % now prove what ordering guarantees are assured by GSP language and what do not. 
 
 
