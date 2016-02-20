@@ -99,33 +99,6 @@ $\Leftarrow)$ We divided the proof in two implications
 
 \end{proof}
 
-\begin{proof}[\lemref{thm:single-order}]
-Firstly, we will prove by induction on on the length of the derivation that $\textsc{\small{AR}};\textsc{\small{VIS}} \subseteq \textsc{\small{VIS}}$, i.e., for all $\vertice_a$,$\vertice_b$,$\vertice_c$ such that ($\vertice_a$,$\vertice_b$) $\in$ $\textsc{\small{AR}}$ and ($\vertice_b$,$\vertice_c$) $\in$ $\textsc{\small{VIS}}$ then ($\vertice_a$,$\vertice_c$) $\in$ $\textsc{\small{VIS}}$.
-
-\begin{itemize}
-   \item{\bf n=0}. It is easy to see because of both relations are empty, hence is trivial $\emptyset \subseteq \emptyset$.
-   \item{\bf n=k+1}. Then $\environment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \arro{} ^k\ \environment{\systemterm}{\op}{\so}{\vis}{\arb}\arroi{\alpha} \environment{\systemterm'}{\op'}{\so'}{\vis'}{\arb'}[\sse']$. We proceed by case analysis on the last transition:
-	
-	\begin{itemize}
-        \item {\bf rule (\ruleName{a-read})}. $\arb'$ = $\arb$.  Then, there exists two cases: 				
-				\begin{itemize}
-					\item $\vertice_c \neq \vertice$, as $\vertice$ is an vertex associated to the last computation, then ($\vertice_b$,$\vertice_c$) $\in$ $\vis$, therefore, ($\vertice_b$,$\vertice_c$) $\in$ $\vis'$. By inductive hypothesis, ($\vertice_a$,$\vertice_c$) $\in$ $\vis$. Hence, $\vertice_c \neq \vertice$ then ($\vertice_a$,$\vertice_c$) $\in$  $\vis'$.
-					\item $\vertice_c$ = $\vertice$. Since $\vertice_a$, $\vertice_b \in \arb$ then there exist two updates into the Store associated to them. Let $\udec[u][\vertice_a]$, $\udec[u][\vertice_b]$ be these updates, then we know that $\udec[u][\vertice_a]$ = $\queuemessage$[m] and $\udec[u][\vertice_b]$ = $\queuemessage$[n] such that $m < n$. If ($\vertice_b$,$\vertice_c$) $\in$ $\vis$ then $\udec[u][\vertice_b]$ $\in \queuemessage[0..\tknown-1] \cdot \tpending \cdot [\ttransactionbuffer]$ by definition. Then, analyzing cases:
-					\begin{itemize}
-						\item $\udec[u][\vertice_b]$ $\in \queuemessage[0..\tknown-1]$. Then $\udec[u][\vertice_a]$ also is in $\queuemessage[0..\tknown-1]$ because of $\udec[u][\vertice_a]$ = $\queuemessage$[m] and $\udec[u][\vertice_b]$ = $\queuemessage$[n] and $m < n$.
-						\item $\udec[u][\vertice_b]$ $\notin \tpending$ and $\udec[u][\vertice_b]$ $\notin [\ttransactionbuffer]$ by $\lemref{lemma:empty_queue}$.
-					\end{itemize}
-					
-				\end{itemize}
-				
-			\item The rest of the rules do not change $\textsc{\small{VIS}}$.
-
-\end{itemize}
-
-\end{itemize}
-
-Now, we will prove by induction on on the length of the derivation that $\textsc{\small{AR}}^{-1};\neg\textsc{\small{VIS}} \subseteq \neg\textsc{\small{VIS}}$, i.e., for all $\vertice_a$,$\vertice_b$,$\vertice_c$ such that ($\vertice_b$,$\vertice_a$) $\in$ $\textsc{\small{AR}}$ and ($\vertice_a$,$\vertice_c$) $\notin$ $\textsc{\small{VIS}}$ then ($\vertice_b$,$\vertice_c$) $\notin$ $\textsc{\small{VIS}}$. This prove is analogue when $\vertice_c \neq \vertice$. Furthermore, if $\udec[u][\vertice_a]$ $\notin \queuemessage[0..\tknown-1]$ then $\udec[u][\vertice_b]$ $\notin \queuemessage[0..\tknown-1]$ because of $\udec[u][\vertice_b]$ is before to $\udec[u][\vertice_a]$ at Store, then 
-\end{proof}
 	
 
 
@@ -133,18 +106,63 @@ Now, we will prove by induction on on the length of the derivation that $\textsc
 Let $\systemterm$  be a \gsp\ system free from asynchronous update. If $\systemterm\arroi{\lambda}\systemterm[']$ 
 then $\systemterm[']$ if free from asynchronous update. 
 \end{lemma}
-
+\chnote{esto no se si es viejo. Creo que no se usa.}
 
 \begin{lemma}\label{lemma:vertice_arb_store} 
-If $(\vertice,\vertice[w])\in\arb$ and $\anupd[^{\vertice[w]}] \in \queuemessage[0 .. \tknown - 1]$ then $\exists \anupd['] s.t. \anupd[']^{\vertice} \in \queuemessage[0 .. \tknown-1]$
+If $(\vertice,\vertice[w])\in\arb$ and $\anupd[^{\vertice[w]}] \in \queuemessage[0 .. \tknown_{\cid} - 1]$ then $\exists \anupd[_0]$ s.t. $\anupd[_0]^{\vertice} \in \queuemessage[0 .. \tknown_{\cid}-1]$
 \end{lemma}
+\begin{proof}
+We proceed by induction on the length of the derivation 
+$\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^n\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}$.
 
+\begin{itemize}
+	    \item {\bf n=0}. Trivially, because $\arb=\vis$ and $\queuemessage=\epsilon$.
+    \item{\bf n=k+1}. Then 
+      \[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] 
+         \tr{} ^k\ 
+         \environment{\systemterm['']}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+         \arro{\lambda}[\cid]
+ 	\environment{\systemterm[']}{\op}{\so}{\vis}{\arb}
+	 \]
+	 
+	By inductive hypothesis, If $(\vertice,\vertice[w])\in\arb'$ and $\anupd[^{\vertice[w]}] \in \queuemessage'[0 .. \tknown_{\cid}' - 1]$ then $\exists \anupd[_0]$ s.t. $ \anupd[_0]^{\vertice} \in \queuemessage[0 .. \tknown_{\cid}'-1]$
+. We proceed by 
+case analysis on the inference rule applied for the last transition:
+
+	\begin{itemize}
+      
+        \item rule \ruleName{a-read}. Follow immediately by inductive hypothesis since $\arb = \arb'$.      
+       
+        \item rule \ruleName{a-update}. Follow immediately by inductive hypothesis since $\vertice[w] \in \queuemessage[0 .. |\queuemessage| - 1]$.     
+        
+       \item rule \ruleName{a-arb}. $\arb = \arb' \cup \arb_{\mbox{\sf new}}$ with 
+         $\arb_{\mbox{\sf new}}= \{ (\vertice, \vertice[w])\ \ |\ \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
+		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage\cdot \ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]\} \cup\  \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\}$. 
+	By inductive hypothesis $(\vertice,\vertice[w])\in\arb'$, it remains to prove that $(\vertice,\vertice[w])\in\arb_{\mbox{\sf new}}$. There are two cases:
+	\begin{itemize}
+	\item $(\vertice,\vertice[w])\in \{ (\vertice', \vertice[w'])\ \ |\ \  \vertice[w']\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
+		     \forall\anupd_0. \anupd_0^{\vertice[w']}\not\in\queuemessage\cdot \ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]\} $. It is immediate since $\anupd_0^{\vertice[w']}\not\in\queuemessage$.
+	\item $(\vertice,\vertice[w])\in \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\}$. It is immediate.
+		    \end{itemize}
+     
+       \item rule \ruleName{a-int} follows straightforwardly.
+       \qed
+    \end{itemize}
+    \end{itemize}
+	
+\end{proof}
+\chnote{esto sale todo por hipotesis inductiva. Los casos arb son inmediatos. No se si vale la pena poner la prueba}
 
 \begin{lemma}\label{lemma:vertice_vis_store} 
 If $(\vertice,\vertice[w])\in\vis$ then $\anupd[^{\vertice}] \in \queuemessage$
 \end{lemma}
+\begin{proof}
+The proof follows by case analysis on the applied rule. The only interesting rule is \ruleName{a-read}. We rely on \corref{corollary:async-emptyqueue} to conclude that $\tpending_{\cid}\cdot{\ttransactionbuffer_{\cid}} = \epsilon$, hence, $\anupd[^{\vertice}] \in \queuemessage$.
+\end{proof}
 
-\begin{proof} [Single Order (\ref{thm:single-order})]
+\subsection{Proof of Theorem Single Order ~\ref{thm:single-order}}
+
+\begin{proof}
 We proceed by induction on the length of the derivation 
 $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^n\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}$.
 

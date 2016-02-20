@@ -62,8 +62,7 @@ case analysis on the inference rule applied for the last transition:
 		\end{itemize}
         
         \item rule \ruleName{a-arb}. Then, $\queuemessage \neq \queuemessage'$. By rule inspection, the only possibility is 
-        $\systemterm''\arro{\tau}[\cidj]\systemterm'$ by using rule \ruleName{send}.
-        \henote{Completar} 
+        $\systemterm''\arro{\tau}[\cidj]\systemterm'$ by using rule \ruleName{send}. The proof follows from inductive hypothesis because $\tknown_{\cid}=\tknown'_{\cid}$, $\tpending'_{\cid}=\tpending_{\cid}$ and $\ttransactionbuffer' _{\cid}=\ttransactionbuffer_{\cid}$ for all $\cid$ and $\op'=\op$.
         \item rule \ruleName{a-int}. We note that $\op' = \op$ and $\queuemessage = \queuemessage'$. Then, we proceed by case analysis on 
         the reduction $\systemterm''\arro{\tau}[{\cidj}]\systemterm'$
             \begin{itemize}
@@ -78,10 +77,6 @@ case analysis on the inference rule applied for the last transition:
 		 implies $\udec\in\  \queuemessage[0..\tknown'_{\cidj}-1] \cdot (\tpending'_{\cidj}\cdot [\ttransactionbuffer'_{\cidj}]) \cdot [\epsilon] =
 		  \queuemessage[0..\tknown_{\cidj}-1] \cdot \tpending_{\cidj} \cdot [\ttransactionbuffer_{\cidj}]$.
 		 Otherwise ($\cid \neq \cidj$), the case follows from the inductive hypothesis.
-%		 When $\systemterm \arroi{\pushtran} \systemterm'$, 
-%		 $\tknown_i$' = $\tknown_i$, $\tpending_i$' = $\tpending_i \cdot [\ttransactionbuffer_i]$ 
-%		 and $\ttransactionbuffer_i$' = $\epsilon$.
-		 
 		 \item  rule \ruleName {pull}. Then,  $\tknown_{\cidj} = \tknown_{\cidj}'+\treceivebuffer_{\cidj}'$, 
 		 $\tpending_{\cidj} = \tpending_{\cidj}' \setminus \queuemessage[\tknown_{\cidj}' .. \tknown_{\cidj}' + 
 		 \treceivebuffer_{\cidj}'-1]$  
@@ -112,9 +107,8 @@ case analysis on the inference rule applied for the last transition:
 		The remaining cases ($\udec \in \queuemessage[0..\tknown'_{\cidj}-1]$ or $\udec\in\ttransactionbuffer'_{\cidj}$) are straightforward.
 		
 		\item rules \ruleName{receive}, \ruleName{confirm}:%, \ruleName{while-true}, \ruleName{while-false}, \henote{reglas para if}
-		The proof follows from inductive hypothesis because $\tknown_{\cid}=\tknown_{\cid}$, $\tpending_{\cid}=\tpending_{\cid}$ 
-		and $\ttransactionbuffer_{\cid}=\ttransactionbuffer_{\cid}$ for all $\cid$ and $\op'=\op$.
-\chnote{aca no es k'=k, u'=u, etc?}
+		The proof follows from inductive hypothesis because $\tknown_{\cid}=\tknown'_{\cid}$, $\tpending_{\cid}=\tpending'_{\cid}$ 
+		and $\ttransactionbuffer _{\cid}=\ttransactionbuffer' _{\cid}$ for all $\cid$ and $\op'=\op$.
 
 	\end{itemize}
 	
@@ -183,7 +177,7 @@ case analysis on the inference rule applied for the last transition:
         \item rule \ruleName{a-int}. We note that $\so' = \so$, $\op' = \op$ and $\queuemessage = \queuemessage'$. Then, we proceed by case analysis on 
         the reduction $\systemterm''\arro{\tau}[{\cidj}]\systemterm'$
             \begin{itemize}
-		 \item  rule \ruleName {pull}. Then,  $\tknown_{\cidj} = \tknown_{\cidj}'+\treceivebuffer_{\cidj}'$, while  $\tknown_{\cid} = \tknown_{\cid}'$
+		 \item  rule \ruleName {pull}. \chnote{esto me quedo incompleto} Then,  $\tknown_{\cidj} = \tknown_{\cidj}'+\treceivebuffer_{\cidj}'$, while  $\tknown_{\cid} = \tknown_{\cid}'$
 		for all $\cid \neq \cidj$.
 		By inductive hypothesis, there exists $\cid$ s.t.
 		if $\anupd_0^{\vertice[w]}\in\queuemessage'[0..k_{\cid}^{'}]$
@@ -407,7 +401,7 @@ $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset
 	    \item {\bf n=0}. Trivially, because $\arb=\so=\emptyset$.
     \item{\bf n=k+1}. Then 
       \[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] 
-         \tr{} ^n\ 
+         \tr{} ^k\ 
          \environment{\systemterm['']}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
          \arro{\lambda}[\cid]
  	\environment{\systemterm[']}{\op}{\so}{\vis}{\arb}

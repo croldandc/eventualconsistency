@@ -18,7 +18,7 @@ The followings properties holds,
 %\begin{lemma}\label{lemma:apply} $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq$ iff $\iapply{\astate}{\adelta[_0]\cdots\adelta[_n]}\triangleleft \anupdseq$.
 %\end{lemma}
 
-\begin{proof} $\Rightarrow)$ The only possible derivation for $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq$ is
+\begin{proof} \ref{lemma:apply}. $\Rightarrow)$ The only possible derivation for $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq$ is
 
 \[
    \mathrulean{\triangapply}
@@ -41,7 +41,7 @@ $\Leftarrow)$ Follows analogously.
 %\begin{lemma}\label{lemma:reduce} $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]\cdot \adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]}\triangleleft \anupdseq[']$ $\adelta[_n] \triangleleft \anupdseq['']$.
 %\end{lemma}
 
-\begin{proof} $\Rightarrow)$ The only possible derivation for $\ireduce {\adelta[_1] \cdots \adelta[_{n-1}] \cdot \adelta[_{n}]} \triangleleft \anupdseq$ is
+\begin{proof} \ref{lemma:reduce}. $\Rightarrow)$ The only possible derivation for $\ireduce {\adelta[_1] \cdots \adelta[_{n-1}] \cdot \adelta[_{n}]} \triangleleft \anupdseq$ is
 
 \[
    \mathrulean{\triangreduce}
@@ -72,7 +72,7 @@ $\Leftarrow)$ Follows analogously.
 %\begin{lemma}\label{lemma:storechanged} Let $\adelta[_0]\cdots\adelta[_{n-1}]$ a delta sequence, such that, $\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_0] \triangleleft \anupdseq[_n]$ and the following relation $\astate \triangleleft \anupdseq$ then $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_n]$
 %\end{lemma}
 
-\begin{proof} The proof follows by induction on the length of the sequence.
+\begin{proof} \ref{lemma:storechanged}. The proof follows by induction on the length of the sequence.
 
 \begin{itemize}
    \item{\bf n=0}. It is easy to see that $\iapply{\astate}{\ireduce{\emptydelta}}\triangleleft \anupdseq$ is $\astate \triangleleft \anupdseq$.
@@ -107,7 +107,7 @@ $\Leftarrow)$ Follows analogously.
 
 			
 			\begin{itemize}
-%				\item {\bf rule (\textsc{t-read})}. If $\systemterm  \arroi{\readtran{r}} \systemterm '$, then by rule (\textsc{\footnotesize{t-read}}), $\systemterm $ must be the following term: 
+%				\item {\bf rule (\textsc{t-read})}. If $\systemterm  \arroi{\readtran{r}} \systemterm '$, then by rule (\textsc{\footnote{?}notesize{t-read}}), $\systemterm $ must be the following term: 
 %				$\tsystem{\tclienti{\treadins{x}{r}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}$
 %				, therefore, the client $i^{th}$ is the only one who have changed. So that, $\systemterm'$ is 
 %				$\tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}$
@@ -482,7 +482,6 @@ $\Leftarrow)$ Follows analogously.
 
 				The case follows analogously to the previous case, since, \equref{eq:sim-receive-c1-d} and \equref{eq:sim-receive-c2-d} are equals and the only difference between \equref{eq:sim-receive-c1-c} and \equref{eq:sim-receive-c2-c}  is the init of the subsequence above $\queuemessage$. The proof for \refprop{prop_inclient} holds 					by using \lemrefprop{lemma:sim-aux}{lemma:reduce} with the hypothesis \equref{eq:sim-receive-c2-c} and \equref{eq:sim-receive-c1-a}.
 
-				  \henote{Seguro? las hipotesis son bastante distintas. Por otro lado, dudo de la caracterisaci\'on en la def}
      		%$\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$,
                %$\astate['] \triangleleft \queuemessage[0 .. t - 1]$ and $t \leq \tknown_l+\treceivebuffer_l$; 
 
@@ -593,7 +592,7 @@ $\Leftarrow)$ Follows analogously.
 				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$. 
 				Since the reduction only affects the client $\cid$, we only need to check
 				that  properties in \defref{def:implementation} still hold for $\cid$.	
-									\henote{Agregar en el texto principal que $\ireduce{\epsilon} = \emptydelta$}\chnote{que seria el texto principal?}
+									\chnote{Hablamos de agregar en el texto principal que $\ireduce{\epsilon} = \emptydelta$. Qué hacemos?}
 
 					\begin{enumerate}
 					\item[\ref{prop_state_known}.]  By \refprop{prop_state_known}, we know that $\known\ \triangleleft\ \flatten {\queuemessage[0..\tknown-1]}$. 
