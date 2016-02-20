@@ -141,7 +141,7 @@ then there exists $\anupd_1$ s.t. $\anupd_1^{\vertice}\in\queuemessage[0..k-1]$
    \item{\bf n=0}. Then $\so$ is $\emptyset$, and hence the thesis trivially holds. 
       \item{\bf n=k+1}. Then 
       \[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] 
-         \tr{} ^n\ 
+         \tr{} ^k\ 
          \environment{\systemterm['']}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
          \arro{\lambda}[\cidj]
  	\environment{\systemterm[']}{\op}{\so}{\vis}{\arb}
@@ -274,7 +274,7 @@ the derivation  $\tr{} ^*$.
 \begin{itemize}
    \item{\bf n=0}. It holds trivially, because $\op=\vis=\emptyset$.
       \item{\bf n=k+1}. Then $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset]
-    \tr{} ^n\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+    \tr{} ^k\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
     \arroi{\lambda} \environment{\systemterm'}{\op}{\so}{\vis}{\arb}[\sse]$. 
     By inductive hypothesis, $\restUR{(\so';\vis')}  \subseteq \ \vis'$.
     We proceed by 
@@ -358,9 +358,8 @@ reduction step only add pairs $(\vertice,\vertice[w])$ with $\vertice[w]$. Then,
 Let $\systemterm$ a \gsp\ system. 
 If 
 $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}$
-then for all $\anupd[_a],\anupd[_b]\in\updatesets$ if $\anupd[^{\vertice[x]}_a]=(\tpending_{\cid} \cdot [\ttransactionbuffer_{\cid}])[m]$ {and $\anupd[^{\vertice[y]}_b]=(\tpending_{\cid} \cdot [\ttransactionbuffer_{\cid}])[n]$} and $m < n$ then
-\[\systemterm' = \anabstcli \ \bigpar\ \queuemessage\ \bigpar\ \Absclient\]
-and $(\vertice[x],\vertice[y])\in\so$.
+then for all $m < n < |\flatten{\tpending_{\cid}} \cdot \ttransactionbuffer_{\cid}|$ if $\anupd[^{\vertice[x]}_0]= \flatten{\tpending_{\cid}} \cdot \ttransactionbuffer_{\cid}[m]$ {and $\anupd[^{\vertice[y]}_1]=\flatten{\tpending_{\cid}} \cdot \ttransactionbuffer_{\cid}[n]$} then
+ $(\vertice[x],\vertice[y])\in\so$.
 \end{lemma}
 \begin{proof} It follows by induction on the length of
 the derivation  $\tr{} ^*$.
@@ -370,26 +369,23 @@ the derivation  $\tr{} ^*$.
       \item{\bf n=k+1}. Then $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset]
     \tr{} ^k\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
     \arroi{\lambda} \environment{\systemterm'}{\op}{\so}{\vis}{\arb}[\sse]$. 
-    By inductive hypothesis, for all $\anupd[_a],\anupd[_b]\in\updatesets$ if $\anupd[^{\vertice[x]}_a]=(\tpending_{\cid}' \cdot [\ttransactionbuffer_{\cid}'])[m]$ {and $\anupd[^{\vertice[y]}_b]=(\tpending_{\cid}' \cdot [\ttransactionbuffer_{\cid}'])[n]$} and $m < n$ then
-\[\systemterm'' = \anabstcli['] \ \bigpar\ \queuemessage' \ \bigpar\ \Absclient[']\]
-and $(\vertice[x],\vertice[y])\in\so'$.
+    By inductive hypothesis, for all $m < n < |\flatten{\tpending_{\cid}} \cdot \ttransactionbuffer_{\cid}|$ if $\anupd[^{\vertice[x]}_0]=\flatten{\tpending_{\cid}'} \cdot \ttransactionbuffer_{\cid}'[m]$ {and $\anupd[^{\vertice[y]}_1]=\flatten{\tpending_{\cid}'} \cdot \ttransactionbuffer_{\cid}'[n]$} and $m < n$ then
+ $(\vertice[x],\vertice[y])\in\so'$.
     We proceed by 
     case analysis on the last applied rule:
 	
     \begin{itemize}
 	\item rule \ruleName{a-update}. Then, $\vis=\vis'$ and $\so = \so'\cup (\sse(\cid)\times\{\vertice\})$ with $\op(\vertice)\in\updatesets$. There are two cases, 
 	    \begin{itemize}
-	    	\item $\vertice[y] = \vertice$. Since, $\systemterm'' \arroi{\updatetran{u}} \systemterm'$, by rule \textsc{update}, $\anupd[_{\vertice}] \in \tpending \cdot [\ttransactionbuffer]$, hence  $\ttransactionbuffer = \ttransactionbuffer' \cdot \anupd[_{\vertice}]$.
+	    	\item $\vertice[y] = \vertice$. Since, $\systemterm'' \arroi{\updatetran{u}} \systemterm'$, by rule \textsc{update}, $\anupd[_{\vertice}] \in \flatten{\tpending} \cdot \ttransactionbuffer$, hence  $\ttransactionbuffer = \ttransactionbuffer' \cdot \anupd[_{\vertice}]$.
 		\item $\vertice[y] \neq \vertice$. Follow immediately by inductive hypothesis.
 	    \end{itemize}
 	 %
 	  \item rule \ruleName{a-read}. Then, $\so = \so'\cup  \so_{\mbox{\sf new}}$ with  
 	  $\so_{\mbox{\sf new}} = (\sse'(\cid)\times\{\vertice\})$, $\tpending = \tpending'$ and $\ttransactionbuffer = \ttransactionbuffer'$
 	  %
-	 By inductive hypothesis $\anupd[_a],\anupd[_b]\in\updatesets$ if $\anupd[^{\vertice[x]}_a]=(\tpending_{\cid}' \cdot [\ttransactionbuffer_{\cid}'])[m]$ {and $\anupd[^{\vertice[y]}_b]=(\tpending_{\cid}' \cdot [\ttransactionbuffer_{\cid}'])[n]$} and $m < n$ then
-\[\systemterm'' = \anabstcli['] \ \bigpar\ \queuemessage' \ \bigpar\ \Absclient[']\]
-and $(\vertice[x],\vertice[y])\in\so'$. Since, $\op' = \op\upd \vertice r$ and $\so = \so'\cup (\sse(\cid)\times\{\vertice\})$, then $(\vertice[x],\vertice[y])\in\so'$. 
-	\item rules \ruleName{a-arb} follow immediately by inductive hypothesis
+	Since, $\op' = \op\upd \vertice r$ then $(\vertice[x],\vertice[y])\in\so'$. 
+	\item rules \ruleName{a-int}, \ruleName{a-arb} follow immediately by inductive hypothesis
 	after noticing that  $\so = \so'$.
 	\end{itemize}
 
@@ -439,7 +435,6 @@ case analysis on the rule applied for the last transition:
         Since $\vertice$ is fresh, $\arb_{\mbox{\sf new}};\restUU{\so} =\emptyset$. Hence, 
 
         \[\arb;\restUU{\so} =  \arb';\restUU{\so} = \arb';\restUU{\so'}\cup\  \arb';\restUU{(\sse(\cid)\times\{\vertice\})}\]
-        	\end{itemize}
 
        By inductive hypothesis, $\arb';\restUU{\so'}\ \subseteq\ {\arb'} \cup \restUU{\so'}\ \subseteq\ \arb \cup \restUU{\so}$.
        It remains to prove that $\arb';\restUU{(\sse(\cid)\times\{\vertice\})}\ \subseteq\ \arb \cup \restUU{\so}$.
@@ -459,17 +454,25 @@ case analysis on the rule applied for the last transition:
         \[\arb;\restUU{\so} = \arb';\restUU{\so'}\  \cup\ \arb_{\mbox{\sf new}};\restUU{\so'} 
         \]
         
-         By inductive hypothesis, $\arb';\restUU{\so'}\ \subseteq\ {\arb'} \cup \restUU{\so'}\ \subseteq\ \arb \cup \restUU{\so}$.
+       By inductive hypothesis, $\arb';\restUU{\so'}\ \subseteq\ {\arb'} \cup \restUU{\so'}\ \subseteq\ \arb \cup \restUU{\so}$.
        It remains to prove that $\arb_{\mbox{\sf new}};\restUU{\so'} \subseteq\ \arb \cup \restUU{\so}$. 
-       For all $\vertice[y]$ s.t. $(\vertice,\vertice[y]) \in \arb_{\mbox{\sf new}}$,  there is not $\anupd_0$ s.t.
-       $ \anupd_0^{\vertice[y]}\not\in\queuemessage''$ by definition of $\arb_{\mbox{\sf new}}$.  
+       For all $\vertice[y]$ s.t. $(\vertice,\vertice[y]) \in \arb_{\mbox{\sf new}}$ there are two cases:
+       \begin{itemize}
+       \item $(\vertice,\vertice[y]) \in \{ (\vertice, \vertice[w])\ \ |\  \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
+		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage''\cdot\ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]\} 
+ $,then,  there is not $\anupd_0$ s.t.
+       $ \anupd_0^{\vertice[y]}\not\in\queuemessage''$.  
        Moreover, for all $(\vertice[y],\vertice[z])\in \restUU{\so'}$ s.t. there is not $\anupd_0$ s.t.
        $ \anupd_0^{\vertice[y]}\not\in\queuemessage''$ implies that there is not $ \anupd_1^{\vertice[z]}\not\in\queuemessage'$
        because of (the contrapositive of) \lemref{lemma:local-updates-preserver-order}.
        Therefore, $(\vertice,\vertice[y]) \in \arb_{\mbox{\sf new}} \subseteq \arb \cup \restUU{\so}$.
-       \qed
+       \item $(\vertice,\vertice[y]) \in \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\ $ follow immediately by \lemref{lemma:arSO-in-arUso}.
+        \end{itemize}
+
     \end{itemize}
 	
+    \end{itemize}
+       \qed
 
 \end{proof}
 
@@ -481,7 +484,7 @@ case analysis on the rule applied for the last transition:
 \begin{itemize}
    \item{\bf n=0}. It holds trivially, because $\op=\vis=\emptyset$%, so that $\emptyset \subseteq \emptyset$.
    \item{\bf n=k+1}. Then $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset]
-    \tr{} ^n\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+    \tr{} ^k\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
     \arroi{\lambda} \environment{\systemterm'}{\op}{\so}{\vis}{\arb}[\sse]$. 
     By inductive hypothesis, $\restUR{\so'}  \subseteq \ \vis'$.
     We proceed by 
@@ -528,7 +531,7 @@ case analysis on the rule applied for the last transition:
    \item{\bf n=0}. It holds trivially, because $\op=\vis=\emptyset$.
    \item{\bf n=k+1}. 
    Then $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset]
-    \tr{} ^n\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+    \tr{} ^k\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
     \arroi{\lambda} \environment{\systemterm'}{\op}{\so}{\vis}{\arb}[\sse]$. 
     By inductive hypothesis, $\restUR{(\vis';\so')}  \subseteq \ \vis'$.
     
@@ -797,7 +800,7 @@ $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset
 	    \item {\bf n=0}. Trivially, because $\arb=\vis=\emptyset$.
     \item{\bf n=k+1}. Then 
       \[\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] 
-         \tr{} ^n\ 
+         \tr{} ^k\ 
          \environment{\systemterm['']}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
          \arro{\lambda}[\cid]
  	\environment{\systemterm[']}{\op}{\so}{\vis}{\arb}

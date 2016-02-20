@@ -104,7 +104,7 @@ Firstly, we will prove by induction on on the length of the derivation that $\te
 
 \begin{itemize}
    \item{\bf n=0}. It is easy to see because of both relations are empty, hence is trivial $\emptyset \subseteq \emptyset$.
-   \item{\bf n=k+1}. Then $\environment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \arro{} ^n\ \environment{\systemterm}{\op}{\so}{\vis}{\arb}\arroi{\alpha} \environment{\systemterm'}{\op'}{\so'}{\vis'}{\arb'}[\sse']$. We proceed by case analysis on the last transition:
+   \item{\bf n=k+1}. Then $\environment{\systemterm_0}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \arro{} ^k\ \environment{\systemterm}{\op}{\so}{\vis}{\arb}\arroi{\alpha} \environment{\systemterm'}{\op'}{\so'}{\vis'}{\arb'}[\sse']$. We proceed by case analysis on the last transition:
 	
 	\begin{itemize}
         \item {\bf rule (\ruleName{a-read})}. $\arb'$ = $\arb$.  Then, there exists two cases: 				
@@ -136,7 +136,7 @@ then $\systemterm[']$ if free from asynchronous update.
 
 
 \begin{lemma}\label{lemma:vertice_arb_store} 
-If $(\vertice,\vertice[w])\in\arb$ and $\anupd[^{\vertice[w]}] \in \queuemessage[0 .. \tknown - 1]$ then $\exists \anupd['] s.t. \anupd[\vertice] \in \queuemessage[0 .. \tknown]$
+If $(\vertice,\vertice[w])\in\arb$ and $\anupd[^{\vertice[w]}] \in \queuemessage[0 .. \tknown - 1]$ then $\exists \anupd['] s.t. \anupd[']^{\vertice} \in \queuemessage[0 .. \tknown-1]$
 \end{lemma}
 
 
@@ -174,7 +174,7 @@ case analysis on the inference rule applied for the last transition:
         	By inductive hypothesis,    $\arb';\vis' \subseteq \vis' \subseteq \vis$. It remains
         to prove that $\arb';\vis_{\mbox{\sf new}} \subseteq \vis$. 
         By \corref{corollary:async-emptyqueue} $\tpending\cdot{\ttransactionbuffer} = \epsilon$, hence, $(\vertice[w],\vertice) \in \vis_{\mbox{\sf new}}$
-        implies $\anupd{\vertice[w]} \in \queuemessage[0..\tknown-1]$. Then, if  $(\vertice[w],\vertice[w']) \in \arb, by \lemref{lemma:vertice_arb_store}, \vertice[w'] \in \queuemessage[0..\tknown-1]$.
+        implies $\anupd[^{\vertice[w]}] \in \queuemessage[0..\tknown-1]$. Then, if  $(\vertice[w],\vertice[w']) \in \arb$, by \lemref{lemma:vertice_arb_store}, $\anupd[{\vertice[w']}] \in \queuemessage[0..\tknown-1]$.
         Therefore, $(\vertice[w'],\vertice) \in \vis_{\mbox{\sf new}} \subseteq \vis$ .
 	
 	\item $\arb^{-1};\neg\vis\subseteq\neg\vis$
