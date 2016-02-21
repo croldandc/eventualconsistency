@@ -152,14 +152,17 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
        		$\ireduce{\igetdeltas{\aseqseg}}\triangleleft \ \flatten{ \queuemessage[t..|\queuemessage| - 1]}$  
     \end{enumerate}	
 	
-        \item \label{prop_deltas} for all $\agssegpair\in\inclient_l\cdot\outserver(\cid_l)$ (similarly, $\agsprefpair\in\inclient_l\cdot\outserver(\cid_l)$) 
-%          \begin{enumerate}[i.]
+        \item \label{prop_deltas} for all $\amxrf$ s.t $\amxrf = \amxrf[_s]$ or $\agssegpair[\_]\in\inclient_l\cdot\outserver(\cid_l)$, %          \begin{enumerate}[i.]
    %       	\item $\amxrf(\cid_l)\leq\irounds_l$,
 		%\item  
 		for all $\aroundtuple[@][@][\adelta'] \in\pending_l$
         if $\irounds\leq\amxrf(\cid_l)$ then $\adelta\triangleleft \flatten{\queuemessage[x..x']}$ and  $\adelta'\triangleleft \flatten{\queuemessage[y..y']}$
         with $y'\leq x'$
-	%\end{enumerate}
+    
+	%\end{enumerate} 
+%       \item \label{prop_desc} if $\cid_l \not\in \dom{\outserver}$ then for all $\aroundtuple[@][@][\adelta'] \in\pending_l$
+%        if $\irounds\leq\amxrf[_s](\cid_l)$ then $\adelta\triangleleft \flatten{\queuemessage[x..x']}$ and  $\adelta'\triangleleft \flatten{\queuemessage[y..y']}$
+%        with $y'\leq x'$
 
 \end{enumerate}
 	
