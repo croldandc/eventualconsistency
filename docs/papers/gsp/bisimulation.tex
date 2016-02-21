@@ -133,55 +133,24 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
      \item ${\inclient}_l \cdot \outserver(\cid_l)  = \epsilon$, $\tknown_l = |\queuemessage|$; % and $\treceivebuffer_l =0$;
 
      \item ${\inclient}_l = \agsprefpair[{\adelta[']}]\cdot\aseqseg$,
-      $\ireduce{\igetdeltas{{\inclient}_l}}\triangleleft \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]}$,  and
+      	$\ireduce{\igetdeltas{{\inclient}_l}}\triangleleft \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]}$,  and
       
-      
-      $\ireduce{\igetdeltas{\outserver(\cid_l)}}\triangleleft 
-       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
+     	 $\ireduce{\igetdeltas{\outserver(\cid_l)}}\triangleleft 
+      	 \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
   
-%      \item ${\inclient}_l = \agssegpairi[1] \cdots \agssegpairi[h']$, 
-%      
-%      	      $\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$, 
-%	      
-%	      
-%
-%     
-%      $\ireduce{\adelta_1\cdots\adelta_{h'}}\triangleleft \flatten{ \queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]}$, 
-%      
-%      $\ireduce{\adelta_h'+1\cdots\adelta_h}\triangleleft 
-%       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
-%           
      \item ${\inclient}_l = \agssegpair[{\astate[']}][{\amxrf[_0]}]\cdot\aseqseg$,      
   		 there exists $t$ s.t. $\tknown_l\leq t \leq \tknown_l+\treceivebuffer_l$ s.t. $\astate['] \triangleleft \ \flatten{\queuemessage[0 .. t - 1]}$, 
-
-
+    
+    		 $\ireduce{\igetdeltas{\aseqseg}}\triangleleft \ \flatten{ \queuemessage[t..\tknown_l+\treceivebuffer_l-1]}$ and 
      
-     $\ireduce{\igetdeltas{\aseqseg}}\triangleleft \ \flatten{ \queuemessage[t..\tknown_l+\treceivebuffer_l-1]}$ and 
-     
-     $\ireduce{\igetdeltas{\outserver(\cid_l) }}\triangleleft \
-       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$; or
+     		$\ireduce{\igetdeltas{\outserver(\cid_l) }}\triangleleft \
+       				\flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$; or
       
- %             $\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$,
-%              
-%     		$\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$,
-                 
-
-%     
-%     $\ireduce{\adelta_{z+1}\cdots\adelta_{h'}}\triangleleft \ \flatten{ \queuemessage[t..\tknown_l+\treceivebuffer_l-1]}$ and 
-%     $\ireduce{\adelta_{h'+1}\cdots\adelta_h}\triangleleft \
-%       \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$; or
-     
-       
      \item ${\inclient}_l = \epsilon$,  $\outserver(\cid_l) = \agssegpair[{\astate[']}]\cdot \aseqseg$ there exists $t \geq \tknown_l+\treceivebuffer_l $ s.t.
-%     $\outserver(\cid_l) = \agssegpair[{\astate[']}]\cdot\agssegpairi[z+1] \cdots \agssegpairi[h]$, 
- %    $\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$
-      $\astate['] \triangleleft \ \flatten{\queuemessage[0 .. t - 1]}$ %and $\tknown_l+\treceivebuffer_l \leq t$; 
+		      $\astate['] \triangleleft \ \flatten{\queuemessage[0 .. t - 1]}$ %and $\tknown_l+\treceivebuffer_l \leq t$; 
      
-       $\ireduce{\igetdeltas{\aseqseg}}\triangleleft \ \flatten{ \queuemessage[t..|\queuemessage| - 1]}$  
-%   $\ireduce{\adelta_{z+1}\cdots\adelta_{h}}\triangleleft \flatten{ \queuemessage[t..\tknown_l+\treceivebuffer_l-1]}$ 
-     
-	
-	\end{enumerate}	
+       		$\ireduce{\igetdeltas{\aseqseg}}\triangleleft \ \flatten{ \queuemessage[t..|\queuemessage| - 1]}$  
+    \end{enumerate}	
 	
         \item \label{prop_deltas} for all $\agssegpair\in\inclient_l\cdot\outserver(\cid_l)$, 
 %          \begin{enumerate}[i.]

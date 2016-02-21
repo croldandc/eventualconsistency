@@ -2,6 +2,9 @@
 
 \section{Proof of results in \secref{sec:simulation}}
 
+The following result states properties about relation $\triangleleft$ that will be use in the proof of 
+the simulation result.
+
 \begin{lemma} \label{lemma:sim-aux}
 The followings properties holds,
 \begin{enumerate}
@@ -9,16 +12,20 @@ The followings properties holds,
 \item \label{lemma:reduce} $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]\cdot \adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]}\triangleleft \anupdseq[']$ $\adelta[_n] \triangleleft \anupdseq['']$
 \item \label{lemma:reducefirst} $\ireduce{\adelta[_0]\cdot\adelta[_1]\cdots\adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\adelta[_0] \triangleleft \anupdseq['], \ireduce{\adelta[_1]\cdots\adelta[_{n}]}\triangleleft \anupdseq['']$
 \item \label{lemma:reduceinreduce} $\ireduce{\adelta[_0]\cdots\ireduce{\adelta['_{0}]\cdots\adelta['_{m}]}\cdots\adelta[_{n}]}\triangleleft \ \anupdseq$ iff $\ireduce{\adelta[_0]\cdots\adelta['_0]\cdots\adelta['_{m}]\cdots\adelta[_{n}]}\triangleleft \anupdseq$
-\item \label{lemma:storechanged} Let $\adelta[_0]\cdots\adelta[_{n-1}]$ a delta sequence, such that, $\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_0] \triangleleft \anupdseq[_n]$ and the following relation $\astate \triangleleft \anupdseq$ then $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_n]$
+\item \label{lemma:storechanged} Let $\adelta[_0]\cdots\adelta[_{n-1}]$ a delta sequence, such that, $\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_0] \triangleleft \anupdseq[_n]$ and  $\astate \triangleleft \anupdseq$. Then $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_n]$.
+\item \label{lemma:reduceempty} $\ireduce{\epsilon} = \emptydelta$. 
 \end{enumerate}
 
 \end{lemma}
 
-
 %\begin{lemma}\label{lemma:apply} $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq$ iff $\iapply{\astate}{\adelta[_0]\cdots\adelta[_n]}\triangleleft \anupdseq$.
 %\end{lemma}
 
-\begin{proof} \ref{lemma:apply}. $\Rightarrow)$ The only possible derivation for $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq$ is
+\begin{proof} {\ }
+
+\begin{itemize}
+\item[ \ref{lemma:apply}.]
+ $\Rightarrow)$ The only possible derivation for $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq$ is
 
 \[
    \mathrulean{\triangapply}
@@ -34,14 +41,13 @@ above proof, we conclude that  $\iapply{\astate}{\adelta[_0]\cdots\adelta[_n]}\t
 
 
 
-$\Leftarrow)$ Follows analogously. 
-\end{proof}
+$\Leftarrow)$ It follows analogously. 
 
 
 %\begin{lemma}\label{lemma:reduce} $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]\cdot \adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\ireduce{\adelta[_0]\cdots\adelta[_{n-1}]}\triangleleft \anupdseq[']$ $\adelta[_n] \triangleleft \anupdseq['']$.
 %\end{lemma}
 
-\begin{proof} \ref{lemma:reduce}. $\Rightarrow)$ The only possible derivation for $\ireduce {\adelta[_1] \cdots \adelta[_{n-1}] \cdot \adelta[_{n}]} \triangleleft \anupdseq$ is
+\item[\ref{lemma:reduce}.] $\Rightarrow)$ The only possible derivation for $\ireduce {\adelta[_1] \cdots \adelta[_{n-1}] \cdot \adelta[_{n}]} \triangleleft \anupdseq$ is
 
 \[
    \mathrulean{\triangreduce}
@@ -59,7 +65,6 @@ $\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_{n-1}] \triangleleft \a
 \]
  
 $\Leftarrow)$ Follows analogously. 
-\end{proof}
 
 %\begin{lemma}\label{lemma:reducefirst} $\ireduce{\adelta[_0]\cdot\adelta[_1]\cdots\adelta[_n]}\triangleleft \anupdseq$ iff  $\anupdseq = \anupdseq[']\cdot\anupdseq['']$, $\adelta[_0] \triangleleft \anupdseq['], \ireduce{\adelta[_1]\cdots\adelta[_{n}]}\triangleleft \anupdseq['']$.
 %\end{lemma}
@@ -71,40 +76,46 @@ $\Leftarrow)$ Follows analogously.
 
 %\begin{lemma}\label{lemma:storechanged} Let $\adelta[_0]\cdots\adelta[_{n-1}]$ a delta sequence, such that, $\adelta[_0] \triangleleft \anupdseq[_0] \ldots \adelta[_0] \triangleleft \anupdseq[_n]$ and the following relation $\astate \triangleleft \anupdseq$ then $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_n]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_n]$
 %\end{lemma}
+%\item[\ref{lemma:reducefirst}.] Follows analogously to the previous case.
+%
+%\item[\ref{lemma:reduceinreduce}.] Follows analogously to  case \ref{lemma:reduce}.
+%
+%\item[\ref{lemma:storechanged}.] The proof follows by induction on the length of the sequence.
+%
+%\begin{itemize}
+%   \item{\bf n=0}. It is easy to see that $\iapply{\astate}{\ireduce{\emptydelta}}\triangleleft \anupdseq$ is $\astate \triangleleft \anupdseq$.
+%   \item{\bf n=k+1}. Then, our inductive hypothesis is $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_k]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_k]$, we should build the following proof for 
+%							
+%						$\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_{k+1}]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_{k+1}] \ $
+%					\[
+%						  \mathrulean{\lemrefprop{lemma:sim-aux}{lemma:apply}}
+%						  {
+%								\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_k]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_k]
+%								\quad \quad 
+%								\anupdseq[_{k+1}]\triangleleft\anupdseq[_{k+1}] 							
+%							}
+%  						{\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_{k+1}]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_{k+1}]}  
+%					\]
+%	
+%
+%\end{itemize}
 
-\begin{proof} \ref{lemma:storechanged}. The proof follows by induction on the length of the sequence.
-
-\begin{itemize}
-   \item{\bf n=0}. It is easy to see that $\iapply{\astate}{\ireduce{\emptydelta}}\triangleleft \anupdseq$ is $\astate \triangleleft \anupdseq$.
-   \item{\bf n=k+1}. Then, our inductive hypothesis is $\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_k]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_k]$, we should build the following proof for 
-							
-						$\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_{k+1}]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_{k+1}] \ $
-					\[
-						  \mathrulean{\lemrefprop{lemma:sim-aux}{lemma:apply}}
-						  {
-								\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_k]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_k]
-								\quad \quad 
-								\anupdseq[_{k+1}]\triangleleft\anupdseq[_{k+1}] 							
-							}
-  						{\iapply{\astate}{\ireduce{\adelta[_0]\cdots\adelta[_{k+1}]}}\triangleleft \anupdseq \cdot \anupdseq[_0]\cdots\anupdseq[_{k+1}]}  
-					\]
-	
+The remaining cases follow analogously. 
 
 \end{itemize}
 
-
 \end{proof}
 
+\newcommand*{\QEDB}{\hfill\ensuremath{\square}}%
 
 
-
-\begin{proof} [of ~\thmref{thm:simulation}]
+\subsection{Proof of~\thmref{thm:simulation}} 
+%\begin{proof} [of ~\thmref{thm:simulation}]
  We show that the following relation is a weak simulation.
 \[
 \mathcal{R} = \{ (\isystemterm, \systemterm) \ |\ \implements{\isystemterm{}}{\systemterm} \}
 \]
-
-
+We proceed by case analysis on the applied rule for the derivation of $\isystemterm\tr{\lambda}\isystemterm[']$:
 			
 			\begin{itemize}
 %				\item {\bf rule (\textsc{t-read})}. If $\systemterm  \arroi{\readtran{r}} \systemterm '$, then by rule (\textsc{\footnote{?}notesize{t-read}}), $\systemterm $ must be the following term: 
@@ -130,7 +141,7 @@ $\Leftarrow)$ Follows analogously.
 						\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer \cdot \tupdate}{\tsent}{\treceivebuffer}}[{\systemterm['']}]	
 				  \end{array}		
 				\]
-				.
+				
 				
 				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$.
 				Note that the only terms that have changed are the transaction buffers 
@@ -167,7 +178,7 @@ $\Leftarrow)$ Follows analogously.
 				\]
 								
 				We  prove that $(\systemterm',\isystemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$.
-				Since the computations involve only client $\cid$, we only need to check that  properties in \defref{def:implementation} still hold for $\cid$.		
+				Since the computation involves only client $\cid$, we only need to check that  properties in \defref{def:implementation} still hold for $\cid$.		
 					
 					\begin{enumerate}
 					
@@ -349,8 +360,9 @@ $\Leftarrow)$ Follows analogously.
 				\[\systemterm = \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\queuemessage\ \bigpar\ \Absclient'' }]. \]
 			
 			
-				Since $\implements{\isystemterm}{\systemterm}$, \refprop{prop_inclient} holds. We have three interesting cases:
-				\begin{itemize}
+				Since $\implements{\isystemterm}{\systemterm}$, \refprop{prop_inclient} holds. We have the following cases:
+				\begin{enumerate}[(i)]
+				       \item It cannot be that ${\inclient}_l \cdot \outserver(\cid_l)  = \epsilon$ because  $\ruleName{receive}$ has been applied.
 
 					\item  ${\inclient} = \agssegpairi[1] \cdots \agssegpairi[h']$, 
 					
@@ -399,7 +411,7 @@ $\Leftarrow)$ Follows analogously.
 				\]
 				
 				We check now that  $\implements{\isystemterm[']}{\systemterm[']}$. Since the unique elements that are modified by the reductions 
-				are $\inclient$, $\outserver(\cid)$ and $\treceivebuffer$, we  only need to check that \refprop{prop_inclient} still holds for client $\cid$.
+				are $\inclient$, $\outserver(\cid)$ and $\treceivebuffer$, we  only need to check that \refprop{prop_inclient} and \ref{prop_deltas} still hold for client $\cid$.
 				
 				\begin{itemize}
 				
@@ -479,56 +491,42 @@ $\Leftarrow)$ Follows analogously.
 				\end{equation}
 				
 				Where $t \leq \tknown+\treceivebuffer$ s.t. $\astate['] \triangleleft \ \flatten{\queuemessage[0 .. t - 1]}$.
-
-				The case follows analogously to the previous case, since, \equref{eq:sim-receive-c1-d} and \equref{eq:sim-receive-c2-d} are equals and the only difference between \equref{eq:sim-receive-c1-c} and \equref{eq:sim-receive-c2-c}  is the init of the subsequence above $\queuemessage$. The proof for \refprop{prop_inclient} holds 					by using \lemrefprop{lemma:sim-aux}{lemma:reduce} with the hypothesis \equref{eq:sim-receive-c2-c} and \equref{eq:sim-receive-c1-a}.
+				
+				It follows analogously to the previous case, because \equref{eq:sim-receive-c2-d} is equal to  \equref{eq:sim-receive-c1-d} and 
+				 \equref{eq:sim-receive-c2-c}  are  \equref{eq:sim-receive-c1-c} analogous.  The proof for \refprop{prop_inclient} holds 					
+				by using \lemrefprop{lemma:sim-aux}{lemma:reduce} with the hypothesis \equref{eq:sim-receive-c2-c} and \equref{eq:sim-receive-c1-a}.
+				As in the previous case, \refprop{prop_deltas} straightforwardly holds.
 
      		%$\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$,
                %$\astate['] \triangleleft \queuemessage[0 .. t - 1]$ and $t \leq \tknown_l+\treceivebuffer_l$; 
 
 
 					
-					\item  ${\inclient} = \epsilon$, 
-     					          $\outserver(\cid) = \agssegpair[{\astate[']}]\cdot\agssegpairi[z+1] \cdots \agssegpairi[h]$, 
-     						   $\astate['] = \iapply{\initialstate}{\ireduce{\adelta_1\cdots\adelta_{z}}}$
-      						   $\astate['] \triangleleft \queuemessage[0 .. l - 1]$ and $\tknown+\treceivebuffer \leq l$;  
-					then $\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_{h}]}}\triangleleft \flatten{\queuemessage}$. 
-					Since $\astate['] = \iapply{\initialstate}{\ireduce{\adelta[_1]\cdots\adelta[_{z}]}}$, then $\astate[']\triangleleft \queuemessage[0..l-1]$ with $r = l - \tknown - \treceivebuffer$, besides $r \leq l < |\queuemessage|$.  Hence,
-				
-				\[\systemterm = \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] \]
-				with $\implements{\isystemterm['']}{\systemterm['']}$. As $\tknown+ \treceivebuffer + r < |\queuemessage|$ then by inspection of rules in 				\figref{fig:OS-tgsp}, 
-				$\systemterm \arroi{\tau}\cdots\arroi{\tau} \systemterm^{r}$ with $r$ internal transitions. Then,
+				\item  ${\inclient} = \epsilon$, 
+					$\outserver(\cid) = \agssegpair[{\astate[']}]\cdot \aseqseg$ then  there exists 
+					$t \geq \tknown+\treceivebuffer$ s.t.
+		     		        $\astate['] \triangleleft \ \flatten{\queuemessage[0 .. t - 1]}$ 
+				        and       		$\ireduce{\igetdeltas{\aseqseg}}\triangleleft \ \flatten{ \queuemessage[t..|\queuemessage| - 1]}$.
+				        Note that $\tknown+ \treceivebuffer \leq t \leq |\queuemessage|$
+		
+				Define $r = t - \tknown - \treceivebuffer$.  If $r = 0$ then take $\systemterm[']=\systemterm$.
+				Otherwise, $r > 0$ implies
+				$\tknown+ \treceivebuffer + r < |\queuemessage|$. Therefore,  $\systemterm$ can reduce   $r$  by repeatedly using rule
+				\ruleName{receive}.  
+				Consequently, $\systemterm \Arro{}\systemterm[']$ with 
 				\[\begin{array}{r@{=}l}
-						\systemterm^{r} & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+r}}[{\systemterm['']}]	
+						\systemterm['] & \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+r}}[{\systemterm['']}]	
 				  \end{array}		
 				\]
 				
-				Furthermore,
-				$\systemterm^{r} \arroi{\tau} \ldots\ \arroi{\tau} \systemterm[']$ with
-				\[\begin{array}{r@{=}l}
-					\systemterm['] &  \tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer + r + m}}[{\systemterm['']}] \\
-				  \end{array}		
-				\]
+				It is immediate to notice that \refprop{prop_inclient}($iii$) holds for $\systemterm[']$ and $\isystemterm[']$ because $t = \known+\treceivebuffer+r$.
+				
+				As in  case ($ii$), \refprop{prop_deltas} straightforwardly holds.
 
-
-				$m$ represents the amount of internal transition that performed by client $\cid$ to reach $\iapply{\astate[']}{\ireduce{\adelta[_1]\cdots\adelta[_{z}]}}$. Hence, $m =  |\queuemessage| - l - 1$ which always is $< |\queuemessage|$.   
-
-
-								
-				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
-				by checking the properties in \defref{def:implementation}.	
-				\begin{itemize}	
-	
-					\item[\ref{prop_inclient}.] It easy to see because the segment from $\outserver(\cid)$ was moved to $\inclient$ holdings the hypothesis.
-					
-					
-					\item[{--}] The remaining properties straightforwardly hold.
+   	
 							
-				\end{itemize}	
-	
-	
-							
-				\end{itemize}
-							The remainging case is straightforward since the hyphotesis is false, hence the property holds.
+\end{enumerate}
+							%The remainging case is straightforward since the hyphotesis is false, hence the property holds.
 
 % \item ${\inclient}_l = \agssegpairi[1] \cdots \agssegpairi[h']$, $\outserver(\cid_l) = \agssegpairi[h'+1] \cdots \agssegpairi[h]$; 
  %    \linebreak
@@ -592,8 +590,7 @@ $\Leftarrow)$ Follows analogously.
 				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$. 
 				Since the reduction only affects the client $\cid$, we only need to check
 				that  properties in \defref{def:implementation} still hold for $\cid$.	
-									\chnote{Hablamos de agregar en el texto principal que $\ireduce{\epsilon} = \emptydelta$. Qué hacemos?}
-
+									
 					\begin{enumerate}
 					\item[\ref{prop_state_known}.]  By \refprop{prop_state_known}, we know that $\known\ \triangleleft\ \flatten {\queuemessage[0..\tknown-1]}$. 
 					By \refprop{prop_inclient},  $\ireduce{\adelta[_1]\cdots\adelta[_{h'}]}\triangleleft \queuemessage[\tknown ..  \tknown + \treceivebuffer - 1]$. 
@@ -633,7 +630,7 @@ $\Leftarrow)$ Follows analogously.
 					         Therefore, each $\aroundtuple[@][@][\adelta'] \in\pending_l$
 					         and $\irounds\leq\amxrf_{h'}(\cid)$ corresponds to a segment within 
 					         $\queuemessage[\tknown+\treceivebuffer.. \tknown + \treceivebuffer -1]$. 
-					         \henote{Creo que hay que agregar una condición para lo que sigue} 
+					         %\henote{Creo que hay que agregar una condición para lo que sigue} 
 					         Similarly, 
 					         it can be concluded that $\aroundtuple[@][@][\adelta'] \in\pending_l$
 					         and $\irounds>\amxrf_{h'}(\cid)$ corresponds to  segments beyond 
@@ -650,7 +647,7 @@ $\Leftarrow)$ Follows analogously.
 					 $\emptydelta \triangleleft \epsilon$, by rule \ruleName{\triangemptydelta}. 
 					 Morevoer, \refprop{prop_inclient} ensures
 					 $\ireduce{\igetdeltas{\outserver(\cid)}}\triangleleft   
-					 \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$,
+					 \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$.
 					 If $\outserver(\cid) =\epsilon$, then
 					 $\ireduce{\epsilon}\triangleleft   
 					 \flatten{\queuemessage[\tknown_l+\treceivebuffer_l..|\queuemessage| - 1]}$ implies
@@ -704,7 +701,7 @@ $\Leftarrow)$ Follows analogously.
 				\[\begin{array}{r@{=}l}
 					\isystemterm & \addid{\iclientinst[\treadins{x}{r}]} \ \bigpar \ \isystemterm['']
 					\\
-					\isystemterm['] & \addid{\iclientinst[{P}\subst{x}{v'}]}\ \bigpar \ \isystemterm['']	\\
+					\isystemterm['] & \addid{\iclientinst[{P}\subst{x}{v}]}\ \bigpar \ \isystemterm['']	\\
 					v & \iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}
 					\end{array}
 				\]
@@ -714,14 +711,14 @@ $\Leftarrow)$ Follows analogously.
 				with $\implements{\isystemterm['']}{\systemterm['']}$. By rule ~\ruleName{read}, 
 				$\systemterm \arroi{\readtran{r}} \systemterm[']$ with
 				\[\begin{array}{r@{=}l}
-					\systemterm['] & \tsystem{\tclienti{{\tprogram}\subst{x}{v}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]\\
+					\systemterm['] & \tsystem{\tclienti{{\tprogram}\subst{x}{v'}}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]\\
 					v' &  \rvalue{r}{\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}	
 				  \end{array}		
 				\]
 				
-				We  show that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$. by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
+				We  show that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$. by showing that $\implements{\isystemterm[']}{\systemterm[']}$.
 				%by checking the properties in \defref{def:implementation}.			
-				 The only terms that have changed are the programs in client $\cid$.  We show that $v=v'$ holds. Since 
+				 The only term that has changed is the programs in client $\cid$.  We show that $v=v'$ holds. Since 
 						$\implements{\isystemterm}{\systemterm}$, the following holds
 						\begin{itemize}
 							\item $\known \triangleleft \flatten {\queuemessage[0..\tknown-1]}$ by  \refprop{prop_state_known};
@@ -729,9 +726,7 @@ $\Leftarrow)$ Follows analogously.
 							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by  \refprop{prop_transactions};
 						\end{itemize}
 						
-						Then, we can build the following proof for 
-						$\rvalue{r}{\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}
-						= 					\iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}$
+						Then, we can build the following 
 						
 						{\small
 						\[
@@ -756,9 +751,9 @@ $\Leftarrow)$ Follows analogously.
 									{\iapply{\known}{{\igetdeltas\pending}\cdot{\pushbuffer}\cdot{\transactionbuffer}}  
 									\triangleleft {\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer}}
 					\]}
-					Then, we conclude $v=v'$ by \triangread.
-						 				\lemrefprop{lemma:sim-aux}{lemma:apply}										
-					The remaining properties straightforwardly hold.
+					Consequently, we conclude $v=v'$.% by \triangread.
+						 				%\lemrefprop{lemma:sim-aux}{lemma:apply}										
+					%The remaining properties straightforwardly hold.
 						
 
 
@@ -778,7 +773,7 @@ $\Leftarrow)$ Follows analogously.
 				with $\implements{\isystemterm['']}{\systemterm['']}$. By rule \ruleName{confirm}, 
 				$\systemterm \arroi{\confirmedtran} \isystemterm[']$ with
 				\[\begin{array}{r@{=}l}
-					\systemterm['] & \tsystem{\tclienti{{\tprogram}\subst{x}{v}}
+					\systemterm['] & \tsystem{\tclienti{{\tprogram}\subst{x}{v'}}
 		{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}]	\\
 					v' & \eval{(\tpending \cdot  \ttransactionbuffer == \epsilon)}
 				  \end{array}		
@@ -786,13 +781,16 @@ $\Leftarrow)$ Follows analogously.
 				
 				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
 				by checking the properties in \defref{def:implementation}.
-				The only terms that have changed are the programs in client $\cid$.  We show that $v=v'$ holds. Since 
+				The only terms that have changed are the programs in client $\cid$ we only need to show  $v=v'$. Since 
 						$\implements{\isystemterm}{\systemterm}$, the following holds
 						\begin{itemize}
 							\item $\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}}\triangleleft \flatten{\tpending} \ $ by  \refprop{prop_pending};
 							\item $\transactionbuffer \triangleleft{\ttransactionbuffer}$ by  \refprop{prop_transactions};
 						\end{itemize}
-						Then, we know that the value of $\pending \cdot \pushbuffer$ is related to $\tpending$, thereby, when $\pending$ or $\pushbuffer$ have any elements then $\tpending$ also has it. Finally, $\transactionbuffer$ has elements iff $\ttransactionbuffer_i$ also has any elements.
+						Since $\ireduce{\igetdeltas{\pending}\cdot{\pushbuffer}}\triangleleft \flatten{\tpending}$,  $\pending  \cdot \pushbuffer == \epsilon$ iff
+						$\tpending==\epsilon$. Analogously,  $\transactionbuffer \triangleleft{\ttransactionbuffer}$  implies 
+						 $ \transactionbuffer == \epsilon$ iff
+						 $\ttransactionbuffer==\epsilon$. Therefore  $v = v'$.
 				
 	
 	
@@ -1058,8 +1056,9 @@ $\Leftarrow)$ Follows analogously.
   						{\iapply{\astate}{\ireduce{\adelta}} \triangleleft \ \flatten{\queuemessage \cdot   \anupdseq[_1]_0\cdots\anupdseq[_1]_m}			}  
 					\]
 						
-						\item[{--}] The remaining properties straightforwardly hold.
-				\end{enumerate}
+					\end{enumerate}
+					 The remaining properties straightforwardly hold.
+
 
 	\item {\bf rule \ruleName{i-pull$_2$}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
 				\[\begin{array}{r@{=}l}
@@ -1140,11 +1139,12 @@ $\Leftarrow)$ Follows analogously.
 				by checking the properties in \defref{def:implementation}.	
 				\begin{enumerate}
 				
-					\item[\ref{prop_inclient}.] By \propref{prop_outserver2}, when $\outserver(i)$ has a state $\astate[']$ as prefix, then $\astate = \iapply{\astate[']}{\ireduce{\adelta_1\cdots\adelta_h}}$ . In particular, there do not exists deltas in $\outserver(i)$ so that $\astate = \astate[']$. By \propref{prop_stateserver}, we know that $\astate \triangleleft \queuemessage$, hence this property holds.
-											
-						\item[{--}] The remaining properties straightforwardly hold.
-
+					\item[\ref{prop_inclient}.] We show that (iii) holds. By \propref{prop_stateserver}, we know that $\astate \triangleleft \queuemessage$. 
+					Then, take $t = \queuemessage$ and notice that $\tknown+\treceivebuffer \leq|\queuemessage|$.
+					\item[\ref{prop_deltas}.] \textcolor{red}{Completar}
 					\end{enumerate}
+					
+					The remaining properties straightforwardly hold.
 
 			\item {\bf rule \ruleName{drop-conn}}. Then, $\isystemterm  \arroi{\tau} \isystemterm '$ with 
 				\[\begin{array}{r@{=}l}
@@ -1157,14 +1157,7 @@ $\Leftarrow)$ Follows analogously.
 
 
 
-				We  prove that $(\isystemterm',\systemterm) \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm}$ 
-				by checking the properties in \defref{def:implementation}.	
-				\begin{enumerate}
-							
-						\item[{--}] Properties straightforwardly hold.
-
-					\end{enumerate}
-
+				Then, take $\systemterm[']=\systemterm$ and  note that $\implements{\isystemterm[']}{\systemterm}$.
 
 
 				%
@@ -1506,5 +1499,5 @@ $\Leftarrow)$ Follows analogously.
 				%
 			%\end{itemize}
 		%\end{itemize}
-		
-\end{proof}
+\QEDB	
+%\end{proof}
