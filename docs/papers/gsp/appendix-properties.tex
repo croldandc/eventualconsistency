@@ -297,7 +297,7 @@ $\anupd_1^{\vertice[w]}\in\queuemessage[0..m-1]$.
 		     \forall\anupd. \anupd^{\vertice}\not\in\queuemessage'\cdot\anupdseq\})$ with $\anupdseq=\ublock[{\udec[{\anupd[_0]}][{\vertice[w][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[w][_n]}]}]$,then,  there is not $\anupd_0$ s.t.
        $ \anupd_0^{\vertice[y]}\not\in\queuemessage''$. 
        Therefore, it holds.
-       \item $(\vertice,\vertice[y]) \in \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\} $ follow immediately by \lemref{lemma:arSO-in-arUso}. \chnote{esto no sé si es suficiente justificacion. El hecho de estar en el session order significa q hay un orden entre los vertices que estaban en los buffer}
+       \item $(\vertice,\vertice[y]) \in \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\} $ follow immediately by \lemref{lemma:upd-in-buffers-updinSO}. \chnote{esto no sé si es suficiente justificacion. El hecho de estar en el session order significa q hay un orden entre los vertices que estaban en los buffer}
 \end{itemize}
         
 	\item rules \ruleName{a-read} and \ruleName{a-int} follow immediately by inductive hypothesis
@@ -400,7 +400,35 @@ then $\so$ is transitive.
 \end{lemma}
 
 
-\begin{proof} \henote{To Do}\qed
+\begin{proof}
+It follows by induction on the length of
+the derivation  $\tr{} ^*$.
+\begin{itemize}
+   \item{\bf n=0}. It holds trivially, because $\so=\emptyset$.
+      \item{\bf n=k+1}. Then $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset]
+    \tr{} ^k\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+    \arroi{\lambda} \environment{\systemterm'}{\op}{\so}{\vis}{\arb}[\sse]$. 
+    By inductive hypothesis, $\so'$ is transitive.
+    We proceed by 
+    case analysis on the last applied rule:
+	
+    \begin{itemize}
+	\item rule \ruleName{a-update}. Then, $\so = \so'\cup (\sse'(\cid)\times\{\vertice\})$ for all $\cid$. Therefore, we have to prove that
+	for all $(\vertice[x],\vertice[y])\in\so$ and $(\vertice[y],\vertice[z])\in\so$ then $(\vertice[x],\vertice[z])\in\so$. Since we are analysing the last rule, then
+	$(\vertice[x],\vertice[y])\in\so'$. There are two cases:
+	\begin{itemize}
+	\item $\vertice \neq \vertice[z]$. Then, it follow immediately by inductive hypothesis.
+	\item $\vertice = \vertice[z]$. Since $(\vertice[x],\vertice[y])\in\so'$ then $\vertice[x]\in \sse'(\cid)$. Therefore,  $(\vertice[x],\vertice[z])\in\so$.
+	\end{itemize} 
+	 \item rule \ruleName{a-read}. The rule follows analogously to the previous rule.
+	
+	\item rules \ruleName{a-arb} and \ruleName{a-int} follow immediately by inductive hypothesis
+	after noticing that  $\so = \so'$.
+	
+	\chnote{esta prueba no me salio sino es a la "algo3"}
+\end{itemize}
+
+\end{itemize}\qed
 \end{proof}
 
 \begin{lemma}
@@ -530,7 +558,7 @@ case analysis on the rule applied for the last transition:
        $ \anupd_0^{\vertice[y]}\not\in\queuemessage''$ implies that there is not $ \anupd_1^{\vertice[z]}\not\in\queuemessage'$
        because of (the contrapositive of) \lemref{lemma:local-updates-preserver-order}.
        Therefore, $(\vertice,\vertice[y]) \in \arb_{\mbox{\sf new}} \subseteq \arb \cup \restUU{\so}$.
-       \item $(\vertice,\vertice[y]) \in \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\ $ follow immediately by \lemref{lemma:arSO-in-arUso}.
+       \item $(\vertice,\vertice[y]) \in \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\ $ follow immediately by \lemref{lemma:upd-in-buffers-updinSO}.
         \end{itemize}
 
     \end{itemize}
