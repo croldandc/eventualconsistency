@@ -3,9 +3,70 @@
 \section{Introduction}
 
 Cloud infrastructures provide data storages that are virtually unlimited, elastic (i.e., scalable at run-time), 
-robust (which is achieved by using replicas),  highly available and partition tolerant. 
-It is known (CAP theorem~\cite{CAP}) that one system cannot provide at the same time availability, 
-partition tolerance, and consistency, but has to drop one of these properties. Cloud data stores typically 
-relax consistency, while providing a weaker  notions of consistency. 
+robust   highly available and partition tolerant by 
+replicating data over multiple servers. A client may  perform update and 
+read operations over any of these replicas and the  store is responsible for keeping 
+the  replicas synchronised. 
+However, it is known (CAP theorem~\cite{CAP}) that one system cannot provide at the same time availability, 
+partition tolerance, and consistency, but has to drop one of these properties. Today's popular 
+data storages, such as Dynamo~\cite{DeCandia:2007:DAH:1294261.1294281} and  Cassandra~\cite{lakshman2010cassandra}, favour 
+availability over strong consistency and provide weaker versions called \emph{eventual consistency}.
+Roughly, eventual consistency ensures that, although data consistency can be at time violated, at some point it will be restored
+and the different replicas will eventually converge to the same state~\cite{DBLP:journals/cacm/BailisG13}.
+The  storages adopt different strategies to achieve eventual consistency and the choice  
+impacts on the  guarantees provided by the system, i.e., on the kind of 
+inconsistencies or anomalies that are allowed to happen. For instance, a storage may
+resolve automatically conflicts introduced be concurrent updates (e.g., by using timestamps or causality) or  
+may leave the problem to applications that read the database (like in Cassandra).
+In this way, the consistency model supported by a data store becomes crucial when writing applications. 
+
+Consequently,  there has been a growing interest on establishing  programming abstractions to help developers 
+to deal with eventual consistent stores. For instance, commutative replicated data types~\cite{DBLP:conf/sss/ShapiroPBZ11}  and 
+cloud types~\cite{burckhardt2012cloud} provide programmers with suitable data type abstractions that encapsulate issues related 
+to eventual consistency. Resent proposals advocate declarative approaches to 
+eventual consistency programming,  e.g.,  
+to automatically select the consistency level required from a store given 
+a consistency contract ~\cite{sivaramakrishnan2015declarative}
+or to prove that  a given consistency level is adequate for preserving some data invariant~\cite{gotsman2016cause}.
+With similar aims,
+% Another recent proposal  aimed at helping programmers to reason about applications 
+%running on top of replicated stores is the  
+the Global Sequence Protocol (\gsp)~\cite{DBLP:conf/ecoop/BurckhardtLPF15} proposes  an operational model  
+ to reason about applications 
+running on top of replicated stores. Basically, the state of a store is represented as the sequence of updates that 
+have led to it. Clients have their own copy of the state which they operate upon: each read and write operation has immediate
+effect over the local state and the system propagates changes to make all replicas consistent using 
+a reliable total order broadcast  protocol (\textsc{rtob}). The \textsc{rtob} protocol guarantees that all messages
+are delivered  in the same total order to all clients. Replicas rely on the order generated  by \textsc{rtob} to 
+converge to the same state. In the very basic model, called core \gsp, each client interacts with its local state 
+  by performing read and write operations. Albeit simple, this model  introduces some subtleties when programming 
+  because  it does not ensure read stability (i.e., two successive reads may 
+return different values) nor atomicity of several updates (i.e., different clients may partially observe 
+a sequence of updates). To overcome these limitations, 
+ three synchronisation primitives, namely \pullcmd, \pushcmd\ and \confcmd, 
+ allow programmers to control the propagation of changes. % and the updating of the local state. 
+It has been shown that this model can be implemented so to  
+consider a reduced representation of sequences of updates by using of state and delta objects and to handle communciation
+failures.The idealised model and its implementation,
+have been defined in terms of a reference implementation. 
+
+We propose here a
+formal account for both the idealised model and the  implementation as process calculi: the 
+\gsp\ and \igsp\ calculi (\secref{sec:gsp} and \secref{sec:igsp}). We show
+that the implementation is correct by showing that the behaviour of a program
+running over \igsp\ can be also observed over the idealised model. Technically, 
+we show that each \igsp\ system can be simulated by the corresponding 
+\gsp\  system (\secref{sec:simulation}). Then, we study and prove the consistency guarantees ensured by 
+\gsp.  
+We rely on the characterisation of consistency guarantees in terms of abstract histories proposed in~\cite{DBLP:journals/ftpl/Burckhardt14}.
+Abstract histories capture the visibility relation between actions and the arbitration of updates in the system. Then, 
+a wide-spectrum of consistency models can be characterised in terms of these two relations. 
+In \secref{sec:properties-gsp}, 
+we show how to operationally associate abstract histories to concrete computations and 
+prove that \gsp\ enjoys the properties  \textit{Monotonic Read},
+ \textit{Causal Visibility}
+and	{\em Consistent prefix} among others. Finally, in \secref{sec:transactions} we study the  
+extension of \gsp\ with synchronous write operations, which ensures strong consistency. 
+%Actually, we prove that \gsp\ with synchronous updates enjoy the single order property.
 
 

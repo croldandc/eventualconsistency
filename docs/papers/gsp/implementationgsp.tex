@@ -261,21 +261,10 @@ the store and that the store confirms processed rounds in a non-decreasing order
 
 \subsection{Operational Semantics}
 
-For the operational semantics of \igsp\ we consider the set of labels extended as follows
-\[\mu := \ldots\ | \ \tau \]
-The label $\tau$ without any client annotation is associated with changes in the global store 
-and communication failures.
+%For the operational semantics of \igsp\ we consider the set of labels extended as follows
+%\[\mu := \ldots\ | \ \tau \]
 
-As for the idealised model, the operational semantics  is given by a labelled transition system 
-over well-formed terms, up-to  structural equivalence, which states that  $\bigpar$ is associative, 
-commutative and has $0$ as neutral element. The inference rules are in \figref{fig:semantics-igsp}.
-Rule \ruleName{i-update}, which is analogous to rule \ruleName{update}, adds the operation $\anupd$ 
- to the temporary block $\transactionbuffer$. 
- The decoration $\vertice$ is irrelevant in this model, 
- hence we do not impose any freshness requirement.
-
-     
-    \begin{figure}[tp]
+  \begin{figure}[tp]
 {\small
  \[
  \begin{array}{l}
@@ -435,19 +424,33 @@ Rule \ruleName{i-update}, which is analogous to rule \ruleName{update}, adds the
 
 
 
-A client terminates a block by executing $\pushcmd$ \ruleName{i-push}. At this time, the block $\transactionbuffer$ 
+
+As for the idealised model, the operational semantics  is given by a labelled transition system 
+over well-formed terms, up-to  structural equivalence. We consider a new label $\tau$ without 
+any client annotation for transitions associated with changes in the global store 
+and communication failures.
+%
+%, which states that  $\bigpar$ is associative, 
+%commutative and has $0$ as neutral element. 
+The inference rules are in \figref{fig:semantics-igsp}.
+
+Rule \ruleName{i-update}, which is analogous to rule \ruleName{update}, adds the operation $\anupd$ 
+ to the temporary block $\transactionbuffer$. 
+ The decoration $\vertice$ is irrelevant in this model, 
+ hence we do not impose any freshness requirement.
+ A client terminates a block by executing $\pushcmd$ \ruleName{i-push}. At this time, the block $\transactionbuffer$ 
  is appended to the already terminated blocks in $\pushbuffer$, which will be sent on the next round. 
  Additionally, the block counter $\irounds$ is incremented by $1$.
  By rule \ruleName{i-send}, a client sends changes to the global store. 
- This transition may take place whenever  the client is connected  (\ie, $\cid\in\dom\inserver$),
-  there are finished blocks in $\pushbuffer$ (\ie, $\pushbuffer \neq \emptydelta$)  and the 
-  client does not need to re-synchronise with the global store 
+ This transition takes place whenever  the client is connected  (\ie, $\cid\in\dom\inserver$),
+  there are finished blocks in $\pushbuffer$ (\ie, $\pushbuffer \neq \emptydelta$)  and
+  there is no need to re-synchronise  
   (\ie, $\inclient \cdot\outserver(\cid) \neq \agssegpair[{\astate[']}][{\amxrf}]\cdot\aseqseg$)\footnote{For simplicity we check re-synchronisation by inspecting  communication buffers  instead of 
   explicitly adding  to the state the condition {\em channel established} used 
  by the implementation.}.
   %
  The 
- available blocks are sent within the same round $\around = \aroundtuple[@][@][\pushbuffer]$, which is labelled with 
+ available blocks are sent within the same round $\around = \aroundtuple[@][@][\pushbuffer]$, which contains 
  the number  $\irounds$ corresponding to the last finished block. 
   The new round $\around$ is added to the corresponding input buffer in the store, \ie, $\inserver(\cid)$ 
   is updated to $\inserver(\cid)\cdot\around$ (where $\_\upd{\_}{\_}$ is the  update operator for functions).
@@ -460,13 +463,14 @@ A client terminates a block by executing $\pushcmd$ \ruleName{i-push}. At this t
     added to the input buffer on the client. As for the idealised model, all received changes are applied to 
    the local replica when $\cid$ performs $\pullcmd$. Rule \ruleName{i-pull$_1$} handles the case in which 
    the connection with the global store has not been previously reset. In such case, 
-   all received segments are of the form $\agssegpair$. Therefore, all received 
-   changes $\adelta[_1]\cdots\adelta[_k]$ are applied to the local state $\astate$. Moreover, 
-   all rounds that are confirmed by the received segments are removed from  the  pending list $\pending$.
-   Actually, it suffices to consider  
-    the confirmation $ \amxrf_k$ since  well-formedness (\defref{def:wf-igsp},\ref{wf-igsp-pending}) ensures  
-    $\amxrf_h(\cid) \leq \amxrf_j(\cid)$ for all ${h}\leq {j}$. Hence, all rounds up-to  
-    $\adelta_k(\cid)$ are removed from $\pending$. This is done by the auxiliary function 
+   all received segments are of the form $\agssegpair$. Therefore, the 
+   changes $\adelta[_1]\cdots\adelta[_k]$ are applied to the local state $\astate$ and 
+   all rounds  confirmed by the received segments are removed from  the  pending list $\pending$.
+   By well-formedness (\defref{def:wf-igsp},\ref{wf-igsp-pending}), it suffices to consider  
+    the confirmation $ \amxrf_k$, which is the greatest. %since   ensures  
+    %$\amxrf_h(\cid) \leq \amxrf_j(\cid)$ for all ${h}\leq {j}$. 
+    Hence, all rounds up-to  
+    $\amxrf_k(\cid)$ are removed from $\pending$. This is done by the auxiliary function 
     $\filter {\_} {\_}$, defined as follows           
       \[
       \begin{array}{ll}
@@ -481,10 +485,10 @@ A client terminates a block by executing $\pushcmd$ \ruleName{i-push}. At this t
       \end{array}
       \]
    
-Rules \ruleName{i-read} and \ruleName{i-confirm} are analogous the ones on the \gsp\ calculus.   We use
+Rules \ruleName{i-read} and \ruleName{i-confirm} are analogous the ones in the \gsp\ calculus.   We use
 $\igetdeltas{\_}$ as the function that projects a sequence of rounds into the sequence containing the 
 corresponding $\adelta$s.
-The global store changes its state as prescribed by rule  \ruleName{i-batch}. It collects 
+The global store changes its state as prescribed by rule  \ruleName{i-batch}: it collects 
 all received rounds in $\inserver$ by using the auxiliary function $\receiveroundsname{\_}$, 
 which builds a unique object $\adelta$ by appending  all rounds in the
 input buffers, and 
@@ -530,8 +534,7 @@ $\receiveroundsname{\_}$ is defined as follows
     every buffer $\outserver(\cid)$. The input buffers  $\inserver(\cid_l)$ are
      emptied because  all received rounds have been processed.
 
-The remaining rules  deal with connectivity issues: rule \ruleName{i-drop-cxn} models the disconnection of the client 
-$\cid$: the buffers $\outserver(\cid)$ and $\inserver(\cid)$ are removed from the global store and also 
+The remaining rules  deal with connectivity issues: rule \ruleName{i-drop-cxn} models a client's disconnection: the buffers $\outserver(\cid)$ and $\inserver(\cid)$ are removed from the global store and also 
 the input buffer of $\cid$ is set to $\epsilon$. When the client $\cid$ \mbox{(re-)}establishes its connection \ruleName{i-accept-cxn}, the store
 creates the buffers for $\cid$ and sends a segment containing the current 
 state of the store. Rule \ruleName{i-pull$_2$} is analogous to \ruleName{i-pull$_1$}, but handles the first
@@ -540,9 +543,9 @@ $\agssegpair[{\astate[''']}][{\amxrf[_0]}]$ contains a state instead of a delta 
 The client uses this new state $\astate[''']$ instead of its local state to  resynchronise. The application of 
 successive segments is analogous to rule \ruleName{i-pull$_1$}.
 
-The proposed implementation allows for a server to crash, i.e., to close all communication buffers but we
-do not model this behaviour explicitly because  it can be obtained by applying several times rule 
-\ruleName{i-drop-cxn}.
+The proposed implementation allows for a server to crash, i.e., to close all communication buffers, but we
+do not model explicitly this behaviour  because  it can be obtained by applying  rule 
+\ruleName{i-drop-cxn} several times.
 %
 %\\[25pt]
 %\mathax{i-crash}{\server{\astate}{\inserver}{\outserver}\ \bigpar \ \iclient

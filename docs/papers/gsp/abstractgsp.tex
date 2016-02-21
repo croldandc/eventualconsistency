@@ -4,7 +4,7 @@
 \section{Global Sequence Protocol Calculus}
 \label{sec:gsp}
 
-\henote{check store-store-etc.}
+%\henote{check store-store-etc.}
 
 
 \subsection{Syntax}
@@ -54,6 +54,11 @@ and $\idset$ of client identifiers $\cid,\cid',\ldots,\cid_1,\ldots$.
 
 
  
+ \begin{definition}[GSP Language] 
+The set of \tgspcalculus\ terms is given by the grammar in \figref{fig:syntax-gsp}.
+\end{definition}
+
+
  \begin{figure}[t]
  \[
 \begin{array}{l}
@@ -119,7 +124,7 @@ and $\idset$ of client identifiers $\cid,\cid',\ldots,\cid_1,\ldots$.
 			& 0 \;|\; \tclient{\tprogram}{\tknown}{\blockseq}{\ttransactionbuffer}{\blockseq}{\treceivebuffer} \;|\;
        				  \Absclient\, \bigpar\, \Absclient %\hfill \text{with}\  n \in \nat
       \end{array}
-      \\[40pt]
+      \\[30pt]
       \begin{array}{ll}
      		 \rName{program} 
 			 \ \tprogram \ ::=\ &
@@ -134,13 +139,11 @@ and $\idset$ of client identifiers $\cid,\cid',\ldots,\cid_1,\ldots$.
      \end{array}
 \end{array}
   \]
+  \vskip -10pt
 \caption{Syntax of the \gsp\ calculus}
 \label{fig:syntax-gsp}
 \end{figure}
 
- \begin{definition}[GSP Language] 
-The set of \tgspcalculus\ terms is given by the grammar in \figref{fig:syntax-gsp}.
-\end{definition}
 
 A \gsp\ system $\systemterm$ consists of  a store and zero or more  clients.
 The global store $\queuemessage$ is completely defined by its state, which 
@@ -176,7 +179,6 @@ the store: $\readcmd,  \updcmd, \pullcmd,  \pushcmd, \confcmd$
 A program $\plet{x}{\ldots}{P}$ introduces a bound variable whose  scope is $P$. The definition of 
 free variables of a program is  standard. We say that a process $P$ is {\em closed} when it does not contain  
  free variables. 
-
 We keep the language for programs simple. We remark that this 
 choice does not affect the results presented in this paper. Actually, we could just  have  characterised 
  the behaviour of programs as a labelled transition system, 
@@ -207,9 +209,6 @@ We require identifiers to univocally identify clients (1) and every local state 
  a client can see at most every messages in the store (2),  all unconfirmed blocks in $\tpending_l$ are  either in  the 
    communication buffer $\tsent_l$ or  in the unseen part of the global store  $\ublock[{\anupdseq[_1]}]\cdots\ublock[{\anupdseq[_p]}]$ (3).
  Moreover, an event identifier is associated with a unique update in the system (4). 
-    
-   
-
 Hereafter, we assume every \gsp\ system to be well-formed.
 
 %\changed{}{
@@ -225,16 +224,16 @@ over well-formed terms, quotiented by the structural equivalence $\equiv$ define
 such that  $\bigpar$ is associative, commutative and has $0$ as neutral element.
 The set of actions is given by the following grammar:
 \[ 
-\begin{array}{r@{\ ::= \ }l}
-  \action & \tau \ |\  \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran \\
-  \actbyc &  (\lambda,\cid)
+\begin{array}{l}
+  \action\ ::=\ \tau \ |\  \readtran{r} \ | \  \updatetran{u} \ | \ \pulltran \ | \ \pushtran \ | \ \confirmedtran \qquad
+%  \actbyc \ ::=\   (\lambda,\cid)
 \end{array}
 \]
+As usual,  $\tau$ stands for an internal, 
+ unobservable action, while the remaining ones corresponds to the interaction of a client with  
+the  store. 
 A  label  $(\lambda,\cid)$ indicates that  
- the client $\cid$ performs the action $\lambda$. As usual,  $\tau$ stands for an internal, 
- unobservable action, while the remaining ones allow 
-a client to update, read from and synchronise with the global store. 
-In what follows we will write  $\arro{\mu}$ instead of $\tr{(\mu,\cid)}$. 
+ the client $\cid$ performs the action $\lambda$.  We  write  $\arro{\lambda}$ instead of $\tr{(\lambda,\cid)}$. 
 
 
 \begin{figure*}[t]
@@ -249,7 +248,7 @@ In what follows we will write  $\arro{\mu}$ instead of $\tr{(\mu,\cid)}$.
 	\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer \cdot \tupdate}{\tsent}{\treceivebuffer}}
 	}
 
-\\[20pt]
+\\[15pt]
 \mathax{push}
 	{
 	\tsystem{\tclienti{\tpushins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer} }
@@ -257,14 +256,14 @@ In what follows we will write  $\arro{\mu}$ instead of $\tr{(\mu,\cid)}$.
 	\tsystem{\tclienti{\tprogram}{\tknown}{\tpending \cdot \ublock}{\emptysequence}{\tsent \cdot \ublock}{\treceivebuffer}[@][{\trounds+1}]}
 	}
 
-\\[12pt]
+\\[8pt]
 \mathax{send}
 	{
 	\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsenthead \cdot \tsent}{\treceivebuffer}} 
 	\ \arro{\tau}\ \tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[\queuemessage \cdot \tsenthead]
 	}
 
-\\[10pt]
+\\[7pt]
 \mathrule{receive}
 	{\tknown + \treceivebuffer< \text{\textbar} S \text{\textbar} } 
 	{
@@ -272,7 +271,7 @@ In what follows we will write  $\arro{\mu}$ instead of $\tr{(\mu,\cid)}$.
 	\ \ \,\arro{\tau} \ \ \,
 	\tsystem{\tclienti{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer+1}}
 	}
-\\[18pt]
+\\[15pt]
 \mathax{pull}
 	{
 	\tsystem{\tclienti{\tpullins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}} 
@@ -280,7 +279,7 @@ In what follows we will write  $\arro{\mu}$ instead of $\tr{(\mu,\cid)}$.
 	\tsystem{\tclienti{\tprogram}{\tknown+\treceivebuffer}{\tpending \setminus \queuemessage[\tknown .. \tknown + \treceivebuffer {\ -1}]}
 		{\ttransactionbuffer}{\tsent}{0}}
 	}
-\\[12pt]
+\\[8pt]
 \mathrule{read}
   	{
 	\rvalue{r}{\flatten {\queuemessage[0..\tknown-1] \cdot \tpending} \cdot \ttransactionbuffer} = v
@@ -292,7 +291,7 @@ In what follows we will write  $\arro{\mu}$ instead of $\tr{(\mu,\cid)}$.
 	}
 
 
-\\[18pt]
+\\[12pt]
 \mathrule{confirm}
  %	{\eval{(\tpending \cdot  \ttransactionbuffer == \emptysequence)}  v}
 	{v = {(\tpending \cdot  \ttransactionbuffer == \emptysequence)}}
@@ -324,6 +323,7 @@ In what follows we will write  $\arro{\mu}$ instead of $\tr{(\mu,\cid)}$.
 %\henote{\mbox{Agregar reglas para if}}
  \end{array}
 \]}
+\vskip-10pt
 \caption{Operational semantics for \tgspcalculus}
 \label{fig:OS-tgsp}
 \end{figure*}
@@ -368,10 +368,8 @@ the known prefix of the global store $\queuemessage[0..\tknown-1]$ and the local
  $\tpending$ and $\ttransactionbuffer$. The  value $v$ is bound to the 
  variable $x$, and hence all free occurrences of $x$ in the 
  continuation $P$  are substituted by $v$.
- 
-
- A client may perform $\confcmd$  to check whether its executed updates have been already 
- applied to the global store: this operation  
+ A client may perform $\confcmd$  to check whether its executed updates are already 
+ in the global store: this operation  
   returns true only when the local buffers  $\tpending$ and $\ttransactionbuffer$ are both empty
   (rule \textsc{confirm}).
  %

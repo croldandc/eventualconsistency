@@ -147,7 +147,7 @@ affect the history and are handled by rule \ruleName{a-int}.
 		  \arroi{\updatetran{u}}  
 		  \environment{\systemterm'}{\op'}{\so'}{\vis}{\arb'}
 	}
-\\[18pt]	
+\\[10pt]	
 \mathrule{a-read}
 	{ 
 	\begin{array}{p{\linewidth}}
@@ -164,7 +164,7 @@ affect the history and are handled by rule \ruleName{a-int}.
 	 }
 	 {\environment{\systemterm}{\op}{\so}{\vis}{\arb} 
 	   \arroi{\readtran{\udec[r]}} \environment{\systemterm'}{\op'}{\so'}{\vis'}{\arb}[\sse']}
-\\[25pt]	
+\\[10pt]	
 \mathrule{a-arb}
 	{ 
 	\begin{array}{p{\linewidth}}
@@ -188,7 +188,7 @@ affect the history and are handled by rule \ruleName{a-int}.
 	 {\environment{\queuemessage\ \bigpar\ \Absclient}{\op}{\so}{\vis}{\arb} 
 	 \arroi{\lambda}	   
 	 \environment{\queuemessage\cdot \anupdseq\ \bigpar\ \Absclient'}{\op}{\so}{\vis}{\arb'}}
-\\[18pt]
+\\[10pt]
 \mathrule{a-int}
 	{ 
 	\begin{array}{l}
@@ -214,7 +214,7 @@ affect the history and are handled by rule \ruleName{a-int}.
 
 We use  histories to analyse the ordering guarantees 
 offered by the \gsp\ model. (Due to space limitation, 
-we refer the interested reader to the characterisations 
+we refer the interested reader to see the characterisations 
 provided in~\cite[Ch. 5]{DBLP:journals/ftpl/Burckhardt14}).
 % now prove what ordering guarantees are assured by GSP language and what do not. 
 
@@ -313,54 +313,54 @@ Consider the following system consisting of two clients and the empty store $\sy
 \end{array}
 \]
 
-
-
-By using rule \ruleName{a-update}, we have the following transition
-\[
-	{\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset} {\emptyset}[\emptyset]
-		  \arro{\updatetranaux{\anupd_1^{\vertice[v][_1]}}}[\cid_1]
-		  \environment{\epsilon \ \bigpar\ \Absclient[_1]'  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
-	}
-\]
-with $\op_1 = \{\asoc{\vertice[v][_1]} \anupd_1\}$,  $\sse_1 = \{\asoc{\cid_1}{\{\vertice [v][_1]}\}\}$ and
-\[
-   \Absclient[_1]'  =  {\anabstcli[{}][{\treadins{y}{r_2}}][0][\epsilon][{\anupd_1}^{\vertice[v][_1]}][\epsilon][0][0]}_{\cid_1}
-\]
-Similarly, 
-\[
-	{\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset} {\emptyset}[\emptyset]
-		  \arro{\updatetranaux{\anupd_1^{\vertice[v][_2]}}}[\cid_2]
-		  \environment{\epsilon \ \bigpar\ \Absclient[_1]'  \ \bigpar\ \Absclient[_2]'}{\op_2}{\emptyset}{\emptyset}{\emptyset}[\sse_2]
-	}
-\]
-with $\op_2 = \{\asoc{\vertice[v][_1]},{\anupd_1},\asoc{\vertice[v][_2]} {\anupd_2}\}$,  
-$\sse_2 = \{\asoc{\cid_1}{\{\vertice [v][_1]}\}, \asoc{\cid_2}{\{\vertice [v][_2]}\}\}$ and
-\[
-   \Absclient[_2]'  =  {\anabstcli[{}][{\treadins{y}{r_2}[Q]}][0][\epsilon][{\anupd_2}^{\vertice[v][_2]}][\epsilon][0][0]}_{\cid_2}
-\]
-Then, by using rule \ruleName{a-read},
-\[ 
-	\environment{\epsilon\ \bigpar\ \Absclient[_1]'  \ \bigpar\ \Absclient[_2]'}{\op_2}{\emptyset}{\emptyset}{\emptyset}[\sse_2]
-	 \arro{\readtran{\udec[r_1][{\vertice[v][_3]}]}}[\cid_1]
-	\environment{\epsilon \ \bigpar\ \Absclient[_1]''  \ \bigpar\ \Absclient[_2]'}{\op_3}{\so_1}{\vis_1}{\emptyset}[\sse_3]
-\]
-with $\op_3 = \{\asoc{\vertice[v][_1]} {\anupd_1},\asoc{\vertice[v][_2]} {\anupd_2},\asoc{\vertice[v][_3]} {r_1}\}$,  
-$\sse_3 = \{\asoc{\cid_1}{\{\vertice [v][_1],\vertice [v][_3]\}},\asoc{\cid_2}{\{\vertice [v][_2]\}}\}$,
-$\so_1 = \vis_1 = \{(\vertice[v][_1],\vertice[v][_3])\}$,
-$   \Absclient[_1]''  =  {\anabstcli[{}][P\subst{x}{v}][0][\epsilon][{\anupd_1}^{\vertice[v][_1]}][\epsilon][0][0]}_{\cid_1}$,
-and $\iread{r_1}{{\anupd_1}^{\vertice[v][_1]}}=v$.
-And similarly,
-\[ 
-	\environment{\epsilon \ \bigpar\ \Absclient[_1]''  \ \bigpar\ \Absclient[_2]'}{\op_3}{\so_1}{\vis_1}{\emptyset}[\sse_3]
-	 \arro{\readtran{\udec[r_2][{\vertice[v][_4]}]}}[\cid_2]
-	\environment{\epsilon \ \bigpar\ \Absclient[_1]''  \ \bigpar\ \Absclient[_2]''}{\op_4}{\so_2}{\vis_2}{\emptyset}[\sse_4]
-\]
-with $\op_4 = \{\asoc{\vertice[v][_1]} {\anupd_1},\asoc{\vertice[v][_2]} {\anupd_2},\asoc{\vertice[v][_3]} {r_1}, \asoc{\vertice[v][_4]} {r_4}\}$,  
-$\sse_4 = \{\asoc{\cid_1}{\{\vertice [v][_1],\vertice [v][_3]\}},\asoc{\cid_2}{\{\vertice [v][_2],\vertice [v][_4]\}}\}$,
-$\so_2 = \vis_2 = \{(\vertice[v][_1],\vertice[v][_3]), (\vertice[v][_2],\vertice[v][_4])\}$, 
-$   \Absclient[_1]''  =  {\anabstcli[{}][Q\subst{y}{v'}][0][\epsilon][{\anupd_1}^{\vertice[v][_1]}][\epsilon][0][0]}_{\cid_1}$ and
- $\iread{r_2}{{\anupd_2}^{\vertice[v][_2]}}=v'$.
- Since $\iread{r_1}{{\anupd_1}^{\vertice[v][_1]}}=v$ and $\iread{r_2}{{\anupd_2}^{\vertice[v][_2]}}=v'$, 
-  none of the clients reads the update performed by the other.
+%
+%
+%By using rule \ruleName{a-update}, we have the following transition
+%\[
+%	{\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset} {\emptyset}[\emptyset]
+%		  \arro{\updatetranaux{\anupd_1^{\vertice[v][_1]}}}[\cid_1]
+%		  \environment{\epsilon \ \bigpar\ \Absclient[_1]'  \ \bigpar\ \Absclient[_2]}{\op_1}{\emptyset}{\emptyset}{\emptyset}[\sse_1]
+%	}
+%\]
+%with $\op_1 = \{\asoc{\vertice[v][_1]} \anupd_1\}$,  $\sse_1 = \{\asoc{\cid_1}{\{\vertice [v][_1]}\}\}$ and
+%\[
+%   \Absclient[_1]'  =  {\anabstcli[{}][{\treadins{y}{r_2}}][0][\epsilon][{\anupd_1}^{\vertice[v][_1]}][\epsilon][0][0]}_{\cid_1}
+%\]
+%Similarly, 
+%\[
+%	{\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset} {\emptyset}[\emptyset]
+%		  \arro{\updatetranaux{\anupd_1^{\vertice[v][_2]}}}[\cid_2]
+%		  \environment{\epsilon \ \bigpar\ \Absclient[_1]'  \ \bigpar\ \Absclient[_2]'}{\op_2}{\emptyset}{\emptyset}{\emptyset}[\sse_2]
+%	}
+%\]
+%with $\op_2 = \{\asoc{\vertice[v][_1]},{\anupd_1},\asoc{\vertice[v][_2]} {\anupd_2}\}$,  
+%$\sse_2 = \{\asoc{\cid_1}{\{\vertice [v][_1]}\}, \asoc{\cid_2}{\{\vertice [v][_2]}\}\}$ and
+%\[
+%   \Absclient[_2]'  =  {\anabstcli[{}][{\treadins{y}{r_2}[Q]}][0][\epsilon][{\anupd_2}^{\vertice[v][_2]}][\epsilon][0][0]}_{\cid_2}
+%\]
+%Then, by using rule \ruleName{a-read},
+%\[ 
+%	\environment{\epsilon\ \bigpar\ \Absclient[_1]'  \ \bigpar\ \Absclient[_2]'}{\op_2}{\emptyset}{\emptyset}{\emptyset}[\sse_2]
+%	 \arro{\readtran{\udec[r_1][{\vertice[v][_3]}]}}[\cid_1]
+%	\environment{\epsilon \ \bigpar\ \Absclient[_1]''  \ \bigpar\ \Absclient[_2]'}{\op_3}{\so_1}{\vis_1}{\emptyset}[\sse_3]
+%\]
+%with $\op_3 = \{\asoc{\vertice[v][_1]} {\anupd_1},\asoc{\vertice[v][_2]} {\anupd_2},\asoc{\vertice[v][_3]} {r_1}\}$,  
+%$\sse_3 = \{\asoc{\cid_1}{\{\vertice [v][_1],\vertice [v][_3]\}},\asoc{\cid_2}{\{\vertice [v][_2]\}}\}$,
+%$\so_1 = \vis_1 = \{(\vertice[v][_1],\vertice[v][_3])\}$,
+%$   \Absclient[_1]''  =  {\anabstcli[{}][P\subst{x}{v}][0][\epsilon][{\anupd_1}^{\vertice[v][_1]}][\epsilon][0][0]}_{\cid_1}$,
+%and $\iread{r_1}{{\anupd_1}^{\vertice[v][_1]}}=v$.
+%And similarly,
+%\[ 
+%	\environment{\epsilon \ \bigpar\ \Absclient[_1]''  \ \bigpar\ \Absclient[_2]'}{\op_3}{\so_1}{\vis_1}{\emptyset}[\sse_3]
+%	 \arro{\readtran{\udec[r_2][{\vertice[v][_4]}]}}[\cid_2]
+%	\environment{\epsilon \ \bigpar\ \Absclient[_1]''  \ \bigpar\ \Absclient[_2]''}{\op_4}{\so_2}{\vis_2}{\emptyset}[\sse_4]
+%\]
+%with $\op_4 = \{\asoc{\vertice[v][_1]} {\anupd_1},\asoc{\vertice[v][_2]} {\anupd_2},\asoc{\vertice[v][_3]} {r_1}, \asoc{\vertice[v][_4]} {r_4}\}$,  
+%$\sse_4 = \{\asoc{\cid_1}{\{\vertice [v][_1],\vertice [v][_3]\}},\asoc{\cid_2}{\{\vertice [v][_2],\vertice [v][_4]\}}\}$,
+%$\so_2 = \vis_2 = \{(\vertice[v][_1],\vertice[v][_3]), (\vertice[v][_2],\vertice[v][_4])\}$, 
+%$   \Absclient[_1]''  =  {\anabstcli[{}][Q\subst{y}{v'}][0][\epsilon][{\anupd_1}^{\vertice[v][_1]}][\epsilon][0][0]}_{\cid_1}$ and
+% $\iread{r_2}{{\anupd_2}^{\vertice[v][_2]}}=v'$.
+% Since $\iread{r_1}{{\anupd_1}^{\vertice[v][_1]}}=v$ and $\iread{r_2}{{\anupd_2}^{\vertice[v][_2]}}=v'$, 
+%  none of the clients reads the update performed by the other.
 
 \end{example}
