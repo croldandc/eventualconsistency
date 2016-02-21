@@ -20,4 +20,10 @@ S.~Burckhardt, D.~Leijen, J.~Protzenko, and M.~F{\"{a}}hndrich.
   LIPIcs}, pages 568--590. Schloss Dagstuhl - Leibniz-Zentrum fuer Informatik,
   2015.
 
+\bibitem{CAP}
+S.~Gilbert and N.~Lynch.
+\newblock Brewer's conjecture and the feasibility of consistent, available,
+  partition-tolerant web services.
+\newblock {\em SIGACT News}, 33(2):51--59, June 2002.
+
 \end{thebibliography}

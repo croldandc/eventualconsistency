@@ -214,28 +214,98 @@ case analysis on the inference rule applied for the last transition:
 \label{lemma:update-ever-belong-different-client} 
 Let $\systemterm$ a \gsp\ system. If 
 $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}$
-then for all $(\vertice,\vertice[w])\in\vis$ if $\vertice\in\sse(\cid)$, 
-$\vertice[w]\in\sse(\cidj)$ and $\cid\neq\cidj$ then
- there exists $\anupd$ s.t. $\udec \in\  \queuemessage[0..\tknown_{\cidj}-1]$.
+then for all $(\vertice[w],\vertice)\in\vis$ if $\vertice[w]\in\sse(\cid)$, 
+$\vertice\in\sse(\cidj)$ and $\cid\neq\cidj$ then
+ there exists $\anupd[^{\vertice[w]}]$ s.t. $\anupd[^{\vertice[w]}] \in\  \queuemessage[0..\tknown_{\cidj}-1]$.
 \end{lemma}
 
 
 
-\begin{proof} \henote{To Do}\qed
-\end{proof}
+\begin{proof}It follows by induction on the length of
+the derivation  $\tr{} ^*$.
+\begin{itemize}
+   \item{\bf n=0}. It holds trivially, because $\vis=\emptyset$.
+      \item{\bf n=k+1}. Then $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset]
+    \tr{} ^k\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+    \arroi{\lambda} \environment{\systemterm'}{\op}{\so}{\vis}{\arb}[\sse]$. 
+    By inductive hypothesis, for all $(\vertice[w],\vertice)\in\vis'$ if $\vertice[w]\in\sse'(\cid)$, 
+$\vertice\in\sse'(\cidj)$ and $\cid\neq\cidj$ then
+ there exists $\anupd[^{\vertice[w]}]$ s.t. $\anupd[^{\vertice[w]}] \in\  \queuemessage'[0..\tknown'_{\cidj}-1]$.
+    We proceed by 
+    case analysis on the last applied rule:
+	
+    \begin{itemize}
+	 \item rule \ruleName{a-read}. Then,
+	  \[\vis= \vis' \cup  \vis_{\mbox{\sf new}} \ \mbox{with} \ 
+	  \vis_{\mbox{\sf new}} = (\{\vertice[w] \ |\  \udec[@][{\vertice[w]}] \in \queuemessage'[0..\tknown'_{\,\cidj}-1] \cdot \tpending'_{\cidj} \cdot \ttransactionbuffer'_{\,\cidj} \}\times\{\vertice\})\]
+	  %
+	  Therefore, 
+	 %
+	 if $(\vertice[w],\vertice)\in\vis'$,	follow immediately by inductive hypothesis after noticing that $\tknown_{\cidj} = \tknown'_{\cidj}$, $\queuemessage = \queuemessage'$.
+	 It remains to prove that $(\vertice[w],\vertice)\in \vis_{\mbox{\sf new}}$. Since, $\vertice[w]\in\sse(\cid)$, 
+$\vertice\in\sse(\cidj)$ and $\cid\neq\cidj$ then $\anupd[^{\vertice[w]}] \notin \tpending'_{\cidj} \cdot \ttransactionbuffer'_{\,\cidj}$.
+	Then, $\anupd[^{\vertice[w]}] \in \queuemessage[0..\tknown_{\,\cidj}-1]$.
+	
+	\item rules \ruleName{a-upd},\ruleName{a-arb} and \ruleName{a-int} follow immediately by inductive hypothesis
+	after noticing that  $\vis = \vis'$.
+	\end{itemize}
 
+\end{itemize}\qed
+\end{proof}
 \begin{lemma}
 \label{lem:server-reflect-arb}
  Let $\systemterm$ a \gsp\ system. If  
  $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm'}{\op}{\so}{\vis}{\arb}$
  then 
-for all $(\vertice,\vertice[w])\in\arb$, if $\anupd_0^{\vertice[w]}\in\queuemessage[0..i]$ then there exists  $\anupd_1$ s.t 
-$\anupd_1^{\vertice}\in\queuemessage[0..i-1]$.
+for all $(\vertice[w],\vertice)\in\arb$, if $\anupd_0^{\vertice}\in\queuemessage[0..m]$ then there exists  $\anupd_1$ s.t 
+$\anupd_1^{\vertice[w]}\in\queuemessage[0..m-1]$.
 \end{lemma}
 
-\begin{proof} By induction on the length of the derivation. \henote{to do}.
-\end{proof}
+\begin{proof} By induction on the length of the derivation $\tr{} ^*$.
+\begin{itemize}
+   \item{\bf n=0}. It holds trivially, because $\arb=\emptyset$.
+      \item{\bf n=k+1}. Then $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset]
+    \tr{} ^k\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
+    \arroi{\lambda} \environment{\systemterm'}{\op}{\so}{\vis}{\arb}[\sse]$. 
+    By inductive hypothesis, for all $(\vertice[w],\vertice)\in\arb'$, if $\anupd_0^{\vertice}\in\queuemessage'[0..m]$ then there exists  $\anupd_1$ s.t 
+$\anupd_1^{\vertice[w]}\in\queuemessage'[0..m-1]$.
+    We proceed by 
+    case analysis on the last applied rule:
+	
+    \begin{itemize}
+	 \item rule \ruleName{a-update}. Then,
+	         \[\arb = \arb' \cup \arb_{\mbox{\sf new}} \ \mbox{with} \ \arb_{\mbox{\sf new}}= (\{ \vertice[w] \ |\ \udec[@][{\vertice[w]}]\in \queuemessage' \}\times\{\vertice\})\]
+        
+        if $(\vertice[w],\vertice)\in\arb'$,	follow immediately by inductive hypothesis  after noticing that $\tknown_{\cidj} = \tknown'_{\cidj}$ and $\queuemessage = \queuemessage'$.
+        It remains to prove that $(\vertice[w],\vertice)\in\arb_{\mbox{\sf new}}$.
+        Since $\vertice$ is fresh, $\anupd_0^{\vertice}\notin\queuemessage[0..m]$. Hence, it holds.
+        
+          \item rule \ruleName{a-arb}. Then, $\queuemessage = \queuemessage'\cdot\ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]$, $\so = \so'$, 
+        $\arb = \arb' \cup \arb_{\mbox{\sf new}}$ with 
+         $\arb_{\mbox{\sf new}}= \{ (\vertice, \vertice[w])\ \ |\  \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
+		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage'\cdot\ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]\} 
+		     \cup\  \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\}
+		     $
+       
+       By inductive hypothesis, if $(\vertice[w],\vertice)\in\arb'$ then it holds.
+       It remains to prove that for all $(\vertice[w],\vertice)\in\arb_{\mbox{\sf new}}$ if $\anupd_0^{\vertice}\in\queuemessage[0..m]$ then there exists  $\anupd_1$ s.t 
+$\anupd_1^{\vertice[w]}\in\queuemessage[0..m-1]$.
+       There are two cases:
+       \begin{itemize}
+       \item $(\vertice[w],\vertice[v]) \in \ (\{\vertice[w][_0],\ldots,\vertice[w][_n]\}\times 
+		\{ \vertice\ \ |\ \  \vertice\in\mathbb{U}, \
+		     \forall\anupd. \anupd^{\vertice}\not\in\queuemessage'\cdot\anupdseq\})$ with $\anupdseq=\ublock[{\udec[{\anupd[_0]}][{\vertice[w][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[w][_n]}]}]$,then,  there is not $\anupd_0$ s.t.
+       $ \anupd_0^{\vertice[y]}\not\in\queuemessage''$. 
+       Therefore, it holds.
+       \item $(\vertice,\vertice[y]) \in \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\} $ follow immediately by \lemref{lemma:arSO-in-arUso}. \chnote{esto no sé si es suficiente justificacion. El hecho de estar en el session order significa q hay un orden entre los vertices que estaban en los buffer}
+\end{itemize}
+        
+	\item rules \ruleName{a-read} and \ruleName{a-int} follow immediately by inductive hypothesis
+	after noticing that  $\arb = \arb'$.
+	\end{itemize}
 
+\end{itemize}\qed
+\end{proof}
 
 \begin{lemma}
 \label{lemma:ar-stable-updates} 
