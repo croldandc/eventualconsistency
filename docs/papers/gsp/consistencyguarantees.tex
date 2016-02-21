@@ -312,6 +312,8 @@ Consider the following system consisting of two clients and the empty store $\sy
    \Absclient[_2] & = & {\anabstcli[{}][{\updcmd[{\anupd_2}];\treadins{y}{r_2}[Q]}][0][\epsilon][\epsilon][\epsilon][0][0]}_{\cid_2}\\
 \end{array}
 \]
+Since the updates are made locally, none of the clients see the update performed by the other and this is the 
+essence of the Dekker anomaly which is ruled out by strong consistency models like sequential consistency or linearizability.
 
 %
 %

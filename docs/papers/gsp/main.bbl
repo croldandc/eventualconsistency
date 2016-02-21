@@ -1,4 +1,9 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
+
+\bibitem{DBLP:journals/cacm/BailisG13}
+P.~Bailis and A.~Ghodsi.
+\newblock Eventual consistency today: limitations, extensions, and beyond.
+\newblock {\em Commun. ACM}, 56(5):55--63, 2013.
 
 \bibitem{DBLP:journals/ftpl/Burckhardt14}
 S.~Burckhardt.
@@ -6,24 +11,53 @@ S.~Burckhardt.
 \newblock {\em Foundations and Trends in Programming Languages}, 1(1-2):1--150,
   2014.
 
+\bibitem{burckhardt2012cloud}
+S.~Burckhardt, M.~F{\"a}hndrich, D.~Leijen, and B.~P. Wood.
+\newblock Cloud types for eventual consistency.
+\newblock In {\em ECOOP 2012}, pages 283--307. Springer, 2012.
+
 \bibitem{DBLP:conf/esop/BurckhardtLFS12}
 S.~Burckhardt, D.~Leijen, M.~F{\"{a}}hndrich, and M.~Sagiv.
 \newblock Eventually consistent transactions.
-\newblock In H.~Seidl, editor, {\em {ESOP} 2012}, volume 7211 of {\em Lecture
-  Notes in Computer Science}, pages 67--86. Springer, 2012.
+\newblock In {\em {ESOP} 2012}, pages 67--86. Springer, 2012.
 
 \bibitem{DBLP:conf/ecoop/BurckhardtLPF15}
 S.~Burckhardt, D.~Leijen, J.~Protzenko, and M.~F{\"{a}}hndrich.
 \newblock Global sequence protocol: {A} robust abstraction for replicated
   shared state.
-\newblock In J.~T. Boyland, editor, {\em {ECOOP} 2015}, volume~37 of {\em
-  LIPIcs}, pages 568--590. Schloss Dagstuhl - Leibniz-Zentrum fuer Informatik,
-  2015.
+\newblock In {\em {ECOOP} 2015}, pages 568--590, 2015.
+
+\bibitem{DeCandia:2007:DAH:1294261.1294281}
+G.~DeCandia, D.~Hastorun, M.~Jampani, G.~Kakulapati, A.~Lakshman, A.~Pilchin,
+  S.~Sivasubramanian, P.~Vosshall, and W.~Vogels.
+\newblock Dynamo: amazon's highly available key-value store.
+\newblock In {\em SOSP '07}, pages 205--220. ACM, 2007.
 
 \bibitem{CAP}
 S.~Gilbert and N.~Lynch.
 \newblock Brewer's conjecture and the feasibility of consistent, available,
   partition-tolerant web services.
 \newblock {\em SIGACT News}, 33(2):51--59, June 2002.
+
+\bibitem{gotsman2016cause}
+A.~Gotsman, H.~Yang, C.~Ferreira, M.~Najafzadeh, and M.~Shapiro.
+\newblock '{C}ause i'm strong enough: reasoning about consistency choices in
+  distributed systems.
+\newblock In {\em POPL 2016}, pages 371--384, 2016.
+
+\bibitem{lakshman2010cassandra}
+A.~Lakshman and P.~Malik.
+\newblock Cassandra: a decentralized structured storage system.
+\newblock {\em ACM SIGOPS Operating Systems Review}, 44(2):35--40, 2010.
+
+\bibitem{DBLP:conf/sss/ShapiroPBZ11}
+M.~Shapiro, N.~M. Pregui{\c{c}}a, C.~Baquero, and M.~Zawirski.
+\newblock Conflict-free replicated data types.
+\newblock In {\em {SSS} 2011}, pages 386--400, 2011.
+
+\bibitem{sivaramakrishnan2015declarative}
+K.~Sivaramakrishnan, G.~Kaki, and S.~Jagannathan.
+\newblock Declarative programming over eventually consistent data stores.
+\newblock In {\em PLDI 2015}, pages 413--424. ACM, 2015.
 
 \end{thebibliography}
