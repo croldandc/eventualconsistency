@@ -64,52 +64,55 @@ $\tpending_{\cid}\cdot{\ttransactionbuffer_{\cid}} = \epsilon$.
 %
 %\begin{proof} Confirmed is evaluated to true when $\tpending$ and [$\ttransactionbuffer$] are empty so that, after the loop, the read operation only return values which belong to the $\queuemessage$.
 %\end{proof}	
-
-\begin{lemma} $\ovis = \roarb$ iff 
-
-\begin{enumerate}
-   \item $\roarb;\ovis \subseteq \ovis$; and
-   \item $\neg\ovis;\neg\roarb \subseteq \neg\ovis$.
-\end{enumerate}
-\end{lemma}
-
-\begin{proof} $\Rightarrow$) 
-\begin{enumerate}
-\item
-	\[ \begin{array}{l@{\ =\ }l@{\qquad}l}
-		\roarb;\ovis &  \roarb;\roarb & \roarb =\ovis\\
-		& \roarb & \roarb \mbox{is a partial order (i.e., transitive)}\\
-		&  \ovis & \roarb =\ovis
-   	\end{array}
-	\]
-\item Note that  $\roarb;\ovis =\ovis$ implies $\neg(\roarb;\ovis) =\neg\ovis$. By property of complement and composition, $\neg(\roarb;\ovis) =\neg\ovis;\neg\roarb =\neg\ovis$. 
-\end{enumerate}
-
-$\Leftarrow)$ We divided the proof in two implications
- \begin{enumerate}
-    \item  $\roarb;\ovis \subseteq \ovis$ implies $\ovis\subseteq \roarb$. We proceed by contradiction. Assume $(a,b)\in\ovis$ but $(a,b)\not\in\roarb$.
-    Since $\roarb$ is a total order, $(b,a)\in\roarb$. By assumption, $(b,a)\in\roarb$ and $(a,b)\in\ovis$ implies $(b,b)\in\ovis$, but this is in contradiction 
-    with the fact that $\ovis$ is acyclic. 
-        
-    \item $\neg\ovis;\neg\roarb \subseteq \neg\ovis$ implies $\roarb\subseteq\ovis$. We proceed by contradiction. 
-    Assume $(a,b)\in\roarb$ and $(a,b)\not\in\ovis$, and hence,  $(a,b)\in\neg\ovis$. Since,
-    $\roarb$ is a strict total order $(b,a)\not\in\roarb$. Hence, $(b,a)\in\neg\roarb$. By assumption, $(a,b)\in\neg\ovis$ and $(b,a)\in\neg\roarb$ implies $(a,a)\in\neg\ovis$.
-    Again, by assumption, 
- \end{enumerate}
-
-\end{proof}
+%
+%\begin{lemma} $\ovis = \roarb$ iff 
+%
+%\begin{enumerate}
+%   \item $\roarb;\ovis \subseteq \ovis$; and
+%   \item $\neg\ovis;\neg\roarb \subseteq \neg\ovis$.
+%\end{enumerate}
+%\end{lemma}
+%
+%\begin{proof} $\Rightarrow$) 
+%\begin{enumerate}
+%\item
+%	\[ \begin{array}{l@{\ =\ }l@{\qquad}l}
+%		\roarb;\ovis &  \roarb;\roarb & \roarb =\ovis\\
+%		& \roarb & \roarb \mbox{is a partial order (i.e., transitive)}\\
+%		&  \ovis & \roarb =\ovis
+%   	\end{array}
+%	\]
+%\item Note that  $\roarb;\ovis =\ovis$ implies $\neg(\roarb;\ovis) =\neg\ovis$. By property of complement and composition, $\neg(\roarb;\ovis) =\neg\ovis;\neg\roarb =\neg\ovis$. 
+%\end{enumerate}
+%
+%$\Leftarrow)$ We divided the proof in two implications
+% \begin{enumerate}
+%    \item  $\roarb;\ovis \subseteq \ovis$ implies $\ovis\subseteq \roarb$. We proceed by contradiction. Assume $(a,b)\in\ovis$ but $(a,b)\not\in\roarb$.
+%    Since $\roarb$ is a total order, $(b,a)\in\roarb$. By assumption, $(b,a)\in\roarb$ and $(a,b)\in\ovis$ implies $(b,b)\in\ovis$, but this is in contradiction 
+%    with the fact that $\ovis$ is acyclic. 
+%        
+%    \item $\neg\ovis;\neg\roarb \subseteq \neg\ovis$ implies $\roarb\subseteq\ovis$. We proceed by contradiction. 
+%    Assume $(a,b)\in\roarb$ and $(a,b)\not\in\ovis$, and hence,  $(a,b)\in\neg\ovis$. Since,
+%    $\roarb$ is a strict total order $(b,a)\not\in\roarb$. Hence, $(b,a)\in\neg\roarb$. By assumption, $(a,b)\in\neg\ovis$ and $(b,a)\in\neg\roarb$ implies $(a,a)\in\neg\ovis$.
+%    Again, by assumption, 
+% \end{enumerate}
+%
+%\end{proof}
 
 	
 
 
-\begin{lemma}\label{lemma:empty_queue} 
-Let $\systemterm$  be a \gsp\ system free from asynchronous update. If $\systemterm\arroi{\lambda}\systemterm[']$ 
-then $\systemterm[']$ if free from asynchronous update. 
-\end{lemma}
-\chnote{esto no se si es viejo. Creo que no se usa.}
+%\begin{lemma}\label{lemma:empty_queue} 
+%Let $\systemterm$  be a \gsp\ system free from asynchronous update. If $\systemterm\arroi{\lambda}\systemterm[']$ 
+%then $\systemterm[']$ if free from asynchronous update. 
+%\end{lemma}
+%\chnote{esto no se si es viejo. Creo que no se usa.}
 
 \begin{lemma}\label{lemma:vertice_arb_store} 
-If $(\vertice,\vertice[w])\in\arb$ and $\anupd[^{\vertice[w]}] \in \queuemessage[0 .. \tknown_{\cid} - 1]$ then $\exists \anupd[_0]$ s.t. $\anupd[_0]^{\vertice} \in \queuemessage[0 .. \tknown_{\cid}-1]$
+
+Let $\systemterm$ be a \gsp\ system free from asynchronous update and%For all  $\systemterm[']$ and $u\in\updatesets$, 
+\linebreak $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}$.
+If $(\vertice,\vertice[w])\in\arb$ and $\anupd[^{\vertice[w]}] \in \queuemessage[0 .. \tknown_{\cid} - 1]$ then $\exists \anupd[_0]$ s.t. $\anupd[_0]^{\vertice} \in \queuemessage[0 .. \tknown_{\cid}-1]$.
 \end{lemma}
 \begin{proof}
 We proceed by induction on the length of the derivation 
@@ -151,18 +154,19 @@ case analysis on the inference rule applied for the last transition:
     \end{itemize}
 	
 \end{proof}
-\chnote{esto sale todo por hipotesis inductiva. Los casos arb son inmediatos. No se si vale la pena poner la prueba}
+%\chnote{esto sale todo por hipotesis inductiva. Los casos arb son inmediatos. No se si vale la pena poner la prueba}
 
 \begin{lemma}\label{lemma:vertice_vis_store} 
-If $(\vertice,\vertice[w])\in\vis$ then $\anupd[^{\vertice}] \in \queuemessage$
+Let $\systemterm$ be a \gsp\ system free from asynchronous update and%For all  $\systemterm[']$ and $u\in\updatesets$, 
+\linebreak $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^*\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}$.
+If $(\vertice,\vertice[w])\in\vis$ then $\anupd[^{\vertice}] \in \queuemessage$.
 \end{lemma}
 \begin{proof}
 The proof follows by case analysis on the applied rule. The only interesting rule is \ruleName{a-read}. We rely on \corref{corollary:async-emptyqueue} to conclude that $\tpending_{\cid}\cdot{\ttransactionbuffer_{\cid}} = \epsilon$, hence, $\anupd[^{\vertice}] \in \queuemessage$.
 \end{proof}
 
-\subsection{Proof of Theorem Single Order ~\ref{thm:single-order}}
+\subsubsection{Proof of Theorem Single Order \ref{thm:single-order}}
 
-\begin{proof}
 We proceed by induction on the length of the derivation 
 $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \tr{} ^n\ \environment{\systemterm[']}{\op}{\so}{\vis}{\arb}$.
 
@@ -245,15 +249,12 @@ case analysis on the inference rule applied for the last transition:
 		
 		\item $(\vertice,\vertice[w]) \in \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\}$. Then $\vertice[w]\notin\queuemessage$. Hence $\forall \vertice[w'].(\vertice[w],\vertice[w]) \in \neg\vis$. Hence, $\arb_{\mbox{\sf new}}^{-1};\neg\vis \subseteq \neg\vis$
 	\end{itemize}
-	\chnote{el caso de arb no me termina de convencer.}
+%	\chnote{el caso de arb no me termina de convencer.}
 	\end{itemize}	     
     	
        \item rule \ruleName{a-int} follows straightforwardly.
-       \qed
     \end{itemize}
     \end{itemize}
-	
-\end{proof}
-
+\QEDB
 
 
