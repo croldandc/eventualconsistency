@@ -240,12 +240,12 @@ case analysis on the inference rule applied for the last transition:
 	The case follows analogously to the previous case, we have to prove that  $\arb_{\mbox{\sf new}};\neg\vis \subseteq \vis$. There are two cases:
 	\begin{itemize}
 		\item $(\vertice,\vertice[w]) \in \{ (\vertice, \vertice[w])\ \ |\ \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
-		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage\cdot \ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]\}$ then $(\vertice[w],\vertice) \in \arb^{-1}$ implies $\forall \vertice[w'].(\vertice[w],\vertice[w'])\notin\vis$ then $(\vertice,\vertice[w]) \in \vis$. 
+		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage\cdot\anupdseq\}$ with $\anupdseq = \ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]$ then $(\vertice[w],\vertice) \in \arb^{-1}$ implies $\forall \vertice[w'].(\vertice[w],\vertice[w'])\notin\vis$ then $(\vertice,\vertice[w]) \in \vis$. 
 		     Hence $\arb_{\mbox{\sf new}}';\neg\vis\subseteq \neg\vis$ trivially holds.
 		
 		\item $(\vertice,\vertice[w]) \in \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\}$. Then $\vertice[w]\notin\queuemessage$. Hence $\forall \vertice[w'].(\vertice[w],\vertice[w]) \in \neg\vis$. Hence, $\arb_{\mbox{\sf new}}^{-1};\neg\vis \subseteq \neg\vis$
 	\end{itemize}
-	
+	\chnote{el caso de arb no me termina de convencer.}
 	\end{itemize}	     
     	
        \item rule \ruleName{a-int} follows straightforwardly.
