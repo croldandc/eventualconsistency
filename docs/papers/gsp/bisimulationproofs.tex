@@ -1071,7 +1071,7 @@ We proceed by case analysis on the applied rule for the derivation of $\isystemt
 						 [{\astate['']}]
 						 [{\aseqround'}]
 						 [@][@]
-						 [{\receivebuffer}]}
+						 [{\receivebuffer}][@][\epsilon]}
 						\ \bigpar \ \iserverins[{\astate[']}][{\amxrf}][\inserver\upd{\cid}{\inserver(\cid)\cdot\aseqround[']}]
 						\ \bigpar\ \iclient \\
 						
@@ -1084,7 +1084,7 @@ We proceed by case analysis on the applied rule for the derivation of $\isystemt
 			
 			
 			Since $(\isystemterm,\systemterm)\in \mathcal{R}$,
-				\[\tsystem{\tclient{\tprogram}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] \]
+				\[\tsystem{\tclient{\tpullins}{\tknown}{\tpending}{\ttransactionbuffer}{\tsent}{\treceivebuffer}}[{\systemterm['']}] \]
 				with $\implements{\isystemterm['']}{\systemterm['']}$. By rule \ruleName{pull}, 
 				$\systemterm \arroi{\pulltran} \systemterm[']$ with
 				\[\begin{array}{r@{=}l}
@@ -1095,9 +1095,7 @@ We proceed by case analysis on the applied rule for the derivation of $\isystemt
 				We  prove that $(\isystemterm',\systemterm') \ \in \ \mathcal{R}$ by showing that $\implements{\isystemterm[']}{\systemterm[']}$ 
 				by checking the properties in \defref{def:implementation}.	
 				\begin{enumerate}
-				\item[\ref{prop_inclient}.] $\inclient$ = $\epsilon$ and $\treceivebuffer$ = 0, then it holds by 
-					\refprop{prop_state_known}.
-		
+				
 					\item[\ref{prop_state_known}.] By \propref{prop_inclient} we know that 
 %					$\astate['''] = \iapply{\initialstate}{\ireduce{\adelta[']_1\cdots\adelta[']_{z}}}$  
 %					and
@@ -1118,7 +1116,9 @@ We proceed by case analysis on the applied rule for the derivation of $\isystemt
 						
 						\item[\ref{prop_pending}.] Follows 
 						analogously to rule \ruleName{i-pull$_1$}.
-						
+				\item[\ref{prop_inclient}.] $\inclient$ = $\epsilon$ and $\treceivebuffer$ = 0, then it holds by 
+					\refprop{prop_state_known}.
+				
 						\item[\ref{prop_deltas}.] 
 						It follows immediately because of \refprop{prop_deltas} and the fact that 
 				              	$\agssegpair\in\epsilon\cdot\outserver(\cid)$ implies $\agssegpair\in\inclient_l\cdot\outserver(\cid)$.											
