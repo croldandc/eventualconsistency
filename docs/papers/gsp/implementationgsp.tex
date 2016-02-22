@@ -218,11 +218,11 @@ for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following condition
 	
 \item \label{wf-igsp-pending} $\pending_l = \aroundtuplei[0]\cdots\aroundtuplei[r]$,  $\irounds_j < \irounds_k$ for all  ${ j}<{k} \in \{0 .. r\}$ and either.
 	\begin{itemize}
-		\item $\pushbuffer_l =\emptydelta$ and $\irounds_r \leq \irounds_l$; or
-		\item $\pushbuffer_l \neq \emptydelta$ and $\irounds_r < \irounds_l$;
+		\item $\pushbuffer_l =\emptydelta$, $\irounds_r \leq \irounds_l$ and $\amxrf(\cid_l) \leq \irounds_l$ or
+		\item $\pushbuffer_l \neq \emptydelta$, $\irounds_r < \irounds_l$ and $\amxrf(\cid_l) < \irounds_l$;
 	\end{itemize}
 
-\item  $\cid_l\in\dom\outserver$ then either
+\item  $l\in\{0,\ldots,m\}$ then either
   \begin{itemize}
     \item $\pending_l = \epsilon$ and $\amxrf(\cid_l) \leq \irounds_l$;
    % \item $\pending_l = \inserver(\cid_l)\cdot\pending_l'$; 
@@ -236,9 +236,9 @@ for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following condition
 		 ${\amxrf_{lst}} (\cid_l) = \irounds_{lst}$. 
 		 
 \item $\inserver(\cid_l) = \epsilon$, $\pending_l =\pending_l''\cdot{\aroundtuple[\cid_l][{\irounds_{lst}}][\adelta_{lst}]}$  
-    		and $\inclient_l\cdot\outserver (\cid_l) = \agssegpair[{\astate}][{\amxrf}] \cdot\aseqseg$
+    		and either $\inclient_l\cdot\outserver (\cid_l) = \agssegpair[{\astate}][{\amxrf[']}] \cdot\aseqseg$
 		%\agssegpair[\delta'_{lst}][{\amxrf_{lst}}]$  
-		with ${\amxrf} (\cid_l) \leq \irounds_{lst}$. 
+		with ${\amxrf[']} (\cid_l) \leq \irounds_{lst}$ or  $\inclient_l\cdot\outserver (\cid_l) = \epsilon$ and ${\amxrf} (\cid_l) \leq \irounds_{lst}$. 
 		 
 		 		 
 \end{itemize}
@@ -248,7 +248,7 @@ for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following condition
 We require all clients to have different identifiers (1). Communication channels in the 
 implementation are bidirectional, hence  $\cid_l\in\dom\inserver$ iff  $\cid_l\in\dom\outserver$ 
 (2). Moreover, the input buffer of a  disconnected client is empty, \ie, $\cid_l\in\dom\outserver$ (3). 
-Condition (4) states that $\agsprefpair$ can appear only as the first message in the flow from 
+Condition (4) states that $\agsprefpair[@][{\amxrf[']}]$ can appear only as the first message in the flow from 
 the store and that the store confirms processed rounds in a non-decreasing order. Similarly, 
  clients send rounds with increasing round number (5). The last condition states a 
  coherence requirement between  
