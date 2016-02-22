@@ -30,8 +30,8 @@ and write $\udec$ for the update  $\anupd$ associated with the event $\vertice$.
 
 We  use $\anupdseq$ to denote sequences of decorated updates and
 $\ublock[\anupdseq]$ for an atomic block of updates. 
-(We reserve the term 
-transaction for a different notion addressed in \secref{sec:transactions}). 
+%(We reserve the term 
+%transaction for a different notion addressed in \secref{sec:transactions}). 
 We write  $\blockseq$  for a sequence of blocks. We denote the empty sequence
 with  $\emptysequence$
 %  defined by the following grammar
@@ -230,7 +230,7 @@ The set of actions is given by the following grammar:
 \end{array}
 \]
 As usual,  $\tau$ stands for an internal, 
- unobservable action, while the remaining ones corresponds to the interaction of a client with  
+ unobservable action, while the remaining ones correspond to the interaction of a client with  
 the  store. 
 A  label  $(\lambda,\cid)$ indicates that  
  the client $\cid$ performs the action $\lambda$.  We  write  $\arro{\lambda}$ instead of $\tr{(\lambda,\cid)}$. 
@@ -329,7 +329,7 @@ A  label  $(\lambda,\cid)$ indicates that
 \end{figure*}
 
 
-We now comment on the inference rules in \figref{fig:OS-tgsp}.%, which define the operational semantics of \tgspcalculus.
+We now comment on the inference rules in \figref{fig:OS-tgsp}.
 When a client performs an update (rule \textsc{update}),  the change has only local effects:
 the sequence of  local updates $\ttransactionbuffer$ is extended with the 
 operation $\anupd$ decorated with a globally fresh identifier $\vertice$. We remark that 
