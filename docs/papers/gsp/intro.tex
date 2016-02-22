@@ -12,8 +12,8 @@ partition tolerance, and consistency. Thus,
 one of these properties has to be discarded. Today's popular 
 data storages, such as Dynamo~\cite{DeCandia:2007:DAH:1294261.1294281} and  Cassandra~\cite{lakshman2010cassandra}, ensure 
 availability over strong consistency and offer weaker versions called \emph{eventual consistency}.
-Roughly, eventual consistency guarantees that, although data consistency can be at time violated, at some point it will be restored
-and the different replicas will eventually converge to the same state~\cite{DBLP:journals/cacm/BailisG13}.
+Roughly, eventual consistency guarantees that all updates will be delivered to the different replicas, which will eventually converge to the same 
+state~\cite{DBLP:journals/cacm/BailisG13}.
 The  storages adopt different strategies to achieve eventual consistency and the choice  
 impacts on the  guarantees provided by the system, i.e., on the kind of 
 inconsistencies or anomalies that are allowed to happen. For instance, a storage may
@@ -27,7 +27,7 @@ cloud types~\cite{burckhardt2012cloud} provide programmers with suitable data ty
 to eventual consistency. Resent proposals advocate declarative approaches to 
 eventual consistency programming,  e.g.,  
 to automatically select the consistency level required from a store given 
-a consistency contract ~\cite{sivaramakrishnan2015declarative}
+a consistency contract~\cite{sivaramakrishnan2015declarative}
 or to prove that  a given consistency level is adequate for preserving some data invariant~\cite{gotsman2016cause}.
 With similar aims,
 % Another recent proposal  aimed at helping programmers to reason about applications 
