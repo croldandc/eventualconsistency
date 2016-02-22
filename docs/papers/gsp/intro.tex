@@ -4,11 +4,12 @@
 
 Cloud infrastructures provide data storages that are virtually unlimited, elastic (i.e., scalable at run-time), 
 highly available and partition tolerant by 
-replicating data, over multiple servers. A client may  perform update and 
+replicating data over multiple servers. A client may perform update and 
 read operations over any of these replicas and the  store is responsible for keeping 
-the  replicas synchronised. 
-However, it is known (CAP theorem~\cite{CAP}) that one system cannot provide at the same time availability, 
-partition tolerance, and consistency, but has to drop one of these properties. Today's popular 
+them synchronised. 
+However, it is known (CAP theorem~\cite{CAP}) that any system cannot simultaneously provide availability, 
+partition tolerance, and consistency. Thus, 
+one of these properties has to be discarded. Today's popular 
 data storages, such as Dynamo~\cite{DeCandia:2007:DAH:1294261.1294281} and  Cassandra~\cite{lakshman2010cassandra}, ensure 
 availability over strong consistency and offer weaker versions called \emph{eventual consistency}.
 Roughly, eventual consistency guarantees that, although data consistency can be at time violated, at some point it will be restored
@@ -50,9 +51,9 @@ consider a reduced representation of sequences of updates by using of state and 
 failures.The idealised model and its implementation,
 have been defined in terms of a reference implementation. 
 
-We propose here a
+In this paper, we propose a
 formal account for both the idealised model and the  implementation as process calculi: the 
-\gsp\ and \igsp\ calculi (\secref{sec:gsp} and \secref{sec:igsp}). We show
+\gsp\ and \igsp\ calculi (\secref{sec:gsp} and \secref{sec:igsp}). We prove
 that the implementation is correct by showing that the behaviour of a program
 running over \igsp\ can be also observed over the idealised model. Technically, 
 we show that each \igsp\ system can be simulated by the corresponding 
