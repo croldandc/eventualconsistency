@@ -9,9 +9,9 @@ read operations over any of these replicas and the  store is responsible for kee
 the  replicas synchronised. 
 However, it is known (CAP theorem~\cite{CAP}) that one system cannot provide at the same time availability, 
 partition tolerance, and consistency, but has to drop one of these properties. Today's popular 
-data storages, such as Dynamo~\cite{DeCandia:2007:DAH:1294261.1294281} and  Cassandra~\cite{lakshman2010cassandra}, favour 
-availability over strong consistency and provide weaker versions called \emph{eventual consistency}.
-Roughly, eventual consistency ensures that, although data consistency can be at time violated, at some point it will be restored
+data storages, such as Dynamo~\cite{DeCandia:2007:DAH:1294261.1294281} and  Cassandra~\cite{lakshman2010cassandra}, ensure 
+availability over strong consistency and offer weaker versions called \emph{eventual consistency}.
+Roughly, eventual consistency guarantees that, although data consistency can be at time violated, at some point it will be restored
 and the different replicas will eventually converge to the same state~\cite{DBLP:journals/cacm/BailisG13}.
 The  storages adopt different strategies to achieve eventual consistency and the choice  
 impacts on the  guarantees provided by the system, i.e., on the kind of 
