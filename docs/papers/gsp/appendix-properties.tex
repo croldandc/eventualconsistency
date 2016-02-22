@@ -600,8 +600,54 @@ then,  there is not $\anupd_0$ s.t.
 
 
 \subsection{Proof of Lemma \ref{lemma:prop-wf} (Well-formedness of Abstract Histories)}
+The proof follows by case analysis on the applied rule. Conditions 1-4 follows straightforwardly by
+rule inspection. The remaining one are as follows
+\begin{itemize}
+   \item[5.] The interesting cases are rules 
+      \begin{itemize}
+      	\item \ruleName{a-update}: $\arb$ is a prefix order. Moreover, condition 6 ensures that for all $\vertice,\vertice[v']$ s.t.
+	$\anupd_0^{\vertice}\in\queuemessage$ and $\anupd_1^{\vertice[v']}\in\queuemessage$, either 
+	$(\vertice,\vertice[v']) \in \arb $ or  $(\vertice[v'],\vertice) \in \arb$. Therefore, $\arb'$ is a prefix order.
+	
+	 \item \ruleName{a-arb}: $\arb$ is a prefix order. Note that the set
+	 	$$\{(\vertice[@][_i],\vertice[@][_j]) \ |\ i,j\in \{0,\ldots,n\}, i<j\}$$
+		 is a total order. Moreover, condition 6 (ii) ensures that 
+		for all $\vertice[@][_i], \vertice[@][_j]$ s.t. $i,j\in \{0,\ldots,n\}$,  $(\vertice[w],\vertice[@][_i]) \in \arb$ implies  $(\vertice[w],\vertice[@][_j]) \in \arb$.
+		Then it satisfies transitivity and downward totality. Additionally, condition 6 (ii) ensures that 
+		for all $\vertice[@][_i]$ s.t. $i\in \{0,\ldots,n\}$,  there does not exist $\vertice[w]$ s.t. $(\vertice[@][_i], \vertice[w]) \in \arb$, hence, 
+		it satisfies  antisymmetry. 
+		
+		Then,  $\arb\cup\{(\vertice[@][_i],\vertice[@][_j]) \ |\ i,j\in \{0,\ldots,n\}, i<j\}$ is a prefix order. Reasoning analogously, 
+		for  
+		$\ (\{\vertice[@][_0],\ldots,\vertice[@][_n]\}\times 
+		\{ \vertice[w]\ \ |\ \  \vertice[w]\in\mathbb{U}, \
+		     \forall\anupd. \anupd^{\vertice[w]}\not\in\queuemessage\cdot\anupdseq\})
+		 $   
+		 it can be concluded that $\arb'$ is a prefix order. 
+     \end{itemize}
+\item[6.] The interesting cases are  
+      \begin{itemize}
+      	\item \ruleName{a-update}:  It is immediate to conclude that the new pairs in  
+	$$(\{ \vertice[w] \ |\ \udec[@][{\vertice[w]}]\in \queuemessage \}\times\{\vertice\})$$
+	satisfy condition $6(ii)$
+	
+	
+	 \item \ruleName{a-arb}: The items in 
+	 	$$\{(\vertice[@][_i],\vertice[@][_j]) \ |\ i,j\in \{0,\ldots,n\}, i<j\}$$
+		 satisfy condition $6(i)$. Moreover, 
+		 pairs in 
+		$$\ (\{\vertice[@][_0],\ldots,\vertice[@][_n]\}\times 
+		\{ \vertice[w]\ \ |\ \  \vertice[w]\in\mathbb{U}, \
+		     \forall\anupd. \anupd^{\vertice[w]}\not\in\queuemessage\cdot\anupdseq\})
+		 $$   
+		 satisfy condition $6(ii)$ because for all $\{\vertice[@][_i]\} \in \{0,\ldots,n\}$ there exist
+		  $\anupd_0^{\vertice}\in\queuemessage$. 
+		 
+\item[7.] 		 Its a direct consequence of \lemref{lemma:upd-in-buffers-updinSO}.
+     \end{itemize}
 
 
+ \end{itemize}
 \subsection{Proof of Theorem ~\ref{theorem:properties}}
 
 \subsubsection{Proof of Read My Writes (\ref{theorem:read-my-writes}).}
