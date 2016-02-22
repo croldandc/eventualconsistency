@@ -210,20 +210,20 @@ for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following condition
   \item $\dom\inserver = \dom\outserver \subseteq  \{0,\ldots,m\}$;
   \item $\cid_l\not\in\dom\outserver$ implies $\inclient_l = \epsilon$;
   \item if $\cid_l\in\dom\outserver$ and $\inclient_l\cdot\outserver(\cid_l) \neq\epsilon$ then either
-	\begin{itemize}
+	\begin{enumerate}[$(i)$.]
 		\item ${\inclient}_l\cdot\outserver(\cid_l)= \agssegpairi[0] \cdots \agssegpairi[h]$; or
 		\item  ${\inclient}_l\cdot\outserver(\cid_l)= \agssegpair[{\astate}][{\amxrf[_0]}]\cdot\agssegpairi[1]\cdots \agssegpairi[h]$.
-	\end{itemize}
+	\end{enumerate}
 	 $\amxrf_j(\cid_l) \leq \ \amxrf_k(\cid_l)$ for all  ${ j}<{k}  \in \{0 .. h\}$ and $\amxrf_h = \amxrf$
 	
 \item \label{wf-igsp-pending} $\pending_l = \aroundtuplei[0]\cdots\aroundtuplei[r]$,  $\irounds_j < \irounds_k$ for all  ${ j}<{k} \in \{0 .. r\}$ and either.
-	\begin{itemize}
+	\begin{enumerate}[$(i)$.]
 		\item $\pushbuffer_l =\emptydelta$, $\irounds_r \leq \irounds_l$ and $\amxrf(\cid_l) \leq \irounds_l$ or
 		\item $\pushbuffer_l \neq \emptydelta$, $\irounds_r < \irounds_l$ and $\amxrf(\cid_l) < \irounds_l$;
-	\end{itemize}
+	\end{enumerate}
 
 \item  $l\in\{0,\ldots,m\}$ then either
-  \begin{itemize}
+  \begin{enumerate}[$(i)$.]
     \item $\pending_l = \epsilon$ and $\amxrf(\cid_l) \leq \irounds_l$;
    % \item $\pending_l = \inserver(\cid_l)\cdot\pending_l'$; 
     \item $\pending_l = \inserver(\cid_l)$ %NECESITABAMOS PARA QUE SEA SINCRO QUE HAYA UN OUT.
@@ -241,7 +241,7 @@ for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following condition
 		with ${\amxrf[']} (\cid_l) \leq \irounds_{lst}$ or  $\inclient_l\cdot\outserver (\cid_l) = \epsilon$ and ${\amxrf} (\cid_l) \leq \irounds_{lst}$. 
 		 
 		 		 
-\end{itemize}
+\end{enumerate}
 \end{enumerate}
 \end{definition}
 
@@ -360,9 +360,9 @@ the store and that the store confirms processed rounds in a non-decreasing order
 \mathrule{i-batch}
 	{
 	\begin{array}{p{\linewidth}}	
-	  $\agssegpair[@][{\amxrf[{'}]}] =\receiveroundsname{\inserver} \ \ \adelta\neq\emptydelta\ \ %=\append{\emptygssegment}{rs} \qquad 
-	  \astate[']=\iapply{\astate}{\adelta} \hfill
- 	 \forall\cid.(\outserver['] (\cid)= \outserver(\cid)\cdot\agssegpair[@][{\amxrf}{[{\amxrf[{'}]}]}] \, \land\,
+	  $\agssegpair[@][{\amxrf[{'}]}] =\receiveroundsname{\inserver} \ \ \ \adelta\neq\emptydelta\ \ \ %=\append{\emptygssegment}{rs} \qquad 
+	  \astate[']=\iapply{\astate}{\adelta} \ \ 
+ 	 \forall\cid.(\outserver['] (\cid)= \outserver(\cid)\cdot\agssegpair[@][{\amxrf}{[{\amxrf[{'}]}]}] \land
  	 \inserver['](\cid) = \epsilon)$
 \end{array}
   }
