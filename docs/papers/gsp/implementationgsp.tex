@@ -19,7 +19,7 @@ but they are
 %In order to keep the description of the model as general as possible, they have been
 characterised  in terms of 
 two abstract types:  $\statetype$ and $\deltatype$, which provides
- the following  operations in~\cite{DBLP:conf/ecoop/BurckhardtLPF15}:
+ the following  operations~\cite{DBLP:conf/ecoop/BurckhardtLPF15}:
 
 {\small
 \[
@@ -467,7 +467,7 @@ Rule \ruleName{i-update}, which is analogous to rule \ruleName{update}, adds the
    changes $\adelta[_1]\cdots\adelta[_k]$ are applied to the local state $\astate$ and 
    all rounds  confirmed by the received segments are removed from  the  pending list $\pending$.
    By well-formedness (\defref{def:wf-igsp},\ref{wf-igsp-pending}), it suffices to consider  
-    the confirmation $ \amxrf_k$, which is the greatest. %since   ensures  
+    the confirmation $ \amxrf_k$, which has the greatest confirmation. %since   ensures  
     %$\amxrf_h(\cid) \leq \amxrf_j(\cid)$ for all ${h}\leq {j}$. 
     Hence, all rounds up-to  
     $\amxrf_k(\cid)$ are removed from $\pending$. This is done by the auxiliary function 

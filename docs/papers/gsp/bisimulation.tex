@@ -12,7 +12,7 @@ Formally,  the relation $\_\triangleleft \_$ associates
  (similarly, $\astate\triangleleft\anupdseq$)  means  that $\delta$ (correspondingly, $\astate$) 
  is a compact representation of $\anupdseq$. Then, it is also assumed that 
 $\astate\triangleleft\anupdseq$ implies  $\iread \aread \astate  = \rvalue \aread  \anupdseq$ for any $\aread$.
-Building on the above relation, the next definition states when a
+Building on the above relation, we define under which conditions a
 \igsp\ system is an implementation of a \gsp\ system.
 
 \begin{figure}[t]
@@ -170,7 +170,7 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
 
 
 The  first three conditions are self-explanatory. Condition (\ref{prop_pending})  states that the pending blocks in $\flatten{\tpending_l}$  
-corresponds either to  rounds in the  pending list  $\pending_l$ or  to blocks ready to 
+correspond either to  rounds in the  pending list  $\pending_l$ or  to blocks ready to 
 be sent, \ie, in ${\pushbuffer}_l$.
 By condition (\ref{prop_sent}), if a client is synchronised with the store 
 (\ie, $\cid_l \in \dom\inserver$ and $\inclient \cdot\outserver(\cid_l) \neq \agssegpair[{\astate[']}][{\amxrf}]\cdot\aseqseg$) 
