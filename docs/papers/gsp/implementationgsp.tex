@@ -202,7 +202,7 @@ We also impose the following well-formedness condition on systems.
  $\isystemterm =  \iclient_0\bigpar \ldots\bigpar \iclient_m\bigpar\iserver$  with
  $\iserver=\server{\astate}{\inserver}{\outserver}$ and 
 $\iclient_l = \addid{\iclientinst[P_l][\astate_l][{\pending}_l][\pushbuffer_l][\transactionbuffer_l][\receivebuffer_l][\irounds_l][\inclient_l][\outclient_l]}[{\cid_l}]$ 
-for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions hold 
+for   $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following conditions hold 
 
 \begin{enumerate}
 
@@ -210,21 +210,21 @@ for all  $l\in \{0,\ldots,m\}$  is {\em well-formed} if the  following condition
   \item $\dom\inserver = \dom\outserver \subseteq  \{0,\ldots,m\}$;
   \item $\cid_l\not\in\dom\outserver$ implies $\inclient_l = \epsilon$;
   \item if $\cid_l\in\dom\outserver$ and $\inclient_l\cdot\outserver(\cid_l) \neq\epsilon$ then either
-	\begin{enumerate}[$(i)$.]
+	\begin{enumerate}[$(i)$]
 		\item ${\inclient}_l\cdot\outserver(\cid_l)= \agssegpairi[0] \cdots \agssegpairi[h]$; or
 		\item  ${\inclient}_l\cdot\outserver(\cid_l)= \agssegpair[{\astate}][{\amxrf[_0]}]\cdot\agssegpairi[1]\cdots \agssegpairi[h]$.
 	\end{enumerate}
 	 $\amxrf_j(\cid_l) \leq \ \amxrf_k(\cid_l)$ for all  ${ j}<{k}  \in \{0 .. h\}$ and $\amxrf_h = \amxrf$
 	
 \item \label{wf-igsp-pending} $\pending_l = \aroundtuplei[0]\cdots\aroundtuplei[r]$,  $\irounds_j < \irounds_k$ for all  ${ j}<{k} \in \{0 .. r\}$ and either.
-	\begin{enumerate}[$(i)$.]
+	\begin{enumerate}[$(i)$]
 		\item $\pushbuffer_l =\emptydelta$, $\irounds_r \leq \irounds_l$ and $\amxrf(\cid_l) \leq \irounds_l$ or
 		\item $\pushbuffer_l \neq \emptydelta$, $\irounds_r < \irounds_l$ and $\amxrf(\cid_l) < \irounds_l$;
 	\end{enumerate}
 
 \item  $l\in\{0,\ldots,m\}$ then either
-  \begin{enumerate}[$(i)$.]
-    \item $\pending_l = \epsilon$ and $\amxrf(\cid_l) \leq \irounds_l$;
+  \begin{enumerate}[$(i)$]
+    \item $\pending_l  = \epsilon$, $\amxrf(\cid_l) \leq \irounds_l$ and if $\cid_l \in\dom{\inserver}$ then $\inserver(\cid_l)=\epsilon$ ;
    % \item $\pending_l = \inserver(\cid_l)\cdot\pending_l'$; 
     \item $\pending_l = \inserver(\cid_l)$ %NECESITABAMOS PARA QUE SEA SINCRO QUE HAYA UN OUT.
     $= {\aroundtuple[\cid_l][{\irounds_{\it fst}}][\adelta_{\it fst}]} \cdot\pending_l'$ and  $ \irounds_{\it fst}> {\amxrf} (\cid_l)$.
@@ -250,7 +250,7 @@ implementation are bidirectional, hence  $\cid_l\in\dom\inserver$ iff  $\cid_l\i
 (2). Moreover, the input buffer of a  disconnected client is empty, \ie, $\cid_l\in\dom\outserver$ (3). 
 Condition (4) states that $\agsprefpair[@][{\amxrf[']}]$ can appear only as the first message in the flow from 
 the store and that the store confirms processed rounds in a non-decreasing order. Similarly, 
- clients send rounds with increasing round number (5). The last condition states a 
+ clients send rounds with increasing round number (5). The last condition (6) states a 
  coherence requirement between  
  pending rounds and the confirmations sent by the store: stores confirms rounds within the range of 
  unconfirmed rounds. 

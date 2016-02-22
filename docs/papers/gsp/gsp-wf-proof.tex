@@ -1,13 +1,14 @@
 % !TEX root = main.tex
+\newcommand*{\QEDB}{\hfill\ensuremath{\square}}%
+
 \section{Proof of results in \secref{sec:gsp} and \secref{sec:igsp}}
 
 
-\begin{proof} [of ~\lemref{lemma:gsp-wf}]
+\subsubsection {Proof of ~\lemref{lemma:gsp-wf} (well-formedness \gsp).}
 
 
-The proof follows by case analysis on the rules. The cases are straightforward.
-
-\end{proof}
+The proof follows by straightforward  case analysis on the applied rule.
+\QEDB
 
  %We will prove that if $\systemterm$ is well-formed and $\systemterm\arroi{\action}\systemterm[']$, then $\systemterm[']$ is well-formed.
 
@@ -45,7 +46,176 @@ The proof follows by case analysis on the rules. The cases are straightforward.
 %		\end{itemize}			
 
 
-\begin{proof} [of ~\lemref{lemma:igsp-wf}]
+\subsubsection {Proof of ~\lemref{lemma:igsp-wf} (well-formedness \igsp).}
 
-The proof follows by case analysis on the rules. The cases are straightforward.
-\end{proof}
+
+The proof follows by case analysis on the  rule applied for 
+Most of the cases follow 
+straightforwardly. The following are the  interesting ones. 
+
+
+\begin{itemize}
+
+\item \ruleName{i-send}: Then, 
+   \[\begin{array}{l}
+      \isystemterm  =  \addid{\iclientinst} \ \bigpar \ \iserverins[\astate[']] \ \bigpar\ \iclient \\
+      \isystemterm[']  =  \addid{\iclientinst[@][@][\pending'][\emptydelta]}
+		\ \bigpar \ \iserverins[{\astate[']}][@][\inserver']
+		\ \bigpar\ \iclient\\
+      \pushbuffer \neq \emptydelta \\
+      \cid\in\dom\inserver\\
+      \around = \aroundtuple[\cid][\irounds][\pushbuffer]\\
+      \inserver'= \inserver\upd{\cid}{\inserver(\cid)\cdot\around}\\
+      \pending'=\pending \cdot \around
+       \end{array}
+       \]
+  
+
+	All items but 6. follow straightforwarly. 
+   	 \begin{itemize}
+   	     \item[$6 (i)$.] Then, $\pending= \epsilon$ and $\pending'= \around$. By condition $5$ (ii), $\pushbuffer \neq \emptydelta$ and $\amxrf['](\cid) < \irounds$. Hence, 
+        		6 (ii) holds.
+  	\end{itemize}
+      	other cases follows straightforwardly.
+	
+\item \ruleName{i-pull${_1}$}: Then, 
+	\[
+	\begin{array}{l}
+    	 \isystemterm  =  \addid{\iclientinst[\tpullins][@]
+			[@]%[\aseqround\cdot{\aroundtuple}\cdot{\aseqround[']}]
+			[@][@][@][@][\inclient]}
+			    \ \ \bigpar \ \iserverins[{\astate[']}][@][\inserver']
+		\ \bigpar\ \iclient
+	 \\
+      	\isystemterm[']  =  \addid{\iclientinst[P]
+						 [\iapply{\known}{\ireduce{\adelta_1\cdots\adelta_k}}]
+						 [\aseqround']
+						 [@][@]
+						 [{\receivebuffer}][@][\epsilon]} \ \bigpar \ \iserverins[{\astate[']}][@][\inserver']
+		\ \bigpar\ \iclient
+	\\
+	\aseqround['] = \filter{\amxrf_k(\cid)} {\aseqround} 
+	\\
+	 \inclient = \agssegpair[{\adelta_1}][{\amxrf_1}]\ldots \agssegpair[{\adelta_k}][{\amxrf_k}]				 	
+	\end{array}
+	\]
+      	All items but 6. follow straightforwarly. 
+   	 \begin{itemize}
+   	     \item[$6 (i)$.] Then, $\pending= \epsilon$  and  $\amxrf['](\cid) < \irounds$. Then $\pending'= \filter{\amxrf_k(\cid)} {\aseqround} = \epsilon$. Then, it follows straightfowardly.
+	      
+   	     \item[$6 (ii)$.] Then, $\pending=  \inserver(\cid) = {\aroundtuple[\cid][{\irounds_{\it fst}}][\adelta_{\it fst}]} \cdot\pending$ and $ \irounds_{\it fst}> {\amxrf} (\cid)$. 
+	     By condition 4, $\amxrf_k (\cid) \leq \amxrf(\cid)$. Therefore, $\amxrf_k (\cid) < \irounds_{\it fst}$. Consequently, $\aseqround['] = \filter{\amxrf_k(\cid)} {\aseqround} = \aseqround =  \inserver(\cid)$ and hence $6(ii)$ holds.
+	     
+	   
+
+   	     \item[$6 (iii)$.] Then, 
+	     $\pending =\pending''\cdot{\aroundtuple[\cid][{\irounds_{lst}}][\adelta_{lst}]} \cdot \inserver(\cid)$  
+    		and $\inclient\cdot\outserver (\cid) = \agssegpairi[0] \cdots\agssegpair[\delta'_{lst}][{\amxrf_{lst}}]$  with
+		 ${\amxrf_{lst}} (\cid) = \irounds_{lst}$. 
+		 Take $\inclient\cdot\outserver (\cid) = \agssegpairi[0] \cdots\agssegpair[\delta_i][{\amxrf_{i}}]$. There are two cases
+		 \begin{itemize}
+		  	\item $\amxrf_i(\cid)=\amxrf_{lst}(\cid)$. Then, $\aseqround['] = \filter{\amxrf_i(\cid)} {\aseqround} =   \inserver(\cid)$, and hence $6(ii)$ holds.
+			\item $\amxrf_i(\cid) < \amxrf_{lst}(\cid)$. Then, $\aseqround['] = \filter{\amxrf_i(\cid)} {\aseqround} =\pending'''\cdot{\aroundtuple[\cid][{\irounds_{lst}}][\adelta_{lst}]} \cdot \inserver(\cid)$ with $\pending''' = \aroundtuple[\cid][{\irounds_0}][\adelta_0]\cdots \aroundtuple[\cid][{\irounds_j}][\adelta_j]$ with $\irounds_j>\amxrf_i(\cid)$. Therefore,
+			$6(iii)$ holds.
+		 \end{itemize} 
+	     
+	     
+	     
+	     
+   	     \item[$6 (iv)$.] It trivially holds because rule    \ruleName{i-pull${_1}$} cannot be applied whenever $\inclient\cdot\outserver (\cid) = \agssegpair[{\astate}][{\amxrf[']}] \cdot\aseqseg$ or   $\inserver(\cid) = \epsilon$.
+  	\end{itemize}
+
+\item \ruleName{i-batch}: Then 
+	\[
+	\begin{array}{l}
+    	 \isystemterm  =  \iserverins\ \bigpar \ \iclient	 \\
+      	\isystemterm[']  = \iserverins[{\astate[']}][{\amxrf}{[{\amxrf[{'}]}]}][{\inserver[']}][{\outserver[']}]\ \bigpar \ \iclient
+	\\
+	\agssegpair[@][{\amxrf[{'}]}] =\receiveroundsname{\inserver} 
+	\\
+	\adelta\neq\emptydelta\ 
+	\\
+	  \astate[']=\iapply{\astate}{\adelta} \\
+ 	 \forall\cid.(\outserver['] (\cid)= \outserver(\cid)\cdot\agssegpair[@][{\amxrf}{[{\amxrf[{'}]}]}] \land
+ 	 \inserver['](\cid) = \epsilon)			 	
+	\end{array}
+	\]
+	
+	The interesting items are 4 and 6.
+	\begin{enumerate}
+	   \item [$4$.] By $\receiveroundsname{\inserver}$ there are two cases:
+	      \begin{itemize}
+	      	\item $\inserver(\cid_l)=\epsilon$ and $\amxrf['](\cid_l)$ is undefined. Therefore, ${\amxrf}{[{\amxrf[{'}]}]}(\cid_l) = \amxrf(\cid_l)$, and 
+		hence, $\outserver['] (\cid) = \agssegpair[@][{\amxrf}{[{\amxrf[{'}]}]}]$.
+		If $\inclient_l\cdot\outserver(\cid_l) = \epsilon$, we are done because condition $4(i)$ holds. 		
+		Otherwise, i.e., $\inclient_l\cdot\outserver(\cid_l) \neq\epsilon$, it 
+		follows by hypothesis that either
+		\begin{itemize}
+			\item[$(i)$] ${\inclient}_l\cdot\outserver(\cid_l)= \agssegpairi[0] \cdots \agssegpairi[h]$; or
+			\item[$(ii)$] ${\inclient}_l\cdot\outserver(\cid_l)= \agssegpair[{\astate}][{\amxrf[_0]}]\cdot\agssegpairi[1]\cdots \agssegpairi[h]$.			
+	         \end{itemize}
+	   	 and $\amxrf_j(\cid_l) \leq \ \amxrf_k(\cid_l)$ for all  ${ j}<{k}  \in \{0 .. h\}$ and $\amxrf_h = \amxrf$.
+		 In both cases, we conclude that ${\amxrf}{[{\amxrf[{'}]}]}(\cid_l) = \amxrf_h(\cid_l)$
+		 
+		 \item $\inserver(\cid_l)\neq\epsilon$, then $\inserver(\cid_l) = \aroundtuple[\cid_l][\irounds_0][{\adelta_0}]\cdot\aseqround$.
+		 By condition $6$, one of the following holds ($i$ and $iv$ are not possible) :
+		  \begin{itemize}
+		     \item  Then, $\irounds_0> {\amxrf} (\cid_l)= \amxrf_h (\cid_l)$. Therefore, ${\amxrf'} (\cid_l) > {\amxrf} (\cid_l) $ by definition of $\receiveroundsname{\inserver}$.
+		     Hence, ${\amxrf}{[{\amxrf[{'}]}]}(\cid_l) > \amxrf_h(\cid_l)$. Hence, $4(i)$ holds.
+		     \item  $\inclient_l\cdot\outserver (\cid_l) = \agssegpairi[0] \cdots\agssegpair[\delta'_{lst}][{\amxrf_{lst}}]$  and  ${\amxrf_{lst}} (\cid_l) = \irounds_{lst} < \irounds_0$. By reasoning analogously to the previous case, we conclude that ${\amxrf}{[{\amxrf[{'}]}]}(\cid_l) > \amxrf_{lst}(\cid_l)$. Hence, $4(ii)$ holds.
+		  \end{itemize}
+	   \item [$6$.] We proceed by case analysis.
+	     \begin{enumerate}[$(i)$]
+  		\item $\pending_l  = \epsilon$, $\amxrf(\cid_l) \leq \irounds_l$ and if $\cid_l \in\dom{\inserver}$ then $\inserver(\cid_l)=\epsilon$. 
+			Hence, $\amxrf['](\cid_l)$ is undefined. Therefore, ${\amxrf}[{\amxrf[']}](\cid_l) = \amxrf(\cid_l) \leq \irounds_l$.
+    		\item $\pending_l = \inserver(\cid_l)
+    			= {\aroundtuple[\cid_l][{\irounds_{\it fst}}][\adelta_{\it fst}]} \cdots{\aroundtuple[\cid_l][{\irounds_{\it lst}}][\adelta_{\it lst}]}$, 
+			and  $ \irounds_{\it fst}> {\amxrf} (\cid_l)$.
+  			Note that $\inserver'(\cid_l)=\epsilon$ and $ \amxrf'(\cid_l) ={\amxrf}[ \amxrf[']](\cid_l)=  \irounds_{\it lst}$. Then, $6(iii)$ holds.
+ 
+		\item $\pending_l =\pending_l''\cdot{\aroundtuple[\cid_l][{\irounds_{lst}}][\adelta_{lst}]} \cdot \inserver(\cid_l)$  
+    			and $\inclient_l\cdot\outserver (\cid_l) = \agssegpairi[0] \cdots\agssegpair[\delta'_{lst}][{\amxrf_{lst}}]$  with
+		 	${\amxrf_{lst}} (\cid_l) = \irounds_{lst}$.  It follows analogously to the previous case.
+		 
+		\item $\inserver(\cid_l) = \epsilon$. Hence, $\amxrf['](\cid_l)$ is undefined and the case follows because 
+		 ${\amxrf}[{\amxrf[']}](\cid_l) = \amxrf(\cid_l) \leq \irounds_l$.
+	     \end{enumerate}		 
+	   \end{itemize}
+	\end{enumerate}
+
+
+
+
+\item \ruleName{i-pull${_2}$}: Then,
+	\[
+	\begin{array}{l}
+    	 \isystemterm  =  \addid{\iclientinst[\tpullins][@][\aseqround][@][@][@][@][\inclient]}
+			     \ \bigpar \ \iserverins[{\astate[']}][{\amxrf}] \ \bigpar\ \iclient
+			      \\
+      	\isystemterm[']  =\addid{\iclientinst[P]
+						 [{\astate['']}]
+						 [{\aseqround'}]
+						 [@][@]
+						 [{\receivebuffer}][@][\epsilon]}
+		\ \bigpar \ \iserverins[{\astate[']}][{\amxrf}][\inserver\upd{\cid}{\inserver(\cid)\cdot\aseqround[']}]
+		\ \bigpar\ \iclient
+	\\
+	\inclient = \agssegpair[{\astate[''']}][{\amxrf_0}]\cdot\agssegpair[{\adelta_1}][{\amxrf_1}]\ldots \agssegpair[{\adelta_k}][{\amxrf_k}]
+	\\
+	\astate['']  = \iapply{\astate[''']}	{\ireduce{\emptydelta\cdot\adelta_1\cdots\adelta_k}} 
+	\\
+	\aseqround['] = \filter{\amxrf_k(\cid)} \aseqround
+	\end{array}
+	\]
+	The interesting case is condition $6$. The only possibility is $6(iv)$. In such case, 
+ $\inserver(\cid) = \epsilon$, $\pending_l =\pending_l''\cdot{\aroundtuple[\cid_l][{\irounds_{lst}}][\adelta_{lst}]}$  
+    		and ${\amxrf_0} (\cid) \leq \irounds_{lst}$. Consequently,
+		\begin{itemize}
+		\item if ${\amxrf_0} (\cid) = \irounds_{lst}$, then $\aseqround['] =\epsilon$ and $\inserver(\cid) = \epsilon$. By condition $5$, $\amxrf(\cid) \leq n $. Hence, condition $6(i)$ holds.
+		
+		 \item if ${\amxrf_0} (\cid) < \irounds_{lst}$, then $\aseqround['] =\epsilon$ $\inserver(\cid) =\aseqround[']  $. Hence, condition $6(ii)$ holds. 
+		\end{itemize}
+
+
+\QEDB
+\end{itemize}

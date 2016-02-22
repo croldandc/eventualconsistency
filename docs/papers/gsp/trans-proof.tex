@@ -139,8 +139,14 @@ case analysis on the inference rule applied for the last transition:
         \item rule \ruleName{a-update}. Follow immediately by inductive hypothesis since $\vertice[w] \in \queuemessage[0 .. |\queuemessage| - 1]$.     
         
        \item rule \ruleName{a-arb}. $\arb = \arb' \cup \arb_{\mbox{\sf new}}$ with 
-         $\arb_{\mbox{\sf new}}= \{ (\vertice, \vertice[w])\ \ |\ \  \vertice[w]\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \
-		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage\cdot \ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]\} \cup\  \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\}$. 
+         \[
+         \begin{array}{l}
+            \arb_{\mbox{\sf new}}= \{ (\vertice, \vertice[w])\ |\ \vertice[w]\in\dom{\op},  \op(\vertice[w])\in\updatesets, 
+		     \forall\anupd_0. \anupd_0^{\vertice[w]}\not\in\queuemessage\cdot \ublock[{\udec[{\anupd[_0]}][{\vertice[@][_0]}]}\cdots{\udec[{\anupd[_n]}][{\vertice[@][_n]}]}]\} 
+		     \\\hfill 
+		     \cup\  \{(\vertice[@][_i],\vertice[@][_j]) \ |\ \vertice[@][_i],\vertice[@][_j]\in \{\vertice[@][_0],\ldots,\vertice[@][_n]\}, i<j\}.
+	\end{array}
+	\] 
 	By inductive hypothesis $(\vertice,\vertice[w])\in\arb'$, it remains to prove that $(\vertice,\vertice[w])\in\arb_{\mbox{\sf new}}$. There are two cases:
 	\begin{itemize}
 	\item $(\vertice,\vertice[w])\in \{ (\vertice', \vertice[w'])\ \ |\ \  \vertice[w']\in\dom{\op}, \ \op(\vertice[w])\in\updatesets, \

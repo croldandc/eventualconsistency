@@ -2,7 +2,7 @@
 \section{Proof of results in~\secref{sec:properties-gsp}}
 
 We start by proving some auxiliary results that 
-will be useful when proving the main theorem.
+will be useful when proving the main result of the section.
 
 \subsection{Results relating system states and abstract executions}
 
@@ -112,12 +112,12 @@ case analysis on the inference rule applied for the last transition:
 		\item rules \ruleName{receive}, \ruleName{confirm}:%, \ruleName{while-true}, \ruleName{while-false}, \henote{reglas para if}
 		The proof follows from inductive hypothesis because $\tknown_{\cid}=\tknown'_{\cid}$, $\tpending_{\cid}=\tpending'_{\cid}$ 
 		and $\ttransactionbuffer _{\cid}=\ttransactionbuffer' _{\cid}$ for all $\cid$ and $\op'=\op$.
-
+\qed
 	\end{itemize}
 	
 \end{itemize}
 \end{itemize}
-\qed
+
 \end{proof}
 
 
@@ -156,9 +156,10 @@ the derivation  $\tr{} ^*$.
 	Since, $\op' = \op\upd \vertice r$ then $(\vertice[x],\vertice[y])\in\so'$. 
 	\item rules \ruleName{a-int}, \ruleName{a-arb} follow immediately by inductive hypothesis
 	after noticing that  $\so = \so'$.
+\qed
 	\end{itemize}
 %\chnote{dentro de las internas, el moviemiento que se genera por la push me parece trivial e inmediato, por eso no lo separé}
-\end{itemize}\qed
+\end{itemize}
 \end{proof}
 
 
@@ -250,14 +251,14 @@ case analysis on the inference rule applied for the last transition:
 		
 		\item rules \ruleName{push},\ruleName{receive}, \ruleName{confirm}.%, \ruleName{while-true}, \ruleName{while-false}, 
 		The proof follows from inductive hypothesis because $\tknown_{\cid}'=\tknown_{\cid}$, $\so'=\so$ and $\op'=\op$.
-
+\qed
 	\end{itemize}
 	
          
 	\end{itemize}
 
 	\end{itemize}
-\qed
+
 
 \end{proof}
 
@@ -301,9 +302,10 @@ $\vertice\in\sse(\cidj)$ and $\cid\neq\cidj$ then $\anupd[^{\vertice[w]}] \notin
 	
 	\item rules \ruleName{a-upd},\ruleName{a-arb} and \ruleName{a-int} follow immediately by inductive hypothesis
 	after noticing that  $\vis = \vis'$.
+	\qed
 	\end{itemize}
 
-\end{itemize}\qed
+\end{itemize}
 \end{proof}
 \begin{lemma}
 \label{lem:server-reflect-arb}
@@ -356,9 +358,10 @@ $\anupd_1^{\vertice[w]}\in\queuemessage[0..m-1]$.
         
 	\item rules \ruleName{a-read} and \ruleName{a-int} follow immediately by inductive hypothesis
 	after noticing that  $\arb = \arb'$.
+	\qed
 	\end{itemize}
 
-\end{itemize}\qed
+\end{itemize}
 \end{proof}
 
 \begin{lemma}
@@ -391,9 +394,10 @@ the derivation  $\tr{} ^*$.
 % that for all $(\vertice,\vertice[x])\in\so$ if $(\vertice[x],\vertice[w])\in\vis$ then  $(\vertice,\vertice[w])\in\vis$.
 \begin{itemize}
    \item{\bf n=0}. It holds trivially, because $\op=\vis=\emptyset$.
-      \item{\bf n=k+1}. Then $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset]
+      \item{\bf n=k+1}. Then 
+      $$\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset]
     \tr{} ^k\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
-    \arroi{\lambda} \environment{\systemterm'}{\op}{\so}{\vis}{\arb}[\sse]$. 
+    \arroi{\lambda} \environment{\systemterm'}{\op}{\so}{\vis}{\arb}[\sse].$$ 
     By inductive hypothesis, $\restUR{(\so';\vis')}  \subseteq \ \vis'$.
     We proceed by 
     case analysis on the last applied rule:
@@ -440,9 +444,10 @@ the derivation  $\tr{} ^*$.
 	
 	\item rules \ruleName{a-arb} and \ruleName{a-int} follow immediately by inductive hypothesis
 	after noticing that  $\vis = \vis'$ and $\so = \so'$.
+	\qed
 	\end{itemize}
 
-\end{itemize}\qed
+\end{itemize}
 \end{proof}
 
 
@@ -482,11 +487,11 @@ the derivation  $\tr{} ^*$.
 %	
 	\item rules \ruleName{a-arb} and \ruleName{a-int} follow immediately by inductive hypothesis
 	after noticing that  $\so = \so'$.
-	
+\qed	
 	%\chnote{esta prueba no me salio sino es a la "algo3"}
 \end{itemize}
 
-\end{itemize}\qed
+\end{itemize}
 \end{proof}
 
 \begin{lemma}
@@ -584,13 +589,12 @@ then,  there is not $\anupd_0$ s.t.
        $ \anupd_0^{\vertice[y]}\not\in\queuemessage'$ implies that there is not $ \anupd_1^{\vertice[z]}\not\in\queuemessage'$
        because of (the contrapositive of) \lemref{lemma:local-updates-preserver-order}.
        Therefore, $(\vertice,\vertice[y]) \in \arb_{\mbox{\sf new}} \subseteq \arb \cup \restUU{\so}$.
-
+\QEDB
         \end{itemize}
 
     \end{itemize}
 	
     \end{itemize}
-       \qed
 
 \end{proof}
 
@@ -602,9 +606,10 @@ then,  there is not $\anupd_0$ s.t.
 The proof follows by induction on the length of the derivation $\tr{} ^*$.
 \begin{itemize}
    \item{\bf n=0}. It holds trivially, because $\op=\vis=\emptyset$%, so that $\emptyset \subseteq \emptyset$.
-   \item{\bf n=k+1}. Then $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset]
+   \item{\bf n=k+1}. Then 
+   $$\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset]
     \tr{} ^k\ \environment{\systemterm''}{\op'}{\so'}{\vis'}{\arb'}[\sse'] 
-    \arroi{\lambda} \environment{\systemterm'}{\op}{\so}{\vis}{\arb}[\sse]$. 
+    \arroi{\lambda} \environment{\systemterm'}{\op}{\so}{\vis}{\arb}[\sse].$$ 
     By inductive hypothesis, $\restUR{\so'}  \subseteq \ \vis'$.
     We proceed by 
     case analysis on the last applied rule:
@@ -639,8 +644,9 @@ The proof follows by induction on the length of the derivation $\tr{} ^*$.
 	
 	\item rules \ruleName{a-arb} and \ruleName{a-int} follow immediately by inductive hypothesis
 	after noticing that  $\vis = \vis'$ and $\so = \so'$.
+	\QEDB
 	\end{itemize}
-\end{itemize}\qed
+\end{itemize}
 
 
 
@@ -992,9 +998,10 @@ case analysis on the inference rule applied for the last transition:
         $\arb_{\mbox{\sf new}};(\vis'\setminus\sse) = \emptyset \subseteq \vis$.
 
        \item rule \ruleName{a-int} follows straightforwardly.
+       \QEDB
     \end{itemize}
     \end{itemize}
-\QEDB	
+	
 
 
 
