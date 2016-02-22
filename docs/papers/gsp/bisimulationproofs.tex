@@ -1141,7 +1141,7 @@ We proceed by case analysis on the applied rule for the derivation of $\isystemt
 				
 					\item[\ref{prop_inclient}.] We show that (iii) holds. By \propref{prop_stateserver}, we know that $\astate \triangleleft \queuemessage$. 
 					Then, take $t = \queuemessage$ and notice that $\tknown+\treceivebuffer \leq|\queuemessage|$.
-					\item[\ref{prop_deltas}.] \textcolor{red}{Completar}
+					\item[\ref{prop_deltas}.] It follows immediately by inductive hypothesis after noticing that $\amxrf = \amxrf[_s]$.
 					\end{enumerate}
 					
 					The remaining properties straightforwardly hold.
