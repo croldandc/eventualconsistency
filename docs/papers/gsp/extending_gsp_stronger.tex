@@ -243,13 +243,14 @@ which disregards the  arbitration order of updates that are not observed. Hence,
 \[ \arb;\vis\subseteq\vis \quad\mbox{and}\quad \arb^{-1};\neg\vis\subseteq\neg\vis\]
 
 The following result shows that any well-formed \gsp\ system, whose programs are 
-free from asynchronous updates (due to space limitation, we omit its formal definition) enjoy 
-the single order guarantee. 
+free from asynchronous updates  enjoy 
+the single order guarantee (For reviewer's convenience we provide the formal 
+definition of programs free from asynchronous update in appendix \ref{appendix-transaction}). 
 
 \begin{theorem}[\textsc{Single Order}]
 \label{thm:single-order}
 Let $\systemterm$ be a well-formed system s.t. $\updcmd$ does not appear in $\systemterm$.  If
- $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \arro{} ^*\ \environment{\systemterm}{\op}{\so}{\vis}{\arb} $ then 
+ $\environment{\systemterm}{\emptyset}{\emptyset}{\emptyset}{\emptyset}[\emptyset] \arro{} ^*\ \environment{\systemterm'}{\op}{\so}{\vis}{\arb} $ then 
  $\arb;\vis\subseteq\vis$ and $\arb^{-1};\neg\vis\subseteq\neg\vis$.
 \end{theorem}
  

@@ -105,14 +105,13 @@ both cases $\op$ is extended with a new event $\vertice$ (\ie, $\vertice \notin 
 with the corresponding operation (either $\aread$ or $\anupd$). The new event $\vertice$ is added to the 
 corresponding  session $\cid$, and $\so$ is updated to make $\vertice$  the maximal event for the session $\cid$.
 Rule  \ruleName{a-update}  amends $\arb$ by capturing the fact that all updates that are already in the 
-global state have take place before the new event. Rule \ruleName{a-read} instead augments $\vis$ with the pairs
+global state took place before the new event. Rule \ruleName{a-read} instead augments $\vis$ with the pairs
 associating the new event with all events that are seen by the read action, namely, the local  view of 
 the global state $\queuemessage[0..\tknown_{\cid}-1]$ and the local  buffers 
 $\tpending_{\cid}$ and $\ttransactionbuffer_{\cid}$. Rule \ruleName{a-arb} handles the changes in the 
-state of the global store (due to a send transition in one client) and  amends $\arb$ by (i) arbitrating the new 
-events exactly in the way in which they are added to the store (\ie, $\{(\vertice[@][_i],\vertice[@][_j]) \ |\ i,j\in \{0,\ldots,n\}, i<j\}$)
-and registering that they are arbitrated before any other concurrent update in the remaining 
-clients (\ie, $
+state of the global store (due to a send transition in one client) and  amends $\arb$ by  arbitrating (i) the new 
+events by respecting the relative order in  which they are added to the store (\ie, $\{(\vertice[@][_i],\vertice[@][_j]) \ |\ i,j\in \{0,\ldots,n\}, i<j\}$)
+and (ii) all updates in the local state of the clients after the new ones (\ie, $
 		\ (\{\vertice[@][_0],\ldots,\vertice[@][_n]\}\times 
 		\{ \vertice[w]\ \ |\ \  \vertice[w]\in\mathbb{U} \
 		     \forall\anupd. \anupd^{\vertice[w]}\not\in\queuemessage\cdot\anupdseq\}$).
