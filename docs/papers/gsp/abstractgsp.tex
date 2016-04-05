@@ -163,7 +163,7 @@ For simplicity, we do not  have an explicit replica of the global store in each 
 state that is known to the client.
 Specifically, the client  $\cid$ knows the 
 sequence $\queuemessage[0..\tknown-1]$. 
-Similarly,  $\treceivebuffer$ indicates the number  updates received by the client
+Similarly,  $\treceivebuffer$ indicates the number of updates received by the client
 that have not been  added to the local replica, i.e., 
 the client has received the updates contained in the segment $\queuemessage[\tknown..\tknown+\treceivebuffer-1]$.
 %Value $\trounds$ counts the number of update operations executed by the client. 

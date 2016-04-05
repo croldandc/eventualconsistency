@@ -24,7 +24,7 @@ In this way, the consistency model supported by a data store becomes crucial whe
 Consequently,  there has been a growing interest on establishing  programming abstractions to help developers 
 to deal with eventual consistent stores. For instance, commutative replicated data types~\cite{DBLP:conf/sss/ShapiroPBZ11}  and 
 cloud types~\cite{burckhardt2012cloud} provide programmers with suitable data type abstractions that encapsulate issues related 
-to eventual consistency. Recent proposals advocate declarative approaches to 
+to eventual consistency. Recent proposals advocate declarative approaches for 
  programming with eventual consistency,  e.g.,  
 to automatically select the consistency level required from a store provided with 
 a consistency contract for the application~\cite{sivaramakrishnan2015declarative}
@@ -43,12 +43,12 @@ converge to the same state. In the very basic model, called core \gsp, each clie
   by performing read and write operations. Albeit simple, this model  introduces some subtleties when programming 
   because  it does not ensure read stability (i.e., two successive reads may 
 return different values) nor atomicity of several updates (i.e., another client may partially observe the effects  
-a sequence of updates). To overcome these limitations, 
+of a sequence of updates). To overcome these limitations, 
  three synchronisation primitives, namely \pullcmd, \pushcmd\ and \confcmd, 
  allow programmers to control the propagation of changes. % and the updating of the local state. 
 It has been shown that this model can be implemented so to handle communication
 failures and to represent updates efficiently by using two type of objects: states and deltas.
-Both models, \ie the idealised one and its implementation,
+Both models, \ie\ the idealised one and its implementation,
 have been defined in terms of a reference implementation. 
 
 In this paper, we propose a

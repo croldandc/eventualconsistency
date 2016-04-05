@@ -152,12 +152,12 @@ affect the history and are handled by rule \ruleName{a-int}.
 	\begin{array}{p{\linewidth}}
 		 $\systemterm \arroi{\readtran{r}} \systemterm' 
 		 \qquad\ \  \vertice \notin  dom(\op) 
-		 \qquad\ \  \op' = \op\upd \vertice r
+		 \qquad\ \  \textcolor{blue}{\op}' = \op\upd \vertice r
 		 \hfill  \sse' = \sse\upd \cid {\sse(\cid)\cup\{\vertice\}}
 		 $\\[2pt]
 		 $
-		 \so' = \so\cup (\sse(\cid)\times\{\vertice\})
-		 \hfill  \vis' = \vis \cup (\{\vertice[w] \ |\  \udec[@][{\vertice[w]}] \in \queuemessage[0..\tknown_{\,\cid}-1] \cdot \tpending_{\cid} \cdot \ttransactionbuffer_{\,\cid} \}\times\{\vertice\})
+		 \textcolor{blue}{\so}' = \so\cup (\sse(\cid)\times\{\vertice\})
+		 \hfill  \textcolor{blue}{\vis'} = \vis \cup (\{\vertice[w] \ |\  \udec[@][{\vertice[w]}] \in \queuemessage[0..\tknown_{\,\cid}-1] \cdot \tpending_{\cid} \cdot \ttransactionbuffer_{\,\cid} \}\times\{\vertice\})
 		 $
 	\end{array}
 	 }
