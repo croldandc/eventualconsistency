@@ -158,7 +158,7 @@ $l\in\{0,\ldots,m\}$, and  $\isystemterm = \concsyst$  a \igsp\  system such tha
 		for all $\aroundtuple[@][@][\adelta'] \in\pending_l$
         if $\irounds\leq\amxrf(\cid_l)$ then $\adelta\triangleleft \flatten{\queuemessage[x..x']}$ and  $\adelta'\triangleleft \flatten{\queuemessage[y..y']}$
         with $y'\leq x'$.
-    
+    \chnote{aca nos dijeron que el guion es un typo y deberia ser delta, en realidad es delta o state.}
 	%\end{enumerate} 
 %       \item \label{prop_desc} if $\cid_l \not\in \dom{\outserver}$ then for all $\aroundtuple[@][@][\adelta'] \in\pending_l$
 %        if $\irounds\leq\amxrf[_s](\cid_l)$ then $\adelta\triangleleft \flatten{\queuemessage[x..x']}$ and  $\adelta'\triangleleft \flatten{\queuemessage[y..y']}$
@@ -178,7 +178,7 @@ then  all  blocks  in  the sending list $\tsent_l$  are either rounds
 that have been sent, i.e., in $\inserver(\cid_l)$, or ready blocks in ${\pushbuffer}_l$.
 Condition (\ref{prop_inclient}) establishes the relation between the received messages in both models. Basically, 
 the local replica 
-is complete  when there are no segments for the client ($i$).%${\inclient}_l \cdot \outserver(\cid_l)  = \epsilon$). 
+is complete  when there are no segments for the client ($i$). %${\inclient}_l \cdot \outserver(\cid_l)  = \epsilon$). 
 When the first received segment is a delta object ($ii$),
  the  content in the input buffer $\inclient_l$ corresponds to the received messages in $\queuemessage[\tknown_l..\tknown_l+\treceivebuffer_l-1]$
 and the the  output buffer $\outserver(\cid_l)$ contains the  updates in the 
@@ -216,7 +216,7 @@ when
  
  
 
-\begin{definition}[simulation] $\mathcal{R}$ is an {\em implementation simulation} if for all 
+\begin{definition}[Simulation] $\mathcal{R}$ is an {\em implementation simulation} if for all 
 $(\isystemterm,\systemterm)\in\mathcal{R}$ we have:
 \begin{enumerate}
    \item If $\isystemterm\arro{\updatetran{\anupd}}\isystemterm[']$ then  $\exists\systemterm['],\vertice[w]$ s.t.  $\systemterm\Arroi{\updatetranaux{\anupd^{\vertice[w][]}}}\systemterm[']$ and $(\isystemterm['],\systemterm['])\in\mathcal{R}$;
@@ -225,7 +225,7 @@ $(\isystemterm,\systemterm)\in\mathcal{R}$ we have:
 \end{enumerate} 
 \end{definition}
 
-As usual, we write $\isystemterm\precsim\systemterm$ if there exists an {simulation} $\mathcal{R}$ s.t.  
+As usual, we write $\isystemterm\precsim\systemterm$ if there exists a {simulation} $\mathcal{R}$ s.t.  
 $(\isystemterm,\systemterm)\in\mathcal{R}$.
 
 %
@@ -239,7 +239,7 @@ $(\isystemterm,\systemterm)\in\mathcal{R}$.
 \end{theorem}
 
 \begin{proof}
-We show that $\mathcal{R} = \{ (\isystemterm, \systemterm) \ |\ \implements{\isystemterm{}}{\systemterm} \}$ is simulation.
+We show that $\mathcal{R} = \{ (\isystemterm, \systemterm) \ |\ \implements{\isystemterm{}}{\systemterm} \}$ is a simulation.
 \end{proof}
 
 We remark that  $\mathcal{R}^{-1}$ is not a simulation because the implementation cannot mimic  the 

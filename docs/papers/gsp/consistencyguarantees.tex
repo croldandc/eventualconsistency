@@ -48,7 +48,7 @@ $\mathbb{U} = \{ \vertice\ |\ \vertice{}\in\op, \op(\vertice) \in \updatesets\}$
 Let $\systemterm = \Absclient_0\bigpar \ldots\bigpar \Absclient_m\bigpar\queuemessage$ be 
 a \gsp\ system where
 $\Absclient_l = \tclienti{\tprogram_l}{\tknown_l}{\tpending_l}{\ttransactionbuffer_l}{\tsent_l}{\treceivebuffer_l}[\cid_l][\trounds_l]$. 
- An  history 
+ A  history 
 $ \environmentterm =  \environment{\systemterm}{\op}{\so}{\vis}{\arb}$  
 is well-formed if the following conditions hold:
 
@@ -74,7 +74,7 @@ only relates
 belonging to the same session (2), which are totally ordered within each session (3). Differently from 
 the definition in~\cite{DBLP:journals/ftpl/Burckhardt14}, we restrict visibility to keep track of dependencies between updates and read events(4).
  We do not require $\arb$ to be a total order but instead to be 
-a prefix order (5). In this way we allow  updates in different replicas not to be arbitrated until they do not reach the global store yet. 
+a prefix order (5). In this way we allow  updates in different replicas not to be arbitrated until they do not reach the global store. 
 The remaining two conditions require the abstract history to be consistent with the state of the system.
 
 %\begin{itemize}
